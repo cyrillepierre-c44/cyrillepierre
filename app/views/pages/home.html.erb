@@ -1,2 +1,318 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<% content_for :title, "Cyrille PIERRE — Consultant Opérationnel & Tech" %>
+
+<%# ============================== HERO ============================== %>
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+
+      <div class="col-lg-6 order-2 order-lg-1">
+        <span class="hero-eyebrow">Ingénieur Arts & Métiers · Lyon</span>
+        <h1>
+          Cyrille<br>
+          <span class="gradient-text">PIERRE</span>
+        </h1>
+
+        <div class="hero-typing-wrapper"
+             data-controller="typing"
+             data-typing-phrases-value='["Consultant en Excellence Opérationnelle","Expert Leadership & Transformation","Développeur Web & Intégrateur IA"]'>
+          <p class="hero-typing">
+            <span data-typing-target="text"></span><span class="cursor"></span>
+          </p>
+        </div>
+
+        <p class="hero-desc">
+          20 ans à transformer des opérations industrielles complexes. Aujourd'hui j'allie cette expertise terrain à la technologie pour générer des gains mesurables et durables.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="<%= operations_path %>" class="btn-cp-primary">Découvrir mon expertise</a>
+          <a href="mailto:cyrille.pierre@gmail.com" class="btn-cp-outline">Me contacter</a>
+        </div>
+      </div>
+
+      <div class="col-lg-5 offset-lg-1 order-1 order-lg-2">
+        <div class="hero-photo-wrapper">
+          <img src="/images/cyrille.jpg" alt="Cyrille PIERRE" class="hero-photo">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ============================== STATS ============================== %>
+<section class="stats-section" data-controller="reveal">
+  <div class="container">
+    <div class="row g-0 text-center">
+
+      <div class="col-6 col-md-3 reveal reveal-delay-1">
+        <div class="stat-item" data-controller="counter" data-counter-end-value="20" data-counter-suffix-value="+ ans">
+          <div class="stat-value"><span data-counter-target="number">0</span></div>
+          <div class="stat-label">d'expérience</div>
+          <div class="stat-sublabel">industrielle & tech</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3 reveal reveal-delay-2">
+        <div class="stat-item" data-controller="counter" data-counter-end-value="200" data-counter-suffix-value="">
+          <div class="stat-value"><span data-counter-target="number">0</span></div>
+          <div class="stat-label">personnes managées</div>
+          <div class="stat-sublabel">jusqu'à 3 unités</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3 reveal reveal-delay-3">
+        <div class="stat-item">
+          <div class="stat-value">1,7 M€</div>
+          <div class="stat-label">d'économies générées</div>
+          <div class="stat-sublabel">résultats cumulés</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3 reveal reveal-delay-4">
+        <div class="stat-item" data-controller="counter" data-counter-end-value="3" data-counter-suffix-value="">
+          <div class="stat-value"><span data-counter-target="number">0</span></div>
+          <div class="stat-label">secteurs d'expertise</div>
+          <div class="stat-sublabel">pharma · agro · microélec.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ============================== ABOUT ============================== %>
+<section class="about-section" data-controller="reveal">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+
+      <div class="col-lg-6 reveal">
+        <span class="section-eyebrow">À propos</span>
+        <h2 class="section-title">Là où la rigueur industrielle rencontre la technologie</h2>
+        <p class="about-text">
+          Ingénieur Arts & Métiers de formation, j'ai passé 20 ans à transformer des opérations industrielles — en pharmaceutique aseptique, agroalimentaire grande cadence, et microélectronique. J'ai managé jusqu'à 200 personnes, siégé en CODIR, et généré des millions d'euros d'économies mesurables.
+        </p>
+        <p class="about-text" style="margin-top: -1rem;">
+          Puis j'ai créé Centaur Bike, appris à coder, et découvert le potentiel de l'IA. Aujourd'hui j'interviens à la croisée de ces deux mondes : là où les problèmes industriels concrets appellent des solutions technologiques sur mesure.
+        </p>
+
+        <div class="diplomas">
+          <div class="diploma-badge">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Ingénieur ENSAM — médaillé d'argent
+          </div>
+          <div class="diploma-badge">
+            <i class="fa-solid fa-code"></i>
+            Le Wagon — Développeur Web
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 reveal reveal-delay-2">
+        <div class="value-prop">
+          <div class="vp-icon">⚙️</div>
+          <div>
+            <h4>Excellence opérationnelle</h4>
+            <p>Analyse des pertes, KAIZEN, TPM, WCM — je connais ces outils par cœur et surtout leur application terrain dans des environnements exigeants.</p>
+          </div>
+        </div>
+        <div class="value-prop">
+          <div class="vp-icon">🧭</div>
+          <div>
+            <h4>Leadership & transformation</h4>
+            <p>J'ai accompagné des équipes de 100 à 200 personnes à travers des changements profonds — SAP, réorganisations, nouvelles normes. La méthode ADKAR n'est pas un concept, c'est ma pratique.</p>
+          </div>
+        </div>
+        <div class="value-prop">
+          <div class="vp-icon">🤖</div>
+          <div>
+            <h4>Tech & Intelligence Artificielle</h4>
+            <p>Je ne parle pas simplement de l'IA — je la pratique et je développe. Je peux concevoir l'outil ET comprendre le besoin terrain. Ce profil est rare.</p>
+          </div>
+        </div>
+
+        <div class="about-quote">
+          <blockquote>« Intrapreneur dans l'âme, proactif, force de propositions — avec un sens hors norme de l'adaptation et une capacité à transformer les rêves en action. »</blockquote>
+          <cite>Bilan de personnalité · MaReussite.com</cite>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ============================== TIMELINE ============================== %>
+<section class="timeline-section" data-controller="reveal">
+  <div class="container">
+    <div class="row g-5">
+
+      <div class="col-lg-4 reveal">
+        <span class="section-eyebrow">Parcours</span>
+        <h2 class="section-title">20 ans de terrain, un profil unique</h2>
+        <p class="section-subtitle">De l'ingénierie à la direction de production, du conseil au code — chaque étape a renforcé la suivante.</p>
+      </div>
+
+      <div class="col-lg-7 offset-lg-1 reveal reveal-delay-2">
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="ti-period">Jan 2021 – Aoû 2025</div>
+            <div class="ti-role">Créateur d'entreprise</div>
+            <div class="ti-company">Centaur Bike · Lyon — Électrification & reconditionnement vélos</div>
+            <span class="ti-result">CA 250 K€/an · Marge 39%</span>
+          </div>
+
+          <div class="timeline-item">
+            <div class="ti-period">Oct 2018 – Déc 2020</div>
+            <div class="ti-role">Directeur de Production · membre CODIR</div>
+            <div class="ti-company">Yoplait · Vienne — 3 unités, 200 personnes</div>
+            <span class="ti-result">+8% TRS · 480 K€/an</span>
+          </div>
+
+          <div class="timeline-item">
+            <div class="ti-period">Jun 2016 – Sep 2018</div>
+            <div class="ti-role">Resp. Fabrication Liquide Injectables</div>
+            <div class="ti-company">CENEXI · Fontenay-sous-Bois — 170 personnes, pharma aseptique</div>
+            <span class="ti-result">−10% absentéisme · 450 K€/an rebuts</span>
+          </div>
+
+          <div class="timeline-item">
+            <div class="ti-period">Oct 2014 – Mai 2016</div>
+            <div class="ti-role">Consultant Senior</div>
+            <div class="ti-company">EFESO Consulting · Paris — Stratégie opérationnelle CODIR</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="ti-period">Sep 2010 – Sep 2014</div>
+            <div class="ti-role">Resp. Unité de Production</div>
+            <div class="ti-company">LIEBIG / Campbell · Le Pontet — 100 personnes</div>
+            <span class="ti-result">−40% pannes · 850 K€/an</span>
+          </div>
+
+          <div class="timeline-item">
+            <div class="ti-period">Mar 2006 – Aoû 2010</div>
+            <div class="ti-role">Chef d'équipe Maintenance postée</div>
+            <div class="ti-company">STMicroelectronics · Crolles — 2 000 employés</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="ti-period">Oct 2003 – Fév 2006</div>
+            <div class="ti-role">Ingénieur Travaux Neufs</div>
+            <div class="ti-company">GHM · Sommevoire</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ============================== SKILLS ============================== %>
+<section class="skills-section" data-controller="reveal">
+  <div class="container">
+    <div class="row g-4">
+
+      <div class="col-12 reveal">
+        <span class="section-eyebrow">Compétences</span>
+        <h2 class="section-title">Un profil à trois dimensions</h2>
+      </div>
+
+      <div class="col-md-4 reveal reveal-delay-1">
+        <div class="skill-category">
+          <div class="skill-cat-label">Excellence Opérationnelle</div>
+          <span class="skill-badge sk-ops">Lean Manufacturing</span>
+          <span class="skill-badge sk-ops">Six Sigma</span>
+          <span class="skill-badge sk-ops">KAIZEN</span>
+          <span class="skill-badge sk-ops">TPM</span>
+          <span class="skill-badge sk-ops">WCM</span>
+          <span class="skill-badge sk-ops">OEE / TRS</span>
+          <span class="skill-badge sk-ops">VSM</span>
+          <span class="skill-badge sk-ops">5S</span>
+        </div>
+      </div>
+
+      <div class="col-md-4 reveal reveal-delay-2">
+        <div class="skill-category">
+          <div class="skill-cat-label">Leadership & Management</div>
+          <span class="skill-badge sk-lead">Management d'équipes</span>
+          <span class="skill-badge sk-lead">Change Management</span>
+          <span class="skill-badge sk-lead">ADKAR</span>
+          <span class="skill-badge sk-lead">Stratégie industrielle</span>
+          <span class="skill-badge sk-lead">Gestion budgétaire</span>
+          <span class="skill-badge sk-lead">Coaching managers</span>
+        </div>
+      </div>
+
+      <div class="col-md-4 reveal reveal-delay-3">
+        <div class="skill-category">
+          <div class="skill-cat-label">Tech & IA</div>
+          <span class="skill-badge sk-tech">Ruby on Rails</span>
+          <span class="skill-badge sk-tech">Intelligence Artificielle</span>
+          <span class="skill-badge sk-tech">LLM / Claude API</span>
+          <span class="skill-badge sk-tech">PostgreSQL</span>
+          <span class="skill-badge sk-tech">JavaScript</span>
+          <span class="skill-badge sk-tech">Linux / WSL</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ============================== SERVICES PREVIEW ============================== %>
+<section class="services-preview-section" data-controller="reveal">
+  <div class="container">
+    <div class="row g-0 mb-4 reveal">
+      <div class="col-12">
+        <span class="section-eyebrow">Mes domaines d'intervention</span>
+        <h2 class="section-title">Comment puis-je vous aider ?</h2>
+      </div>
+    </div>
+    <div class="row g-4">
+
+      <div class="col-md-4 reveal reveal-delay-1">
+        <a href="<%= operations_path %>" class="preview-card">
+          <span class="preview-icon">⚙️</span>
+          <h3>Excellence Opérationnelle</h3>
+          <p>Diagnostic de vos pertes, déploiement Lean & KAIZEN, mise en place d'indicateurs — avec des résultats mesurables dès les premières semaines.</p>
+          <span class="preview-link">Voir cette expertise →</span>
+        </a>
+      </div>
+
+      <div class="col-md-4 reveal reveal-delay-2">
+        <a href="<%= leadership_path %>" class="preview-card">
+          <span class="preview-icon">🧭</span>
+          <h3>Leadership & Transformation</h3>
+          <p>Management de transition, conduite du changement, développement des managers — pour faire évoluer vos équipes durablement.</p>
+          <span class="preview-link">Voir cette expertise →</span>
+        </a>
+      </div>
+
+      <div class="col-md-4 reveal reveal-delay-3">
+        <a href="<%= tech_path %>" class="preview-card">
+          <span class="preview-icon">🤖</span>
+          <h3>Tech & Intelligence Artificielle</h3>
+          <p>Applications métier sur mesure, intégration IA, outils de pilotage digital — je parle la langue du terrain ET celle du code.</p>
+          <span class="preview-link">Voir cette expertise →</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%# ============================== CTA ============================== %>
+<section data-controller="reveal">
+  <div class="container">
+    <div class="cta-block reveal">
+      <span class="section-eyebrow">Contact</span>
+      <h2>Parlons de votre projet</h2>
+      <p>Vous avez une problématique opérationnelle, un projet de transformation ou un outil à construire ? Je suis disponible pour un premier échange sans engagement.</p>
+      <div class="cta-actions">
+        <a href="mailto:cyrille.pierre@gmail.com" class="btn-cp-primary">M'écrire directement</a>
+        <a href="https://www.linkedin.com/in/cyrille-pierre" target="_blank" rel="noopener" class="btn-cp-outline">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+</section>

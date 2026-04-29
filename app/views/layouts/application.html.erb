@@ -1,29 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
-    <title><%= content_for(:title) || "Cyrillepierre" %></title>
+    <title><%= content_for(:title) || "Cyrille PIERRE — Consultant Opérationnel & Tech" %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Cyrillepierre">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="Cyrille PIERRE — Consultant indépendant en excellence opérationnelle et transformation digitale. Ingénieur Arts & Métiers, 20 ans d'expérience industrielle. Lyon.">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <nav class="navbar navbar-expand-lg navbar-cp fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="<%= root_path %>">
+          <span class="brand-logo">CP</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Menu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+            <li class="nav-item">
+              <a class="nav-link <%= 'active' if current_page?(root_path) %>" href="<%= root_path %>">Profil</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= 'active' if current_page?(operations_path) %>" href="<%= operations_path %>">Excellence Opérationnelle</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= 'active' if current_page?(leadership_path) %>" href="<%= leadership_path %>">Leadership</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= 'active' if current_page?(tech_path) %>" href="<%= tech_path %>">Tech & IA</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= 'active' if current_page?(realisations_path) %>" href="<%= realisations_path %>">Réalisations</a>
+            </li>
+            <li class="nav-item ms-lg-2">
+              <a class="btn-cp-primary" href="mailto:cyrille.pierre@gmail.com">Me contacter</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <%= yield %>
+    </main>
+
+    <footer class="footer-cp">
+      <div class="container">
+        <div class="row align-items-start g-4">
+          <div class="col-md-4">
+            <span class="brand-logo">CP</span>
+            <span class="footer-name">Cyrille PIERRE</span>
+            <p class="footer-tagline">Consultant Indépendant · Ingénieur Arts & Métiers · Lyon</p>
+          </div>
+          <div class="col-md-4 d-flex align-items-center justify-content-md-center">
+            <nav class="footer-nav">
+              <a href="<%= root_path %>">Profil</a>
+              <a href="<%= operations_path %>">Excellence Op.</a>
+              <a href="<%= leadership_path %>">Leadership</a>
+              <a href="<%= tech_path %>">Tech & IA</a>
+            </nav>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <a href="mailto:cyrille.pierre@gmail.com" class="footer-contact d-block mb-1">cyrille.pierre@gmail.com</a>
+            <a href="https://www.linkedin.com/in/cyrille-pierre" target="_blank" rel="noopener" class="footer-contact">LinkedIn → cyrille-pierre</a>
+          </div>
+        </div>
+        <hr class="footer-hr">
+        <p class="footer-copy">© <%= Date.current.year %> Cyrille PIERRE · Tous droits réservés</p>
+      </div>
+    </footer>
   </body>
 </html>

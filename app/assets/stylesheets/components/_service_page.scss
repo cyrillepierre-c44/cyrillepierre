@@ -1,0 +1,221 @@
+// ============================================================
+// Shared styles for Operations, Leadership, Tech pages
+// ============================================================
+
+// Hero
+.service-hero {
+  padding: 4.5rem 0 3.5rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(0, 212, 255, 0.07) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 50%, rgba(139, 92, 246, 0.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .service-hero-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--cp-gradient);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: $headers-font;
+    font-weight: 700;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) { font-size: 2rem; }
+  }
+
+  .service-hero-sub {
+    font-size: 1.15rem;
+    color: var(--cp-muted);
+    max-width: 580px;
+    line-height: 1.7;
+    margin-bottom: 0;
+  }
+}
+
+// Results bar
+.results-bar {
+  background: rgba(0, 212, 255, 0.04);
+  border: 1px solid rgba(0, 212, 255, 0.12);
+  border-radius: 1rem;
+  padding: 2.5rem 2rem;
+  margin: 2rem 0 3rem;
+
+  .result-item {
+    text-align: center;
+    padding: 0.5rem 0;
+
+    .result-value {
+      font-family: $headers-font;
+      font-weight: 700;
+      font-size: 2rem;
+      background: var(--cp-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+
+    .result-label {
+      color: var(--cp-text);
+      font-size: 0.82rem;
+      font-weight: 500;
+      margin-top: 0.2rem;
+    }
+
+    .result-company {
+      color: rgba(148, 163, 184, 0.55);
+      font-size: 0.73rem;
+    }
+  }
+}
+
+// Service cards
+.service-card {
+  background: var(--cp-bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--cp-border);
+  border-radius: 1rem;
+  padding: 2rem;
+  height: 100%;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    border-color: rgba(0, 212, 255, 0.35);
+    transform: translateY(-5px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  }
+
+  .card-icon {
+    font-size: 2.25rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  h3 {
+    font-family: $headers-font;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--cp-text);
+    margin-bottom: 0.75rem;
+  }
+
+  .card-desc {
+    color: var(--cp-muted);
+    font-size: 0.93rem;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  ul.card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      color: var(--cp-muted);
+      font-size: 0.88rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+      &:last-child { border-bottom: none; }
+
+      &::before {
+        content: "→";
+        color: var(--cp-accent);
+        margin-right: 0.5rem;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Company badges
+.company-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 2rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  color: var(--cp-muted);
+  margin: 0.25rem;
+
+  .badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cp-gradient);
+    flex-shrink: 0;
+  }
+}
+
+// CTA block
+.cta-block {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.07), rgba(139, 92, 246, 0.07));
+  border: 1px solid rgba(0, 212, 255, 0.14);
+  border-radius: 1.5rem;
+  padding: 4rem 3rem;
+  text-align: center;
+  margin: 4rem 0;
+
+  @media (max-width: 768px) { padding: 2.5rem 1.5rem; }
+
+  h2 {
+    font-family: $headers-font;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: var(--cp-muted);
+    font-size: 1rem;
+    max-width: 480px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+
+  .cta-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+// Differentiator box
+.differentiator-box {
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin: 3rem 0;
+
+  .diff-quote {
+    font-family: $headers-font;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--cp-text);
+    line-height: 1.6;
+    font-style: italic;
+  }
+}

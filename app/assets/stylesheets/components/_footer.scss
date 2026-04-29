@@ -1,0 +1,64 @@
+.footer-cp {
+  background: #030812;
+  border-top: 1px solid rgba(0, 212, 255, 0.08);
+  padding: 3.5rem 0 1.5rem;
+  margin-top: 6rem;
+
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+    vertical-align: middle;
+  }
+
+  .footer-name {
+    font-family: $headers-font;
+    font-weight: 600;
+    font-size: 1rem;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+  }
+
+  .footer-tagline {
+    color: var(--cp-muted);
+    font-size: 0.82rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    a {
+      color: var(--cp-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s ease;
+
+      &:hover { color: var(--cp-accent); }
+    }
+  }
+
+  .footer-contact {
+    color: var(--cp-muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.2s ease;
+
+    &:hover { color: var(--cp-accent); }
+  }
+
+  .footer-hr {
+    border-color: rgba(255, 255, 255, 0.05);
+    margin: 2rem 0 1.25rem;
+  }
+
+  .footer-copy {
+    color: rgba(148, 163, 184, 0.45);
+    font-size: 0.78rem;
+    text-align: center;
+    margin: 0;
+  }
+}

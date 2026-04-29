@@ -1,10 +1,16 @@
-// Define variables for your color scheme
+// Dark tech palette
+$bg-primary:    #050a15;
+$bg-secondary:  #0d1b2a;
+$accent-cyan:   #00d4ff;
+$accent-purple: #8b5cf6;
+$text-light:    #e2e8f0;
+$text-muted:    #94a3b8;
 
-// For example:
-$red: #FD1015;
-$blue: #0D6EFD;
-$yellow: #FFC65A;
-$orange: #E67E22;
-$green: #1EDD88;
-$gray: #0E0000;
-$light-gray: #F4F4F4;
+// Bootstrap variable aliases
+$blue:       $accent-cyan;
+$gray:       $text-light;
+$light-gray: $bg-primary;
+$green:      #10b981;
+$red:        #ef4444;
+$yellow:     #f59e0b;
+$orange:     #f97316;

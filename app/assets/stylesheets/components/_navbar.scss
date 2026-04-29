@@ -1,12 +1,54 @@
-.navbar-lewagon {
-  justify-content: space-between;
-  background: white;
-}
+.navbar-cp {
+  background: rgba(5, 10, 21, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+  padding: 0.85rem 0;
 
-.navbar-lewagon .navbar-collapse {
-  flex-grow: 0;
-}
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    font-size: 0.85rem;
+  }
 
-.navbar-lewagon .navbar-brand img {
-  width: 40px;
+  .navbar-brand {
+    text-decoration: none;
+  }
+
+  .nav-link {
+    color: var(--cp-muted);
+    font-weight: 500;
+    font-size: 0.88rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.375rem;
+    transition: color 0.2s ease, background 0.2s ease;
+
+    &:hover {
+      color: var(--cp-text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    &.active {
+      color: var(--cp-accent);
+    }
+  }
+
+  .navbar-toggler {
+    border-color: rgba(0, 212, 255, 0.2);
+    padding: 0.4rem 0.6rem;
+
+    &:focus { box-shadow: none; }
+
+    &-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%2300d4ff' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+  }
+
+  @media (max-width: 991px) {
+    .navbar-collapse {
+      padding: 1rem 0 0.5rem;
+      border-top: 1px solid rgba(0, 212, 255, 0.08);
+      margin-top: 0.75rem;
+    }
+  }
 }

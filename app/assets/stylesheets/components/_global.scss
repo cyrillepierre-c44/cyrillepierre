@@ -1,0 +1,179 @@
+// ============================================================
+// CSS Custom Properties
+// ============================================================
+:root {
+  --cp-bg:        #050a15;
+  --cp-bg-card:   rgba(13, 27, 42, 0.85);
+  --cp-accent:    #00d4ff;
+  --cp-purple:    #8b5cf6;
+  --cp-text:      #e2e8f0;
+  --cp-muted:     #94a3b8;
+  --cp-border:    rgba(0, 212, 255, 0.15);
+  --cp-gradient:  linear-gradient(135deg, #00d4ff 0%, #8b5cf6 100%);
+}
+
+body {
+  background-color: var(--cp-bg);
+  color: var(--cp-text);
+  padding-top: 72px;
+  font-family: $body-font;
+}
+
+// ============================================================
+// Keyframe Animations
+// ============================================================
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.2); }
+  50%       { box-shadow: 0 0 40px rgba(0, 212, 255, 0.4); }
+}
+
+// ============================================================
+// Reveal Animation
+// ============================================================
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+
+  &.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal-delay-1 { transition-delay: 0.10s; }
+.reveal-delay-2 { transition-delay: 0.20s; }
+.reveal-delay-3 { transition-delay: 0.30s; }
+.reveal-delay-4 { transition-delay: 0.40s; }
+
+// ============================================================
+// Utility Classes
+// ============================================================
+.gradient-text {
+  background: var(--cp-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cp-accent);
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: $headers-font;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  color: var(--cp-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 580px;
+}
+
+.accent-line {
+  width: 48px;
+  height: 3px;
+  background: var(--cp-gradient);
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+}
+
+// ============================================================
+// Glass Card
+// ============================================================
+.glass-card {
+  background: var(--cp-bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--cp-border);
+  border-radius: 1rem;
+  padding: 2rem;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    border-color: rgba(0, 212, 255, 0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// ============================================================
+// Buttons
+// ============================================================
+.btn-cp-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--cp-gradient);
+  color: #fff !important;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  font-weight: 600;
+  font-family: $headers-font;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    opacity: 0.88;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 212, 255, 0.25);
+  }
+}
+
+.btn-cp-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--cp-accent) !important;
+  border: 1px solid var(--cp-accent);
+  border-radius: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  font-weight: 600;
+  font-family: $headers-font;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 212, 255, 0.08);
+    transform: translateY(-2px);
+  }
+}
+
+// ============================================================
+// Brand Logo Mark
+// ============================================================
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cp-gradient);
+  border-radius: 8px;
+  font-family: $headers-font;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+}
