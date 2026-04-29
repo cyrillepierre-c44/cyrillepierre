@@ -97,4 +97,4 @@ production:
     url: <%= ENV["DATABASE_URL"] %>
   cable:
     <<: *default
-    url: <%= ENV["DATABASE_URL"] %
+    url: <%= ENV["DATABASE_URL"] %>
