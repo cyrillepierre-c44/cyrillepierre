@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 24px; color: #1a202c; }
+    .card { background: #fff; border-radius: 10px; padding: 36px; max-width: 660px; margin: 0 auto; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+    h1 { color: #0d1b2a; font-size: 20px; margin: 0 0 6px; }
+    .subtitle { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+    .themes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .badge { background: #e0f7ff; color: #0077aa; border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 600; }
+    .section { margin-bottom: 24px; }
+    .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #94a3b8; font-weight: 700; margin-bottom: 8px; }
+    .info-line { font-size: 15px; margin-bottom: 4px; }
+    .summary-box { background: #f8fafc; border-left: 4px solid #00d4ff; padding: 16px 20px; border-radius: 0 8px 8px 0; white-space: pre-line; font-size: 15px; line-height: 1.8; }
+    .transcript { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+    .chat-line { padding: 10px 14px; border-bottom: 1px solid #f0f4f8; font-size: 14px; display: flex; gap: 10px; }
+    .chat-line:last-child { border-bottom: none; }
+    .chat-line.assistant { background: #f8fafc; }
+    .role { font-weight: 700; min-width: 80px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #8b5cf6; padding-top: 1px; }
+    .chat-line.user .role { color: #00d4ff; }
+    a { color: #00d4ff; }
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 24px 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Nouveau contact — cyrillepierre.fr</h1>
+    <p class="subtitle">Un visiteur a rempli le formulaire de contact avec assistance IA.</p>
+
+    <div class="themes">
+      <% @themes.each do |theme| %>
+        <span class="badge"><%= theme %></span>
+      <% end %>
+    </div>
+
+    <div class="section">
+      <div class="label">Coordonnées</div>
+      <div class="info-line"><strong><%= @name %></strong><% if @company.present? %> · <%= @company %><% end %></div>
+      <div class="info-line"><a href="mailto:<%= @email %>"><%= @email %></a><% if @phone.present? %> · <%= @phone %><% end %></div>
+    </div>
+
+    <div class="section">
+      <div class="label">Résumé du besoin (généré par IA)</div>
+      <div class="summary-box"><%= @summary %></div>
+    </div>
+
+    <% if @precision.present? %>
+      <div class="section">
+        <div class="label">Précisions ajoutées par le contact</div>
+        <div class="summary-box" style="border-left-color: #8b5cf6;"><%= @precision %></div>
+      </div>
+    <% end %>
+
+    <% if @history.any? %>
+      <div class="section">
+        <div class="label">Transcript de la conversation</div>
+        <div class="transcript">
+          <% @history.each do |msg| %>
+            <% next if msg["content"].blank? %>
+            <div class="chat-line <%= msg['role'] %>">
+              <span class="role"><%= msg["role"] == "user" ? "Visiteur" : "Assistant" %></span>
+              <span><%= msg["content"].gsub("##READY##", "").strip %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</body>
+</html>

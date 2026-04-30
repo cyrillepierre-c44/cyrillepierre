@@ -1,0 +1,213 @@
+<% content_for :title, "Contact — Cyrille PIERRE" %>
+
+<section class="cf-hero">
+  <div class="container">
+    <span class="section-eyebrow">Contact</span>
+    <h1>Parlons de <span class="gradient-text">votre projet</span></h1>
+    <p class="cf-hero-sub">
+      Trois questions guidées par l'IA, un résumé clair, une réponse sous 24h.
+    </p>
+  </div>
+</section>
+
+<div class="cf-wrapper">
+  <div class="container">
+    <%= form_with url: contact_path, method: :post,
+        data: { controller: "contact-chat", turbo: false } do %>
+
+      <%# ════════════════════════════════════════ %>
+      <%# ÉTAPE 1 — Coordonnées                   %>
+      <%# ════════════════════════════════════════ %>
+      <div class="cf-step-block">
+        <div class="cf-step-header">
+          <span class="cf-step-badge">1</span>
+          <div>
+            <h2 class="cf-step-title">Vos coordonnées</h2>
+            <p class="cf-step-desc">Nécessaires pour vous répondre.</p>
+          </div>
+        </div>
+
+        <div class="cf-fields-grid">
+          <div class="cf-field">
+            <label class="cf-label" for="contact_name">
+              Nom complet <span class="cf-required" title="Obligatoire">*</span>
+            </label>
+            <input type="text" id="contact_name" name="contact_name"
+                   class="cf-input" required placeholder="Marie Dupont">
+          </div>
+
+          <div class="cf-field">
+            <label class="cf-label" for="contact_company">Entreprise</label>
+            <input type="text" id="contact_company" name="contact_company"
+                   class="cf-input" placeholder="Acme Industries">
+          </div>
+
+          <div class="cf-field">
+            <label class="cf-label" for="contact_email">
+              Email <span class="cf-required" title="Obligatoire">*</span>
+            </label>
+            <input type="email" id="contact_email" name="contact_email"
+                   class="cf-input" required placeholder="marie@acme.com">
+          </div>
+
+          <div class="cf-field">
+            <label class="cf-label" for="contact_phone">Téléphone</label>
+            <input type="tel" id="contact_phone" name="contact_phone"
+                   class="cf-input" placeholder="06 XX XX XX XX">
+          </div>
+        </div>
+
+        <p class="cf-required-legend"><span class="cf-required">*</span> Champs obligatoires</p>
+      </div>
+
+      <%# ════════════════════════════════════════ %>
+      <%# ÉTAPE 2 — Thèmes                        %>
+      <%# ════════════════════════════════════════ %>
+      <div class="cf-step-block">
+        <div class="cf-step-header">
+          <span class="cf-step-badge">2</span>
+          <div>
+            <h2 class="cf-step-title">Votre domaine d'intérêt</h2>
+            <p class="cf-step-desc">Sélectionnez un ou plusieurs thèmes — l'assistant adaptera ses questions.</p>
+          </div>
+        </div>
+
+        <div class="cf-themes-grid">
+
+          <label class="cf-theme-card" data-contact-chat-target="themeCheckbox"
+                 data-action="change->contact-chat#themeChanged">
+            <input type="checkbox" name="contact_themes[]" value="Excellence Opérationnelle">
+            <div class="cf-theme-inner">
+              <span class="cf-theme-icon">⚙️</span>
+              <h3 class="cf-theme-title">Excellence Opérationnelle</h3>
+              <p class="cf-theme-desc">Lean, KAIZEN, TPM, TRS — réduction des pertes et gains mesurables</p>
+              <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+            </div>
+          </label>
+
+          <label class="cf-theme-card" data-contact-chat-target="themeCheckbox"
+                 data-action="change->contact-chat#themeChanged">
+            <input type="checkbox" name="contact_themes[]" value="Leadership & Transformation">
+            <div class="cf-theme-inner">
+              <span class="cf-theme-icon">🧭</span>
+              <h3 class="cf-theme-title">Leadership & Transformation</h3>
+              <p class="cf-theme-desc">Management, conduite du changement, ADKAR — faire évoluer vos équipes</p>
+              <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+            </div>
+          </label>
+
+          <label class="cf-theme-card" data-contact-chat-target="themeCheckbox"
+                 data-action="change->contact-chat#themeChanged">
+            <input type="checkbox" name="contact_themes[]" value="Tech & IA">
+            <div class="cf-theme-inner">
+              <span class="cf-theme-icon">🤖</span>
+              <h3 class="cf-theme-title">Tech & Intelligence Artificielle</h3>
+              <p class="cf-theme-desc">Applications métier, outils de pilotage, intégration IA sur mesure</p>
+              <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+            </div>
+          </label>
+
+        </div>
+      </div>
+
+      <%# ════════════════════════════════════════ %>
+      <%# ÉTAPE 3 — Chat IA                       %>
+      <%# ════════════════════════════════════════ %>
+      <div class="cf-step-block cf-chat-block" id="cf-chat-section">
+        <div class="cf-step-header">
+          <span class="cf-step-badge">3</span>
+          <div>
+            <h2 class="cf-step-title">Discussion avec l'assistant</h2>
+            <p class="cf-step-desc">3 questions pour aider Cyrille à comprendre précisément votre besoin.</p>
+          </div>
+        </div>
+
+        <%# Placeholder avant sélection de thème %>
+        <div class="cf-chat-placeholder" data-contact-chat-target="placeholder">
+          <i class="fa-regular fa-comment-dots cf-placeholder-icon"></i>
+          <p>Sélectionnez un thème à l'étape 2 pour démarrer la conversation.</p>
+        </div>
+
+        <%# Zone de chat %>
+        <div class="cf-chat-area d-none" data-contact-chat-target="chatArea">
+          <div class="cf-chat-topbar">
+            <span class="cf-chat-dot"></span>
+            <span class="cf-chat-name">Assistant Cyrille PIERRE</span>
+            <span class="cf-chat-badge">IA</span>
+          </div>
+
+          <div class="cf-chat-messages" data-contact-chat-target="messages"></div>
+
+          <div class="cf-chat-typing d-none" data-contact-chat-target="typing">
+            <span></span><span></span><span></span>
+          </div>
+
+          <div class="cf-chat-footer" data-contact-chat-target="inputRow">
+            <input type="text"
+                   class="cf-chat-input"
+                   placeholder="Votre réponse…"
+                   data-contact-chat-target="input"
+                   data-action="keydown.enter->contact-chat#sendOnEnter">
+            <button type="button"
+                    class="cf-chat-send"
+                    data-contact-chat-target="sendBtn"
+                    data-action="click->contact-chat#send">
+              Envoyer <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <%# Résumé IA %>
+        <div class="cf-summary d-none" data-contact-chat-target="summaryBlock">
+          <div class="cf-summary-header">
+            <i class="fa-solid fa-circle-check"></i>
+            Résumé de votre demande
+          </div>
+          <div class="cf-summary-body" data-contact-chat-target="summaryText"></div>
+        </div>
+      </div>
+
+      <%# ════════════════════════════════════════ %>
+      <%# ÉTAPE 4 — Envoi (apparaît après résumé) %>
+      <%# ════════════════════════════════════════ %>
+      <div class="cf-step-block cf-send-block d-none" data-contact-chat-target="bottomSection">
+        <div class="cf-step-header">
+          <span class="cf-step-badge cf-step-badge--green">4</span>
+          <div>
+            <h2 class="cf-step-title">Prêt à envoyer</h2>
+            <p class="cf-step-desc">Ajoutez des précisions si besoin, puis envoyez votre demande.</p>
+          </div>
+        </div>
+
+        <div class="cf-field" style="margin-bottom: 2rem;">
+          <label class="cf-label" for="contact_precision">
+            Souhaitez-vous ajouter autre chose ?
+            <span class="cf-label-opt">Facultatif</span>
+          </label>
+          <textarea id="contact_precision" name="contact_precision"
+                    class="cf-input cf-textarea" rows="4"
+                    placeholder="Contexte supplémentaire, contraintes, délais, questions…"></textarea>
+        </div>
+
+        <button type="submit"
+                class="cf-submit-btn"
+                data-contact-chat-target="submitBtn"
+                disabled>
+          <i class="fa-solid fa-paper-plane"></i>
+          Envoyer ma demande à Cyrille
+        </button>
+      </div>
+
+      <%# Hint affiché pendant le chat %>
+      <p class="cf-pending-hint" data-contact-chat-target="submitHint">
+        <i class="fa-regular fa-clock"></i>
+        Complétez la conversation pour activer l'envoi.
+      </p>
+
+      <%# Champs cachés %>
+      <input type="hidden" id="contact_summary" name="contact_summary" data-contact-chat-target="summaryField">
+      <input type="hidden" id="contact_history" name="contact_history" data-contact-chat-target="historyField">
+
+    <% end %>
+  </div>
+</div>
