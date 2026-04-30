@@ -37,10 +37,17 @@
   border-radius: 1.25rem;
   padding: 2.5rem;
   margin-bottom: 1.5rem;
-  transition: border-color 0.3s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 32px rgba(0, 0, 0, 0.45);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 
   &:focus-within {
-    border-color: rgba(0, 212, 255, 0.25);
+    border-color: rgba(0, 212, 255, 0.35);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 4px 32px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(0, 212, 255, 0.08);
   }
 }
 
@@ -544,6 +551,144 @@
   margin-bottom: 0;
 
   i { opacity: 0.6; }
+}
+
+// ── Mobile ─────────────────────────────────────────────────
+@media (max-width: 576px) {
+  .cf-hero {
+    padding: 2.5rem 0 1.5rem;
+
+    h1 { font-size: clamp(1.7rem, 7vw, 2.2rem); }
+  }
+
+  .cf-hero-sub { font-size: 1rem; }
+
+  .cf-step-block {
+    padding: 1.25rem 1rem;
+    border-radius: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .cf-step-header { margin-bottom: 1.25rem; gap: 0.75rem; }
+
+  .cf-step-title { font-size: 1.05rem; }
+
+  .cf-step-desc { font-size: 0.82rem; }
+
+  .cf-fields-grid { gap: 0.85rem; }
+
+  .cf-input {
+    font-size: 1rem; // garde 16px min pour éviter le zoom iOS
+    padding: 0.75rem 0.85rem;
+  }
+
+  .cf-themes-grid { gap: 0.65rem; }
+
+  .cf-theme-card .cf-theme-inner {
+    padding: 1.1rem 0.9rem 1rem;
+    flex-direction: row;
+    text-align: left;
+    gap: 0.85rem;
+    align-items: center;
+  }
+
+  .cf-theme-card .cf-theme-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .cf-theme-card .cf-theme-title { font-size: 0.88rem; margin-bottom: 0.2rem; }
+
+  .cf-theme-card .cf-theme-desc { font-size: 0.75rem; }
+
+  .cf-theme-card .cf-theme-check { margin-top: 0; margin-left: auto; flex-shrink: 0; }
+
+  .cf-chat-placeholder { padding: 2rem 1rem; }
+
+  .cf-chat-topbar { padding: 0.75rem 1rem; }
+
+  .cf-chat-messages {
+    padding: 0.85rem;
+    min-height: 200px;
+    max-height: 300px;
+    gap: 0.75rem;
+  }
+
+  .chat-msg {
+    max-width: 90%;
+    font-size: 0.9rem;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .cf-chat-footer { padding: 0.65rem 0.75rem; gap: 0.5rem; }
+
+  .cf-chat-input { font-size: 1rem; padding: 0.65rem 0.75rem; }
+
+  .cf-chat-send {
+    padding: 0.65rem 0.75rem;
+    gap: 0;
+    min-width: 2.6rem;
+    justify-content: center;
+
+    .cf-send-label { display: none; }
+
+    i { font-size: 1rem; }
+  }
+
+  .cf-summary { margin: 1rem 0 1.25rem; }
+
+  .cf-summary-body { font-size: 0.9rem; line-height: 1.7; }
+
+  .cf-send-block { padding: 1.25rem 1rem; }
+
+  .cf-submit-btn {
+    font-size: 0.95rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .cf-pending-hint { font-size: 0.8rem; }
+}
+
+// ── Summary toast ──────────────────────────────────────────
+.cf-summary-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  padding: 0.8rem 1.75rem;
+  border-radius: 2rem;
+  font-family: $headers-font;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(16, 185, 129, 0.45);
+  white-space: nowrap;
+  animation: toast-up 0.35s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateX(-50%) translateY(-3px);
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.55);
+  }
+
+  .cf-toast-cta {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    padding: 0.15rem 0.65rem;
+    font-size: 0.85rem;
+  }
+}
+
+@keyframes toast-up {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 // ── Flash notice ───────────────────────────────────────────

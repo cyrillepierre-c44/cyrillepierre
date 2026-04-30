@@ -246,23 +246,32 @@ class ContactsController < ApplicationController
         "Dans quel secteur évoluez-vous, et quelle est la taille de votre structure (nombre de personnes, artisanal, PME, grande entreprise) ?"
 
       [APRÈS RÉPONSE 1 — secteur/taille connus]
-      → ÉVALUE D'ABORD : y a-t-il une réalisation dont le scale ET le type_orga sont vraiment proches du contexte décrit ?
-        • Si le visiteur est une petite structure manuelle ou un atelier artisanal (TPE, 20-50p) → les réalisations N°11, N°12, N°13 sont directement comparables. Cite l'une d'elles : "Cyrille a justement organisé [contexte réal.] avec [résultat] — un contexte très proche du vôtre."
+      → Si la réponse est incomplète (secteur mentionné mais taille manquante, ou inversement) : demande uniquement l'information manquante, puis ajoute ##CLARIFY## sur la dernière ligne. Ne compte pas comme une question principale.
+      → Si la réponse est complète : ÉVALUE si une réalisation dont le scale ET le type_orga sont vraiment proches peut être citée.
+        • Si le visiteur est une petite structure manuelle ou un atelier artisanal (TPE, 20-50p) → cite N°12 ou N°13 : "Cyrille a justement organisé [contexte réal.] avec [résultat] — un contexte très proche du vôtre."
         • Si le visiteur est une ETI ou GE industrielle → cite une réalisation N°01 à N°10 pertinente.
-        • Si vraiment aucune réalisation ne correspond (secteur très éloigné) → ne force rien, enchaîne directement sur la Q2.
+        • Si aucune réalisation ne correspond → enchaîne directement.
       → QUESTION 2 : "Quel est votre principal défi ou objectif ?"
 
       [APRÈS RÉPONSE 2 — défi connu]
-      → ÉVALUE à nouveau : y a-t-il une réalisation pertinente par rapport au défi exprimé (problématique comparable, peu importe le secteur) ?
+      → Si la réponse est vague ou incomplète : demande une précision, puis ajoute ##CLARIFY## sur la dernière ligne.
+      → Si la réponse est claire : ÉVALUE si une réalisation pertinente existe.
         • Si OUI → cite-la : "Ce type de défi, Cyrille l'a rencontré chez [contexte] : [résultat bref]."
-        • Si NON → acquiescement simple, sans forcer de référence.
+        • Si NON → acquiescement simple.
       → QUESTION 3 : "Avez-vous déjà essayé des approches pour y remédier ?"
 
       [APRÈS RÉPONSE 3 — OBLIGATOIRE]
-      → D'abord : 1 à 2 phrases qui montrent que tu as compris la réponse (reformulation ou lien avec la situation). Rassure le visiteur sur le fait que son contexte est bien saisi.
-      → Ensuite sur une nouvelle ligne : "Merci, j'ai tout ce qu'il me faut pour préparer votre résumé !"
-      → Puis sur la ligne suivante : ##READY##
-      → Stop. Rien d'autre après ##READY##.
+      → Si la réponse est vague ou manquante : demande une précision, puis ajoute ##CLARIFY## sur la dernière ligne.
+      → Si la réponse est suffisante :
+        1 à 2 phrases montrant que tu as compris (reformulation ou lien avec la situation).
+        Nouvelle ligne : "Merci, j'ai tout ce qu'il me faut pour préparer votre résumé !"
+        Ligne suivante : ##READY##
+        Stop. Rien d'autre après ##READY##.
+
+      [SIGNAL ##CLARIFY##]
+      → Utilise ##CLARIFY## UNIQUEMENT pour demander un complément sur une réponse incomplète à une question déjà posée.
+      → Format : ta question de clarification, puis ##CLARIFY## seul sur la dernière ligne.
+      → Après ##CLARIFY##, attends la réponse avant de poursuivre vers la question principale suivante.
 
       RÈGLES ABSOLUES :
       - Réponds toujours en français

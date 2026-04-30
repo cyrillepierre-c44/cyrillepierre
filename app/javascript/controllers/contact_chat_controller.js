@@ -5,7 +5,8 @@ export default class extends Controller {
   static targets = [
     "themeCheckbox", "placeholder", "chatArea", "messages", "typing",
     "inputRow", "input", "sendBtn", "summaryBlock", "summaryText",
-    "summaryField", "historyField", "submitBtn", "submitHint", "bottomSection"
+    "summaryField", "historyField", "submitBtn", "submitHint", "bottomSection",
+    "summaryToast"
   ]
 
   static MAX_QUESTIONS = 3
@@ -15,6 +16,15 @@ export default class extends Controller {
     this.chatStarted = false
     this.ready = false
     this.userMessageCount = 0
+    this.prefetchPromise = null
+    window.scrollTo({ top: 0, behavior: "instant" })
+  }
+
+  prefetchGreeting(event) {
+    if (this.prefetchPromise || !event.target.value.trim()) return
+    this.prefetchPromise = this.postToBackend("/contact/chat", {
+      message: "", history: [], themes: [], initial: true
+    })
   }
 
   themeChanged() {
@@ -29,15 +39,15 @@ export default class extends Controller {
   async triggerInitialGreeting() {
     this.setInputDisabled(true)
     this.showTyping()
-    const data = await this.postToBackend("/contact/chat", {
+    const data = await (this.prefetchPromise || this.postToBackend("/contact/chat", {
       message: "", history: [], themes: this.selectedThemes, initial: true
-    })
+    }))
     this.hideTyping()
     const clean = this.stripReady(data.reply)
     this.appendMessage("assistant", clean)
     this.history.push({ role: "assistant", content: data.reply })
     this.setInputDisabled(false)
-    this.inputTarget.focus()
+    this.inputTarget.focus({ preventScroll: true })
   }
 
   sendOnEnter(event) {
@@ -61,7 +71,10 @@ export default class extends Controller {
     })
     this.hideTyping()
 
-    const clean = this.stripReady(data.reply)
+    const isClarify = data.reply.includes("##CLARIFY##")
+    if (isClarify) this.userMessageCount--
+
+    const clean = this.stripReady(data.reply).replace("##CLARIFY##", "").trim()
     this.appendMessage("assistant", clean)
     this.history.push({ role: "assistant", content: data.reply })
     this.historyFieldTarget.value = JSON.stringify(this.history)
@@ -76,7 +89,7 @@ export default class extends Controller {
       await this.generateSummary()
     } else {
       this.setInputDisabled(false)
-      this.inputTarget.focus()
+      this.inputTarget.focus({ preventScroll: true })
     }
   }
 
@@ -97,9 +110,7 @@ export default class extends Controller {
     this.submitBtnTarget.disabled = false
     this.submitHintTarget.classList.add("d-none")
 
-    setTimeout(() => {
-      this.summaryBlockTarget.scrollIntoView({ behavior: "smooth", block: "start" })
-    }, 100)
+    this.summaryToastTarget.classList.remove("d-none")
   }
 
   async postToBackend(url, body) {
@@ -124,6 +135,18 @@ export default class extends Controller {
     div.innerText = content
     this.messagesTarget.appendChild(div)
     this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight
+  }
+
+  scrollToSummary() {
+    this.summaryToastTarget.classList.add("d-none")
+    this.scrollToElement(this.summaryBlockTarget)
+  }
+
+  scrollToElement(el) {
+    const NAVBAR = 72
+    const MARGIN = 16
+    const top = el.getBoundingClientRect().top + window.scrollY - NAVBAR - MARGIN
+    window.scrollTo({ top, behavior: "smooth" })
   }
 
   showTyping() { this.typingTarget.classList.remove("d-none") }

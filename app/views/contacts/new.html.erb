@@ -1,4 +1,7 @@
 <% content_for :title, "Contact — Cyrille PIERRE" %>
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
 
 <section class="cf-hero">
   <div class="container">
@@ -33,7 +36,8 @@
               Nom complet <span class="cf-required" title="Obligatoire">*</span>
             </label>
             <input type="text" id="contact_name" name="contact_name"
-                   class="cf-input" required placeholder="Marie Dupont">
+                   class="cf-input" required placeholder="Marie Dupont"
+                   data-action="input->contact-chat#prefetchGreeting">
           </div>
 
           <div class="cf-field">
@@ -152,7 +156,8 @@
                     class="cf-chat-send"
                     data-contact-chat-target="sendBtn"
                     data-action="click->contact-chat#send">
-              Envoyer <i class="fa-solid fa-arrow-right"></i>
+              <span class="cf-send-label">Envoyer</span>
+              <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>
         </div>
@@ -207,6 +212,15 @@
       <%# Champs cachés %>
       <input type="hidden" id="contact_summary" name="contact_summary" data-contact-chat-target="summaryField">
       <input type="hidden" id="contact_history" name="contact_history" data-contact-chat-target="historyField">
+
+      <%# Toast résumé prêt %>
+      <div class="cf-summary-toast d-none"
+           data-contact-chat-target="summaryToast"
+           data-action="click->contact-chat#scrollToSummary">
+        <i class="fa-solid fa-circle-check"></i>
+        Résumé prêt
+        <span class="cf-toast-cta">Voir <i class="fa-solid fa-arrow-down"></i></span>
+      </div>
 
     <% end %>
   </div>

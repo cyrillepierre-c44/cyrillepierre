@@ -298,6 +298,18 @@
       color: var(--cp-muted);
       font-size: 0.88rem;
       margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .ti-available {
+      color: #10b981;
+      font-weight: 700;
+    }
+
+    .ti-link {
+      color: var(--cp-accent);
+      text-decoration: none;
+      &:hover { text-decoration: underline; }
     }
 
     .ti-result {
