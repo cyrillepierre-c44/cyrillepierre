@@ -146,18 +146,18 @@
             <span></span><span></span><span></span>
           </div>
 
-          <div class="cf-chat-footer" data-contact-chat-target="inputRow"
+          <div data-contact-chat-target="inputRow"
                data-controller="voice-input"
                data-voice-input-max-length-value="500"
                data-voice-input-lang-value="fr-FR">
-            <button type="button"
-                    class="voice-btn"
-                    title="Dicter ma réponse"
-                    data-voice-input-target="btn"
-                    data-action="click->voice-input#toggle">
-              <i class="fa-solid fa-microphone"></i>
-            </button>
-            <div class="cf-chat-input-wrap">
+            <div class="cf-chat-footer">
+              <button type="button"
+                      class="voice-btn cf-footer-btn"
+                      title="Dicter ma réponse"
+                      data-voice-input-target="btn"
+                      data-action="click->voice-input#toggle">
+                <i class="fa-solid fa-microphone"></i>
+              </button>
               <input type="text"
                      class="cf-chat-input"
                      placeholder="Votre réponse…"
@@ -165,15 +165,17 @@
                      data-contact-chat-target="input"
                      data-voice-input-target="field"
                      data-action="keydown.enter->contact-chat#sendOnEnter">
+              <button type="button"
+                      class="cf-chat-send cf-footer-btn"
+                      data-contact-chat-target="sendBtn"
+                      data-action="click->contact-chat#send">
+                <span class="cf-send-label">Envoyer</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+            <div class="cf-chat-counter-row">
               <span class="voice-counter" data-voice-input-target="counter">0 / 500</span>
             </div>
-            <button type="button"
-                    class="cf-chat-send"
-                    data-contact-chat-target="sendBtn"
-                    data-action="click->contact-chat#send">
-              <span class="cf-send-label">Envoyer</span>
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
           </div>
         </div>
 

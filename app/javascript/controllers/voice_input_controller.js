@@ -11,7 +11,7 @@ export default class extends Controller {
     this.recognition = null
     this.listening   = false
     this.baseText    = ""
-    this.addedFinal  = ""
+    this.restartTimer = null
 
     this.updateCounter()
     this.fieldTarget.addEventListener("input", () => this.updateCounter())
@@ -26,36 +26,40 @@ export default class extends Controller {
 
   start() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition
-    this.recognition    = new SR()
-    this.recognition.lang            = this.langValue
-    this.recognition.continuous      = true
-    this.recognition.interimResults  = true
+    this.recognition = new SR()
+    this.recognition.lang           = this.langValue
+    this.recognition.continuous     = false  // plus fiable sur Android
+    this.recognition.interimResults = true
 
-    this.baseText   = this.fieldTarget.value
-    this.addedFinal = ""
+    this.baseText = this.fieldTarget.value
 
     this.recognition.onresult = (event) => {
-      let interim = ""
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-          this.addedFinal += event.results[i][0].transcript + " "
-        } else {
-          interim = event.results[i][0].transcript
-        }
+      // On ne lit que le dernier résultat — évite les doublons Android
+      const result     = event.results[event.results.length - 1]
+      const transcript = result[0].transcript
+      const sep        = this.baseText.length > 0 && !this.baseText.endsWith(" ") ? " " : ""
+
+      if (result.isFinal) {
+        this.baseText = (this.baseText + sep + transcript).slice(0, this.maxLengthValue)
+        this.fieldTarget.value = this.baseText
+      } else {
+        this.fieldTarget.value = (this.baseText + sep + transcript).slice(0, this.maxLengthValue)
       }
-      const full = (this.baseText + this.addedFinal + interim).trimEnd()
-      this.fieldTarget.value = full.slice(0, this.maxLengthValue)
       this.updateCounter()
     }
 
     this.recognition.onend = () => {
-      this.baseText   = this.fieldTarget.value
-      this.addedFinal = ""
-      if (this.listening) this.recognition.start()
+      // Délai court pour éviter le double-trigger Android
+      if (this.listening) {
+        this.restartTimer = setTimeout(() => {
+          if (this.listening) this.recognition.start()
+        }, 120)
+      }
     }
 
     this.recognition.onerror = (event) => {
-      if (event.error !== "aborted") this.stop()
+      // "no-speech" et "aborted" sont normaux — on ne coupe pas le micro
+      if (event.error !== "aborted" && event.error !== "no-speech") this.stop()
     }
 
     this.recognition.start()
@@ -66,6 +70,7 @@ export default class extends Controller {
 
   stop() {
     this.listening = false
+    clearTimeout(this.restartTimer)
     if (this.recognition) this.recognition.stop()
     this.btnTarget.classList.remove("voice-btn--active")
     this.btnTarget.title = "Dicter ma réponse"

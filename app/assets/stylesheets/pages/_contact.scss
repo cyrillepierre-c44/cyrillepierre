@@ -404,10 +404,21 @@
 
 .cf-chat-footer {
   display: flex;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
+  align-items: stretch;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
   border-top: 1px solid var(--cp-border);
   background: rgba(255, 255, 255, 0.02);
+}
+
+.cf-chat-counter-row {
+  padding: 0.25rem 1rem 0.5rem;
+  text-align: right;
+}
+
+.cf-footer-btn {
+  align-self: stretch;
+  flex-shrink: 0;
 }
 
 .cf-chat-input {
@@ -625,6 +636,12 @@
 
   .cf-chat-input { font-size: 1rem; padding: 0.65rem 0.75rem; }
 
+  .voice-btn {
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
   .cf-chat-send {
     padding: 0.65rem 0.75rem;
     gap: 0;
@@ -672,8 +689,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.4rem;
-  height: 2.4rem;
+  // aspect-ratio: 1 ne fonctionne pas avec align-self: stretch sur iOS Safari
+  width: 2.9rem;
+  height: 2.9rem;
+  min-width: 2.9rem;
+  align-self: center; // override align-self: stretch du .cf-footer-btn
   border-radius: 50%;
   border: 1.5px solid var(--cp-border);
   background: rgba(255, 255, 255, 0.04);
@@ -696,12 +716,13 @@
     color: #ef4444;
     animation: mic-pulse 1.2s ease-in-out infinite;
 
-    i::before { content: "\f131"; } // fa-microphone-slash
+    i::before { content: "\f131"; }
   }
 
   &--sm {
-    width: 2rem;
-    height: 2rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    min-width: 2.2rem;
     i { font-size: 0.8rem; }
   }
 }
