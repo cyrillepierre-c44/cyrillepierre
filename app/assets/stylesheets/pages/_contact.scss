@@ -447,7 +447,10 @@
 .cf-chat-send {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  appearance: none;
+  -webkit-appearance: none;
   background: var(--cp-gradient);
   border: none;
   border-radius: 0.6rem;
