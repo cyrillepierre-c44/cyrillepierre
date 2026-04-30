@@ -1,0 +1,148 @@
+<% content_for :title, "Contact — Cyrille PIERRE" %>
+
+<section class="contact-hero">
+  <div class="container">
+    <span class="section-eyebrow">Contact</span>
+    <h1 class="section-title">Parlons de votre projet</h1>
+    <p class="section-subtitle">
+      Sélectionnez vos thèmes d'intérêt, puis laissez-vous guider par l'assistant pour décrire votre besoin.
+      Je vous réponds sous 24h.
+    </p>
+  </div>
+</section>
+
+<section class="contact-section">
+  <div class="container">
+    <%= form_with url: contact_path, method: :post,
+        data: { controller: "contact-chat", turbo: false },
+        class: "contact-form" do |f| %>
+
+      <div class="contact-grid">
+
+        <%# ── Colonne gauche : infos + thèmes ── %>
+        <div class="contact-col-left">
+
+          <div class="contact-block">
+            <h3 class="contact-block-title">Vos coordonnées</h3>
+
+            <div class="field-group">
+              <label class="cp-label" for="contact_name">Nom complet <span class="required">*</span></label>
+              <input type="text" id="contact_name" name="contact_name" class="cp-input" required placeholder="Marie Dupont">
+            </div>
+
+            <div class="field-group">
+              <label class="cp-label" for="contact_company">Entreprise</label>
+              <input type="text" id="contact_company" name="contact_company" class="cp-input" placeholder="Acme Industries">
+            </div>
+
+            <div class="field-group">
+              <label class="cp-label" for="contact_email">Email <span class="required">*</span></label>
+              <input type="email" id="contact_email" name="contact_email" class="cp-input" required placeholder="marie@acme.com">
+            </div>
+
+            <div class="field-group">
+              <label class="cp-label" for="contact_phone">Téléphone</label>
+              <input type="tel" id="contact_phone" name="contact_phone" class="cp-input" placeholder="06 XX XX XX XX">
+            </div>
+          </div>
+
+          <div class="contact-block">
+            <h3 class="contact-block-title">Thème(s) d'intérêt <span class="required">*</span></h3>
+            <p class="contact-block-hint">Sélectionnez au moins un thème pour activer l'assistant.</p>
+
+            <label class="theme-checkbox" data-contact-chat-target="themeCheckbox"
+                   data-action="change->contact-chat#themeChanged">
+              <input type="checkbox" name="contact_themes[]" value="Excellence Opérationnelle">
+              <span class="theme-check-inner">
+                <span class="theme-icon">⚙️</span>
+                <span>Excellence Opérationnelle</span>
+              </span>
+            </label>
+
+            <label class="theme-checkbox" data-contact-chat-target="themeCheckbox"
+                   data-action="change->contact-chat#themeChanged">
+              <input type="checkbox" name="contact_themes[]" value="Leadership & Transformation">
+              <span class="theme-check-inner">
+                <span class="theme-icon">🧭</span>
+                <span>Leadership & Transformation</span>
+              </span>
+            </label>
+
+            <label class="theme-checkbox" data-contact-chat-target="themeCheckbox"
+                   data-action="change->contact-chat#themeChanged">
+              <input type="checkbox" name="contact_themes[]" value="Tech & IA">
+              <span class="theme-check-inner">
+                <span class="theme-icon">🤖</span>
+                <span>Tech & Intelligence Artificielle</span>
+              </span>
+            </label>
+          </div>
+
+          <%# Champs cachés remplis par le Stimulus controller %>
+          <input type="hidden" id="contact_summary" name="contact_summary" data-contact-chat-target="summaryField">
+          <input type="hidden" id="contact_history" name="contact_history" data-contact-chat-target="historyField">
+
+          <button type="submit"
+                  class="btn-cp-primary contact-submit"
+                  data-contact-chat-target="submitBtn"
+                  disabled>
+            Envoyer ma demande
+          </button>
+          <p class="contact-submit-hint" data-contact-chat-target="submitHint">
+            Complétez la conversation avec l'assistant pour activer l'envoi.
+          </p>
+
+        </div>
+
+        <%# ── Colonne droite : chat IA ── %>
+        <div class="contact-col-right">
+
+          <div class="chat-placeholder" data-contact-chat-target="placeholder">
+            <div class="chat-placeholder-inner">
+              <span class="chat-placeholder-icon">💬</span>
+              <p>Sélectionnez un thème ci-contre pour démarrer la conversation avec l'assistant.</p>
+              <p class="chat-placeholder-sub">L'assistant vous posera quelques questions pour aider Cyrille à comprendre votre besoin précis.</p>
+            </div>
+          </div>
+
+          <div class="chat-area d-none" data-contact-chat-target="chatArea">
+            <div class="chat-header">
+              <span class="chat-header-dot"></span>
+              Assistant Cyrille PIERRE
+            </div>
+
+            <div class="chat-messages" data-contact-chat-target="messages"></div>
+
+            <div class="chat-typing d-none" data-contact-chat-target="typing">
+              <span></span><span></span><span></span>
+            </div>
+
+            <div class="chat-input-row" data-contact-chat-target="inputRow">
+              <input type="text"
+                     class="chat-input"
+                     placeholder="Votre réponse..."
+                     data-contact-chat-target="input"
+                     data-action="keydown.enter->contact-chat#sendOnEnter">
+              <button type="button"
+                      class="chat-send-btn"
+                      data-contact-chat-target="sendBtn"
+                      data-action="click->contact-chat#send">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="chat-summary d-none" data-contact-chat-target="summaryBlock">
+            <div class="chat-summary-header">
+              <i class="fa-solid fa-check-circle"></i> Résumé de votre demande
+            </div>
+            <div class="chat-summary-body" data-contact-chat-target="summaryText"></div>
+            <p class="chat-summary-cta">Vérifiez le résumé, puis cliquez sur <strong>Envoyer ma demande</strong>.</p>
+          </div>
+
+        </div>
+      </div>
+
+    <% end %>
+  </div>
+</section>
