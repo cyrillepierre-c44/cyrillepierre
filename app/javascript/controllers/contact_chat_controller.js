@@ -47,7 +47,7 @@ export default class extends Controller {
     this.appendMessage("assistant", clean)
     this.history.push({ role: "assistant", content: data.reply })
     this.setInputDisabled(false)
-    this.inputTarget.focus({ preventScroll: true })
+    if (!this.isMobile) this.inputTarget.focus({ preventScroll: true })
   }
 
   sendOnEnter(event) {
@@ -57,6 +57,9 @@ export default class extends Controller {
   async send() {
     const message = this.inputTarget.value.trim()
     if (!message || this.ready) return
+
+    const voice = this.application.getControllerForElementAndIdentifier(this.inputRowTarget, "voice-input")
+    if (voice) voice.stop()
 
     this.appendMessage("user", message)
     this.inputTarget.value = ""
@@ -89,7 +92,7 @@ export default class extends Controller {
       await this.generateSummary()
     } else {
       this.setInputDisabled(false)
-      this.inputTarget.focus({ preventScroll: true })
+      if (!this.isMobile) this.inputTarget.focus({ preventScroll: true })
     }
   }
 
@@ -163,6 +166,10 @@ export default class extends Controller {
 
   hasAnyThemeSelected() {
     return this.themeCheckboxTargets.some(cb => cb.querySelector("input")?.checked)
+  }
+
+  get isMobile() {
+    return window.matchMedia("(hover: none) and (pointer: coarse)").matches
   }
 
   get selectedThemes() {

@@ -276,6 +276,7 @@ class ContactsController < ApplicationController
       RÈGLES ABSOLUES :
       - Réponds toujours en français
       - Tes réponses sont courtes et percutantes (3 phrases max par réponse)
+      - Sépare TOUJOURS ta réponse/acquiescement de la question suivante par une ligne vide (\\n\\n) — la question doit apparaître visuellement séparée, comme un nouveau paragraphe
       - Ne cite jamais les identifiants internes (N°XX, scale, type_orga, les tags)
       - Tu NE poses JAMAIS une 4ème question
       - Tu NE proposes JAMAIS un appel ou un rendez-vous

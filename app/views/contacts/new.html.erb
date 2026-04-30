@@ -146,12 +146,27 @@
             <span></span><span></span><span></span>
           </div>
 
-          <div class="cf-chat-footer" data-contact-chat-target="inputRow">
-            <input type="text"
-                   class="cf-chat-input"
-                   placeholder="Votre réponse…"
-                   data-contact-chat-target="input"
-                   data-action="keydown.enter->contact-chat#sendOnEnter">
+          <div class="cf-chat-footer" data-contact-chat-target="inputRow"
+               data-controller="voice-input"
+               data-voice-input-max-length-value="500"
+               data-voice-input-lang-value="fr-FR">
+            <button type="button"
+                    class="voice-btn"
+                    title="Dicter ma réponse"
+                    data-voice-input-target="btn"
+                    data-action="click->voice-input#toggle">
+              <i class="fa-solid fa-microphone"></i>
+            </button>
+            <div class="cf-chat-input-wrap">
+              <input type="text"
+                     class="cf-chat-input"
+                     placeholder="Votre réponse…"
+                     maxlength="500"
+                     data-contact-chat-target="input"
+                     data-voice-input-target="field"
+                     data-action="keydown.enter->contact-chat#sendOnEnter">
+              <span class="voice-counter" data-voice-input-target="counter">0 / 500</span>
+            </div>
             <button type="button"
                     class="cf-chat-send"
                     data-contact-chat-target="sendBtn"
@@ -184,14 +199,29 @@
           </div>
         </div>
 
-        <div class="cf-field" style="margin-bottom: 2rem;">
-          <label class="cf-label" for="contact_precision">
-            Souhaitez-vous ajouter autre chose ?
-            <span class="cf-label-opt">Facultatif</span>
-          </label>
+        <div class="cf-field" style="margin-bottom: 2rem;"
+             data-controller="voice-input"
+             data-voice-input-max-length-value="800"
+             data-voice-input-lang-value="fr-FR">
+          <div class="cf-label-row">
+            <label class="cf-label" for="contact_precision">
+              Souhaitez-vous ajouter autre chose ?
+              <span class="cf-label-opt">Facultatif</span>
+            </label>
+            <button type="button"
+                    class="voice-btn voice-btn--sm"
+                    title="Dicter ma réponse"
+                    data-voice-input-target="btn"
+                    data-action="click->voice-input#toggle">
+              <i class="fa-solid fa-microphone"></i>
+            </button>
+          </div>
           <textarea id="contact_precision" name="contact_precision"
                     class="cf-input cf-textarea" rows="4"
-                    placeholder="Contexte supplémentaire, contraintes, délais, questions…"></textarea>
+                    maxlength="800"
+                    placeholder="Contexte supplémentaire, contraintes, délais, questions…"
+                    data-voice-input-target="field"></textarea>
+          <span class="voice-counter" data-voice-input-target="counter">0 / 800</span>
         </div>
 
         <button type="submit"
