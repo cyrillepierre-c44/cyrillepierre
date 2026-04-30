@@ -1,16 +1,20 @@
 import { Controller } from "@hotwired/stimulus"
+import { marked } from "marked"
 
 export default class extends Controller {
   static targets = [
     "themeCheckbox", "placeholder", "chatArea", "messages", "typing",
     "inputRow", "input", "sendBtn", "summaryBlock", "summaryText",
-    "summaryField", "historyField", "submitBtn", "submitHint"
+    "summaryField", "historyField", "submitBtn", "submitHint", "bottomSection"
   ]
+
+  static MAX_QUESTIONS = 3
 
   connect() {
     this.history = []
     this.chatStarted = false
     this.ready = false
+    this.userMessageCount = 0
   }
 
   themeChanged() {
@@ -47,6 +51,7 @@ export default class extends Controller {
     this.appendMessage("user", message)
     this.inputTarget.value = ""
     this.setInputDisabled(true)
+    this.userMessageCount++
     this.history.push({ role: "user", content: message })
     this.historyFieldTarget.value = JSON.stringify(this.history)
 
@@ -61,10 +66,13 @@ export default class extends Controller {
     this.history.push({ role: "assistant", content: data.reply })
     this.historyFieldTarget.value = JSON.stringify(this.history)
 
-    if (data.ready) {
+    const forceEnd = this.userMessageCount >= this.constructor.MAX_QUESTIONS
+    if (data.ready || forceEnd) {
       this.ready = true
       this.setInputDisabled(true)
-      this.appendMessage("assistant", "Parfait, je prépare le résumé de votre demande…")
+      if (!data.ready) {
+        this.appendMessage("assistant", "Merci, j'ai tout ce qu'il me faut. Je prépare votre résumé…")
+      }
       await this.generateSummary()
     } else {
       this.setInputDisabled(false)
@@ -79,14 +87,19 @@ export default class extends Controller {
     })
     this.hideTyping()
 
-    this.summaryTextTarget.innerText = data.summary
+    this.summaryTextTarget.innerHTML = marked.parse(data.summary || "")
     this.summaryFieldTarget.value = data.summary
     this.historyFieldTarget.value = JSON.stringify(this.history)
 
     this.summaryBlockTarget.classList.remove("d-none")
     this.inputRowTarget.classList.add("d-none")
+    this.bottomSectionTarget.classList.remove("d-none")
     this.submitBtnTarget.disabled = false
     this.submitHintTarget.classList.add("d-none")
+
+    setTimeout(() => {
+      this.summaryBlockTarget.scrollIntoView({ behavior: "smooth", block: "start" })
+    }, 100)
   }
 
   async postToBackend(url, body) {

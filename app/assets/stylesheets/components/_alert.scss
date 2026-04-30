@@ -5,24 +5,3 @@
   z-index: 1000;
 }
 
-.alert-flash-notice {
-  position: fixed;
-  top: 84px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #fff;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.6rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
-  animation: slide-down 0.3s ease;
-  white-space: nowrap;
-}
-
-@keyframes slide-down {
-  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-}

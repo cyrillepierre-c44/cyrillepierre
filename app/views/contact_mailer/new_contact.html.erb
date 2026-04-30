@@ -45,6 +45,13 @@
       <div class="summary-box"><%= @summary %></div>
     </div>
 
+    <% if @precision.present? %>
+      <div class="section">
+        <div class="label">Précisions ajoutées par le contact</div>
+        <div class="summary-box" style="border-left-color: #8b5cf6;"><%= @precision %></div>
+      </div>
+    <% end %>
+
     <% if @history.any? %>
       <div class="section">
         <div class="label">Transcript de la conversation</div>
