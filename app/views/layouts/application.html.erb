@@ -103,6 +103,10 @@
               <a href="<%= next_s[:path] %>" class="section-pagination-link section-pagination-link--next">
                 <span class="section-pagination-name"><%= next_s[:label] %> →</span>
               </a>
+            <% elsif current_idx == sections.length - 1 %>
+              <a href="<%= sections.first[:path] %>" class="section-pagination-link section-pagination-link--next">
+                <span class="section-pagination-name"><%= sections.first[:label] %> →</span>
+              </a>
             <% else %>
               <div></div>
             <% end %>
