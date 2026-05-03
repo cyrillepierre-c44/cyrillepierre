@@ -1,8 +1,10 @@
 .footer-cp {
   background: #030812;
   border-top: 1px solid rgba(0, 212, 255, 0.08);
-  padding: 3.5rem 0 1.5rem;
-  margin-top: 6rem;
+  padding: 2rem 0 1.5rem;
+  margin-top: 1.5rem;
+
+  @media (min-width: 992px) { display: none; }
 
   .brand-logo {
     width: 36px;

@@ -714,7 +714,7 @@
 </section>
 
 <%# ============================== MÉTHODE ============================== %>
-<section class="py-5" data-controller="reveal" style="background: rgba(13, 27, 42, 0.3);">
+<section class="py-5" data-controller="reveal">
   <div class="container">
     <div class="row g-5 align-items-center">
       <div class="col-lg-5 reveal">
@@ -766,13 +766,23 @@
 
 <%# ============================== CTA ============================== %>
 <div class="container" data-controller="reveal">
+  <div class="personality-block reveal">
+    <span class="personality-icon">🏆</span>
+    <div class="personality-body">
+      <p class="personality-label">Ce qui me pousse à aller plus loin</p>
+      <blockquote>« Ces chiffres ne sont pas anodins pour moi. Mon sens aigu de la compétition et mon besoin de réussite visible me poussent à aller chercher les 850 K€ quand d'autres se seraient contentés de 400 K€. Chaque mission est une occasion de laisser quelque chose de durable. »</blockquote>
+      <cite>Bilan de personnalité · MaReussite.com</cite>
+    </div>
+  </div>
+</div>
+
+<div class="container" data-controller="reveal">
   <div class="cta-block reveal">
     <span class="section-eyebrow">Votre projet</span>
     <h2>Ces résultats peuvent être les vôtres</h2>
     <p>Si vous avez une problématique de performance, d'organisation ou d'outillage tech — parlons-en. Un premier échange de 30 minutes suffit souvent à identifier ce qui bloque.</p>
     <div class="cta-actions">
-      <a href="mailto:cyrille.pierre@gmail.com" class="btn-cp-primary">M'écrire directement</a>
-      <a href="<%= root_path %>" class="btn-cp-outline">Voir mon profil complet</a>
+      <a href="<%= contact_path %>" class="btn-cp-primary">Performons ensemble</a>
     </div>
   </div>
 </div>

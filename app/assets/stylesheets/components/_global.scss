@@ -19,6 +19,13 @@ body {
   font-family: $body-font;
 }
 
+@media (max-width: 991px) {
+  section.py-5 {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+}
+
 // ============================================================
 // Keyframe Animations
 // ============================================================
@@ -150,6 +157,24 @@ body {
     box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5), 0 4px 16px rgba(0, 212, 255, 0.2);
     opacity: 0.95;
   }
+}
+
+.btn-cp-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981 !important;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  font-weight: 600;
+  font-family: $headers-font;
+  font-size: 0.95rem;
+  cursor: default;
+  white-space: nowrap;
+
+  i { font-size: 0.9rem; }
 }
 
 .btn-cp-outline {

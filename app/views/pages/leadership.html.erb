@@ -102,7 +102,7 @@
   </div>
 </section>
 
-<section class="py-5" data-controller="reveal" style="background: rgba(13, 27, 42, 0.3);">
+<section class="py-5" data-controller="reveal">
   <div class="container">
     <div class="row g-5 align-items-center">
 
@@ -137,13 +137,23 @@
 </section>
 
 <div class="container" data-controller="reveal">
+  <div class="personality-block reveal">
+    <span class="personality-icon">🤝</span>
+    <div class="personality-body">
+      <p class="personality-label">Ce que mes équipes disent de moi</p>
+      <blockquote>« Le changement ne s'impose pas — il se co-construit. Mon aisance relationnelle naturelle et ma franchise créent rapidement la confiance nécessaire à toute transformation. On sait où on va avec moi, et les équipes le sentent. »</blockquote>
+      <cite>Bilan de personnalité · MaReussite.com</cite>
+    </div>
+  </div>
+</div>
+
+<div class="container" data-controller="reveal">
   <div class="cta-block reveal">
     <span class="section-eyebrow">Votre transformation</span>
     <h2>Votre transformation commence par vos équipes</h2>
     <p>Que ce soit un contexte de crise, de croissance ou de restructuration — parlons de votre situation concrète.</p>
     <div class="cta-actions">
-      <a href="mailto:cyrille.pierre@gmail.com" class="btn-cp-primary">Discutons-en</a>
-      <a href="<%= operations_path %>" class="btn-cp-outline">Voir Excellence Opérationnelle →</a>
+      <a href="<%= contact_path %>" class="btn-cp-primary">Discutons-en</a>
     </div>
   </div>
 </div>

@@ -5,6 +5,8 @@
 // Hero
 .service-hero {
   padding: 4.5rem 0 3.5rem;
+
+  @media (max-width: 991px) { padding: 2rem 0 1.5rem; }
   position: relative;
   overflow: hidden;
 
@@ -55,6 +57,8 @@
   border-radius: 1rem;
   padding: 2.5rem 2rem;
   margin: 2rem 0 3rem;
+
+  @media (max-width: 991px) { margin-bottom: 1.5rem; }
 
   .result-item {
     text-align: center;
@@ -168,6 +172,65 @@
   }
 }
 
+// Personality block
+.personality-block {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-left: 3px solid var(--cp-purple);
+  border-radius: 0 1rem 1rem 0;
+  padding: 1.75rem 2rem;
+  margin: 3rem 0 0;
+
+  @media (max-width: 991px) { margin-top: 1.5rem; }
+
+  .personality-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .personality-body { flex: 1; }
+
+  .personality-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(139, 92, 246, 0.75);
+    margin-bottom: 0.6rem;
+  }
+
+  blockquote {
+    font-family: $headers-font;
+    font-size: 1rem;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--cp-text);
+    line-height: 1.7;
+    margin: 0 0 0.6rem;
+  }
+
+  cite {
+    font-size: 0.72rem;
+    color: rgba(139, 92, 246, 0.6);
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 576px) {
+    padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+    gap: 1rem;
+    .personality-icon { font-size: 1.5rem; }
+    blockquote { font-size: 0.93rem; }
+  }
+}
+
 // CTA block
 .cta-block {
   background: linear-gradient(135deg, rgba(0, 212, 255, 0.07), rgba(139, 92, 246, 0.07));
@@ -175,7 +238,7 @@
   border-radius: 1.5rem;
   padding: 4rem 3rem;
   text-align: center;
-  margin: 4rem 0;
+  margin: 2rem 0 1.5rem;
 
   @media (max-width: 768px) { padding: 2.5rem 1.5rem; }
 
@@ -209,6 +272,8 @@
   border-radius: 1rem;
   padding: 2rem;
   margin: 3rem 0;
+
+  @media (max-width: 991px) { margin: 1.5rem 0; }
 
   .diff-quote {
     font-family: $headers-font;

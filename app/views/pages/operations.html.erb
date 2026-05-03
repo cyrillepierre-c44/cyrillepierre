@@ -102,7 +102,7 @@
   </div>
 </section>
 
-<section class="py-5" data-controller="reveal" style="background: rgba(13, 27, 42, 0.3);">
+<section class="py-5" data-controller="reveal">
   <div class="container">
     <div class="row g-5 align-items-center">
       <div class="col-lg-5 reveal">
@@ -171,13 +171,23 @@
 </section>
 
 <div class="container" data-controller="reveal">
+  <div class="personality-block reveal">
+    <span class="personality-icon">⚡</span>
+    <div class="personality-body">
+      <p class="personality-label">Ce qui me fait avancer</p>
+      <blockquote>« Ce qui me pousse sur le terrain chaque matin, c'est l'intolérance au gaspillage et l'obsession du résultat mesurable. Je suis incapable de rester spectateur face à un gisement inexploité — c'est un moteur, pas une posture. »</blockquote>
+      <cite>Bilan de personnalité · MaReussite.com</cite>
+    </div>
+  </div>
+</div>
+
+<div class="container" data-controller="reveal">
   <div class="cta-block reveal">
     <span class="section-eyebrow">Passons à l'action</span>
     <h2>Vous avez un problème de performance opérationnelle ?</h2>
     <p>Un premier échange de 30 minutes suffit souvent pour identifier les gisements prioritaires. Sans engagement.</p>
     <div class="cta-actions">
-      <a href="mailto:cyrille.pierre@gmail.com" class="btn-cp-primary">M'écrire</a>
-      <a href="<%= root_path %>" class="btn-cp-outline">Voir mon profil complet</a>
+      <a href="<%= contact_path %>" class="btn-cp-primary">Améliorons ensemble</a>
     </div>
   </div>
 </div>
