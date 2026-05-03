@@ -19,11 +19,9 @@ body {
   font-family: $body-font;
 }
 
-@media (max-width: 991px) {
-  section.py-5 {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
-  }
+section.py-5 {
+  padding-top: 2rem !important;
+  padding-bottom: 3rem !important;
 }
 
 // ============================================================
