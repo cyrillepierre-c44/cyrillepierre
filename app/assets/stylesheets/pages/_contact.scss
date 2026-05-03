@@ -264,7 +264,7 @@
 }
 
 // ── Chat block ─────────────────────────────────────────────
-.cf-chat-block { padding-bottom: 0; overflow: hidden; }
+.cf-chat-block { padding-bottom: 1.5rem; overflow: hidden; }
 
 .cf-chat-placeholder {
   text-align: center;
@@ -423,6 +423,7 @@
 
 .cf-chat-input {
   flex: 1;
+  min-width: 0;
   font-family: $body-font;
   font-size: 1rem;
   color: var(--cp-text);
