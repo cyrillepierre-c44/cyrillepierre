@@ -4,6 +4,18 @@
     <title><%= content_for(:title) || "Cyrille PIERRE — Consultant Opérationnel & Tech" %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Cyrille PIERRE — Consultant indépendant en excellence opérationnelle et transformation digitale. Ingénieur Arts & Métiers, 20 ans d'expérience industrielle. Lyon.">
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="Cyrille PIERRE">
+    <meta property="og:locale"      content="fr_FR">
+    <meta property="og:title"       content="<%= content_for(:title) || "Cyrille PIERRE — Consultant Opérationnel & Tech" %>">
+    <meta property="og:description" content="Consultant indépendant en excellence opérationnelle et transformation digitale. Ingénieur Arts & Métiers, 20 ans d'expérience industrielle. Lyon.">
+    <meta property="og:url"         content="https://www.cyrillepierre.com<%= request.path %>">
+    <meta property="og:image"       content="https://www.cyrillepierre.com/images/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card"       content="summary_large_image">
+    <meta name="twitter:title"      content="<%= content_for(:title) || "Cyrille PIERRE — Consultant Opérationnel & Tech" %>">
+    <meta name="twitter:image"      content="https://www.cyrillepierre.com/images/og-image.jpg">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link rel="icon" href="/icon.png" type="image/png">
