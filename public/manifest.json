@@ -1,0 +1,21 @@
+{
+  "name": "Cyrille PIERRE",
+  "short_name": "CP",
+  "description": "Consultant Opérationnel & Tech — Ingénieur Arts & Métiers, Lyon",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#050a15",
+  "theme_color": "#050a15",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
