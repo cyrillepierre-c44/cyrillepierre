@@ -71,6 +71,7 @@ class ContactsController < ApplicationController
           #{contexte_line ? "Données vérifiées sur l'entreprise : #{contexte_line}." : ""}
 
           CONSIGNES :
+          - Corrige les artefacts de saisie vocale évidents : si un mot est phonétiquement proche d'un terme métier connu (ex : "île manufacturing" → "Lean Manufacturing", "trs" → "TRS", "capex" → "CAPEX"), utilise le terme correct sans le mentionner
           - Ne reformule PAS ce qui a été dit mot pour mot : SYNTHÉTISE et ANALYSE
           - Identifie les signaux forts (tension, croissance, blocage, ce qui a déjà été tenté)
           - Utilise un vocabulaire métier précis (Lean, 5S, flux, capacité, management visuel, etc.) si pertinent
@@ -398,6 +399,7 @@ class ContactsController < ApplicationController
 
       RÈGLES ABSOLUES :
       - Réponds toujours en français
+      - Corrige silencieusement les artefacts de saisie vocale évidents (ex : "île manufacturing" → Lean Manufacturing, "capex" mal orthographié, termes phonétiquement déformés) — ne les relève pas, utilise simplement le bon terme dans ta réponse
       - Tes réponses sont courtes et percutantes (3 phrases max par réponse)
       - Sépare TOUJOURS ta réponse/acquiescement de la question suivante par une ligne vide (\\n\\n) — la question doit apparaître visuellement séparée, comme un nouveau paragraphe
       - Ne cite jamais les identifiants internes (N°XX, scale, type_orga, les tags)
