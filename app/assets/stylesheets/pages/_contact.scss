@@ -137,6 +137,27 @@
   margin: 1.25rem 0 0;
 }
 
+.cf-rgpd-notice {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--cp-muted);
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 0.5rem;
+
+  i { margin-right: 0.35rem; opacity: 0.7; }
+
+  a {
+    color: var(--cp-muted);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover { color: var(--cp-accent); }
+  }
+}
+
 .cf-input {
   font-family: $body-font;
   font-size: 1rem;
@@ -404,7 +425,7 @@
 
 .cf-chat-footer {
   display: flex;
-  align-items: stretch;
+  align-items: flex-end;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-top: 1px solid var(--cp-border);
@@ -412,8 +433,11 @@
 }
 
 .cf-chat-counter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 0.25rem 1rem 0.5rem;
-  text-align: right;
+  gap: 1rem;
 }
 
 .cf-footer-btn {
@@ -431,7 +455,10 @@
   border: 1.5px solid var(--cp-border);
   border-radius: 0.6rem;
   padding: 0.75rem 1rem;
-  line-height: 1.4;
+  line-height: 1.5;
+  resize: none;
+  overflow-y: auto;
+  max-height: 8rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 
   &::placeholder { color: rgba(148, 163, 184, 0.4); }
@@ -594,7 +621,8 @@
 
   .cf-input {
     font-size: 1rem; // garde 16px min pour éviter le zoom iOS
-    padding: 0.75rem 0.85rem;
+    padding: 0.9rem 1rem;
+    min-height: 3rem;
   }
 
   .cf-themes-grid { gap: 0.65rem; }
@@ -638,27 +666,32 @@
 
   .cf-chat-footer { padding: 0.65rem 0.75rem; gap: 0.5rem; }
 
-  .cf-chat-input { font-size: 1rem; padding: 0.65rem 0.75rem; }
+  .cf-chat-input {
+    font-size: 1rem;
+    padding: 0.8rem 0.9rem;
+    min-height: 3rem;
+  }
 
   .voice-btn {
-    width: 2.75rem;
-    height: 2.75rem;
-    min-width: 2.75rem;
+    width: 3rem;
+    height: 3rem;
+    min-width: 3rem;
   }
 
   .cf-chat-send {
-    width: 2.75rem;
-    height: 2.75rem;
-    min-width: 2.75rem;
+    width: 3rem;
+    height: 3rem;
+    min-width: 3rem;
     padding: 0;
     gap: 0;
     justify-content: center;
-    align-self: center;
 
     .cf-send-label { display: none; }
 
     i { font-size: 1rem; }
   }
+
+  .cf-voice-hint { font-size: 0.7rem; }
 
   .cf-summary { margin: 1rem 0 1.25rem; }
 
@@ -672,6 +705,16 @@
   }
 
   .cf-pending-hint { font-size: 0.8rem; }
+}
+
+// ── Voice hint ─────────────────────────────────────────────
+.cf-voice-hint {
+  font-size: 0.72rem;
+  color: var(--cp-muted);
+  opacity: 0.65;
+  line-height: 1.4;
+
+  i { margin-right: 0.2rem; }
 }
 
 // ── Voice input ────────────────────────────────────────────

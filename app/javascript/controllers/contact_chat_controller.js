@@ -6,7 +6,7 @@ export default class extends Controller {
     "themeCheckbox", "placeholder", "chatArea", "messages", "typing",
     "inputRow", "input", "sendBtn", "summaryBlock", "summaryText",
     "summaryField", "historyField", "submitBtn", "submitHint", "bottomSection",
-    "summaryToast"
+    "summaryToast", "company", "sector", "size"
   ]
 
   static MAX_QUESTIONS = 3
@@ -20,10 +20,19 @@ export default class extends Controller {
     window.scrollTo({ top: 0, behavior: "instant" })
   }
 
+  async inferCompany() {
+    const name = this.hasCompanyTarget ? this.companyTarget.value.trim() : ""
+    if (!name) return
+    const data = await this.postToBackend("/contact/infer_company", { company: name })
+    if (data.sector && this.hasSectorTarget) this.sectorTarget.value = data.sector
+    if (data.size   && this.hasSizeTarget)   this.sizeTarget.value   = data.size
+  }
+
   prefetchGreeting(event) {
     if (this.prefetchPromise || !event.target.value.trim()) return
     this.prefetchPromise = this.postToBackend("/contact/chat", {
-      message: "", history: [], themes: [], initial: true
+      message: "", history: [], themes: [], initial: true,
+      sector: this.sectorValue, size: this.sizeValue
     })
   }
 
@@ -40,7 +49,8 @@ export default class extends Controller {
     this.setInputDisabled(true)
     this.showTyping()
     const data = await (this.prefetchPromise || this.postToBackend("/contact/chat", {
-      message: "", history: [], themes: this.selectedThemes, initial: true
+      message: "", history: [], themes: this.selectedThemes, initial: true,
+      sector: this.sectorValue, size: this.sizeValue
     }))
     this.hideTyping()
     const clean = this.stripReady(data.reply)
@@ -51,7 +61,10 @@ export default class extends Controller {
   }
 
   sendOnEnter(event) {
-    if (event.key === "Enter") this.send()
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault()
+      this.send()
+    }
   }
 
   async send() {
@@ -70,7 +83,8 @@ export default class extends Controller {
 
     this.showTyping()
     const data = await this.postToBackend("/contact/chat", {
-      message, history: this.history, themes: this.selectedThemes, initial: false
+      message, history: this.history, themes: this.selectedThemes, initial: false,
+      sector: this.sectorValue, size: this.sizeValue
     })
     this.hideTyping()
 
@@ -176,5 +190,13 @@ export default class extends Controller {
     return this.themeCheckboxTargets
       .filter(cb => cb.querySelector("input")?.checked)
       .map(cb => cb.querySelector("input").value)
+  }
+
+  get sectorValue() {
+    return (this.hasSectorTarget ? this.sectorTarget.value : "").trim()
+  }
+
+  get sizeValue() {
+    return (this.hasSizeTarget ? this.sizeTarget.value : "").trim()
   }
 }

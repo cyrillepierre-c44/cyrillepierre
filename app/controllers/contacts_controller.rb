@@ -4,13 +4,44 @@ class ContactsController < ApplicationController
   def new
   end
 
+  def infer_company
+    company = params[:company].to_s.strip
+    return render json: { sector: nil, size: nil } if company.blank?
+
+    messages = [
+      { role: "system", content: "Tu identifies des entreprises. Réponds uniquement en JSON valide, sans texte autour." },
+      { role: "user", content: <<~PROMPT }
+        Pour l'entreprise "#{company}", identifie UNIQUEMENT :
+        1. Le secteur d'activité principal (ex : agroalimentaire, pharmaceutique, automobile, services numériques, etc.)
+        2. L'effectif approximatif (ex : "~200 personnes", "2 000-5 000 personnes") — laisse null si inconnu
+
+        Si l'entreprise est inconnue ou le nom trop générique, réponds : null
+
+        Sinon, réponds uniquement avec ce JSON (rien d'autre) :
+        {"secteur": "...", "effectif": "..."}
+      PROMPT
+    ]
+
+    result = call_llm(messages).strip
+    if result.downcase == "null" || result.blank?
+      render json: { sector: nil, size: nil }
+    else
+      parsed = JSON.parse(result)
+      render json: { sector: parsed["secteur"].presence, size: parsed["effectif"].presence }
+    end
+  rescue JSON::ParserError
+    render json: { sector: nil, size: nil }
+  end
+
   def chat
     message = params[:message].to_s.strip
     history = params[:history] || []
     themes  = params[:themes]  || []
     initial = params[:initial].to_s == "true"
+    sector  = params[:sector].to_s.strip
+    size    = params[:size].to_s.strip
 
-    messages = [{ role: "system", content: build_system_prompt(themes) }]
+    messages = [{ role: "system", content: build_system_prompt(themes, sector, size) }]
     history.each { |m| messages << { role: m["role"], content: m["content"] } }
     messages << { role: "user", content: initial ? "__START__" : message }
 
@@ -71,7 +102,9 @@ class ContactsController < ApplicationController
       themes:    themes,
       summary:   summary,
       history:   params[:contact_history],
-      precision: params[:contact_precision]
+      precision: params[:contact_precision],
+      sector:    params[:contact_sector],
+      size:      params[:contact_size]
     ).deliver_later
 
     ContactMailer.confirmation_to_client(
@@ -195,7 +228,7 @@ class ContactsController < ApplicationController
       tags: %w[semi-conducteurs maintenance TPM salle-blanche équipe-postée industrie-haute-tech GE] }
   ].freeze
 
-  def build_system_prompt(themes)
+  def build_system_prompt(themes, sector = nil, size = nil)
     themes_str = themes.any? ? themes.join(", ") : "non précisés"
     realisations_str = REALISATIONS.map do |r|
       lines = [
@@ -208,11 +241,27 @@ class ContactsController < ApplicationController
       lines.join("\n")
     end.join("\n\n")
 
+    visitor_context_lines = []
+    visitor_context_lines << "Secteur : #{sector}" if sector.present?
+    visitor_context_lines << "Taille : #{size}"    if size.present?
+
+    visitor_section = if visitor_context_lines.any?
+      <<~CTX
+        CONTEXTE VISITEUR (renseigné par le visiteur dans le formulaire) :
+        #{visitor_context_lines.join("\n")}
+        → Ces informations sont CERTAINES — ne pose AUCUNE question sur le secteur ou la taille.
+        → Utilise-les pour personnaliser l'accueil et matcher les réalisations dès Q1.
+
+      CTX
+    else
+      ""
+    end
+
     <<~PROMPT
       Tu es l'assistant de contact de Cyrille PIERRE, consultant indépendant (Excellence Opérationnelle, Leadership, Tech & IA).
       Thèmes sélectionnés par le visiteur : #{themes_str}
 
-      PROFIL DE CYRILLE — double expertise (à utiliser pour contextualiser les réalisations) :
+      #{visitor_section}PROFIL DE CYRILLE — double expertise (à utiliser pour contextualiser les réalisations) :
       Cyrille a exercé dans deux types de structures très différents :
 
       1. GRANDES INDUSTRIES (sites PME à ETI/GE, production automatisée) :
@@ -242,23 +291,23 @@ class ContactsController < ApplicationController
       PROTOCOLE STRICT :
 
       [MESSAGE __START__]
-      → Accueil chaleureux en 1 phrase, puis QUESTION 1 :
-        "Dans quel secteur évoluez-vous, et quelle est la taille de votre structure (nombre de personnes, artisanal, PME, grande entreprise) ?"
+      → Accueil chaleureux en 1-2 phrases.
+      #{visitor_context_lines.any? ? "  Le secteur#{size.present? ? ' et la taille' : ''} du visiteur #{size.present? ? 'sont connus' : 'est connu'} — mentionne-le brièvement pour personnaliser l'accueil. Ne pose PAS de question sur le secteur ou la taille." : ""}
+      → QUESTION 1 : "Quel est votre principal défi ou objectif ?"
 
-      [APRÈS RÉPONSE 1 — secteur/taille connus]
-      → Si la réponse est incomplète (secteur mentionné mais taille manquante, ou inversement) : demande uniquement l'information manquante, puis ajoute ##CLARIFY## sur la dernière ligne. Ne compte pas comme une question principale.
-      → Si la réponse est complète : ÉVALUE si une réalisation dont le scale ET le type_orga sont vraiment proches peut être citée.
-        • Si le visiteur est une petite structure manuelle ou un atelier artisanal (TPE, 20-50p) → cite N°12 ou N°13 : "Cyrille a justement organisé [contexte réal.] avec [résultat] — un contexte très proche du vôtre."
-        • Si le visiteur est une ETI ou GE industrielle → cite une réalisation N°01 à N°10 pertinente.
-        • Si aucune réalisation ne correspond → enchaîne directement.
-      → QUESTION 2 : "Quel est votre principal défi ou objectif ?"
-
-      [APRÈS RÉPONSE 2 — défi connu]
+      [APRÈS RÉPONSE 1 — défi connu]
       → Si la réponse est vague ou incomplète : demande une précision, puis ajoute ##CLARIFY## sur la dernière ligne.
-      → Si la réponse est claire : ÉVALUE si une réalisation pertinente existe.
-        • Si OUI → cite-la : "Ce type de défi, Cyrille l'a rencontré chez [contexte] : [résultat bref]."
-        • Si NON → acquiescement simple.
-      → QUESTION 3 : "Avez-vous déjà essayé des approches pour y remédier ?"
+      → Si la réponse est claire : ÉVALUE si une réalisation dont le contexte est proche peut être citée.
+        • Croise le défi avec le contexte entreprise (si disponible) pour trouver la réalisation la plus pertinente.
+        • Si le visiteur est une petite structure manuelle ou un atelier artisanal (TPE, 20-50p) → cite N°12 ou N°13.
+        • Si le visiteur est une ETI ou GE industrielle → cite une réalisation N°01 à N°10 pertinente.
+        • Si aucune réalisation ne correspond → acquiescement simple.
+      → QUESTION 2 : "Avez-vous déjà essayé des approches pour y remédier ?"
+
+      [APRÈS RÉPONSE 2 — approches connues]
+      → Si la réponse est vague ou manquante : demande une précision, puis ajoute ##CLARIFY## sur la dernière ligne.
+      → Si la réponse est suffisante : acquiescement simple.
+      → QUESTION 3 : "Quel serait le signe concret qui vous ferait dire que la mission est réussie ?"
 
       [APRÈS RÉPONSE 3 — OBLIGATOIRE]
       → Si la réponse est vague ou manquante : demande une précision, puis ajoute ##CLARIFY## sur la dernière ligne.

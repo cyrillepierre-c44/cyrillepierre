@@ -12,6 +12,6 @@ export default class extends Controller {
   }
 
   onScroll() {
-    this.element.classList.toggle("floating-cta--visible", window.scrollY > 300)
+    this.element.classList.toggle("floating-cta--visible", window.scrollY > 80)
   }
 }

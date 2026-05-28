@@ -49,7 +49,7 @@
 
 @media (max-width: 576px) {
   .floating-cta {
-    bottom: 1.25rem;
+    bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px));
     right: 1rem;
   }
 

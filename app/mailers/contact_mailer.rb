@@ -1,5 +1,5 @@
 class ContactMailer < ApplicationMailer
-  def new_contact(name:, email:, company:, phone:, themes:, summary:, history:, precision: nil)
+  def new_contact(name:, email:, company:, phone:, themes:, summary:, history:, precision: nil, sector: nil, size: nil)
     @name      = name
     @email     = email
     @company   = company
@@ -8,6 +8,8 @@ class ContactMailer < ApplicationMailer
     @summary   = summary
     @precision = precision
     @history   = parse_history(history)
+    @sector    = sector
+    @size      = size
 
     mail(
       to:       "cyrille.pierre@gmail.com",

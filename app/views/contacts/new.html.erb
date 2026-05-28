@@ -43,7 +43,9 @@
           <div class="cf-field">
             <label class="cf-label" for="contact_company">Entreprise</label>
             <input type="text" id="contact_company" name="contact_company"
-                   class="cf-input" placeholder="Acme Industries">
+                   class="cf-input" placeholder="Acme Industries"
+                   data-contact-chat-target="company"
+                   data-action="blur->contact-chat#inferCompany">
           </div>
 
           <div class="cf-field">
@@ -62,6 +64,11 @@
         </div>
 
         <p class="cf-required-legend"><span class="cf-required">*</span> Champs obligatoires</p>
+
+        <p class="cf-rgpd-notice">
+          <i class="fa-solid fa-shield-halved"></i>
+          Vos coordonnées sont utilisées uniquement pour répondre à votre demande et ne sont pas transmises à des tiers. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression en écrivant à <a href="mailto:cyrille.pierre@gmail.com">cyrille.pierre@gmail.com</a>.
+        </p>
       </div>
 
       <%# ════════════════════════════════════════ %>
@@ -158,13 +165,14 @@
                       data-action="click->voice-input#toggle">
                 <i class="fa-solid fa-microphone"></i>
               </button>
-              <input type="text"
+              <textarea
                      class="cf-chat-input"
-                     placeholder="Votre réponse…"
+                     placeholder="Votre réponse… (Maj+Entrée pour sauter une ligne)"
                      maxlength="500"
+                     rows="2"
                      data-contact-chat-target="input"
                      data-voice-input-target="field"
-                     data-action="keydown.enter->contact-chat#sendOnEnter">
+                     data-action="keydown.enter->contact-chat#sendOnEnter"></textarea>
               <button type="button"
                       class="cf-chat-send cf-footer-btn"
                       data-contact-chat-target="sendBtn"
@@ -174,6 +182,9 @@
               </button>
             </div>
             <div class="cf-chat-counter-row">
+              <span class="cf-voice-hint">
+                <i class="fa-solid fa-microphone"></i> Appuyez sur le micro pour dicter — appuyez à nouveau pour arrêter.
+              </span>
               <span class="voice-counter" data-voice-input-target="counter">0 / 500</span>
             </div>
           </div>
@@ -244,6 +255,8 @@
       <%# Champs cachés %>
       <input type="hidden" id="contact_summary" name="contact_summary" data-contact-chat-target="summaryField">
       <input type="hidden" id="contact_history" name="contact_history" data-contact-chat-target="historyField">
+      <input type="hidden" id="contact_sector" name="contact_sector" data-contact-chat-target="sector">
+      <input type="hidden" id="contact_size"   name="contact_size"   data-contact-chat-target="size">
 
       <%# Toast résumé prêt %>
       <div class="cf-summary-toast d-none"

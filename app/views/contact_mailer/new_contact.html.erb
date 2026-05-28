@@ -38,6 +38,14 @@
       <div class="label">Coordonnées</div>
       <div class="info-line"><strong><%= @name %></strong><% if @company.present? %> · <%= @company %><% end %></div>
       <div class="info-line"><a href="mailto:<%= @email %>"><%= @email %></a><% if @phone.present? %> · <%= @phone %><% end %></div>
+      <% if @sector.present? || @size.present? %>
+        <div class="info-line" style="margin-top: 6px; color: #64748b; font-size: 13px;">
+          <% if @sector.present? %>Secteur : <strong><%= @sector %></strong><% end %>
+          <% if @sector.present? && @size.present? %> &nbsp;·&nbsp; <% end %>
+          <% if @size.present? %>Effectif : <strong><%= @size %></strong><% end %>
+          &nbsp;<span style="font-size: 11px; color: #94a3b8;">(identifié automatiquement)</span>
+        </div>
+      <% end %>
     </div>
 
     <div class="section">
