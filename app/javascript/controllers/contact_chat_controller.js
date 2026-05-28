@@ -113,7 +113,8 @@ export default class extends Controller {
   async generateSummary() {
     this.showTyping()
     const data = await this.postToBackend("/contact/summarize", {
-      history: this.history, themes: this.selectedThemes
+      history: this.history, themes: this.selectedThemes,
+      sector: this.sectorValue, size: this.sizeValue
     })
     this.hideTyping()
 

@@ -52,6 +52,13 @@ class ContactsController < ApplicationController
   def summarize
     history = params[:history] || []
     themes  = params[:themes]  || []
+    sector  = params[:sector].to_s.strip
+    size    = params[:size].to_s.strip
+
+    contexte_connu = []
+    contexte_connu << "Secteur : #{sector}" if sector.present?
+    contexte_connu << "Effectif : #{size}"  if size.present?
+    contexte_line = contexte_connu.any? ? contexte_connu.join(" — ") : nil
 
     messages = [
       { role: "system", content: "Tu rédiges des résumés structurés de demandes clients. Réponds en français." },
@@ -61,6 +68,7 @@ class ContactsController < ApplicationController
         content: <<~PROMPT
           Tu es un analyste expert. À partir de la conversation ci-dessus, rédige un résumé en Markdown pour Cyrille PIERRE, consultant.
           Thèmes sélectionnés : #{themes.join(", ")}.
+          #{contexte_line ? "Données vérifiées sur l'entreprise : #{contexte_line}." : ""}
 
           CONSIGNES :
           - Ne reformule PAS ce qui a été dit mot pour mot : SYNTHÉTISE et ANALYSE
@@ -69,10 +77,11 @@ class ContactsController < ApplicationController
           - Formule des phrases courtes et percutantes, comme un consultant qui a tout compris en 3 questions
           - Ne pose JAMAIS de question. Jamais de "qu'en penses-tu ?". Affirmations uniquement.
           - Max 120 mots au total
+          - Pour le contexte : utilise UNIQUEMENT les données vérifiées ci-dessus ou ce qui a été explicitement dit dans la conversation. N'invente JAMAIS un effectif ou un secteur non confirmé.
 
           Format OBLIGATOIRE (avec emojis, en Markdown) :
 
-          🏭 **Contexte :** [secteur + taille + type réel de structure — ex : "Atelier de confection artisanal, 20 personnes, en phase de croissance"]
+          🏭 **Contexte :** [#{contexte_line ? contexte_line + " + " : ""}type de structure + situation — n'invente PAS l'effectif s'il est inconnu]
 
           🎯 **Enjeu :** [la tension ou le défi réel, formulé avec précision — pas une reformulation, une analyse]
 
