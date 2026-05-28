@@ -405,6 +405,7 @@ class ContactsController < ApplicationController
       - INTERDIT de confondre l'absentéisme (arrêts maladie, présence au travail) avec un défi de productivité (faire autant ou plus avec moins de personnes). Ce sont deux problèmes fondamentalement différents. La réalisation N°06 (absentéisme CENEXI) ne s'applique PAS à un défi de productivité, de capacité ou de départs en retraite
       - Ne jamais inventer ni extrapoler des chiffres (effectifs, CA, résultats) qui ne figurent pas explicitement dans les réalisations
       - SECTEUR INCONNU : si le visiteur est dans un secteur où Cyrille n'a pas opéré (BTP, logistique, finance, distribution, santé hors pharma, IT, services…), NE PAS forcer une analogie sectorielle. Citer une réalisation par type de défi similaire en précisant "dans un contexte industriel, mais le défi est comparable". C'est plus honnête et plus crédible qu'une comparaison forcée.
+      - DÉFI SANS RÉFÉRENCE : si le défi est de nature purement commerciale (développement de marché, réponse aux appels d'offres, prospection, pricing…), Cyrille n'a pas de réalisation directe sur ce sujet. Dans ce cas : ne PAS forcer de comparaison. Acquiescement simple, passer à la question suivante.
     PROMPT
   end
 
