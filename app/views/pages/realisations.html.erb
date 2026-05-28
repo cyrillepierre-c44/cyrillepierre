@@ -986,19 +986,23 @@
               </linearGradient>
             </defs>
             <rect width="480" height="200" fill="#050a15"/>
-            <!-- Niveaux ABC -->
-            <rect x="40"  y="130" width="80" height="40" rx="5" fill="rgba(148,163,184,0.1)" stroke="rgba(148,163,184,0.2)" stroke-width="1"/>
-            <text x="80"  y="156" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="sans-serif" font-weight="600">Niveau C</text>
-            <rect x="140" y="95"  width="80" height="75" rx="5" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.2)" stroke-width="1"/>
-            <text x="180" y="138" text-anchor="middle" fill="#00d4ff" font-size="11" font-family="sans-serif" font-weight="600">Niveau B</text>
-            <rect x="240" y="50"  width="80" height="120" rx="5" fill="rgba(139,92,246,0.1)" stroke="rgba(139,92,246,0.3)" stroke-width="1"/>
-            <text x="280" y="115" text-anchor="middle" fill="#8b5cf6" font-size="11" font-family="sans-serif" font-weight="600">Niveau A</text>
-            <text x="280" y="133" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="sans-serif">ZAC / aseptique</text>
-            <!-- Badge fidélisation -->
-            <rect x="350" y="55" width="110" height="50" rx="8" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.2)" stroke-width="1"/>
-            <text x="405" y="75" text-anchor="middle" fill="#10b981" font-size="10" font-family="sans-serif" font-weight="600">Fidélisation ✓</text>
-            <text x="405" y="92" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="sans-serif">Déc. 2017 · Leem</text>
-            <text x="240" y="188" text-anchor="middle" fill="url(#g20)" font-size="12" font-weight="bold" font-family="sans-serif">Classification définie · minima salaires validés</text>
+            <%# Ligne de base commune à y=155 — barres remontées, 15px de gap %>
+            <%# Niveau C : x=25, w=75, top=125, h=30 %>
+            <rect x="25"  y="125" width="75" height="30" rx="5" fill="rgba(148,163,184,0.1)" stroke="rgba(148,163,184,0.2)" stroke-width="1"/>
+            <text x="62"  y="145" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="sans-serif" font-weight="600">Niveau C</text>
+            <%# Niveau B : x=115, w=75, top=85, h=70 %>
+            <rect x="115" y="85"  width="75" height="70" rx="5" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.2)" stroke-width="1"/>
+            <text x="152" y="124" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="sans-serif" font-weight="600">Niveau B</text>
+            <%# Niveau A : x=205, w=75, top=40, h=115 %>
+            <rect x="205" y="40"  width="75" height="115" rx="5" fill="rgba(139,92,246,0.1)" stroke="rgba(139,92,246,0.3)" stroke-width="1"/>
+            <text x="242" y="97"  text-anchor="middle" fill="#8b5cf6" font-size="10" font-family="sans-serif" font-weight="600">Niveau A</text>
+            <text x="242" y="112" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="sans-serif">ZAC / aseptique</text>
+            <%# Badge fidélisation : x=310, w=130, right=440, marge droite=40 %>
+            <rect x="310" y="50" width="130" height="55" rx="8" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.2)" stroke-width="1"/>
+            <text x="375" y="72" text-anchor="middle" fill="#10b981" font-size="10" font-family="sans-serif" font-weight="600">Fidélisation ✓</text>
+            <text x="375" y="89" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="sans-serif">Déc. 2017 · Leem</text>
+            <%# Texte résultat : 23px de marge avec bottom bars (y=155) %>
+            <text x="230" y="178" text-anchor="middle" fill="url(#g20)" font-size="12" font-weight="bold" font-family="sans-serif">Classification définie · minima salaires validés</text>
             <line x1="0" y1="192" x2="480" y2="192" stroke="rgba(0,212,255,0.08)" stroke-width="1"/>
           </svg>
         </div>
