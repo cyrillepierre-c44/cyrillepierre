@@ -52,6 +52,13 @@ class ContactsController < ApplicationController
   def summarize
     history = params[:history] || []
     themes  = params[:themes]  || []
+    sector  = params[:sector].to_s.strip
+    size    = params[:size].to_s.strip
+
+    contexte_connu = []
+    contexte_connu << "Secteur : #{sector}" if sector.present?
+    contexte_connu << "Effectif : #{size}"  if size.present?
+    contexte_line = contexte_connu.any? ? contexte_connu.join(" — ") : nil
 
     messages = [
       { role: "system", content: "Tu rédiges des résumés structurés de demandes clients. Réponds en français." },
@@ -61,18 +68,21 @@ class ContactsController < ApplicationController
         content: <<~PROMPT
           Tu es un analyste expert. À partir de la conversation ci-dessus, rédige un résumé en Markdown pour Cyrille PIERRE, consultant.
           Thèmes sélectionnés : #{themes.join(", ")}.
+          #{contexte_line ? "Données vérifiées sur l'entreprise : #{contexte_line}." : ""}
 
           CONSIGNES :
+          - Corrige les artefacts de saisie vocale évidents : si un mot est phonétiquement proche d'un terme métier connu (ex : "île manufacturing" → "Lean Manufacturing", "trs" → "TRS", "capex" → "CAPEX"), utilise le terme correct sans le mentionner
           - Ne reformule PAS ce qui a été dit mot pour mot : SYNTHÉTISE et ANALYSE
           - Identifie les signaux forts (tension, croissance, blocage, ce qui a déjà été tenté)
           - Utilise un vocabulaire métier précis (Lean, 5S, flux, capacité, management visuel, etc.) si pertinent
           - Formule des phrases courtes et percutantes, comme un consultant qui a tout compris en 3 questions
           - Ne pose JAMAIS de question. Jamais de "qu'en penses-tu ?". Affirmations uniquement.
           - Max 120 mots au total
+          - Pour le contexte : utilise UNIQUEMENT les données vérifiées ci-dessus ou ce qui a été explicitement dit dans la conversation. N'invente JAMAIS un effectif, un nombre d'ETP, un nombre de personnes ou un secteur non confirmé — si inconnu, décris la structure (ex : "atelier artisanal") sans chiffrer.
 
           Format OBLIGATOIRE (avec emojis, en Markdown) :
 
-          🏭 **Contexte :** [secteur + taille + type réel de structure — ex : "Atelier de confection artisanal, 20 personnes, en phase de croissance"]
+          🏭 **Contexte :** [#{contexte_line ? contexte_line + " + " : ""}type de structure + situation — n'invente PAS l'effectif s'il est inconnu]
 
           🎯 **Enjeu :** [la tension ou le défi réel, formulé avec précision — pas une reformulation, une analyse]
 
@@ -154,7 +164,8 @@ class ContactsController < ApplicationController
       context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · 100 personnes · lignes automatisées",
       titre: "Organisation en Unités Autonomes de Production (UAP)",
       resultat: "TRS 57% → 67% · durées intervention ÷2",
-      tags: %w[agro organisation UAP autonomie maintenance production TRS productivité capacité isopérimètre] },
+      semantic_scope: "Pour : restructuration organisationnelle production/maintenance, création d'unités autonomes, amélioration TRS. NE PAS utiliser pour de l'animation d'équipe, de la motivation ou des rituels de management — utiliser N°16 pour ces sujets.",
+      tags: %w[agro organisation UAP autonomie maintenance production TRS productivité capacité restructuration-orga] },
     { id: "N°06",
       scale: "ETI (CENEXI, 400p, 3 sites)",
       type_orga: "usine industrielle process continu",
@@ -190,28 +201,32 @@ class ContactsController < ApplicationController
       context: "Mission EFESO Consulting · sous-traitant automobile · intervention COMEX d'une structure ETI/GE",
       titre: "Plan de progrès avec un COMEX non aligné",
       resultat: "Mission signée · 4 mois terrain · COMEX converti",
-      tags: %w[auto automobile consulting COMEX changement résistance alignment] },
+      semantic_scope: "UNIQUEMENT pour : résistance au changement au niveau COMEX ou Direction, alignement stratégique entre dirigeants, plan de progrès avec des parties prenantes C-suite. NE PAS utiliser pour : coordination d'équipes terrain, management de proximité, animation des opérateurs — ce sont des défis fondamentalement différents.",
+      tags: %w[auto automobile consulting COMEX changement résistance alignement-direction stratégie] },
     { id: "N°11",
       scale: "Micro-entreprise (Cyrille seul, 1-3 personnes)",
       type_orga: "atelier artisanal / travail 100% manuel",
       context: "Centaur Bike · Lyon · micro-entreprise fondée et gérée par Cyrille seul (1 à 3 personnes max) · atelier d'électrification et de reconditionnement de vélos électriques · travail exclusivement manuel · B2C et B2B · NE PAS présenter comme un atelier de 20 personnes",
       titre: "Création, pilotage et organisation d'un atelier artisanal de reconditionnement de vélos électriques",
       resultat: "250 K€ CA/an · Marge 39% · organisation complète de l'atelier de A à Z · 2ème prix pitch",
-      tags: %w[startup entrepreneuriat micro-entreprise atelier manuel reconditionnement vélo électrique organisation création pilotage] },
+      semantic_scope: "Pertinent pour : défis de création, développement, croissance d'une TPE, recrutement des premiers collaborateurs, structuration d'une petite organisation, équilibre CA/recrutement. Cyrille a vécu le dilemme croissance vs recrutement en tant que dirigeant.",
+      tags: %w[startup entrepreneuriat micro-entreprise TPE création pilotage croissance recrutement développement-commercial organisation atelier artisanal vélo reconditionnement] },
     { id: "N°12",
       scale: "PME petite (Enjoué, association, 20-50 personnes)",
       type_orga: "atelier artisanal / travail 100% manuel / 20-50 personnes",
       context: "Projet RE-PLAY · Enjoué · Lyon · association loi 1901 · atelier de reconditionnement artisanal de jouets · 20-50 personnes · travail exclusivement manuel · mission de mécénat de compétences (en cours)",
       titre: "Digitalisation des processus d'un atelier de reconditionnement manuel — UX inclusive zero-text, Poka-Yoke numérique",
       resultat: "Application Rails déployée en production · 6 points de contrôle qualité numérisés · traçabilité AGEC · opérateurs guidés sans texte",
-      tags: %w[tech digital application Rails atelier manuel reconditionnement inclusion qualité traçabilité PME-petite processus poka-yoke] },
+      semantic_scope: "UNIQUEMENT pour : ateliers artisanaux manuels, structures d'insertion ou ESS, reconditionnement, digitalisation d'un processus manuel simple. NE PAS utiliser pour une PME industrielle classique (agroalimentaire, pharma, mécanique…) sous prétexte qu'elle a 20 personnes — le contexte est fondamentalement différent.",
+      tags: %w[tech digital application Rails atelier manuel reconditionnement inclusion qualité traçabilité ESS association poka-yoke zero-text] },
     { id: "N°13",
       scale: "PME petite (atelier artisanal, petite équipe)",
       type_orga: "atelier artisanal / travail 100% manuel",
       context: "Projet Démontés · Centaur Bike · Saint-Fons · atelier de reconditionnement manuel de pièces vélos · petite équipe artisanale",
       titre: "Industrialisation d'un atelier artisanal de reconditionnement : Lean 5S, standardisation des postes, SOP, formation",
       resultat: "16 rôles modélisés · postes 5S organisés · SOP rédigées · tutoriels vidéo · filière réemploi structurée",
-      tags: %w[lean 5S VSM SOP atelier artisanal reconditionnement manuel organisation PME-petite industrialisation éco-circulaire processus] },
+      semantic_scope: "UNIQUEMENT pour : ateliers artisanaux manuels, structures sans process industriel formalisé, reconditionnement, économie circulaire. NE PAS utiliser pour une PME industrielle (agroalimentaire, pharma…) car le type de structure est différent malgré une taille similaire.",
+      tags: %w[lean 5S VSM SOP atelier artisanal reconditionnement manuel organisation industrialisation éco-circulaire processus petite-équipe] },
     { id: "N°14",
       scale: "ETI (GHM, 500 personnes)",
       type_orga: "industrie lourde / fonderie",
@@ -225,7 +240,49 @@ class ContactsController < ApplicationController
       context: "STMicroelectronics (GE mondial, semi-conducteurs) · site Crolles · 5 000 personnes sur site · salle blanche · production de semi-conducteurs",
       titre: "Management d'une équipe maintenance postée en salle blanche — TPM",
       resultat: "120 K€/an sur durée de vie équipements · 6 opérateurs managés · processus TPM structurés",
-      tags: %w[semi-conducteurs maintenance TPM salle-blanche équipe-postée industrie-haute-tech GE] }
+      tags: %w[semi-conducteurs maintenance TPM salle-blanche équipe-postée industrie-haute-tech GE] },
+    { id: "N°16",
+      scale: "PME-site / filiale GE (Campbell Soup Co.)",
+      type_orga: "usine industrielle automatisée",
+      context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · agroalimentaire · 100 personnes",
+      titre: "Refonte du management de proximité — formation et alignement des chefs d'équipe",
+      resultat: "Managers alignés · ambiance assainie · 0 tension syndicale · montée en compétences interne",
+      tags: %w[agro management formation chefs-équipe alignement-terrain coordination-équipes animation-équipe DDS rituels-management management-visuel pilotage-terrain IRP développement-managers coaching management-de-proximité] },
+    { id: "N°17",
+      scale: "ETI/GE (SOGEFI, équipementier automobile)",
+      type_orga: "industrie manufacturière / forge et traitement de surface",
+      context: "SOGEFI (équipementier automobile, fabricant de barres de suspension) · mission EFESO Consulting · industrie automobile",
+      titre: "Chantier WCM sur grenailleuse — groupe de travail pluridisciplinaire",
+      resultat: "43 K€ économisés sur 3 mois · CAPEX 4 K€ · remise au standard · équipement fiabilisé",
+      tags: %w[auto automobile WCM chantier amélioration-continue pluridisciplinaire fiabilité équipement maintenance TPM forge traitement-surface] },
+    { id: "N°18",
+      scale: "PME-site / filiale GE (Campbell Soup Co.)",
+      type_orga: "usine industrielle automatisée",
+      context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · agroalimentaire · 100 personnes",
+      titre: "Réduction de la consommation MO cariste — méthode ECRS",
+      resultat: "−3 ETP intérimaires · dimensionnement accepté sans conflit social · ECRS appliqué",
+      tags: %w[agro ECRS MO optimisation-effectifs logistique-interne manutention productivité lean intérimaires] },
+    { id: "N°19",
+      scale: "ETI (CENEXI, 400p, 3 sites)",
+      type_orga: "usine industrielle process continu",
+      context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes · lignes de remplissage aseptiques",
+      titre: "Mise en place de nouveaux horaires 3×8 — négociation IRP et volontariat",
+      resultat: "−10 ETP intérimaires · volume maintenu · accord IRP signé · démarrage sur volontariat",
+      tags: %w[pharma horaires organisation 3x8 IRP négociation-sociale intérimaires changement volontariat] },
+    { id: "N°20",
+      scale: "ETI (CENEXI, 400p, 3 sites)",
+      type_orga: "usine industrielle process continu",
+      context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes",
+      titre: "Mise en place de la classification Leem et minima de salaire — fidélisation des opérateurs qualifiés",
+      resultat: "Classification définie · minima salaires validés Direction · fidélisation renforcée en ZAC",
+      tags: %w[pharma RH classification salaire fidélisation compétences convention-collective social emploi recrutement] },
+    { id: "N°21",
+      scale: "GE-site / filiale GE (STMicroelectronics, GE mondial)",
+      type_orga: "industrie de haute technologie / salle blanche",
+      context: "STMicroelectronics (GE mondial, semi-conducteurs) · site Crolles · 5 000 personnes · équipe postée 2×8 · salle blanche",
+      titre: "Création d'un outil de passage de consignes en équipe postée",
+      resultat: "Communication inter-équipes établie · problèmes récurrents tracés · bottleneck réduit",
+      tags: %w[semi-conducteurs communication outil-digital passage-de-consignes équipe-postée traçabilité information partage] }
   ].freeze
 
   def build_system_prompt(themes, sector = nil, size = nil)
@@ -258,11 +315,17 @@ class ContactsController < ApplicationController
     end
 
     <<~PROMPT
-      Tu es l'assistant de contact de Cyrille PIERRE, consultant indépendant (Excellence Opérationnelle, Leadership, Tech & IA).
+      Tu es l'assistant de contact de Cyrille PIERRE, consultant indépendant spécialisé en management de transition, excellence opérationnelle et tech/IA.
       Thèmes sélectionnés par le visiteur : #{themes_str}
 
-      #{visitor_section}PROFIL DE CYRILLE — double expertise (à utiliser pour contextualiser les réalisations) :
-      Cyrille a exercé dans deux types de structures très différents :
+      #{visitor_section}POSITIONNEMENT ACTUEL DE CYRILLE (depuis mars 2026) :
+      Cyrille est manager de transition et consultant indépendant. Il intervient en mission courte ou longue dans des organisations pour piloter une transformation, redresser la performance ou construire des outils digitaux sur mesure. Il connaît le métier de manager de transition de l'intérieur — il le pratique.
+
+      → Pour les cabinets de management de transition, les sociétés de conseil ou les structures qui pilotent des managers en mission : Cyrille est un interlocuteur naturel, il parle le même langage et comprend les enjeux de suivi, de performance et de relation client.
+      → Pour les entreprises industrielles : il arrive avec 20 ans de terrain et des résultats mesurables.
+      → Pour les projets digitaux ou IA : il conçoit et développe lui-même les outils (Ruby on Rails, LLM, API).
+
+      PROFIL DE CYRILLE — triple expertise :
 
       1. GRANDES INDUSTRIES (sites PME à ETI/GE, production automatisée) :
          - Yoplait/General Mills (GE mondial) — site 200p, directeur production 3 unités agro
@@ -271,13 +334,20 @@ class ContactsController < ApplicationController
          - STMicroelectronics (GE mondial, 5 000p sur site Crolles) — chef équipe maintenance salle blanche, semi-conducteurs
          - GHM fonderie (ETI, 500p) — ingénieur travaux neufs
          - EFESO Consulting — missions conseil auprès de COMEX automobile
+         - SOGEFI (équipementier automobile) — chantier WCM terrain via EFESO
 
       2. PETITES STRUCTURES MANUELLES (TPE / artisanal, 20 à 50 personnes, travail 100% manuel) :
-         - Centaur Bike : atelier d'électrification et de reconditionnement de vélos électriques, travail entièrement manuel, B2C+B2B, 250 K€ CA
-         - Projet Démontés : industrialisation d'un atelier artisanal de reconditionnement de pièces vélos, Lean 5S, SOP, standardisation des postes
-         - Projet RE-PLAY / Enjoué : digitalisation des processus d'un atelier de reconditionnement de jouets (20-50 personnes), UX inclusive zero-text, Poka-Yoke numérique
+         - Centaur Bike : atelier d'électrification et de reconditionnement de vélos électriques, B2C+B2B, 250 K€ CA
+         - Projet Démontés : industrialisation d'un atelier artisanal de reconditionnement de pièces vélos, Lean 5S, SOP
+         - Projet RE-PLAY / Enjoué : digitalisation des processus d'un atelier de reconditionnement de jouets (20-50 personnes), UX zero-text, Poka-Yoke numérique
 
-      → Cyrille est à l'aise avec les deux types de structures. Pour les petites structures manuelles et les ateliers artisanaux, il a une expérience directe et concrète — ce n'est pas théorique.
+      3. DIGITAL & OUTILS MÉTIER (tout secteur, tout type de structure) :
+         - Application Rails de suivi qualité et en-cours déployée en production (RE-PLAY)
+         - Digitalisation du pilotage de la performance TRS (tableau de bord tactile, LIEBIG)
+         - Outil de passage de consignes en équipe postée (STMicro)
+         - Ce site web + assistant IA de contact (conçu et développé par Cyrille lui-même)
+
+      → Cyrille est à l'aise dans les trois registres. La dimension digitale est transversale à tous les secteurs.
 
       RÉALISATIONS DE CYRILLE :
       #{realisations_str}
@@ -297,11 +367,15 @@ class ContactsController < ApplicationController
 
       [APRÈS RÉPONSE 1 — défi connu]
       → Si la réponse est vague ou incomplète : demande une précision, puis ajoute ##CLARIFY## sur la dernière ligne.
-      → Si la réponse est claire : ÉVALUE si une réalisation dont le contexte est proche peut être citée.
-        • Croise le défi avec le contexte entreprise (si disponible) pour trouver la réalisation la plus pertinente.
-        • Si le visiteur est une petite structure manuelle ou un atelier artisanal (TPE, 20-50p) → cite N°12 ou N°13.
-        • Si le visiteur est une ETI ou GE industrielle → cite une réalisation N°01 à N°10 pertinente.
-        • Si aucune réalisation ne correspond → acquiescement simple.
+      → Si la réponse est claire : ÉVALUE si une réalisation pertinente peut être citée, en suivant cette logique :
+        1. Si le défi est DIGITAL / OUTIL / SUIVI / TABLEAU DE BORD / INDICATEURS → citer en priorité les réalisations tech : N°03 (digitalisation TRS), N°12 (application RE-PLAY), N°21 (outil de consignes). Mentionner que Cyrille développe lui-même les outils.
+        2. Si le visiteur est un CABINET DE CONSEIL, une SOCIÉTÉ DE MANAGEMENT DE TRANSITION ou un INTERMÉDIAIRE → souligner que Cyrille est lui-même manager de transition, il connaît le métier de l'intérieur.
+        3. Si le visiteur est une TPE / petite structure avec un défi de CROISSANCE, RECRUTEMENT, STRUCTURATION ou DÉVELOPPEMENT COMMERCIAL → citer N°11 (Centaur Bike) : Cyrille a lui-même vécu le dilemme croissance/recrutement en tant que dirigeant d'une micro-entreprise.
+        4. Pour les autres défis : cherche d'abord par TYPE DE DÉFI (productivité, absentéisme, management, RH, WCM, CAPEX…)
+        4. Croise avec le contexte entreprise (secteur + taille) pour valider la pertinence
+        5. Si le secteur est différent (BTP, logistique, finance, santé hors pharma, services…) → cite par TYPE DE DÉFI, précise brièvement "dans un contexte industriel" — NE PAS forcer une analogie sectorielle
+        6. Si atelier artisanal / reconditionnement / ESS / structure sans process industriel formalisé → cite N°12 ou N°13. NE PAS les citer pour une PME industrielle classique (agro, pharma, mécanique…) même si elle a 20 personnes — vérifier le type de structure, pas seulement la taille
+        7. Si aucune réalisation ne correspond vraiment → acquiescement simple sans forcer
       → QUESTION 2 : "Avez-vous déjà essayé des approches pour y remédier ?"
 
       [APRÈS RÉPONSE 2 — approches connues]
@@ -318,21 +392,28 @@ class ContactsController < ApplicationController
         Stop. Rien d'autre après ##READY##.
 
       [SIGNAL ##CLARIFY##]
-      → Utilise ##CLARIFY## UNIQUEMENT pour demander un complément sur une réponse incomplète à une question déjà posée.
-      → Format : ta question de clarification, puis ##CLARIFY## seul sur la dernière ligne.
+      → Utilise ##CLARIFY## UNIQUEMENT si la réponse est réellement incomplète au point de ne pas pouvoir avancer (ex : secteur manquant si indispensable, réponse hors sujet).
+      → NE PAS utiliser ##CLARIFY## si la réponse donne une direction claire même imprécise — "améliorer la productivité", "réduire les coûts", "mieux manager mes équipes" sont suffisants pour enchaîner.
+      → Format : ta question de clarification courte, puis ##CLARIFY## seul sur la dernière ligne.
       → Après ##CLARIFY##, attends la réponse avant de poursuivre vers la question principale suivante.
+      → Maximum 1 ##CLARIFY## par question principale.
 
       RÈGLES ABSOLUES :
       - Réponds toujours en français
+      - Corrige silencieusement les artefacts de saisie vocale évidents (ex : "île manufacturing" → Lean Manufacturing, "capex" mal orthographié, termes phonétiquement déformés) — ne les relève pas, utilise simplement le bon terme dans ta réponse
       - Tes réponses sont courtes et percutantes (3 phrases max par réponse)
       - Sépare TOUJOURS ta réponse/acquiescement de la question suivante par une ligne vide (\\n\\n) — la question doit apparaître visuellement séparée, comme un nouveau paragraphe
       - Ne cite jamais les identifiants internes (N°XX, scale, type_orga, les tags)
+      - Ne cite JAMAIS la même réalisation deux fois dans la même conversation
       - Tu NE poses JAMAIS une 4ème question
       - Tu NE proposes JAMAIS un appel ou un rendez-vous
       - INTERDIT de comparer une TPE/atelier artisanal à une usine industrielle de 100+ personnes automatisée : ce serait contre-productif et peu crédible
       - Pour un atelier artisanal ou une TPE, utilise l'expérience Démontés (N°13) ou RE-PLAY/Enjoué (N°12) qui concernent de vraies équipes de 20-50 personnes. Centaur Bike (N°11) = Cyrille seul, 1-3 personnes max — ne PAS l'utiliser comme référence d'équipe de 20 personnes
       - INTERDIT de confondre l'absentéisme (arrêts maladie, présence au travail) avec un défi de productivité (faire autant ou plus avec moins de personnes). Ce sont deux problèmes fondamentalement différents. La réalisation N°06 (absentéisme CENEXI) ne s'applique PAS à un défi de productivité, de capacité ou de départs en retraite
       - Ne jamais inventer ni extrapoler des chiffres (effectifs, CA, résultats) qui ne figurent pas explicitement dans les réalisations
+      - SECTEUR INCONNU : si le visiteur est dans un secteur où Cyrille n'a pas opéré (BTP, logistique, finance, distribution, santé hors pharma, IT, services…), NE PAS forcer une analogie sectorielle. Citer une réalisation par type de défi similaire en précisant "dans un contexte industriel, mais le défi est comparable". C'est plus honnête et plus crédible qu'une comparaison forcée.
+      - DÉFI SANS RÉFÉRENCE : si le défi est de nature purement commerciale (développement de marché, réponse aux appels d'offres, prospection, pricing…), Cyrille n'a pas de réalisation directe sur ce sujet. Dans ce cas : ne PAS forcer de comparaison. Acquiescement simple, passer à la question suivante.
+      - FORMATION TECHNIQUE MÉTIER : si le défi est "apprendre à faire" un geste technique (diagnostiquer une panne, maîtriser un procédé, former à un métier manuel spécifique…), ce n'est pas le domaine de Cyrille. Ne pas citer de réalisation opex comme si elle répondait à un besoin de formation technique. Acquiescement simple, orienter vers les aspects organisation/process si pertinent.
     PROMPT
   end
 

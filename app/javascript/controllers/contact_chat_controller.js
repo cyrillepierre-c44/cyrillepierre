@@ -89,12 +89,16 @@ export default class extends Controller {
     this.hideTyping()
 
     const isClarify = data.reply.includes("##CLARIFY##")
-    if (isClarify) this.userMessageCount--
+    const isError   = data.reply.includes("difficulté technique")
+    if (isClarify || isError) this.userMessageCount--
 
+    const isError = data.reply.includes("difficulté technique")
     const clean = this.stripReady(data.reply).replace("##CLARIFY##", "").trim()
     this.appendMessage("assistant", clean)
-    this.history.push({ role: "assistant", content: data.reply })
-    this.historyFieldTarget.value = JSON.stringify(this.history)
+    if (!isError) {
+      this.history.push({ role: "assistant", content: data.reply })
+      this.historyFieldTarget.value = JSON.stringify(this.history)
+    }
 
     const forceEnd = this.userMessageCount >= this.constructor.MAX_QUESTIONS
     if (data.ready || forceEnd) {
@@ -113,7 +117,8 @@ export default class extends Controller {
   async generateSummary() {
     this.showTyping()
     const data = await this.postToBackend("/contact/summarize", {
-      history: this.history, themes: this.selectedThemes
+      history: this.history, themes: this.selectedThemes,
+      sector: this.sectorValue, size: this.sizeValue
     })
     this.hideTyping()
 
