@@ -108,4 +108,34 @@
     line-height: 1.65;
     margin: 0;
   }
+
+  .real-pivots {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      display: flex;
+      gap: 0.65rem;
+      margin-bottom: 0.35rem;
+
+      &:last-child { margin-bottom: 0; }
+    }
+
+    .pivot-year {
+      font-family: $headers-font;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--cp-accent);
+      min-width: 2.5rem;
+      flex-shrink: 0;
+      padding-top: 0.05rem;
+    }
+
+    .pivot-text {
+      font-size: 0.88rem;
+      color: var(--cp-muted);
+      line-height: 1.55;
+    }
+  }
 }
