@@ -206,11 +206,11 @@ class ContactsController < ApplicationController
     { id: "N°11",
       scale: "Micro-entreprise (Cyrille seul, 1-3 personnes)",
       type_orga: "atelier artisanal / travail 100% manuel",
-      context: "Centaur Bike · Lyon · micro-entreprise fondée et gérée par Cyrille seul (1 à 3 personnes max) · atelier d'électrification et de reconditionnement de vélos électriques · travail exclusivement manuel · B2C et B2B · NE PAS présenter comme un atelier de 20 personnes",
-      titre: "Création, pilotage et organisation d'un atelier artisanal de reconditionnement de vélos électriques",
-      resultat: "250 K€ CA/an · Marge 39% · organisation complète de l'atelier de A à Z · 2ème prix pitch",
-      semantic_scope: "Pertinent pour : défis de création, développement, croissance d'une TPE, recrutement des premiers collaborateurs, structuration d'une petite organisation, équilibre CA/recrutement. Cyrille a vécu le dilemme croissance vs recrutement en tant que dirigeant.",
-      tags: %w[startup entrepreneuriat micro-entreprise TPE création pilotage croissance recrutement développement-commercial organisation atelier artisanal vélo reconditionnement] },
+      context: "Centaur Bike · Lyon · micro-entreprise fondée et pilotée par Cyrille seul · 4 pivots en 4 ans : 2021 électrification vélos sur-mesure, 2022 reconditionnement + vente vélos électriques (pic 250 K€ CA, marge 39%), 2023 service mobile flottes professionnelles B2B, 2024 conseil Lean et organisationnel pour ateliers de reconditionnement vélos en libre-service",
+      titre: "Création et pilotage d'une micro-entreprise avec 4 pivots stratégiques en 4 ans — de l'artisan au conseil",
+      resultat: "4 pivots réussis · pic 250 K€ CA (2022) · passage du B2C artisanal au conseil B2B · 2ème prix pitch Rotary · capacité de remise en question et de réinvention permanente",
+      semantic_scope: "Pertinent pour : défis de création/démarrage TPE, pivots stratégiques, remise en question d'un modèle économique, développement commercial, structuration d'une petite organisation, conseil auprès d'ateliers de reconditionnement. Cyrille a vécu l'adaptabilité permanente en tant que dirigeant.",
+      tags: %w[startup entrepreneuriat micro-entreprise TPE création pivot stratégie développement-commercial organisation reconditionnement vélo lean conseil adaptabilité réinvention B2B] },
     { id: "N°12",
       scale: "PME petite (Enjoué, association, 20-50 personnes)",
       type_orga: "atelier artisanal / travail 100% manuel / 20-50 personnes",
@@ -337,7 +337,7 @@ class ContactsController < ApplicationController
          - SOGEFI (équipementier automobile) — chantier WCM terrain via EFESO
 
       2. PETITES STRUCTURES MANUELLES (TPE / artisanal, 20 à 50 personnes, travail 100% manuel) :
-         - Centaur Bike : atelier d'électrification et de reconditionnement de vélos électriques, B2C+B2B, 250 K€ CA
+         - Centaur Bike : 4 pivots en 4 ans (électrification → reconditionnement → service flottes B2B → conseil Lean ateliers vélos), pic 250 K€ CA — modèle de réinvention permanente
          - Projet Démontés : industrialisation d'un atelier artisanal de reconditionnement de pièces vélos, Lean 5S, SOP
          - Projet RE-PLAY / Enjoué : digitalisation des processus d'un atelier de reconditionnement de jouets (20-50 personnes), UX zero-text, Poka-Yoke numérique
 
