@@ -215,14 +215,16 @@ class ContactsController < ApplicationController
       context: "Projet RE-PLAY · Enjoué · Lyon · association loi 1901 · atelier de reconditionnement artisanal de jouets · 20-50 personnes · travail exclusivement manuel · mission de mécénat de compétences (en cours)",
       titre: "Digitalisation des processus d'un atelier de reconditionnement manuel — UX inclusive zero-text, Poka-Yoke numérique",
       resultat: "Application Rails déployée en production · 6 points de contrôle qualité numérisés · traçabilité AGEC · opérateurs guidés sans texte",
-      tags: %w[tech digital application Rails atelier manuel reconditionnement inclusion qualité traçabilité PME-petite processus poka-yoke] },
+      semantic_scope: "UNIQUEMENT pour : ateliers artisanaux manuels, structures d'insertion ou ESS, reconditionnement, digitalisation d'un processus manuel simple. NE PAS utiliser pour une PME industrielle classique (agroalimentaire, pharma, mécanique…) sous prétexte qu'elle a 20 personnes — le contexte est fondamentalement différent.",
+      tags: %w[tech digital application Rails atelier manuel reconditionnement inclusion qualité traçabilité ESS association poka-yoke zero-text] },
     { id: "N°13",
       scale: "PME petite (atelier artisanal, petite équipe)",
       type_orga: "atelier artisanal / travail 100% manuel",
       context: "Projet Démontés · Centaur Bike · Saint-Fons · atelier de reconditionnement manuel de pièces vélos · petite équipe artisanale",
       titre: "Industrialisation d'un atelier artisanal de reconditionnement : Lean 5S, standardisation des postes, SOP, formation",
       resultat: "16 rôles modélisés · postes 5S organisés · SOP rédigées · tutoriels vidéo · filière réemploi structurée",
-      tags: %w[lean 5S VSM SOP atelier artisanal reconditionnement manuel organisation PME-petite industrialisation éco-circulaire processus] },
+      semantic_scope: "UNIQUEMENT pour : ateliers artisanaux manuels, structures sans process industriel formalisé, reconditionnement, économie circulaire. NE PAS utiliser pour une PME industrielle (agroalimentaire, pharma…) car le type de structure est différent malgré une taille similaire.",
+      tags: %w[lean 5S VSM SOP atelier artisanal reconditionnement manuel organisation industrialisation éco-circulaire processus petite-équipe] },
     { id: "N°14",
       scale: "ETI (GHM, 500 personnes)",
       type_orga: "industrie lourde / fonderie",
@@ -370,7 +372,7 @@ class ContactsController < ApplicationController
         4. Pour les autres défis : cherche d'abord par TYPE DE DÉFI (productivité, absentéisme, management, RH, WCM, CAPEX…)
         4. Croise avec le contexte entreprise (secteur + taille) pour valider la pertinence
         5. Si le secteur est différent (BTP, logistique, finance, santé hors pharma, services…) → cite par TYPE DE DÉFI, précise brièvement "dans un contexte industriel" — NE PAS forcer une analogie sectorielle
-        6. Si petite structure manuelle ou atelier artisanal → cite N°12 ou N°13
+        6. Si atelier artisanal / reconditionnement / ESS / structure sans process industriel formalisé → cite N°12 ou N°13. NE PAS les citer pour une PME industrielle classique (agro, pharma, mécanique…) même si elle a 20 personnes — vérifier le type de structure, pas seulement la taille
         7. Si aucune réalisation ne correspond vraiment → acquiescement simple sans forcer
       → QUESTION 2 : "Avez-vous déjà essayé des approches pour y remédier ?"
 
