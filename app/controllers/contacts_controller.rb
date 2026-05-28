@@ -234,7 +234,49 @@ class ContactsController < ApplicationController
       context: "STMicroelectronics (GE mondial, semi-conducteurs) · site Crolles · 5 000 personnes sur site · salle blanche · production de semi-conducteurs",
       titre: "Management d'une équipe maintenance postée en salle blanche — TPM",
       resultat: "120 K€/an sur durée de vie équipements · 6 opérateurs managés · processus TPM structurés",
-      tags: %w[semi-conducteurs maintenance TPM salle-blanche équipe-postée industrie-haute-tech GE] }
+      tags: %w[semi-conducteurs maintenance TPM salle-blanche équipe-postée industrie-haute-tech GE] },
+    { id: "N°16",
+      scale: "PME-site / filiale GE (Campbell Soup Co.)",
+      type_orga: "usine industrielle automatisée",
+      context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · agroalimentaire · 100 personnes",
+      titre: "Refonte du management de proximité — formation et alignement des chefs d'équipe",
+      resultat: "Managers alignés · ambiance assainie · 0 tension syndicale · montée en compétences interne",
+      tags: %w[agro management formation chefs-équipe alignement DDS animation-terrain IRP développement-managers coaching] },
+    { id: "N°17",
+      scale: "ETI/GE (SOGEFI, équipementier automobile)",
+      type_orga: "industrie manufacturière / forge et traitement de surface",
+      context: "SOGEFI (équipementier automobile, fabricant de barres de suspension) · mission EFESO Consulting · industrie automobile",
+      titre: "Chantier WCM sur grenailleuse — groupe de travail pluridisciplinaire",
+      resultat: "43 K€ économisés sur 3 mois · CAPEX 4 K€ · remise au standard · équipement fiabilisé",
+      tags: %w[auto automobile WCM chantier amélioration-continue pluridisciplinaire fiabilité équipement maintenance TPM forge traitement-surface] },
+    { id: "N°18",
+      scale: "PME-site / filiale GE (Campbell Soup Co.)",
+      type_orga: "usine industrielle automatisée",
+      context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · agroalimentaire · 100 personnes",
+      titre: "Réduction de la consommation MO cariste — méthode ECRS",
+      resultat: "−3 ETP intérimaires · dimensionnement accepté sans conflit social · ECRS appliqué",
+      tags: %w[agro ECRS MO optimisation-effectifs logistique-interne manutention productivité lean intérimaires] },
+    { id: "N°19",
+      scale: "ETI (CENEXI, 400p, 3 sites)",
+      type_orga: "usine industrielle process continu",
+      context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes · lignes de remplissage aseptiques",
+      titre: "Mise en place de nouveaux horaires 3×8 — négociation IRP et volontariat",
+      resultat: "−10 ETP intérimaires · volume maintenu · accord IRP signé · démarrage sur volontariat",
+      tags: %w[pharma horaires organisation 3x8 IRP négociation-sociale intérimaires changement volontariat] },
+    { id: "N°20",
+      scale: "ETI (CENEXI, 400p, 3 sites)",
+      type_orga: "usine industrielle process continu",
+      context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes",
+      titre: "Mise en place de la classification Leem et minima de salaire — fidélisation des opérateurs qualifiés",
+      resultat: "Classification définie · minima salaires validés Direction · fidélisation renforcée en ZAC",
+      tags: %w[pharma RH classification salaire fidélisation compétences convention-collective social emploi recrutement] },
+    { id: "N°21",
+      scale: "GE-site / filiale GE (STMicroelectronics, GE mondial)",
+      type_orga: "industrie de haute technologie / salle blanche",
+      context: "STMicroelectronics (GE mondial, semi-conducteurs) · site Crolles · 5 000 personnes · équipe postée 2×8 · salle blanche",
+      titre: "Création d'un outil de passage de consignes en équipe postée",
+      resultat: "Communication inter-équipes établie · problèmes récurrents tracés · bottleneck réduit",
+      tags: %w[semi-conducteurs communication outil-digital passage-de-consignes équipe-postée traçabilité information partage] }
   ].freeze
 
   def build_system_prompt(themes, sector = nil, size = nil)
@@ -306,11 +348,13 @@ class ContactsController < ApplicationController
 
       [APRÈS RÉPONSE 1 — défi connu]
       → Si la réponse est vague ou incomplète : demande une précision, puis ajoute ##CLARIFY## sur la dernière ligne.
-      → Si la réponse est claire : ÉVALUE si une réalisation dont le contexte est proche peut être citée.
-        • Croise le défi avec le contexte entreprise (si disponible) pour trouver la réalisation la plus pertinente.
-        • Si le visiteur est une petite structure manuelle ou un atelier artisanal (TPE, 20-50p) → cite N°12 ou N°13.
-        • Si le visiteur est une ETI ou GE industrielle → cite une réalisation N°01 à N°10 pertinente.
-        • Si aucune réalisation ne correspond → acquiescement simple.
+      → Si la réponse est claire : ÉVALUE si une réalisation pertinente peut être citée, en suivant cette logique :
+        1. Cherche d'abord par TYPE DE DÉFI (productivité, absentéisme, management, RH, digital, WCM, CAPEX…)
+        2. Croise ensuite avec le contexte entreprise (secteur + taille) pour valider la pertinence
+        3. Si le secteur du visiteur est connu de Cyrille → cite une réalisation sectorielle proche
+        4. Si le secteur est différent (BTP, logistique, finance, santé hors pharma, services…) → cite une réalisation par TYPE DE DÉFI uniquement, en précisant brièvement "dans un contexte industriel différent" — NE PAS forcer une analogie sectorielle
+        5. Si une petite structure manuelle ou atelier artisanal → cite N°12 ou N°13
+        6. Si aucune réalisation ne correspond vraiment → acquiescement simple sans forcer
       → QUESTION 2 : "Avez-vous déjà essayé des approches pour y remédier ?"
 
       [APRÈS RÉPONSE 2 — approches connues]
@@ -342,6 +386,7 @@ class ContactsController < ApplicationController
       - Pour un atelier artisanal ou une TPE, utilise l'expérience Démontés (N°13) ou RE-PLAY/Enjoué (N°12) qui concernent de vraies équipes de 20-50 personnes. Centaur Bike (N°11) = Cyrille seul, 1-3 personnes max — ne PAS l'utiliser comme référence d'équipe de 20 personnes
       - INTERDIT de confondre l'absentéisme (arrêts maladie, présence au travail) avec un défi de productivité (faire autant ou plus avec moins de personnes). Ce sont deux problèmes fondamentalement différents. La réalisation N°06 (absentéisme CENEXI) ne s'applique PAS à un défi de productivité, de capacité ou de départs en retraite
       - Ne jamais inventer ni extrapoler des chiffres (effectifs, CA, résultats) qui ne figurent pas explicitement dans les réalisations
+      - SECTEUR INCONNU : si le visiteur est dans un secteur où Cyrille n'a pas opéré (BTP, logistique, finance, distribution, santé hors pharma, IT, services…), NE PAS forcer une analogie sectorielle. Citer une réalisation par type de défi similaire en précisant "dans un contexte industriel, mais le défi est comparable". C'est plus honnête et plus crédible qu'une comparaison forcée.
     PROMPT
   end
 
