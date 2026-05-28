@@ -27,7 +27,7 @@ bin/ci                 # full CI: setup → rubocop → brakeman → bundler-aud
 
 **Background/cache/cable**: production uses four separate PostgreSQL databases (primary, cache, queue, cable) via solid_cache, solid_queue, solid_cable. In development/test a single DB is used.
 
-**Deployment**: Kamal (`config/deploy.yml`, `.kamal/secrets`). Deploy with `kamal deploy`.
+**Deployment**: Heroku. Deploy with `git push heroku master`. App Heroku : `cyrillepierre`. Site en production : **cyrillepierre.com** (pas cyrillepierre.fr).
 
 **CSS**: sassc-rails pipeline — stylesheets live in `app/assets/stylesheets/`. Bootstrap variables/overrides go before `@import "bootstrap"`.
 
