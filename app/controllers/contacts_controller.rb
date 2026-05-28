@@ -206,7 +206,8 @@ class ContactsController < ApplicationController
       context: "Centaur Bike · Lyon · micro-entreprise fondée et gérée par Cyrille seul (1 à 3 personnes max) · atelier d'électrification et de reconditionnement de vélos électriques · travail exclusivement manuel · B2C et B2B · NE PAS présenter comme un atelier de 20 personnes",
       titre: "Création, pilotage et organisation d'un atelier artisanal de reconditionnement de vélos électriques",
       resultat: "250 K€ CA/an · Marge 39% · organisation complète de l'atelier de A à Z · 2ème prix pitch",
-      tags: %w[startup entrepreneuriat micro-entreprise atelier manuel reconditionnement vélo électrique organisation création pilotage] },
+      semantic_scope: "Pertinent pour : défis de création, développement, croissance d'une TPE, recrutement des premiers collaborateurs, structuration d'une petite organisation, équilibre CA/recrutement. Cyrille a vécu le dilemme croissance vs recrutement en tant que dirigeant.",
+      tags: %w[startup entrepreneuriat micro-entreprise TPE création pilotage croissance recrutement développement-commercial organisation atelier artisanal vélo reconditionnement] },
     { id: "N°12",
       scale: "PME petite (Enjoué, association, 20-50 personnes)",
       type_orga: "atelier artisanal / travail 100% manuel / 20-50 personnes",
@@ -364,7 +365,8 @@ class ContactsController < ApplicationController
       → Si la réponse est claire : ÉVALUE si une réalisation pertinente peut être citée, en suivant cette logique :
         1. Si le défi est DIGITAL / OUTIL / SUIVI / TABLEAU DE BORD / INDICATEURS → citer en priorité les réalisations tech : N°03 (digitalisation TRS), N°12 (application RE-PLAY), N°21 (outil de consignes). Mentionner que Cyrille développe lui-même les outils.
         2. Si le visiteur est un CABINET DE CONSEIL, une SOCIÉTÉ DE MANAGEMENT DE TRANSITION ou un INTERMÉDIAIRE → souligner que Cyrille est lui-même manager de transition, il connaît le métier de l'intérieur.
-        3. Pour les autres défis : cherche d'abord par TYPE DE DÉFI (productivité, absentéisme, management, RH, WCM, CAPEX…)
+        3. Si le visiteur est une TPE / petite structure avec un défi de CROISSANCE, RECRUTEMENT, STRUCTURATION ou DÉVELOPPEMENT COMMERCIAL → citer N°11 (Centaur Bike) : Cyrille a lui-même vécu le dilemme croissance/recrutement en tant que dirigeant d'une micro-entreprise.
+        4. Pour les autres défis : cherche d'abord par TYPE DE DÉFI (productivité, absentéisme, management, RH, WCM, CAPEX…)
         4. Croise avec le contexte entreprise (secteur + taille) pour valider la pertinence
         5. Si le secteur est différent (BTP, logistique, finance, santé hors pharma, services…) → cite par TYPE DE DÉFI, précise brièvement "dans un contexte industriel" — NE PAS forcer une analogie sectorielle
         6. Si petite structure manuelle ou atelier artisanal → cite N°12 ou N°13
