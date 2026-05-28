@@ -1081,17 +1081,53 @@
               </linearGradient>
             </defs>
             <rect width="480" height="200" fill="#050a15"/>
-            <!-- Scène amphithéâtre -->
-            <ellipse cx="240" cy="165" rx="200" ry="20" fill="rgba(0,212,255,0.04)" stroke="rgba(0,212,255,0.1)" stroke-width="1"/>
-            <!-- Rangées public -->
-            <text x="100" y="130" text-anchor="middle" font-size="10">👥👥👥👥👥</text>
-            <text x="200" y="115" text-anchor="middle" font-size="10">👥👥👥👥👥👥</text>
-            <text x="310" y="130" text-anchor="middle" font-size="10">👥👥👥👥👥</text>
-            <!-- Scène -->
-            <rect x="165" y="50" width="150" height="55" rx="6" fill="rgba(139,92,246,0.06)" stroke="rgba(139,92,246,0.2)" stroke-width="1"/>
-            <text x="240" y="73" text-anchor="middle" font-size="20">🎤</text>
-            <text x="240" y="93" text-anchor="middle" fill="#8b5cf6" font-size="9" font-family="sans-serif">COMEX France · scène</text>
-            <text x="240" y="175" text-anchor="middle" fill="url(#g25)" font-size="12" font-weight="bold" font-family="sans-serif">400 salariés · compliment PDG</text>
+            <%# Guides arc amphithéâtre (bandes légères sous chaque rangée) %>
+            <path d="M30,112 Q240,98 450,112"  stroke="rgba(148,163,184,0.07)" fill="none" stroke-width="16"/>
+            <path d="M12,85  Q240,70 468,85"   stroke="rgba(148,163,184,0.05)" fill="none" stroke-width="16"/>
+            <path d="M4,57   Q240,41 476,57"   stroke="rgba(148,163,184,0.04)" fill="none" stroke-width="16"/>
+            <path d="M0,28   Q240,11 480,28"   stroke="rgba(148,163,184,0.03)" fill="none" stroke-width="16"/>
+            <%# Rangée 1 (avant) : 5 personnes %>
+            <text x="88"  y="108" text-anchor="middle" font-size="13">👤</text>
+            <text x="164" y="106" text-anchor="middle" font-size="13">👤</text>
+            <text x="240" y="105" text-anchor="middle" font-size="13">👤</text>
+            <text x="316" y="106" text-anchor="middle" font-size="13">👤</text>
+            <text x="392" y="108" text-anchor="middle" font-size="13">👤</text>
+            <%# Rangée 2 : 7 personnes %>
+            <text x="44"  y="82" text-anchor="middle" font-size="12">👤</text>
+            <text x="108" y="80" text-anchor="middle" font-size="12">👤</text>
+            <text x="172" y="78" text-anchor="middle" font-size="12">👤</text>
+            <text x="240" y="77" text-anchor="middle" font-size="12">👤</text>
+            <text x="308" y="78" text-anchor="middle" font-size="12">👤</text>
+            <text x="372" y="80" text-anchor="middle" font-size="12">👤</text>
+            <text x="436" y="82" text-anchor="middle" font-size="12">👤</text>
+            <%# Rangée 3 : 9 personnes %>
+            <text x="20"  y="55" text-anchor="middle" font-size="11">👤</text>
+            <text x="75"  y="53" text-anchor="middle" font-size="11">👤</text>
+            <text x="130" y="51" text-anchor="middle" font-size="11">👤</text>
+            <text x="185" y="50" text-anchor="middle" font-size="11">👤</text>
+            <text x="240" y="49" text-anchor="middle" font-size="11">👤</text>
+            <text x="295" y="50" text-anchor="middle" font-size="11">👤</text>
+            <text x="350" y="51" text-anchor="middle" font-size="11">👤</text>
+            <text x="405" y="53" text-anchor="middle" font-size="11">👤</text>
+            <text x="460" y="55" text-anchor="middle" font-size="11">👤</text>
+            <%# Rangée 4 (fond) : 11 personnes %>
+            <text x="14"  y="27" text-anchor="middle" font-size="10">👤</text>
+            <text x="58"  y="25" text-anchor="middle" font-size="10">👤</text>
+            <text x="102" y="23" text-anchor="middle" font-size="10">👤</text>
+            <text x="147" y="22" text-anchor="middle" font-size="10">👤</text>
+            <text x="193" y="21" text-anchor="middle" font-size="10">👤</text>
+            <text x="240" y="20" text-anchor="middle" font-size="10">👤</text>
+            <text x="287" y="21" text-anchor="middle" font-size="10">👤</text>
+            <text x="333" y="22" text-anchor="middle" font-size="10">👤</text>
+            <text x="378" y="23" text-anchor="middle" font-size="10">👤</text>
+            <text x="422" y="25" text-anchor="middle" font-size="10">👤</text>
+            <text x="466" y="27" text-anchor="middle" font-size="10">👤</text>
+            <%# Scène centrée en bas %>
+            <rect x="170" y="120" width="140" height="38" rx="6" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.28)" stroke-width="1.5"/>
+            <text x="240" y="138" text-anchor="middle" font-size="16">🎤</text>
+            <text x="240" y="152" text-anchor="middle" fill="#8b5cf6" font-size="9" font-family="sans-serif">COMEX France · scène</text>
+            <%# Texte résultat : 20px de marge avec le bas de la scène (y=158) %>
+            <text x="240" y="178" text-anchor="middle" fill="url(#g25)" font-size="12" font-weight="bold" font-family="sans-serif">400 salariés · compliment PDG</text>
             <line x1="0" y1="192" x2="480" y2="192" stroke="rgba(0,212,255,0.08)" stroke-width="1"/>
           </svg>
         </div>
