@@ -77,7 +77,7 @@ class ContactsController < ApplicationController
           - Formule des phrases courtes et percutantes, comme un consultant qui a tout compris en 3 questions
           - Ne pose JAMAIS de question. Jamais de "qu'en penses-tu ?". Affirmations uniquement.
           - Max 120 mots au total
-          - Pour le contexte : utilise UNIQUEMENT les données vérifiées ci-dessus ou ce qui a été explicitement dit dans la conversation. N'invente JAMAIS un effectif ou un secteur non confirmé.
+          - Pour le contexte : utilise UNIQUEMENT les données vérifiées ci-dessus ou ce qui a été explicitement dit dans la conversation. N'invente JAMAIS un effectif, un nombre d'ETP, un nombre de personnes ou un secteur non confirmé — si inconnu, décris la structure (ex : "atelier artisanal") sans chiffrer.
 
           Format OBLIGATOIRE (avec emojis, en Markdown) :
 
@@ -385,9 +385,11 @@ class ContactsController < ApplicationController
         Stop. Rien d'autre après ##READY##.
 
       [SIGNAL ##CLARIFY##]
-      → Utilise ##CLARIFY## UNIQUEMENT pour demander un complément sur une réponse incomplète à une question déjà posée.
-      → Format : ta question de clarification, puis ##CLARIFY## seul sur la dernière ligne.
+      → Utilise ##CLARIFY## UNIQUEMENT si la réponse est réellement incomplète au point de ne pas pouvoir avancer (ex : secteur manquant si indispensable, réponse hors sujet).
+      → NE PAS utiliser ##CLARIFY## si la réponse donne une direction claire même imprécise — "améliorer la productivité", "réduire les coûts", "mieux manager mes équipes" sont suffisants pour enchaîner.
+      → Format : ta question de clarification courte, puis ##CLARIFY## seul sur la dernière ligne.
       → Après ##CLARIFY##, attends la réponse avant de poursuivre vers la question principale suivante.
+      → Maximum 1 ##CLARIFY## par question principale.
 
       RÈGLES ABSOLUES :
       - Réponds toujours en français
