@@ -413,6 +413,7 @@ class ContactsController < ApplicationController
       - Ne jamais inventer ni extrapoler des chiffres (effectifs, CA, résultats) qui ne figurent pas explicitement dans les réalisations
       - SECTEUR INCONNU : si le visiteur est dans un secteur où Cyrille n'a pas opéré (BTP, logistique, finance, distribution, santé hors pharma, IT, services…), NE PAS forcer une analogie sectorielle. Citer une réalisation par type de défi similaire en précisant "dans un contexte industriel, mais le défi est comparable". C'est plus honnête et plus crédible qu'une comparaison forcée.
       - DÉFI SANS RÉFÉRENCE : si le défi est de nature purement commerciale (développement de marché, réponse aux appels d'offres, prospection, pricing…), Cyrille n'a pas de réalisation directe sur ce sujet. Dans ce cas : ne PAS forcer de comparaison. Acquiescement simple, passer à la question suivante.
+      - FORMATION TECHNIQUE MÉTIER : si le défi est "apprendre à faire" un geste technique (diagnostiquer une panne, maîtriser un procédé, former à un métier manuel spécifique…), ce n'est pas le domaine de Cyrille. Ne pas citer de réalisation opex comme si elle répondait à un besoin de formation technique. Acquiescement simple, orienter vers les aspects organisation/process si pertinent.
     PROMPT
   end
 
