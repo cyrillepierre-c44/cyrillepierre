@@ -55,7 +55,7 @@
   .cv-btn:hover { background: #c9a961; color: #1a2332; }
   .cv-btn.paper { background: white; color: #555; border-color: #aaa; }
   .cv-btn.paper:hover { background: #f0f0f0; }
-  body.paper-mode .cv-btn.paper { background: #1a2332; color: white; border-color: #1a2332; }
+  body.paper-mode .cv-btn.paper { background: #1a2332; color: #c9a961; border-color: #c9a961; }
 
   /* VERSION PAPIER */
   body.paper-mode .left {
@@ -347,6 +347,7 @@
   <a href="/" class="cv-btn">← Accueil</a>
   <button class="cv-btn" onclick="window.print()">⎙ Imprimer</button>
   <button class="cv-btn paper" onclick="togglePaper(this)">🖨 Version papier</button>
+  <button class="cv-btn" onclick="shareCV(this)">↗ Partager</button>
 </div>
 <script>
   function togglePaper(btn) {
@@ -356,6 +357,28 @@
       : '🖨 Version papier';
   }
 
+  function shareCV(btn) {
+    var isPaper = document.body.classList.contains('paper-mode');
+    var url = window.location.origin + window.location.pathname + (isPaper ? '?mode=papier' : '');
+    if (navigator.share) {
+      navigator.share({ title: 'CV — Cyrille PIERRE', url: url });
+    } else {
+      navigator.clipboard.writeText(url).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = '✓ Lien copié !';
+        setTimeout(function() { btn.textContent = orig; }, 2000);
+      });
+    }
+  }
+
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'papier') {
+      document.body.classList.add('paper-mode');
+      var paperBtn = document.querySelector('.cv-btn.paper');
+      if (paperBtn) paperBtn.textContent = '🎨 Version couleur';
+    }
+  })();
 </script>
 <div class="page-wrapper">
 <div class="page">
