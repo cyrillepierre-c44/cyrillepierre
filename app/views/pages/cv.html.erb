@@ -25,62 +25,37 @@
 
   .btn-bar {
     position: fixed;
-    bottom: 28px;
-    right: 28px;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: column;
     gap: 8px;
     z-index: 100;
   }
 
-  .print-btn {
+  .cv-btn {
+    display: block;
+    width: 160px;
     background: #1a2332;
     color: #c9a961;
     border: 1.5px solid #c9a961;
     font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    padding: 10px 20px;
+    padding: 10px 0;
     border-radius: 4px;
     cursor: pointer;
     letter-spacing: 0.05em;
-    transition: background 0.2s, color 0.2s;
-  }
-  .print-btn:hover { background: #c9a961; color: #1a2332; }
-
-  .toggle-paper-btn {
-    background: white;
-    color: #555;
-    border: 1.5px solid #aaa;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    letter-spacing: 0.04em;
-    transition: background 0.2s, color 0.2s;
-  }
-  .toggle-paper-btn:hover { background: #f0f0f0; }
-
-  .home-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #1a2332;
-    color: #c9a961;
-    border: 1.5px solid #c9a961;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 7px 14px;
-    border-radius: 4px;
+    text-align: center;
     text-decoration: none;
-    letter-spacing: 0.05em;
-    z-index: 100;
+    box-sizing: border-box;
     transition: background 0.2s, color 0.2s;
   }
-  .home-btn:hover { background: #c9a961; color: #1a2332; }
+  .cv-btn:hover { background: #c9a961; color: #1a2332; }
+  .cv-btn.paper { background: white; color: #555; border-color: #aaa; }
+  .cv-btn.paper:hover { background: #f0f0f0; }
+  body.paper-mode .cv-btn.paper { background: #1a2332; color: white; border-color: #1a2332; }
 
   /* VERSION PAPIER */
   body.paper-mode .left {
@@ -102,19 +77,21 @@
   body.paper-mode .exp-date { color: #555; }
   body.paper-mode .section-title { color: #1a2332; border-bottom-color: #aaa; }
   body.paper-mode .sections-divider { border-top-color: #ccc; }
-  body.paper-mode .toggle-paper-btn { background: #1a2332; color: white; border-color: #1a2332; }
 
   @media (max-width: 829px) {
     html, body { background: #f0f0f0; overflow-x: hidden; }
     .page-wrapper { padding: 0; }
     .page { transform-origin: top left; }
     .btn-bar {
+      left: 50%;
+      top: auto;
       bottom: 16px;
-      right: 50%;
-      transform: translateX(50%);
-      flex-direction: row;
-      gap: 10px;
+      transform: translateX(-50%);
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
     }
+    .cv-btn { width: 200px; }
   }
 
   @page {
@@ -137,10 +114,7 @@
       margin: 0 !important;
       padding: 0 !important;
     }
-    .print-btn { display: none !important; }
-    .toggle-paper-btn { display: none !important; }
     .btn-bar { display: none !important; }
-    .home-btn { display: none !important; }
     .page-wrapper {
       height: 1123px !important;
       min-height: 0 !important;
@@ -369,10 +343,10 @@
 </style>
 </head>
 <body>
-<a href="/" class="home-btn">← Accueil</a>
 <div class="btn-bar">
-  <button class="print-btn" onclick="window.print()">⎙ Imprimer</button>
-  <button class="toggle-paper-btn" onclick="togglePaper(this)">🖨 Version papier</button>
+  <a href="/" class="cv-btn">← Accueil</a>
+  <button class="cv-btn" onclick="window.print()">⎙ Imprimer</button>
+  <button class="cv-btn paper" onclick="togglePaper(this)">🖨 Version papier</button>
 </div>
 <script>
   function togglePaper(btn) {
@@ -381,6 +355,7 @@
       ? '🎨 Version couleur'
       : '🖨 Version papier';
   }
+
 </script>
 <div class="page-wrapper">
 <div class="page">
