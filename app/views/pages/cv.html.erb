@@ -109,34 +109,43 @@
       print-color-adjust: exact !important;
     }
     html, body {
-      width: 794px;
-      height: 1123px;
-      overflow: hidden;
+      width: 794px !important;
+      height: 1123px !important;
+      min-height: 0 !important;
+      max-height: 1123px !important;
+      overflow: hidden !important;
       background: white;
+      margin: 0 !important;
+      padding: 0 !important;
     }
-    .print-btn { display: none; }
-    .toggle-paper-btn { display: none; }
+    .print-btn { display: none !important; }
+    .toggle-paper-btn { display: none !important; }
+    .btn-bar { display: none !important; }
     .page-wrapper {
       height: 1123px !important;
-      overflow: hidden;
-      padding: 0;
+      min-height: 0 !important;
+      max-height: 1123px !important;
+      overflow: hidden !important;
+      padding: 0 !important;
+      margin: 0 !important;
     }
     .page {
-      width: 794px;
-      height: 1123px;
-      min-height: unset;
-      overflow: hidden;
-      box-shadow: none;
+      width: 794px !important;
+      height: 1123px !important;
+      min-height: 0 !important;
+      max-height: 1123px !important;
+      overflow: hidden !important;
+      box-shadow: none !important;
       transform: none !important;
-      margin-left: 0 !important;
+      margin: 0 !important;
     }
     .left {
-      height: 1123px;
-      min-height: unset;
-      overflow: hidden;
+      height: 1123px !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
     }
     .right {
-      overflow: hidden;
+      overflow: hidden !important;
     }
   }
 
@@ -600,6 +609,13 @@
 
   window.addEventListener('beforeprint', clearScale);
   window.addEventListener('afterprint',  scalePage);
+
+  var printMQ = window.matchMedia('print');
+  if (printMQ.addEventListener) {
+    printMQ.addEventListener('change', function(mq) {
+      mq.matches ? clearScale() : scalePage();
+    });
+  }
 </script>
 </body>
 </html>
