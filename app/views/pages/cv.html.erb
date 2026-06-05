@@ -104,6 +104,10 @@
   }
 
   @media print {
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
     html, body {
       width: 794px;
       height: 1123px;
@@ -112,12 +116,19 @@
     }
     .print-btn { display: none; }
     .toggle-paper-btn { display: none; }
+    .page-wrapper {
+      height: 1123px !important;
+      overflow: hidden;
+      padding: 0;
+    }
     .page {
       width: 794px;
       height: 1123px;
       min-height: unset;
       overflow: hidden;
       box-shadow: none;
+      transform: none !important;
+      margin-left: 0 !important;
     }
     .left {
       height: 1123px;
