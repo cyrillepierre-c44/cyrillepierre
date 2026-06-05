@@ -63,6 +63,25 @@
   }
   .toggle-paper-btn:hover { background: #f0f0f0; }
 
+  .home-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #1a2332;
+    color: #c9a961;
+    border: 1.5px solid #c9a961;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 4px;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    z-index: 100;
+    transition: background 0.2s, color 0.2s;
+  }
+  .home-btn:hover { background: #c9a961; color: #1a2332; }
+
   /* VERSION PAPIER */
   body.paper-mode .left {
     background: #f2f2f2;
@@ -121,6 +140,7 @@
     .print-btn { display: none !important; }
     .toggle-paper-btn { display: none !important; }
     .btn-bar { display: none !important; }
+    .home-btn { display: none !important; }
     .page-wrapper {
       height: 1123px !important;
       min-height: 0 !important;
@@ -349,6 +369,7 @@
 </style>
 </head>
 <body>
+<a href="/" class="home-btn">← Accueil</a>
 <div class="btn-bar">
   <button class="print-btn" onclick="window.print()">⎙ Imprimer</button>
   <button class="toggle-paper-btn" onclick="togglePaper(this)">🖨 Version papier</button>
