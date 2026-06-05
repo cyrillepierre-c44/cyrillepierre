@@ -570,27 +570,36 @@
 </div><!-- fin page-wrapper -->
 
 <script>
+  var page    = document.querySelector('.page');
+  var wrapper = document.querySelector('.page-wrapper');
+
   function scalePage() {
-    var page = document.querySelector('.page');
-    var wrapper = document.querySelector('.page-wrapper');
     var vw = window.innerWidth;
     if (vw < 830) {
       var scale = (vw - 8) / 794;
-      page.style.transform = 'scale(' + scale + ')';
+      page.style.transform       = 'scale(' + scale + ')';
       page.style.transformOrigin = 'top left';
-      page.style.marginLeft = '4px';
-      wrapper.style.height = (page.offsetHeight * scale) + 'px';
-      wrapper.style.overflow = 'hidden';
+      page.style.marginLeft      = '4px';
+      wrapper.style.height       = (page.offsetHeight * scale) + 'px';
+      wrapper.style.overflow     = 'hidden';
     } else {
-      page.style.transform = '';
-      page.style.transformOrigin = '';
-      page.style.marginLeft = '';
-      wrapper.style.height = '';
-      wrapper.style.overflow = '';
+      clearScale();
     }
   }
+
+  function clearScale() {
+    page.style.transform       = '';
+    page.style.transformOrigin = '';
+    page.style.marginLeft      = '';
+    wrapper.style.height       = '';
+    wrapper.style.overflow     = '';
+  }
+
   document.addEventListener('DOMContentLoaded', scalePage);
   window.addEventListener('resize', scalePage);
+
+  window.addEventListener('beforeprint', clearScale);
+  window.addEventListener('afterprint',  scalePage);
 </script>
 </body>
 </html>
