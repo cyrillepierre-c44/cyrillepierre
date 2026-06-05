@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get "leadership-transformation", to: "pages#leadership",   as: :leadership
   get "tech-ia",                   to: "pages#tech",         as: :tech
   get "realisations",              to: "pages#realisations",  as: :realisations
+  get "cv",                        to: "pages#cv",            as: :cv
 
   get  "contact",           to: "contacts#new",       as: :contact
   post "contact",           to: "contacts#create"
