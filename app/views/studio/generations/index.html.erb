@@ -1,0 +1,34 @@
+<% content_for :title, "Studio — Cyrille PIERRE" %>
+
+<section class="service-hero">
+  <div class="container">
+    <span class="section-eyebrow">Studio</span>
+    <h1>Mes <span class="gradient-text">générations</span></h1>
+    <p class="service-hero-sub">Posts LinkedIn, lettres/propositions et actus du site, générés par IA.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <div class="studio-actions studio-actions--top">
+    <%= link_to "+ Nouvelle génération", new_studio_generation_path, class: "btn-cp-primary" %>
+  </div>
+
+  <% if @generations.empty? %>
+    <p class="studio-empty">Aucune génération pour le moment.</p>
+  <% else %>
+    <div class="studio-list">
+      <% @generations.each do |generation| %>
+        <%= link_to studio_generation_path(generation), class: "studio-list-item" do %>
+          <div class="studio-list-item-main">
+            <span class="studio-badge studio-badge--<%= generation.kind %>"><%= generation.kind.humanize %></span>
+            <span class="studio-list-item-title"><%= generation.title.presence || "(sans titre)" %></span>
+          </div>
+          <div class="studio-list-item-meta">
+            <span class="studio-badge studio-badge--status-<%= generation.status %>"><%= generation.status.humanize %></span>
+            <span class="studio-list-item-date"><%= generation.created_at.strftime("%d/%m/%Y %H:%M") %></span>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

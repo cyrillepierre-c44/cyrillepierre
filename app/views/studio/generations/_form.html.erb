@@ -1,0 +1,86 @@
+<%= form_for generation, url: url, html: { multipart: true, data: { controller: "studio-generation" } } do |f| %>
+  <%= render "devise/shared/error_messages", resource: generation %>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">1. Type de contenu</h2>
+    <div class="cf-themes-grid studio-kind-grid">
+      <label class="cf-theme-card">
+        <%= f.radio_button :kind, "linkedin_post", checked: generation.kind.blank? || generation.linkedin_post? %>
+        <div class="cf-theme-inner">
+          <span class="cf-theme-icon">💼</span>
+          <h3 class="cf-theme-title">Post LinkedIn</h3>
+          <p class="cf-theme-desc">Un post court et percutant à partir d'une source</p>
+          <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+        </div>
+      </label>
+
+      <label class="cf-theme-card">
+        <%= f.radio_button :kind, "job_application", checked: generation.job_application? %>
+        <div class="cf-theme-inner">
+          <span class="cf-theme-icon">✉️</span>
+          <h3 class="cf-theme-title">Lettre / Proposition</h3>
+          <p class="cf-theme-desc">Lettre de motivation ou proposition commerciale ciblée</p>
+          <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+        </div>
+      </label>
+
+      <label class="cf-theme-card">
+        <%= f.radio_button :kind, "site_actu", checked: generation.site_actu? %>
+        <div class="cf-theme-inner">
+          <span class="cf-theme-icon">📰</span>
+          <h3 class="cf-theme-title">Actu du site</h3>
+          <p class="cf-theme-desc">Une actualité publiable sur /actus</p>
+          <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">2. Titre (optionnel)</h2>
+    <div class="cf-field">
+      <%= f.text_field :title, class: "cf-input", placeholder: "Donne un nom à cette génération" %>
+    </div>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">3. Source</h2>
+
+    <div class="studio-source-tabs" role="tablist">
+      <button type="button" class="studio-source-tab studio-source-tab--active"
+              data-studio-generation-target="tabButton" data-source="text"
+              data-action="click->studio-generation#selectSource">Texte collé</button>
+      <button type="button" class="studio-source-tab"
+              data-studio-generation-target="tabButton" data-source="file"
+              data-action="click->studio-generation#selectSource">Fichier</button>
+      <button type="button" class="studio-source-tab"
+              data-studio-generation-target="tabButton" data-source="url"
+              data-action="click->studio-generation#selectSource">URL</button>
+    </div>
+
+    <div class="cf-field studio-source-panel" data-studio-generation-target="sourcePanel" data-source="text">
+      <%= f.text_area :input_text, class: "cf-input cf-textarea", rows: 8, placeholder: "Colle ici le texte source (brief, offre d'emploi, notes…)" %>
+    </div>
+
+    <div class="cf-field studio-source-panel d-none" data-studio-generation-target="sourcePanel" data-source="file">
+      <%= f.file_field :source_file, class: "cf-input", accept: ".txt,.md,.pdf" %>
+      <p class="studio-field-hint">Formats acceptés : .txt, .md, .pdf — 10 Mo maximum</p>
+    </div>
+
+    <div class="cf-field studio-source-panel d-none" data-studio-generation-target="sourcePanel" data-source="url">
+      <%= f.url_field :input_url, class: "cf-input", placeholder: "https://exemple.com/offre-emploi" %>
+    </div>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">4. Instructions complémentaires (optionnel)</h2>
+    <div class="cf-field">
+      <%= f.text_area :extra_instructions, class: "cf-input cf-textarea", rows: 3, placeholder: "Ton à adopter, points à mettre en avant…" %>
+    </div>
+  </div>
+
+  <div class="studio-actions">
+    <%= link_to "Annuler", studio_generations_path, class: "btn-cp-outline" %>
+    <%= f.submit submit_label, class: "btn-cp-primary", data: { studio_generation_target: "submitButton", action: "studio-generation#submitting" } %>
+  </div>
+<% end %>

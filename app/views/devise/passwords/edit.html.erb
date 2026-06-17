@@ -1,0 +1,31 @@
+<% content_for :title, "Nouveau mot de passe — Cyrille PIERRE" %>
+
+<section class="studio-auth">
+  <div class="container">
+    <div class="studio-card">
+      <h1 class="studio-card-title">Nouveau mot de passe</h1>
+
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "cf-fields-grid cf-fields-grid--single" }) do |f| %>
+        <%= f.hidden_field :reset_password_token %>
+
+        <div class="cf-field">
+          <label class="cf-label" for="user_password">Nouveau mot de passe<% if @minimum_password_length %> <span class="cf-label-opt"><%= @minimum_password_length %> caractères minimum</span><% end %></label>
+          <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: "cf-input", required: true %>
+        </div>
+
+        <div class="cf-field">
+          <label class="cf-label" for="user_password_confirmation">Confirmer le nouveau mot de passe</label>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "cf-input", required: true %>
+        </div>
+
+        <div class="cf-field">
+          <%= f.submit "Changer mon mot de passe", class: "btn-cp-primary" %>
+        </div>
+      <% end %>
+
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</section>

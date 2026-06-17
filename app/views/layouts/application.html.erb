@@ -60,8 +60,23 @@
               <a class="nav-link <%= 'active' if current_page?(realisations_path) %>" href="<%= realisations_path %>">Réalisations</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link <%= 'active' if current_page?(actus_path) %>" href="<%= actus_path %>">Actus</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link <%= 'active' if current_page?(cv_path) %>" href="<%= cv_path %>">CV</a>
             </li>
+            <% if user_signed_in? %>
+              <li class="nav-item">
+                <a class="nav-link <%= 'active' if current_page?(studio_generations_path) %>" href="<%= studio_generations_path %>">Studio</a>
+              </li>
+              <li class="nav-item">
+                <%= button_to "Déconnexion", destroy_user_session_path, method: :delete, class: "nav-link btn-link-as-nav", form: { class: "d-inline" } %>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <a class="nav-link" href="<%= new_user_session_path %>">Connexion</a>
+              </li>
+            <% end %>
             <li class="nav-item ms-lg-2">
               <% if current_page?(contact_path) %>
                 <span class="btn-cp-current">
@@ -89,6 +104,9 @@
     <main>
       <% if notice.present? %>
         <div class="alert-flash-notice"><%= notice %></div>
+      <% end %>
+      <% if alert.present? %>
+        <div class="alert-flash-alert"><%= alert %></div>
       <% end %>
       <%= yield %>
 

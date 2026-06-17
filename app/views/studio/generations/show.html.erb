@@ -1,0 +1,66 @@
+<% content_for :title, (@generation.title.presence || "Génération") + " — Studio" %>
+
+<section class="service-hero">
+  <div class="container">
+    <span class="section-eyebrow"><%= @generation.kind.humanize %></span>
+    <h1><%= @generation.title.presence || "Génération sans titre" %></h1>
+  </div>
+</section>
+
+<div class="container pb-5" data-controller="studio-clipboard">
+  <div class="studio-card">
+    <div class="studio-show-toolbar">
+      <span class="studio-badge studio-badge--status-<%= @generation.status %>"><%= @generation.status.humanize %></span>
+
+      <div class="studio-actions">
+        <button type="button" class="btn-cp-outline" data-action="studio-clipboard#copy">
+          Copier
+        </button>
+
+        <%= button_to "Régénérer", regenerate_studio_generation_path(@generation), method: :patch, class: "btn-cp-outline" %>
+
+        <% if policy(@generation).publish? && !@generation.published? %>
+          <%= button_to "Publier sur /actus", publish_studio_generation_path(@generation), method: :patch, class: "btn-cp-primary" %>
+        <% elsif policy(@generation).unpublish? && @generation.published? %>
+          <%= button_to "Dépublier", unpublish_studio_generation_path(@generation), method: :patch, class: "btn-cp-outline" %>
+        <% end %>
+
+        <% if policy(@generation).destroy? %>
+          <%= button_to "Supprimer", studio_generation_path(@generation), method: :delete,
+                         class: "btn-cp-outline studio-btn-danger",
+                         data: { turbo_confirm: "Supprimer cette génération ?" } %>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @generation.output.present? %>
+      <pre class="studio-output" data-studio-clipboard-target="source"><%= @generation.output %></pre>
+    <% else %>
+      <p class="studio-empty">Pas encore de contenu généré.</p>
+    <% end %>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">Sources</h2>
+    <dl class="studio-sources-list">
+      <% if @generation.input_text.present? %>
+        <dt>Texte collé</dt>
+        <dd><%= truncate(@generation.input_text, length: 300) %></dd>
+      <% end %>
+      <% if @generation.input_url.present? %>
+        <dt>URL</dt>
+        <dd><%= @generation.input_url %></dd>
+      <% end %>
+      <% if @generation.source_file.attached? %>
+        <dt>Fichier</dt>
+        <dd><%= @generation.source_file.filename %></dd>
+      <% end %>
+      <% if @generation.extra_instructions.present? %>
+        <dt>Instructions complémentaires</dt>
+        <dd><%= @generation.extra_instructions %></dd>
+      <% end %>
+    </dl>
+  </div>
+
+  <%= link_to "← Retour à la liste", studio_generations_path, class: "studio-back-link" %>
+</div>

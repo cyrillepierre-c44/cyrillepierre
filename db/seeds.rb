@@ -7,3 +7,13 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+if ENV["ADMIN_EMAIL"].present? && ENV["ADMIN_PASSWORD"].present?
+  admin = User.find_or_initialize_by(email: ENV["ADMIN_EMAIL"])
+  admin.password = ENV["ADMIN_PASSWORD"]
+  admin.role = :admin
+  admin.save!
+  puts "Admin user ready: #{admin.email}"
+else
+  puts "Skipping admin seed: set ADMIN_EMAIL and ADMIN_PASSWORD to create one."
+end

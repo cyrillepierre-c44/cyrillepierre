@@ -43,6 +43,14 @@ gem "image_processing", "~> 1.2"
 
 gem "ruby_llm"
 
+# Authentication & authorization for the content studio
+gem "devise"
+gem "pundit"
+# HTML parsing for URL scraping (was only a transitive dependency before)
+gem "nokogiri"
+# Text extraction from uploaded PDF files (pure Ruby, no native dependency)
+gem "pdf-reader"
+
 gem "sprockets-rails"
 gem "bootstrap", "~> 5.3"
 gem "autoprefixer-rails"

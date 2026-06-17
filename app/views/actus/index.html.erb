@@ -1,0 +1,26 @@
+<% content_for :title, "Actus — Cyrille PIERRE" %>
+
+<section class="service-hero">
+  <div class="container">
+    <div class="service-hero-icon">📰</div>
+    <span class="section-eyebrow">Actualités</span>
+    <h1>Mes <span class="gradient-text">Actus</span></h1>
+    <p class="service-hero-sub">Dernières nouvelles et réalisations.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <% if @actus.empty? %>
+    <p class="studio-empty">Aucune actualité publiée pour le moment.</p>
+  <% else %>
+    <div class="actus-grid">
+      <% @actus.each do |actu| %>
+        <%= link_to actu_path(actu), class: "actu-card" do %>
+          <span class="actu-card-date"><%= actu.published_at.strftime("%d/%m/%Y") %></span>
+          <h2 class="actu-card-title"><%= actu.title.presence || "Actualité" %></h2>
+          <p class="actu-card-excerpt"><%= truncate(actu.output, length: 220) %></p>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

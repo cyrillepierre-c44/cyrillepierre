@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users, skip: [:registrations]
   root to: "pages#home"
 
   get "expertise-operationnelle", to: "pages#operations",    as: :operations
@@ -12,6 +13,18 @@ Rails.application.routes.draw do
   post "contact/chat",           to: "contacts#chat",           as: :contact_chat
   post "contact/summarize",      to: "contacts#summarize",      as: :contact_summarize
   post "contact/infer_company",  to: "contacts#infer_company",  as: :contact_infer_company
+
+  resources :actus, only: [:index, :show]
+
+  namespace :studio do
+    resources :generations do
+      member do
+        patch :regenerate
+        patch :publish
+        patch :unpublish
+      end
+    end
+  end
 
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"

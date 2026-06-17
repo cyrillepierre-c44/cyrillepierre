@@ -1,0 +1,13 @@
+<% content_for :title, "Nouvelle génération — Studio" %>
+
+<section class="service-hero">
+  <div class="container">
+    <span class="section-eyebrow">Studio</span>
+    <h1>Nouvelle <span class="gradient-text">génération</span></h1>
+    <p class="service-hero-sub">Choisis un type de contenu, fournis une source, et laisse l'IA rédiger un brouillon.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <%= render "form", generation: @generation, url: studio_generations_path, submit_label: "Générer" %>
+</div>

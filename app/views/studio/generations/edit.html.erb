@@ -1,0 +1,13 @@
+<% content_for :title, "Modifier — Studio" %>
+
+<section class="service-hero">
+  <div class="container">
+    <span class="section-eyebrow">Studio</span>
+    <h1>Modifier la <span class="gradient-text">génération</span></h1>
+    <p class="service-hero-sub">Mets à jour la source puis régénère le contenu si besoin.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <%= render "form", generation: @generation, url: studio_generation_path(@generation), submit_label: "Mettre à jour" %>
+</div>
