@@ -22,6 +22,7 @@ Rails.application.routes.draw do
         patch :regenerate
         patch :publish
         patch :unpublish
+        patch :generate_visual
       end
     end
   end

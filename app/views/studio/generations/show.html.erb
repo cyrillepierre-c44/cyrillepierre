@@ -122,6 +122,35 @@
     <% end %>
   </div>
 
+  <% if @generation.linkedin_post? && @generation.output.present? %>
+    <div class="studio-card">
+      <h2 class="studio-card-subtitle">Visuel</h2>
+
+      <% if @generation.visual.attached? %>
+        <%= image_tag @generation.visual, class: "studio-visual-preview" %>
+      <% else %>
+        <p class="studio-card-sub">Pas encore de visuel généré pour ce post.</p>
+      <% end %>
+
+      <% if policy(@generation).generate_visual? %>
+        <%= form_for @generation, url: generate_visual_studio_generation_path(@generation), method: :patch,
+                      html: { data: { controller: "studio-generation", turbo: false,
+                                      action: "submit->studio-generation#submitting" } } do |f| %>
+          <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
+            <div class="studio-progress-box">
+              <p class="studio-progress-text">Génération du visuel en cours…</p>
+              <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
+              <p class="studio-progress-hint">Ça peut prendre jusqu'à une minute.</p>
+            </div>
+          </div>
+
+          <%= f.submit @generation.visual.attached? ? "Régénérer le visuel" : "Générer un visuel",
+                        class: "btn-cp-outline mt-2", data: { studio_generation_target: "submitButton" } %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
   <div class="studio-card">
     <h2 class="studio-card-subtitle">Sources</h2>
     <dl class="studio-sources-list">

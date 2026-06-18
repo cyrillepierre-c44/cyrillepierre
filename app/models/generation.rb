@@ -4,6 +4,11 @@ class Generation < ApplicationRecord
 
   belongs_to :user
   has_one_attached :source_file
+  has_one_attached :visual
+
+  # Not persisted — a one-off flag from the creation form telling the controller to also
+  # generate a visual right after the text (see Studio::GenerationsController#create).
+  attr_accessor :generate_visual
 
   enum :kind, { linkedin_post: 0, cover_letter: 1, site_actu: 2, commercial_proposal: 3 }
   enum :status, { draft: 0, generated: 1, published: 2 }

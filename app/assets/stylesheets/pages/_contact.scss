@@ -185,6 +185,15 @@
   &:hover:not(:focus) {
     border-color: rgba(0, 212, 255, 0.25);
   }
+
+  // The select's own background is near-transparent (it shows the page behind it), but
+  // browsers don't apply that to the native dropdown popup — it falls back to a light
+  // background while still inheriting our light text color, making unselected options
+  // unreadable. Force an opaque dark background on the options themselves.
+  option {
+    background: var(--cp-bg-card);
+    color: var(--cp-text);
+  }
 }
 
 .cf-textarea {

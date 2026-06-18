@@ -1,7 +1,7 @@
 module Studio
   class GenerationsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_generation, only: %i[show edit update destroy regenerate publish unpublish]
+    before_action :set_generation, only: %i[show edit update destroy regenerate publish unpublish generate_visual]
 
     def index
       @generations = policy_scope(Generation).order(updated_at: :desc)
@@ -18,6 +18,7 @@ module Studio
 
       if @generation.save
         ContentGenerator.call(@generation)
+        VisualGenerator.call(@generation) if generate_visual_requested?
         redirect_to studio_generation_path(@generation), notice: "Contenu généré."
       else
         render :new, status: :unprocessable_entity
@@ -59,6 +60,11 @@ module Studio
       redirect_to studio_generation_path(@generation), notice: "Dépublié."
     end
 
+    def generate_visual
+      VisualGenerator.call(@generation)
+      redirect_to studio_generation_path(@generation), notice: "Visuel généré."
+    end
+
     private
 
     def set_generation
@@ -69,8 +75,12 @@ module Studio
     def generation_params
       params.require(:generation).permit(
         :kind, :title, :input_text, :input_url, :extra_instructions, :source_file, :llm_model, :orientation,
-        :realisation_id, :output
+        :realisation_id, :output, :generate_visual
       )
+    end
+
+    def generate_visual_requested?
+      ActiveModel::Type::Boolean.new.cast(generation_params[:generate_visual])
     end
   end
 end

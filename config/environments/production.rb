@@ -24,8 +24,9 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Heroku's filesystem is ephemeral (wiped on every deploy/restart), so :local would lose
+  # uploaded source files and generated visuals — store them on Cloudinary instead.
+  config.active_storage.service = :cloudinary
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true

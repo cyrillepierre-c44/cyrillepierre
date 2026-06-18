@@ -23,6 +23,10 @@ class GenerationPolicy < ApplicationPolicy
     update?
   end
 
+  def generate_visual?
+    update?
+  end
+
   def publish?
     admin? && record.publishable?
   end

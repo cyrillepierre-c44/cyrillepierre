@@ -5,7 +5,7 @@
 
   <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
     <div class="studio-progress-box">
-      <p class="studio-progress-text">Génération en cours…</p>
+      <p class="studio-progress-text" data-studio-generation-target="progressText">Génération en cours…</p>
       <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
       <p class="studio-progress-hint">Ça peut prendre jusqu'à une minute selon la source fournie.</p>
     </div>
@@ -85,6 +85,15 @@
         sélecteur n'impose un choix que pour les posts générés sans source.
       </p>
     </div>
+
+    <% if local_assigns.fetch(:show_generate_visual_option, false) %>
+      <div class="cf-field cf-field--checkbox">
+        <label>
+          <%= f.check_box :generate_visual %>
+          Générer aussi un visuel juste après le texte
+        </label>
+      </div>
+    <% end %>
   </div>
 
   <div class="studio-card">

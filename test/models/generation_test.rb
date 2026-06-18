@@ -87,6 +87,16 @@ class GenerationTest < ActiveSupport::TestCase
     assert generation.valid?
   end
 
+  test "accepts an attached visual" do
+    generation = build_generation
+    generation.visual.attach(
+      io: StringIO.new("fake png bytes"),
+      filename: "visual.png",
+      content_type: "image/png"
+    )
+    assert generation.visual.attached?
+  end
+
   test "auto-assigns a realisation for a sourceless linkedin post" do
     generation = build_generation
     generation.save!
