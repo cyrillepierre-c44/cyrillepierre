@@ -359,6 +359,32 @@
   margin-bottom: 0.5rem;
 }
 
+.studio-editable-title {
+  cursor: pointer;
+  border-radius: 0.4rem;
+  padding: 0.1rem 0.4rem;
+  margin: -0.1rem -0.4rem;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &::after {
+    content: "✎";
+    font-size: 0.55em;
+    margin-left: 0.5rem;
+    opacity: 0.5;
+    vertical-align: middle;
+  }
+}
+
+.studio-title-input {
+  font-family: $headers-font;
+  font-size: 1.8rem;
+  max-width: 720px;
+}
+
 .studio-section-header {
   display: flex;
   align-items: center;

@@ -3,7 +3,28 @@
 <section class="service-hero">
   <div class="container">
     <span class="section-eyebrow"><%= @generation.kind.humanize %></span>
-    <h1><%= @generation.title.presence || "Génération sans titre" %></h1>
+
+    <% if policy(@generation).update? %>
+      <div data-controller="studio-output-edit">
+        <h1 class="studio-editable-title" data-studio-output-edit-target="display"
+            data-action="click->studio-output-edit#edit" title="Cliquer pour modifier le titre">
+          <%= @generation.title.presence || "Génération sans titre" %>
+        </h1>
+
+        <div class="d-none" data-studio-output-edit-target="form">
+          <%= form_for @generation, url: studio_generation_path(@generation), method: :patch,
+                        html: { id: "studio-title-edit-form", data: { turbo: false } } do |f| %>
+            <%= f.text_field :title, class: "cf-input studio-title-input", placeholder: "Titre de la génération" %>
+            <div class="studio-actions mt-2">
+              <button type="button" class="btn-cp-outline" data-action="studio-output-edit#cancel">Annuler</button>
+              <%= f.submit "Enregistrer", class: "btn-cp-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <h1><%= @generation.title.presence || "Génération sans titre" %></h1>
+    <% end %>
   </div>
 </section>
 
