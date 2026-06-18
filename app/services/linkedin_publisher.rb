@@ -2,8 +2,9 @@
 # user's LinkedIn profile, via LinkedIn's Posts API.
 class LinkedinPublisher
   API_BASE = "https://api.linkedin.com"
-  # LinkedIn deprecates API versions after ~12 months — bump this at least once a year.
-  LINKEDIN_VERSION = "202504"
+  # LinkedIn deprecates API versions after ~12 months — bump this at least once a year
+  # (format YYYYMM, current month is generally safe).
+  LINKEDIN_VERSION = "202606"
 
   class Error < StandardError; end
 
