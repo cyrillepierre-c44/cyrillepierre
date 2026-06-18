@@ -35,6 +35,24 @@ bin/ci                 # full CI: setup → rubocop → brakeman → bundler-aud
 
 **Security CI steps**: brakeman (static analysis) and bundler-audit (gem CVEs) run as part of `bin/ci`.
 
+**Auth & authorization**: Devise (`User` model, registrations disabled — comptes créés via `rails c`/seeds) + Pundit (`ApplicationPolicy`, `GenerationPolicy`). `User` a un `role` enum (`editor`/`admin`). `ApplicationController` inclut `Pundit::Authorization` et rescue `Pundit::NotAuthorizedError` en redirigeant avec une alerte.
+
+## Studio (`/studio`, `app/controllers/studio/`, `app/models/generation.rb`)
+
+Outil de génération de contenu par IA, réservé aux utilisateurs Devise authentifiés. Modèle `Generation` (`belongs_to :user`, `has_one_attached :source_file`).
+
+**Types de contenu** (`Generation::KIND`, enum `kind`) : `linkedin_post`, `cover_letter`, `commercial_proposal`, `site_actu`. Les deux derniers types "structurés" (lettre, proposition) utilisent un format de sortie en 4 sections marquées (`SECTION_MARKERS` : version finale / à personnaliser / à vérifier / version courte), parsées par `Generation#sections`.
+
+**Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées).
+
+**Génération** : `ContentGenerator` (service) construit le prompt système (règles d'écriture anti-IA-générique + prompt spécifique au `kind`) et appelle le LLM via `RubyLLM`. Deux providers au choix par génération (`Generation::LLM_MODELS`) : le LLM par défaut de l'app (GitHub Models) ou Mammouth.ai (clé `MAMMOUTH_API_KEY`, endpoint OpenAI-compatible). La relecture orthographique finale tourne toujours sur GitHub Models (gratuit) quel que soit le modèle choisi pour le brouillon.
+
+**Posts LinkedIn** : champ `orientation` (enum : `consultant`, `transition_management`, `cdi_search`) change le ton et l'appel à l'action. Le prompt inclut les 5 derniers posts publiés/générés pour éviter de réutiliser la même réalisation ou accroche.
+
+**Publication** : seul `site_actu` est publiable (`publishable?`) — actions `publish`/`unpublish` passent `status` à `published`/`generated` et fixent `published_at`. Les actus publiées s'affichent sur `/actus` (`ActusController`).
+
+**Fuseau horaire** : Paris (cf. commit "fuseau horaire Paris" du 18/06).
+
 ## Page CV (`app/views/pages/cv.html.erb`)
 
 Page standalone — elle n'utilise **pas** le layout Rails (`layout false` dans le controller). Tout le CSS et le JS sont inline dans le fichier.

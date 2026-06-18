@@ -191,6 +191,8 @@ class ContentGenerator
       RÉALISATIONS DE CYRILLE (à citer si pertinent, sans les identifiants internes type N°XX) :
       #{realisations_str}
 
+      #{cv_context}
+
       #{recent_posts_context}
 
       CONSIGNES :
