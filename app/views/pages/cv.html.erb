@@ -57,6 +57,22 @@
   .cv-btn.paper:hover { background: #f0f0f0; }
   body.paper-mode .cv-btn.paper { background: #1a2332; color: #c9a961; border-color: #c9a961; }
 
+  .print-quality {
+    display: block;
+    width: 160px;
+    background: white;
+    color: #555;
+    border: 1.5px solid #aaa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 8px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
   /* VERSION PAPIER */
   body.paper-mode .left {
     background: #f2f2f2;
@@ -92,6 +108,7 @@
       gap: 8px;
     }
     .cv-btn { width: 200px; }
+    .print-quality { width: 200px; }
   }
 
   @page {
@@ -345,11 +362,36 @@
 <body>
 <div class="btn-bar">
   <a href="/" class="cv-btn">← Accueil</a>
+  <select class="print-quality" id="printQuality" title="Qualité du PDF généré à l'impression">
+    <option value="standard">Qualité standard</option>
+    <option value="compact">Compacte (poids réduit)</option>
+  </select>
   <button class="cv-btn" onclick="window.print()">⎙ Imprimer</button>
   <button class="cv-btn paper" onclick="togglePaper(this)">🖨 Version papier</button>
   <button class="cv-btn" onclick="shareCV(this)">↗ Partager</button>
 </div>
 <script>
+  var PHOTO_STANDARD_SRC = "/images/cyrille.jpg";
+  var PHOTO_COMPACT_SRC = "/images/cyrille-print-compact.jpg";
+
+  function useCompactPrintQuality() {
+    var select = document.getElementById('printQuality');
+    return select && select.value === 'compact';
+  }
+
+  function setPrintPhoto() {
+    var photo = document.querySelector('.photo-wrapper img');
+    if (photo) photo.src = useCompactPrintQuality() ? PHOTO_COMPACT_SRC : PHOTO_STANDARD_SRC;
+  }
+
+  function restoreScreenPhoto() {
+    var photo = document.querySelector('.photo-wrapper img');
+    if (photo) photo.src = PHOTO_STANDARD_SRC;
+  }
+
+  window.addEventListener('beforeprint', setPrintPhoto);
+  window.addEventListener('afterprint', restoreScreenPhoto);
+
   function togglePaper(btn) {
     document.body.classList.toggle('paper-mode');
     btn.textContent = document.body.classList.contains('paper-mode')
