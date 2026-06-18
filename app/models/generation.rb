@@ -63,6 +63,12 @@ class Generation < ApplicationRecord
     kind.in?(STRUCTURED_KINDS)
   end
 
+  def linkedin_post_url
+    return if linkedin_post_urn.blank?
+
+    "https://www.linkedin.com/feed/update/#{linkedin_post_urn}/"
+  end
+
   # Splits the LLM output into labelled sections when the prompt asked for the
   # ###MARKER### format (cover letters, commercial proposals). Falls back to a
   # single "final" section if the markers are missing (e.g. generation failed).

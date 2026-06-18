@@ -1,7 +1,7 @@
 require "test_helper"
 
 class LinkedinPublisherTest < ActiveSupport::TestCase
-  FakeResponse = Struct.new(:status, :body) do
+  FakeResponse = Struct.new(:status, :body, :headers) do
     def success?
       status.to_i.between?(200, 299)
     end

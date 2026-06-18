@@ -22,8 +22,8 @@ class LinkedinPublisher
     raise Error, "Aucun texte à publier." if generation.output.blank?
 
     image_urn = upload_visual if generation.visual.attached?
-    create_post(image_urn)
-    generation.update!(linkedin_published_at: Time.current)
+    post_urn = create_post(image_urn)
+    generation.update!(linkedin_published_at: Time.current, linkedin_post_urn: post_urn)
     generation
   end
 
@@ -60,6 +60,8 @@ class LinkedinPublisher
   def create_post(image_urn)
     response = Faraday.post("#{API_BASE}/rest/posts", post_body(image_urn).to_json, rest_headers)
     raise Error, error_message(response) unless response.success?
+
+    response.headers["x-restli-id"]
   end
 
   def upload_visual

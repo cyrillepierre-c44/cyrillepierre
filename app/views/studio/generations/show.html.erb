@@ -173,6 +173,9 @@
       <% if @generation.linkedin_published_at.present? %>
         <p class="studio-card-sub mt-3">
           ✓ Publié sur LinkedIn le <%= @generation.linkedin_published_at.strftime("%d/%m/%Y à %H:%M") %>
+          <% if @generation.linkedin_post_url.present? %>
+            — <%= link_to "voir le post", @generation.linkedin_post_url, target: "_blank", rel: "noopener" %>
+          <% end %>
         </p>
       <% end %>
 
