@@ -25,7 +25,10 @@
           </div>
           <div class="studio-list-item-meta">
             <span class="studio-badge studio-badge--status-<%= generation.status %>"><%= generation.status.humanize %></span>
-            <span class="studio-list-item-date"><%= generation.created_at.strftime("%d/%m/%Y %H:%M") %></span>
+            <span class="studio-badge studio-badge--model">
+              <%= Generation::LLM_MODELS.dig(generation.llm_model, 0) || generation.llm_model %>
+            </span>
+            <span class="studio-list-item-date"><%= generation.updated_at.strftime("%d/%m/%Y %H:%M") %></span>
           </div>
         <% end %>
       <% end %>

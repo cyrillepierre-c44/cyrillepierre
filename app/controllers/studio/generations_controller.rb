@@ -4,7 +4,7 @@ module Studio
     before_action :set_generation, only: %i[show edit update destroy regenerate publish unpublish]
 
     def index
-      @generations = policy_scope(Generation).order(created_at: :desc)
+      @generations = policy_scope(Generation).order(updated_at: :desc)
     end
 
     def new

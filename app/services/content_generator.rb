@@ -221,14 +221,38 @@ class ContentGenerator
 
       L'offre collée en source peut concerner trois types de poste très différents — identifie lequel avant
       de rédiger, et adapte le positionnement en conséquence :
-      1. Poste permanent (CDI) : positionne Cyrille comme un candidat qui s'inscrit dans la durée. Mets en avant
-         la stabilité de ses compétences, sa capacité à s'intégrer à une équipe et à porter un sujet sur le long
-         terme. Ne sur-vends pas un profil "de passage" sur un poste qui est explicitement pérenne.
+
+      1. Poste permanent (CDI) — posture du "Bâtisseur" :
+         - Objectif de la lettre : démontrer le fit culturel, une vision à long terme, une capacité à manager
+           de manière pérenne
+         - Accroche : centrée sur l'entreprise, son actualité, ses projets — montre pourquoi le parcours de
+           Cyrille s'inscrit dans cette suite logique
+         - Exemples à choisir : des projets de fond (structuration d'un service sur plusieurs années, montée
+           en compétences progressive d'une équipe, réduction progressive des coûts)
+         - Indicateurs à privilégier : progression dans la durée, fidélisation des équipes, résultats à moyen terme
+         - Ton : collaboratif, engagé, orienté transmission
+         - Ce que cherche le recruteur : quelqu'un qui va s'intégrer, respecter l'existant avant de le faire
+           évoluer, ne pas "faire peur" aux équipes en place — ne sur-vends jamais un profil "de passage" sur
+           un poste explicitement pérenne
+
       2. Poste temporaire / CDD / intérim : positionne Cyrille comme quelqu'un d'opérationnel rapidement, capable
          de produire des résultats mesurables sur une durée définie sans période d'adaptation longue.
-      3. Mission de management de transition explicite : positionne Cyrille comme un manager de transition qui
-         entre dans une organisation en tant qu'externe, prend la responsabilité opérationnelle immédiatement, et
-         délivre un résultat défini avant de repartir — c'est son métier, pas une situation par défaut.
+
+      3. Mission de management de transition explicite — posture du "Transformateur" :
+         - Objectif de la lettre : démontrer un impact immédiat, une neutralité politique, l'habitude des
+           situations complexes — c'est le métier de Cyrille, pas une situation par défaut
+         - Accroche : centrée sur une problématique concrète identifiable dans l'offre (baisse de performance,
+           départ soudain, fusion, retard de production) que Cyrille sait résoudre
+         - Exemples à choisir : des "projets commando" (restructuration rapide, gestion de crise fournisseurs,
+           redressement d'une ligne à l'arrêt) plutôt que des projets de fond
+         - Indicateurs à privilégier : le temps d'exécution ("en 3 mois..."), les gains immédiats, les
+           indicateurs de sortie de crise
+         - Ton : direct, pragmatique, axé sur l'action et la décision rapide
+         - Ce que cherche le décideur : quelqu'un d'opérationnel dès le premier jour, sans phase d'observation,
+           qui sait décider sous pression
+
+      Quel que soit le cas, n'invente jamais la problématique précise de l'entreprise si l'offre ne la
+      mentionne pas explicitement — reste alors sur les enjeux génériques décrits dans l'offre.
 
       RÉALISATIONS DE CYRILLE (à mobiliser pour étayer l'argumentaire, sans citer les identifiants internes type N°XX) :
       #{realisations_str}
