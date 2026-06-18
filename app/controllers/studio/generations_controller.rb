@@ -1,7 +1,8 @@
 module Studio
   class GenerationsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_generation, only: %i[show edit update destroy regenerate publish unpublish generate_visual]
+    before_action :set_generation,
+                  only: %i[show edit update destroy regenerate publish unpublish generate_visual publish_to_linkedin]
 
     def index
       @generations = policy_scope(Generation).order(updated_at: :desc)
@@ -63,6 +64,13 @@ module Studio
     def generate_visual
       VisualGenerator.call(@generation)
       redirect_to studio_generation_path(@generation), notice: "Visuel généré."
+    end
+
+    def publish_to_linkedin
+      LinkedinPublisher.call(@generation)
+      redirect_to studio_generation_path(@generation), notice: "Publié sur LinkedIn."
+    rescue LinkedinPublisher::Error => e
+      redirect_to studio_generation_path(@generation), alert: e.message
     end
 
     private

@@ -53,6 +53,8 @@ gem "pdf-reader"
 # Active Storage backend in production — Heroku's filesystem is ephemeral, so :local would
 # lose uploaded/generated files on every deploy or dyno restart.
 gem "cloudinary"
+# HTTP client for the LinkedIn OAuth + publishing API (was only a transitive dependency before)
+gem "faraday"
 
 gem "sprockets-rails"
 gem "bootstrap", "~> 5.3"

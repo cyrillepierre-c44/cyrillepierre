@@ -11,6 +11,14 @@
 <div class="container pb-5">
   <div class="studio-actions studio-actions--top">
     <%= link_to "+ Nouvelle génération", new_studio_generation_path, class: "btn-cp-primary" %>
+
+    <% if current_user.linkedin_connected? %>
+      <span class="studio-badge">LinkedIn connecté</span>
+      <%= button_to "Déconnecter LinkedIn", linkedin_auth_disconnect_path, method: :delete, class: "btn-cp-outline" %>
+    <% else %>
+      <%= link_to (current_user.linkedin_access_token.present? ? "Reconnecter LinkedIn" : "Connecter mon compte LinkedIn"),
+                   linkedin_auth_connect_path, class: "btn-cp-outline" %>
+    <% end %>
   </div>
 
   <% if @generations.empty? %>

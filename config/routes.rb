@@ -16,6 +16,10 @@ Rails.application.routes.draw do
 
   resources :actus, only: [:index, :show]
 
+  get    "auth/linkedin",          to: "linkedin_auth#connect",    as: :linkedin_auth_connect
+  get    "auth/linkedin/callback", to: "linkedin_auth#callback",   as: :linkedin_auth_callback
+  delete "auth/linkedin",          to: "linkedin_auth#disconnect", as: :linkedin_auth_disconnect
+
   namespace :studio do
     resources :generations do
       member do
@@ -23,6 +27,7 @@ Rails.application.routes.draw do
         patch :publish
         patch :unpublish
         patch :generate_visual
+        patch :publish_to_linkedin
       end
     end
   end

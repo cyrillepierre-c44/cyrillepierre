@@ -27,6 +27,10 @@ class GenerationPolicy < ApplicationPolicy
     update?
   end
 
+  def publish_to_linkedin?
+    update?
+  end
+
   def publish?
     admin? && record.publishable?
   end

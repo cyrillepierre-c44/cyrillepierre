@@ -169,6 +169,35 @@
                         class: "btn-cp-outline mt-2", data: { studio_generation_target: "submitButton" } %>
         <% end %>
       <% end %>
+
+      <% if @generation.linkedin_published_at.present? %>
+        <p class="studio-card-sub mt-3">
+          ✓ Publié sur LinkedIn le <%= @generation.linkedin_published_at.strftime("%d/%m/%Y à %H:%M") %>
+        </p>
+      <% end %>
+
+      <% if policy(@generation).publish_to_linkedin? %>
+        <% if current_user.linkedin_connected? %>
+          <%= form_for @generation, url: publish_to_linkedin_studio_generation_path(@generation), method: :patch,
+                        html: { class: "mt-2", data: { controller: "studio-generation", turbo: false,
+                                        action: "submit->studio-generation#submitting" } } do |f| %>
+            <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
+              <div class="studio-progress-box">
+                <p class="studio-progress-text">Publication sur LinkedIn en cours…</p>
+                <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
+              </div>
+            </div>
+
+            <%= f.submit @generation.linkedin_published_at.present? ? "Republier sur LinkedIn" : "Publier sur LinkedIn",
+                          class: "btn-cp-primary", data: { studio_generation_target: "submitButton" } %>
+          <% end %>
+        <% else %>
+          <p class="studio-card-sub mt-2">
+            <%= link_to "Connecter mon compte LinkedIn", linkedin_auth_connect_path, class: "btn-cp-outline" %>
+            pour pouvoir publier directement.
+          </p>
+        <% end %>
+      <% end %>
     </div>
   <% end %>
 
