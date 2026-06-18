@@ -7,6 +7,13 @@ class Generation < ApplicationRecord
 
   enum :kind, { linkedin_post: 0, cover_letter: 1, site_actu: 2, commercial_proposal: 3 }
   enum :status, { draft: 0, generated: 1, published: 2 }
+  enum :orientation, { consultant: 0, transition_management: 1, cdi_search: 2 }, prefix: true
+
+  ORIENTATION_LABELS = {
+    "consultant" => "Consultant (missions ponctuelles)",
+    "transition_management" => "Manager de transition",
+    "cdi_search" => "Recherche de poste en CDI"
+  }.freeze
 
   STRUCTURED_KINDS = %w[cover_letter commercial_proposal].freeze
 

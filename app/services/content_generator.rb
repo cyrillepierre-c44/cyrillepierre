@@ -13,6 +13,29 @@ class ContentGenerator
     site_actu: :site_actu_prompt
   }.freeze
 
+  ORIENTATION_GUIDANCE = {
+    "consultant" => <<~TXT,
+      Orientation CONSULTANT : Cyrille se positionne comme prestataire externe disponible pour des missions
+      ponctuelles (audit, accompagnement, chantier défini). Le post doit donner envie de le solliciter pour
+      une mission précise — invite à échanger sur une problématique similaire, sans pousser de lien ni de
+      template à télécharger. Le lecteur cible est un dirigeant, un DAF/CFO ou un responsable opérationnel
+      qui pourrait avoir un besoin comparable à traiter.
+    TXT
+    "transition_management" => <<~TXT,
+      Orientation MANAGER DE TRANSITION : Cyrille se positionne comme un manager de transition disponible
+      pour reprendre une responsabilité opérationnelle en urgence ou sur une durée définie (départ soudain,
+      crise, fusion, redressement). Ton direct et pragmatique, axé sur la capacité à être opérationnel
+      immédiatement sans phase d'observation. Le lecteur cible est un actionnaire, un fonds d'investissement,
+      un COMEX ou un cabinet de management de transition.
+    TXT
+    "cdi_search" => <<~TXT
+      Orientation RECHERCHE DE POSTE EN CDI : Cyrille montre qu'il s'inscrit dans la durée — capacité à
+      construire, faire grandir une équipe, porter un sujet sur plusieurs années. Pas de ton "prestataire
+      disponible immédiatement" : on est sur de l'engagement long terme. Le lecteur cible est un recruteur,
+      un DG ou un futur N+1, pas un investisseur.
+    TXT
+  }.freeze
+
   PROOFREADING_INSTRUCTIONS = <<~PROMPT
     Tu es un correcteur orthographique et grammatical, rien de plus.
     Corrige UNIQUEMENT les fautes d'orthographe, de grammaire, de conjugaison et les mots mal formés
@@ -155,7 +178,7 @@ class ContentGenerator
 
       CONTEXTE STRATÉGIQUE :
       Cyrille publie 2 à 3 posts par semaine, avec deux objectifs : démontrer son expertise via des thèmes liés à
-      ses compétences et réalisations, et générer des opportunités de mission (trouver des clients).
+      ses compétences et réalisations, et générer des opportunités selon l'orientation choisie ci-dessous.
       Il suit actuellement la formation ICCF (HEC) — analyse financière et valorisation d'entreprises — pour
       apprendre à parler le langage des décideurs financiers (CFO, actionnaires, investisseurs, COMEX). Ce sont
       eux qui valident les budgets de digitalisation, de chantiers Lean, de réorganisation ou de mission de
@@ -163,13 +186,19 @@ class ContentGenerator
       réalisation à ce qui compte pour ces décideurs (coûts évités, capacité libérée, risque réduit, rentabilité
       d'un investissement) — sans pour autant transformer chaque post en cours de finance.
 
+      #{ORIENTATION_GUIDANCE.fetch(generation.orientation, ORIENTATION_GUIDANCE['consultant'])}
+
       RÉALISATIONS DE CYRILLE (à citer si pertinent, sans les identifiants internes type N°XX) :
       #{realisations_str}
+
+      #{recent_posts_context}
 
       CONSIGNES :
       - 150 à 250 mots
       - Une accroche forte en première ligne (les 2 premières lignes décident si on lit la suite)
       - Phrases courtes, retours à la ligne fréquents (format LinkedIn, pas de gros pavés)
+      - Choisis une réalisation différente de celles déjà utilisées dans les posts récents listés ci-dessus,
+        sauf si aucune autre ne convient au sujet
       - Quand c'est pertinent, traduis le résultat opérationnel en langage compréhensible par un décideur financier
         (ex. "moins d'arrêts machine non planifiés" → "un risque opérationnel mieux maîtrisé"), MAIS uniquement à
         partir des chiffres et faits réellement fournis dans les réalisations ou les sources — jamais de ratio,
@@ -184,6 +213,21 @@ class ContentGenerator
       - Ne jamais inventer de chiffres ou de faits non fournis dans les sources
       - Réponds uniquement avec le texte du post, sans titre ni commentaire autour
     PROMPT
+  end
+
+  def recent_posts_context
+    posts = Generation.where(kind: :linkedin_post, status: %i[generated published])
+                      .where.not(id: generation.id)
+                      .order(created_at: :desc)
+                      .limit(5)
+                      .pluck(:output)
+                      .compact_blank
+
+    return "Aucun post LinkedIn récent à éviter de répéter." if posts.empty?
+
+    intro = "POSTS LINKEDIN RÉCENTS DE CYRILLE (ne réutilise PAS la même réalisation ni la même accroche) :"
+    body = posts.each_with_index.map { |text, i| "--- Post récent #{i + 1} ---\n#{text.truncate(500)}" }.join("\n\n")
+    "#{intro}\n#{body}"
   end
 
   # rubocop:disable Metrics/MethodLength

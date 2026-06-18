@@ -57,14 +57,25 @@
   </div>
 
   <div class="studio-card">
-    <h2 class="studio-card-subtitle">2. Titre (optionnel)</h2>
+    <h2 class="studio-card-subtitle">2. Orientation</h2>
+    <div class="cf-field">
+      <%= f.select :orientation,
+                    Generation::ORIENTATION_LABELS.map { |value, label| [label, value] },
+                    { selected: generation.orientation.presence || "consultant" },
+                    class: "cf-input" %>
+      <p class="studio-field-hint">Surtout utile pour les posts LinkedIn — change le ton et l'appel à l'action.</p>
+    </div>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">3. Titre (optionnel)</h2>
     <div class="cf-field">
       <%= f.text_field :title, class: "cf-input", placeholder: "Donne un nom à cette génération" %>
     </div>
   </div>
 
   <div class="studio-card">
-    <h2 class="studio-card-subtitle">3. Modèle IA</h2>
+    <h2 class="studio-card-subtitle">4. Modèle IA</h2>
     <div class="cf-field">
       <%= f.select :llm_model,
                     Generation::LLM_MODELS.map { |value, (label, _provider)| [label, value] },
@@ -74,7 +85,7 @@
   </div>
 
   <div class="studio-card">
-    <h2 class="studio-card-subtitle">4. Source</h2>
+    <h2 class="studio-card-subtitle">5. Source</h2>
 
     <div class="studio-source-tabs" role="tablist">
       <button type="button" class="studio-source-tab studio-source-tab--active"
@@ -103,7 +114,7 @@
   </div>
 
   <div class="studio-card">
-    <h2 class="studio-card-subtitle">5. Instructions complémentaires (optionnel)</h2>
+    <h2 class="studio-card-subtitle">6. Instructions complémentaires (optionnel)</h2>
     <div class="cf-field">
       <%= f.text_area :extra_instructions, class: "cf-input cf-textarea", rows: 3, placeholder: "Ton à adopter, points à mettre en avant…" %>
     </div>
