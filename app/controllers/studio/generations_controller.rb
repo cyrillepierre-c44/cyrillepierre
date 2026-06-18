@@ -69,7 +69,7 @@ module Studio
     def generation_params
       params.require(:generation).permit(
         :kind, :title, :input_text, :input_url, :extra_instructions, :source_file, :llm_model, :orientation,
-        :realisation_id
+        :realisation_id, :output
       )
     end
   end

@@ -56,42 +56,68 @@
 
     <% if @generation.output.blank? %>
       <p class="studio-empty">Pas encore de contenu généré.</p>
-    <% elsif @generation.structured_output? %>
-      <% @generation.sections.each do |key, content| %>
-        <div class="studio-section" data-controller="studio-clipboard">
-          <div class="studio-section-header">
-            <h3 class="studio-section-title"><%= Generation::SECTION_LABELS.fetch(key, key.to_s.humanize) %></h3>
-            <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
-          </div>
-          <pre class="studio-output" data-studio-clipboard-target="source"><%= content %></pre>
-        </div>
-      <% end %>
-    <% elsif @generation.linkedin_post? %>
-      <% formatted_post = LinkedinTextFormatter.call(@generation.output) %>
-      <h3 class="studio-section-title">Aperçu façon LinkedIn</h3>
-      <div class="studio-linkedin-preview">
-        <div class="studio-linkedin-preview-header">
-          <img src="/images/cyrille.jpg" alt="Cyrille PIERRE" class="studio-linkedin-preview-avatar">
-          <div>
-            <div class="studio-linkedin-preview-name">Cyrille PIERRE</div>
-            <div class="studio-linkedin-preview-headline">
-              Consultant indépendant · Management de transition, Excellence opérationnelle &amp; Tech/IA
-            </div>
-          </div>
-        </div>
-        <p class="studio-linkedin-preview-body"><%= formatted_post %></p>
-      </div>
-
-      <div class="studio-section-header studio-section-header--end mt-3" data-controller="studio-clipboard">
-        <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
-        <pre class="d-none" data-studio-clipboard-target="source"><%= formatted_post %></pre>
-      </div>
     <% else %>
-      <div data-controller="studio-clipboard">
-        <div class="studio-section-header studio-section-header--end">
-          <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
+      <div data-controller="studio-output-edit">
+        <div data-studio-output-edit-target="display">
+          <% if @generation.structured_output? %>
+            <% @generation.sections.each do |key, content| %>
+              <div class="studio-section" data-controller="studio-clipboard">
+                <div class="studio-section-header">
+                  <h3 class="studio-section-title"><%= Generation::SECTION_LABELS.fetch(key, key.to_s.humanize) %></h3>
+                  <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
+                </div>
+                <pre class="studio-output" data-studio-clipboard-target="source"><%= content %></pre>
+              </div>
+            <% end %>
+          <% elsif @generation.linkedin_post? %>
+            <% formatted_post = LinkedinTextFormatter.call(@generation.output) %>
+            <div class="studio-linkedin-preview">
+              <div class="studio-linkedin-preview-header">
+                <img src="/images/cyrille.jpg" alt="Cyrille PIERRE" class="studio-linkedin-preview-avatar">
+                <div>
+                  <div class="studio-linkedin-preview-name">Cyrille PIERRE</div>
+                  <div class="studio-linkedin-preview-headline">
+                    Consultant indépendant · Management de transition, Excellence opérationnelle &amp; Tech/IA
+                  </div>
+                </div>
+              </div>
+              <p class="studio-linkedin-preview-body"><%= formatted_post %></p>
+            </div>
+
+            <div class="studio-section-header studio-section-header--end mt-3" data-controller="studio-clipboard">
+              <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
+              <pre class="d-none" data-studio-clipboard-target="source"><%= formatted_post %></pre>
+            </div>
+          <% else %>
+            <div data-controller="studio-clipboard">
+              <div class="studio-section-header studio-section-header--end">
+                <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
+              </div>
+              <pre class="studio-output" data-studio-clipboard-target="source"><%= @generation.output %></pre>
+            </div>
+          <% end %>
+
+          <% if policy(@generation).update? %>
+            <div class="studio-section-header--end mt-2">
+              <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-output-edit#edit">
+                ✎ Modifier le texte
+              </button>
+            </div>
+          <% end %>
         </div>
-        <pre class="studio-output" data-studio-clipboard-target="source"><%= @generation.output %></pre>
+
+        <% if policy(@generation).update? %>
+          <div class="d-none" data-studio-output-edit-target="form">
+            <%= form_for @generation, url: studio_generation_path(@generation), method: :patch,
+                          html: { id: "studio-output-edit-form", data: { turbo: false } } do |f| %>
+              <%= f.text_area :output, class: "cf-input cf-textarea", rows: 14 %>
+              <div class="studio-actions mt-2">
+                <button type="button" class="btn-cp-outline" data-action="studio-output-edit#cancel">Annuler</button>
+                <%= f.submit "Enregistrer", class: "btn-cp-primary" %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     <% end %>
   </div>

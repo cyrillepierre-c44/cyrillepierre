@@ -16,9 +16,16 @@ class LinkedinTextFormatter
     segment.each_char.map { |char| bold_char(char) }.join
   end
 
+  # The Unicode bold block only defines plain A-Z/a-z/0-9 — there's no bold "é" or bold "%".
+  # For accented letters, decompose into base letter + accent (NFD), bold the base, and
+  # reattach the accent: é → e + ´ → bolded-e + ´, which still renders as a bold é.
+  # Punctuation with no bold equivalent (%, /, +, …) is left untouched — there's nothing to map it to.
   def self.bold_char(char)
-    _range, offset = BOLD_OFFSETS.find { |range, _| range.cover?(char) }
-    offset ? [char.ord + offset].pack("U") : char
+    base, *marks = char.unicode_normalize(:nfd).chars
+    _range, offset = BOLD_OFFSETS.find { |range, _| range.cover?(base) }
+    return char unless offset
+
+    ([base.ord + offset].pack("U") + marks.join)
   end
   private_class_method :bold_char
 end

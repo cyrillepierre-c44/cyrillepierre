@@ -213,7 +213,8 @@ class ContentGenerator
   def linkedin_post_prompt
     <<~PROMPT
       Tu rédiges des posts LinkedIn pour Cyrille PIERRE, consultant indépendant en management de transition,
-      excellence opérationnelle et tech/IA. Ton style : direct, concret, pas de jargon creux, pas d'emoji excessif.
+      excellence opérationnelle et tech/IA. Ton style : direct, concret, pas de jargon creux, quelques emojis
+      ciblés (jamais aucun, jamais en excès — voir la consigne précise plus bas).
 
       CONTEXTE STRATÉGIQUE :
       Cyrille publie 2 à 3 posts par semaine, avec deux objectifs : démontrer son expertise via des thèmes liés à
@@ -241,10 +242,15 @@ class ContentGenerator
       4. Ouverture — la question ouverte ou l'invitation à réagir qui clôt le post (voir consignes ci-dessous).
 
       MISE EN FORME :
-      - Tu peux mettre en gras, avec la syntaxe markdown **comme ceci**, des mots-clés isolés (chiffre clé, nom de
-        l'enjeu) — JAMAIS une phrase ou une proposition complète (sujet + verbe), un passage en gras ne doit jamais
-        dépasser 4-5 mots. Maximum 3 passages en gras dans tout le post : avant de répondre, compte-les, et si tu en
-        as plus de 3, retires-en jusqu'à revenir à 3
+      - Le gras (markdown **comme ceci**) est réservé à EXACTEMENT 2 passages dans tout le post, jamais plus,
+        jamais moins : (1) le chiffre ou résultat le plus marquant du Hook, (2) le chiffre ou résultat le plus
+        marquant du paragraphe Résultat. Rien d'autre ne doit être en gras.
+        - Un passage en gras = un chiffre avec son unité ("**240 K€/an**", "**TRS +8%**") ou un terme technique
+          isolé de 1 à 3 mots ("**micro-arrêts**") — jamais un verbe, jamais "sujet + verbe + complément"
+        - Mauvais exemple (à ne jamais reproduire) : "**réduire de moitié les temps d'arrêt**" (c'est une
+          proposition entière, pas un mot-clé) ou "**240 000 € par an économisés**" (le verbe ne doit pas être
+          inclus : écris plutôt "**240 000 €/an**" tout court)
+        - Bon exemple : "Résultat : **240 K€/an** économisés grâce à une digitalisation du suivi TRS."
       - 3 à 5 emojis ciblés dans tout le post, jamais en décoration : un emoji n'est légitime qu'attaché à un
         chiffre, un résultat ou une étape clé (ex. "📊 +8% de TRS", "🎯 l'objectif"), jamais en début de chaque ligne
         ni pour faire joli
@@ -270,7 +276,17 @@ class ContentGenerator
         sans formule de growth-hacking creuse (pas de "MP-moi le mot clé X, je t'envoie mon template")
       - Pas de hashtags excessifs (3 maximum, à la fin)
       - Ne jamais inventer de chiffres ou de faits non fournis dans les sources
-      - Réponds uniquement avec le texte du post, sans titre ni commentaire autour
+
+      AVANT DE RÉPONDRE, vérifie ton brouillon sur ces deux points précis (corrige-le si besoin avant de
+      répondre) :
+      1. Compte les emojis : il en faut ENTRE 3 ET 5, jamais zéro. S'il y en a moins de 3, ajoute-en sur un
+         chiffre, un résultat ou une étape clé du texte.
+      2. Compte les passages en gras (texte entre **...**) : il en faut EXACTEMENT 2, ni plus ni moins. Si tu
+         en as plus de 2, retire les marqueurs ** des passages en trop. Si un passage en gras contient un verbe
+         ou plus de 3 mots, raccourcis-le au seul chiffre ou mot-clé qu'il contient (ex. "**240 000 €
+         économisés**" devient "**240 000 €**").
+
+      Réponds uniquement avec le texte du post, sans titre ni commentaire autour.
     PROMPT
   end
 
