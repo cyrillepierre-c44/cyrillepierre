@@ -36,6 +36,18 @@ class ContentGenerator
     TXT
   }.freeze
 
+  # Only injected into public-facing content (LinkedIn posts, site actus) — cover letters and
+  # commercial proposals legitimately name past employers/clients as credibility/references.
+  ANONYMIZE_COMPANIES_RULE = <<~TXT
+    CONFIDENTIALITÉ — RÈGLE ABSOLUE : ce contenu est public. Ne mentionne JAMAIS le nom réel d'une entreprise,
+    marque, groupe ou enseigne (même si un nom apparaît dans les réalisations ou le CV ci-dessus). Décris
+    l'entreprise de façon générique à partir de son secteur et de sa taille (ex. "une usine agroalimentaire
+    filiale d'un groupe international", "un sous-traitant pharmaceutique de taille intermédiaire", "une PME
+    industrielle"), jamais par son nom. D'anciens clients ou employeurs ne souhaitent pas voir l'état ou la
+    performance de leur outil industriel discutés publiquement sous leur nom — reste sur des faits et des
+    chiffres, jamais sur l'identité de l'entreprise.
+  TXT
+
   PROOFREADING_INSTRUCTIONS = <<~PROMPT
     Tu es un correcteur orthographique et grammatical, rien de plus.
     Corrige UNIQUEMENT les fautes d'orthographe, de grammaire, de conjugaison et les mots mal formés
@@ -162,6 +174,15 @@ class ContentGenerator
     end.join("\n")
   end
 
+  # Same catalogue, but described by sector/scale instead of by company name — used for the
+  # public-facing kinds (LinkedIn posts, site actus) so the real employer/client name never
+  # even reaches the prompt, on top of the explicit ANONYMIZE_COMPANIES_RULE instruction.
+  def anonymized_realisations_str
+    RealisationCatalog::ITEMS.map do |r|
+      "#{r[:id]} #{r[:titre]} — #{r[:scale]}, #{r[:type_orga]} — #{r[:resultat]}"
+    end.join("\n")
+  end
+
   def locked_realisation
     return @locked_realisation if defined?(@locked_realisation)
 
@@ -176,7 +197,7 @@ class ContentGenerator
 
     <<~TXT
       RÉALISATIONS DE CYRILLE (à citer si pertinent, sans les identifiants internes type N°XX) :
-      #{realisations_str}
+      #{anonymized_realisations_str}
 
       Avant de choisir laquelle citer, vérifie que son éventuel "semantic_scope" correspond bien au sujet ou au
       brief fourni — certaines réalisations précisent explicitement pour quels sujets les utiliser ou ne pas
@@ -189,7 +210,7 @@ class ContentGenerator
     scope_line = "Cadre d'utilisation : #{r[:semantic_scope]}" if r[:semantic_scope].present?
     <<~TXT
       RÉALISATION À UTILISER POUR CE POST (obligatoire, n'en choisis pas une autre) :
-      #{r[:titre]} — #{r[:context]} — #{r[:resultat]}
+      #{r[:titre]} — #{r[:scale]}, #{r[:type_orga]} — #{r[:resultat]}
       #{scope_line}
     TXT
   end
@@ -215,6 +236,8 @@ class ContentGenerator
       Tu rédiges des posts LinkedIn pour Cyrille PIERRE, consultant indépendant en management de transition,
       excellence opérationnelle et tech/IA. Ton style : direct, concret, pas de jargon creux, quelques emojis
       ciblés (jamais aucun, jamais en excès — voir la consigne précise plus bas).
+
+      #{ANONYMIZE_COMPANIES_RULE}
 
       CONTEXTE STRATÉGIQUE :
       Cyrille publie 2 à 3 posts par semaine, avec deux objectifs : démontrer son expertise via des thèmes liés à
@@ -441,8 +464,10 @@ class ContentGenerator
       Tu rédiges une actualité courte pour le site web de Cyrille PIERRE, consultant indépendant en management
       de transition, excellence opérationnelle et tech/IA.
 
+      #{ANONYMIZE_COMPANIES_RULE}
+
       RÉALISATIONS DE CYRILLE (pour mise en contexte si pertinent, sans citer les identifiants internes type N°XX) :
-      #{realisations_str}
+      #{anonymized_realisations_str}
 
       CONSIGNES :
       - 100 à 200 mots, ton factuel et clair, à la troisième personne

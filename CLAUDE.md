@@ -37,17 +37,31 @@ bin/ci                 # full CI: setup → rubocop → brakeman → bundler-aud
 
 **Auth & authorization**: Devise (`User` model, registrations disabled — comptes créés via `rails c`/seeds) + Pundit (`ApplicationPolicy`, `GenerationPolicy`). `User` a un `role` enum (`editor`/`admin`). `ApplicationController` inclut `Pundit::Authorization` et rescue `Pundit::NotAuthorizedError` en redirigeant avec une alerte.
 
+**Stockage (Active Storage)** : service `:cloudinary` en production (`config/environments/production.rb`) — le disque Heroku est éphémère, `:local` perdait les fichiers à chaque redéploiement/restart. Le gem officiel `cloudinary` fournit `ActiveStorage::Service::CloudinaryService` et lit `CLOUDINARY_URL` automatiquement (rien à dupliquer dans `config/storage.yml`, juste `service: Cloudinary`). En développement, `:cloudinary` si `CLOUDINARY_URL` est présente dans `.env`, sinon fallback `:local` ; `test` reste toujours sur `:local`/`Disk` (pas de dépendance réseau dans la suite).
+
+**Mailer** : `config.action_mailer.default_url_options` doit utiliser `cyrillepierre.com` (pas `.fr`) en production — erreur déjà corrigée une fois, à ne pas réintroduire.
+
 ## Studio (`/studio`, `app/controllers/studio/`, `app/models/generation.rb`)
 
-Outil de génération de contenu par IA, réservé aux utilisateurs Devise authentifiés. Modèle `Generation` (`belongs_to :user`, `has_one_attached :source_file`).
+Outil de génération de contenu par IA, réservé aux utilisateurs Devise authentifiés. Modèle `Generation` (`belongs_to :user`, `has_one_attached :source_file`, `has_one_attached :visual`).
 
 **Types de contenu** (`Generation::KIND`, enum `kind`) : `linkedin_post`, `cover_letter`, `commercial_proposal`, `site_actu`. Les deux derniers types "structurés" (lettre, proposition) utilisent un format de sortie en 4 sections marquées (`SECTION_MARKERS` : version finale / à personnaliser / à vérifier / version courte), parsées par `Generation#sections`.
 
-**Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées).
+**Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées, certaines avec un `semantic_scope` précisant pour quels sujets les utiliser/ne pas utiliser).
 
 **Génération** : `ContentGenerator` (service) construit le prompt système (règles d'écriture anti-IA-générique + prompt spécifique au `kind`) et appelle le LLM via `RubyLLM`. Deux providers au choix par génération (`Generation::LLM_MODELS`) : le LLM par défaut de l'app (GitHub Models) ou Mammouth.ai (clé `MAMMOUTH_API_KEY`, endpoint OpenAI-compatible). La relecture orthographique finale tourne toujours sur GitHub Models (gratuit) quel que soit le modèle choisi pour le brouillon.
 
-**Posts LinkedIn** : champ `orientation` (enum : `consultant`, `transition_management`, `cdi_search`) change le ton et l'appel à l'action. Le prompt inclut les 5 derniers posts publiés/générés pour éviter de réutiliser la même réalisation ou accroche.
+**Réalisation verrouillée pour les posts sans source** : `Generation#assign_auto_realisation` (callback `before_save`, uniquement si `linkedin_post?` et aucune source) fixe `realisation_id` par rotation via `RealisationCatalog.pick_unused` (exclut les réalisations utilisées dans les 10 derniers posts de l'utilisateur). But : éviter que le LLM invente un sujet puis cherche après-coup une réalisation qui colle à peu près — la réalisation est choisie *avant* génération et son `semantic_scope` devient le cadre obligatoire du prompt (`ContentGenerator#locked_realisation_block`). Un sélecteur dans le formulaire (`_form.html.erb`, visible seulement pour `linkedin_post`) permet d'imposer une réalisation précise à la place de la rotation auto. Dès qu'une source/brief est fournie, ce verrouillage ne s'applique pas : le LLM garde le catalogue complet et choisit librement.
+
+**Anonymisation des entreprises** : pour `linkedin_post` et `site_actu` (contenus publics), `ContentGenerator::ANONYMIZE_COMPANIES_RULE` interdit de citer le nom réel d'une entreprise/marque, et `anonymized_realisations_str`/`locked_realisation_block` décrivent les réalisations par secteur/taille (`scale`, `type_orga`) plutôt que par `context` (qui contient le nom). `cover_letter` et `commercial_proposal` gardent les vrais noms (CV et références clients = attendu et utile pour ces usages privés).
+
+**Posts LinkedIn** :
+- champ `orientation` (enum : `consultant`, `transition_management`, `cdi_search`) change le ton et l'appel à l'action.
+- le prompt inclut les 5 derniers posts publiés/générés pour éviter de réutiliser la même réalisation ou accroche.
+- canevas imposé (Hook / Contexte / Résultat / Ouverture), gras limité à 2 passages courts (jamais une phrase entière) et 3 à 5 emojis ciblés — règles renforcées plusieurs fois car les LLM respectent mal les contraintes de comptage strict, contrairement aux contraintes de présence/interdiction (anonymisation, structure) qui sont bien suivies.
+- `LinkedinTextFormatter` (`app/services/linkedin_text_formatter.rb`) convertit le `**gras** markdown` en vrais caractères Unicode gras à l'affichage/copie (LinkedIn ne rend pas le markdown) — gère aussi les lettres accentuées (décomposition NFD, base + accent). Les symboles type `%` n'ont pas d'équivalent gras en Unicode : limite inhérente, pas un bug.
+- **Visuel généré par IA** : `VisualGenerator` (`app/services/visual_generator.rb`) appelle Mammouth (modèle `gemini-2.5-flash-image`) pour produire une illustration (environnement industriel réel, palette bleu marine/doré, jauge ou graphique rouge→vert comme métaphore de mesure, jamais de texte/visage). Le prompt combine le texte généré du post (angle réel choisi par le LLM) et les faits de la réalisation verrouillée (secteur + résultat chiffré, pour ancrer les chiffres). Bouton "Générer/Régénérer le visuel" sur la page de détail, ou case "Générer aussi un visuel" sur le formulaire de création (texte puis image dans la même requête ; la barre de progression switch de texte après un délai fixe côté JS, faute de suivi temps réel — requête synchrone, pas de polling).
+- **Édition manuelle** : titre (clic sur le `<h1>`) et texte généré (`output`) sont éditables en ligne sur la page de détail (`data-controller="studio-output-edit"`, toggle display/form), via PATCH sur l'action `update` existante.
 
 **Publication** : seul `site_actu` est publiable (`publishable?`) — actions `publish`/`unpublish` passent `status` à `published`/`generated` et fixent `published_at`. Les actus publiées s'affichent sur `/actus` (`ActusController`).
 
@@ -61,6 +75,10 @@ Fonctionnalités :
 - **Mode papier** : toggle via classe `paper-mode` sur `<body>`. Bouton affiche "🖨 Version papier" / "🎨 Version couleur" (texte doré en mode actif).
 - **URL param `?mode=papier`** : active automatiquement le mode papier au chargement (lu par un IIFE au bas de la page).
 - **Bouton Partager** : utilise `navigator.share` (Web Share API, natif mobile) avec fallback `navigator.clipboard` (copie du lien, feedback "✓ Lien copié !" 2 s). L'URL partagée inclut `?mode=papier` si le mode est actif.
-- **Impression** : `@media print` force les dimensions A4 exactes (794×1123 px). Le bouton "⎙ Imprimer" appelle `window.print()`.
+- **Impression** : `@media print` force les dimensions A4 exactes (794×1123 px). Le bouton "⎙ Imprimer" appelle `window.print()`. Un sélecteur "Qualité d'impression" (Standard/Compacte) permute la photo entre `/images/cyrille.jpg` et `/images/cyrille-print-compact.jpg` juste avant l'impression (`beforeprint`/`afterprint`) pour garder le PDF généré sous 2 Mo.
 - **Scaling mobile** : JS transform `scale()` sur `.page` pour les viewports < 830 px. Annulé avant impression (`beforeprint`) et restauré après (`afterprint`).
 - **Couleurs** : fond sombre `#1a2332`, accent doré `#c9a961`. Les boutons de la barre utilisent ces deux couleurs.
+
+## UI — `<select>` sombres
+
+`.cf-input option` (`app/assets/stylesheets/pages/_contact.scss`) force un fond sombre opaque sur les `<option>` : le champ `<select>` a un fond quasi-transparent qui passe bien à l'écran, mais certains navigateurs rendent le menu déroulant natif avec un fond clair par défaut tout en gardant notre texte clair hérité — illisible sans ce correctif.
