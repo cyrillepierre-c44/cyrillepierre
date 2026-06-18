@@ -195,9 +195,22 @@ class ContentGenerator
 
       #{recent_posts_context}
 
+      CANEVAS À SUIVRE (adapte la longueur de chaque partie au sujet, mais respecte cet enchaînement) :
+      1. Hook — 1 à 2 lignes qui donnent envie de lire la suite (chiffre surprenant, affirmation tranchée, question
+         directe). Pas de mise en contexte avant le hook.
+      2. Contexte — la situation de départ, le problème ou la contrainte rencontrée, en 2-4 lignes concrètes.
+      3. Résultat — ce qui a été fait et obtenu, avec les chiffres/faits réels fournis dans les sources.
+      4. Ouverture — la question ouverte ou l'invitation à réagir qui clôt le post (voir consignes ci-dessous).
+
+      MISE EN FORME :
+      - Tu peux mettre en gras, avec la syntaxe markdown **comme ceci**, l'accroche ou 2-3 mots-clés maximum dans
+        tout le post (chiffre clé, nom de l'enjeu) — jamais une phrase entière, et jamais plus de 3 passages en gras
+      - 1 à 3 emojis ciblés maximum dans tout le post, jamais en décoration : un emoji n'est légitime qu'attaché à
+        un chiffre, un résultat ou une étape clé (ex. "📊 +8% de TRS", "🎯 l'objectif"), jamais en début de chaque
+        ligne ni pour faire joli
+
       CONSIGNES :
       - 150 à 250 mots
-      - Une accroche forte en première ligne (les 2 premières lignes décident si on lit la suite)
       - Phrases courtes, retours à la ligne fréquents (format LinkedIn, pas de gros pavés)
       - Choisis une réalisation différente de celles déjà utilisées dans les posts récents listés ci-dessus,
         sauf si aucune autre ne convient au sujet
