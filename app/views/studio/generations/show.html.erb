@@ -66,12 +66,32 @@
           <pre class="studio-output" data-studio-clipboard-target="source"><%= content %></pre>
         </div>
       <% end %>
+    <% elsif @generation.linkedin_post? %>
+      <% formatted_post = LinkedinTextFormatter.call(@generation.output) %>
+      <h3 class="studio-section-title">Aperçu façon LinkedIn</h3>
+      <div class="studio-linkedin-preview">
+        <div class="studio-linkedin-preview-header">
+          <img src="/images/cyrille.jpg" alt="Cyrille PIERRE" class="studio-linkedin-preview-avatar">
+          <div>
+            <div class="studio-linkedin-preview-name">Cyrille PIERRE</div>
+            <div class="studio-linkedin-preview-headline">
+              Consultant indépendant · Management de transition, Excellence opérationnelle &amp; Tech/IA
+            </div>
+          </div>
+        </div>
+        <p class="studio-linkedin-preview-body"><%= formatted_post %></p>
+      </div>
+
+      <div class="studio-section-header studio-section-header--end mt-3" data-controller="studio-clipboard">
+        <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
+        <pre class="d-none" data-studio-clipboard-target="source"><%= formatted_post %></pre>
+      </div>
     <% else %>
       <div data-controller="studio-clipboard">
         <div class="studio-section-header studio-section-header--end">
           <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
         </div>
-        <pre class="studio-output" data-studio-clipboard-target="source"><%= @generation.linkedin_post? ? LinkedinTextFormatter.call(@generation.output) : @generation.output %></pre>
+        <pre class="studio-output" data-studio-clipboard-target="source"><%= @generation.output %></pre>
       </div>
     <% end %>
   </div>

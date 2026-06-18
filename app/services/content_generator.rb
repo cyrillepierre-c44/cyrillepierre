@@ -241,11 +241,13 @@ class ContentGenerator
       4. Ouverture — la question ouverte ou l'invitation à réagir qui clôt le post (voir consignes ci-dessous).
 
       MISE EN FORME :
-      - Tu peux mettre en gras, avec la syntaxe markdown **comme ceci**, l'accroche ou 2-3 mots-clés maximum dans
-        tout le post (chiffre clé, nom de l'enjeu) — jamais une phrase entière, et jamais plus de 3 passages en gras
-      - 1 à 3 emojis ciblés maximum dans tout le post, jamais en décoration : un emoji n'est légitime qu'attaché à
-        un chiffre, un résultat ou une étape clé (ex. "📊 +8% de TRS", "🎯 l'objectif"), jamais en début de chaque
-        ligne ni pour faire joli
+      - Tu peux mettre en gras, avec la syntaxe markdown **comme ceci**, des mots-clés isolés (chiffre clé, nom de
+        l'enjeu) — JAMAIS une phrase ou une proposition complète (sujet + verbe), un passage en gras ne doit jamais
+        dépasser 4-5 mots. Maximum 3 passages en gras dans tout le post : avant de répondre, compte-les, et si tu en
+        as plus de 3, retires-en jusqu'à revenir à 3
+      - 3 à 5 emojis ciblés dans tout le post, jamais en décoration : un emoji n'est légitime qu'attaché à un
+        chiffre, un résultat ou une étape clé (ex. "📊 +8% de TRS", "🎯 l'objectif"), jamais en début de chaque ligne
+        ni pour faire joli
 
       CONSIGNES :
       - 150 à 250 mots
@@ -259,6 +261,11 @@ class ContentGenerator
       - N'invente et ne cite jamais de résultat financier précis (chiffre, %, point) pour une entreprise nommée
         si ce chiffre ne figure pas dans les réalisations fournies — en cas de doute, reste qualitatif
         ("a contribué à réduire les coûts", sans inventer le montant) plutôt que d'inventer un chiffre
+      - L'accroche ne doit JAMAIS dramatiser un chiffre au-delà de ce que dit la source : si une réalisation
+        indique "−50% d'arrêts non identifiés", n'écris jamais que les arrêts ont "disparu" ou "atteint zéro" —
+        reprends le chiffre exact ("réduits de moitié"), même dans l'accroche. Relis ton propre texte avant de
+        répondre : si un chiffre apparaît à deux endroits différents du post, vérifie qu'il est rigoureusement
+        identique aux deux endroits
       - Termine par une question ouverte ou une invitation à réagir, sans "lien en commentaire" artificiel et
         sans formule de growth-hacking creuse (pas de "MP-moi le mot clé X, je t'envoie mon template")
       - Pas de hashtags excessifs (3 maximum, à la fin)
