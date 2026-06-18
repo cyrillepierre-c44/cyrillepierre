@@ -1,5 +1,56 @@
 // ── Studio (auth, generations) ──────────────────────────────
 
+.studio-progress-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(5, 10, 21, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.studio-progress-box {
+  background: var(--cp-bg-card);
+  border: 1px solid var(--cp-border);
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  max-width: 360px;
+}
+
+.studio-progress-text {
+  font-family: $headers-font;
+  font-size: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.studio-progress-bar {
+  height: 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.studio-progress-bar-fill {
+  height: 100%;
+  width: 40%;
+  border-radius: 4px;
+  background: var(--cp-gradient);
+  animation: studio-progress-indeterminate 1.4s ease-in-out infinite;
+}
+
+@keyframes studio-progress-indeterminate {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+.studio-progress-hint {
+  color: var(--cp-muted);
+  font-size: 0.82rem;
+  margin: 1rem 0 0;
+}
+
 .studio-auth {
   padding: 5rem 0;
   display: flex;
@@ -77,6 +128,11 @@
 // ── Kind selector (reuses .cf-theme-card) ───────────────────
 .studio-kind-grid {
   margin-bottom: 0;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 // ── Source tabs ──────────────────────────────────────────────
@@ -200,6 +256,7 @@
 
   &--status-published { background: rgba(16, 185, 129, 0.15); color: #10b981; }
   &--status-generated { background: rgba(0, 212, 255, 0.15); color: var(--cp-accent); }
+  &--model { background: rgba(139, 92, 246, 0.15); color: var(--cp-purple); }
 }
 
 // ── Show page ────────────────────────────────────────────────
@@ -210,6 +267,25 @@
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
+}
+
+.studio-show-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.studio-regenerate-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.studio-regenerate-select {
+  width: auto;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.85rem;
 }
 
 .studio-output {
@@ -223,6 +299,34 @@
   font-size: 0.95rem;
   line-height: 1.6;
   margin: 0;
+}
+
+.studio-section {
+  margin-top: 1.5rem;
+
+  &:first-child { margin-top: 0; }
+}
+
+.studio-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+
+  &--end { justify-content: flex-end; }
+}
+
+.studio-section-title {
+  font-family: $headers-font;
+  font-size: 1rem;
+  color: var(--cp-accent);
+  margin: 0;
+}
+
+.btn-cp-sm {
+  padding: 0.4rem 0.9rem !important;
+  font-size: 0.82rem !important;
 }
 
 .studio-sources-list {

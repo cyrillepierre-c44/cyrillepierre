@@ -92,7 +92,6 @@ export default class extends Controller {
     const isError   = data.reply.includes("difficulté technique")
     if (isClarify || isError) this.userMessageCount--
 
-    const isError = data.reply.includes("difficulté technique")
     const clean = this.stripReady(data.reply).replace("##CLARIFY##", "").trim()
     this.appendMessage("assistant", clean)
     if (!isError) {

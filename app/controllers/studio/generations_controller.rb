@@ -44,6 +44,7 @@ module Studio
     end
 
     def regenerate
+      @generation.update!(llm_model: generation_params[:llm_model]) if generation_params[:llm_model].present?
       ContentGenerator.call(@generation)
       redirect_to studio_generation_path(@generation), notice: "Contenu régénéré."
     end
@@ -66,7 +67,9 @@ module Studio
     end
 
     def generation_params
-      params.require(:generation).permit(:kind, :title, :input_text, :input_url, :extra_instructions, :source_file)
+      params.require(:generation).permit(
+        :kind, :title, :input_text, :input_url, :extra_instructions, :source_file, :llm_model
+      )
     end
   end
 end

@@ -1,5 +1,15 @@
-<%= form_for generation, url: url, html: { multipart: true, data: { controller: "studio-generation" } } do |f| %>
+<%= form_for generation, url: url,
+              html: { multipart: true,
+                      data: { controller: "studio-generation", turbo: false, action: "submit->studio-generation#submitting" } } do |f| %>
   <%= render "devise/shared/error_messages", resource: generation %>
+
+  <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
+    <div class="studio-progress-box">
+      <p class="studio-progress-text">Génération en cours…</p>
+      <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
+      <p class="studio-progress-hint">Ça peut prendre jusqu'à une minute selon la source fournie.</p>
+    </div>
+  </div>
 
   <div class="studio-card">
     <h2 class="studio-card-subtitle">1. Type de contenu</h2>
@@ -15,11 +25,21 @@
       </label>
 
       <label class="cf-theme-card">
-        <%= f.radio_button :kind, "job_application", checked: generation.job_application? %>
+        <%= f.radio_button :kind, "cover_letter", checked: generation.cover_letter? %>
         <div class="cf-theme-inner">
           <span class="cf-theme-icon">✉️</span>
-          <h3 class="cf-theme-title">Lettre / Proposition</h3>
-          <p class="cf-theme-desc">Lettre de motivation ou proposition commerciale ciblée</p>
+          <h3 class="cf-theme-title">Lettre de motivation</h3>
+          <p class="cf-theme-desc">Ciblée sur une offre d'emploi ou de mission précise</p>
+          <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+        </div>
+      </label>
+
+      <label class="cf-theme-card">
+        <%= f.radio_button :kind, "commercial_proposal", checked: generation.commercial_proposal? %>
+        <div class="cf-theme-inner">
+          <span class="cf-theme-icon">📋</span>
+          <h3 class="cf-theme-title">Proposition commerciale</h3>
+          <p class="cf-theme-desc">En réponse à un brief client</p>
           <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
         </div>
       </label>
@@ -44,7 +64,17 @@
   </div>
 
   <div class="studio-card">
-    <h2 class="studio-card-subtitle">3. Source</h2>
+    <h2 class="studio-card-subtitle">3. Modèle IA</h2>
+    <div class="cf-field">
+      <%= f.select :llm_model,
+                    Generation::LLM_MODELS.map { |value, (label, _provider)| [label, value] },
+                    { selected: generation.llm_model.presence || "gpt-4o" },
+                    class: "cf-input" %>
+    </div>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">4. Source</h2>
 
     <div class="studio-source-tabs" role="tablist">
       <button type="button" class="studio-source-tab studio-source-tab--active"
@@ -73,7 +103,7 @@
   </div>
 
   <div class="studio-card">
-    <h2 class="studio-card-subtitle">4. Instructions complémentaires (optionnel)</h2>
+    <h2 class="studio-card-subtitle">5. Instructions complémentaires (optionnel)</h2>
     <div class="cf-field">
       <%= f.text_area :extra_instructions, class: "cf-input cf-textarea", rows: 3, placeholder: "Ton à adopter, points à mettre en avant…" %>
     </div>
@@ -81,6 +111,6 @@
 
   <div class="studio-actions">
     <%= link_to "Annuler", studio_generations_path, class: "btn-cp-outline" %>
-    <%= f.submit submit_label, class: "btn-cp-primary", data: { studio_generation_target: "submitButton", action: "studio-generation#submitting" } %>
+    <%= f.submit submit_label, class: "btn-cp-primary", data: { studio_generation_target: "submitButton" } %>
   </div>
 <% end %>

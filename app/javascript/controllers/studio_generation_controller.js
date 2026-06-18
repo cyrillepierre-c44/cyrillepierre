@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["tabButton", "sourcePanel", "submitButton"]
+  static targets = ["tabButton", "sourcePanel", "submitButton", "overlay"]
 
   selectSource(event) {
     const source = event.currentTarget.dataset.source
@@ -15,10 +15,18 @@ export default class extends Controller {
     })
   }
 
-  submitting() {
-    if (!this.hasSubmitButtonTarget) return
+  submitting(event) {
+    if (!event.target.checkValidity || event.target.checkValidity()) {
+      this.showOverlay()
+    }
 
-    this.submitButtonTarget.disabled = true
-    this.submitButtonTarget.value = "Génération en cours…"
+    if (this.hasSubmitButtonTarget) {
+      this.submitButtonTarget.disabled = true
+      this.submitButtonTarget.value = "Génération en cours…"
+    }
+  }
+
+  showOverlay() {
+    if (this.hasOverlayTarget) this.overlayTarget.classList.remove("d-none")
   }
 }

@@ -7,17 +7,33 @@
   </div>
 </section>
 
-<div class="container pb-5" data-controller="studio-clipboard">
+<div class="container pb-5">
   <div class="studio-card">
     <div class="studio-show-toolbar">
-      <span class="studio-badge studio-badge--status-<%= @generation.status %>"><%= @generation.status.humanize %></span>
+      <div class="studio-show-badges">
+        <span class="studio-badge studio-badge--status-<%= @generation.status %>"><%= @generation.status.humanize %></span>
+        <span class="studio-badge studio-badge--model">
+          <%= Generation::LLM_MODELS.dig(@generation.llm_model, 0) || @generation.llm_model %>
+        </span>
+      </div>
 
       <div class="studio-actions">
-        <button type="button" class="btn-cp-outline" data-action="studio-clipboard#copy">
-          Copier
-        </button>
+        <%= form_for @generation, url: regenerate_studio_generation_path(@generation), method: :patch,
+                      html: { class: "studio-regenerate-form",
+                              data: { controller: "studio-generation", turbo: false,
+                                      action: "submit->studio-generation#submitting" } } do |f| %>
+          <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
+            <div class="studio-progress-box">
+              <p class="studio-progress-text">Génération en cours…</p>
+              <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
+              <p class="studio-progress-hint">Ça peut prendre jusqu'à une minute selon la source fournie.</p>
+            </div>
+          </div>
 
-        <%= button_to "Régénérer", regenerate_studio_generation_path(@generation), method: :patch, class: "btn-cp-outline" %>
+          <%= f.select :llm_model, Generation::LLM_MODELS.map { |value, (label, _provider)| [label, value] },
+                        { selected: @generation.llm_model }, class: "cf-input studio-regenerate-select" %>
+          <%= f.submit "Régénérer", class: "btn-cp-outline", data: { studio_generation_target: "submitButton" } %>
+        <% end %>
 
         <% if policy(@generation).publish? && !@generation.published? %>
           <%= button_to "Publier sur /actus", publish_studio_generation_path(@generation), method: :patch, class: "btn-cp-primary" %>
@@ -33,10 +49,25 @@
       </div>
     </div>
 
-    <% if @generation.output.present? %>
-      <pre class="studio-output" data-studio-clipboard-target="source"><%= @generation.output %></pre>
-    <% else %>
+    <% if @generation.output.blank? %>
       <p class="studio-empty">Pas encore de contenu généré.</p>
+    <% elsif @generation.structured_output? %>
+      <% @generation.sections.each do |key, content| %>
+        <div class="studio-section" data-controller="studio-clipboard">
+          <div class="studio-section-header">
+            <h3 class="studio-section-title"><%= Generation::SECTION_LABELS.fetch(key, key.to_s.humanize) %></h3>
+            <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
+          </div>
+          <pre class="studio-output" data-studio-clipboard-target="source"><%= content %></pre>
+        </div>
+      <% end %>
+    <% else %>
+      <div data-controller="studio-clipboard">
+        <div class="studio-section-header studio-section-header--end">
+          <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
+        </div>
+        <pre class="studio-output" data-studio-clipboard-target="source"><%= @generation.output %></pre>
+      </div>
     <% end %>
   </div>
 

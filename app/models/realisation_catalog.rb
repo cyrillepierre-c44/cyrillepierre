@@ -42,7 +42,7 @@ module RealisationCatalog
       type_orga: "usine industrielle process continu",
       context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes · production continue",
       titre: "Réduction de l'absentéisme de courte durée",
-      resultat: "−10% absentéisme · +2 M ampoules/mois",
+      resultat: "Absentéisme divisé par deux dès la 1ère année · +2 M ampoules/mois",
       semantic_scope: "UNIQUEMENT : arrêts maladie répétés, absentéisme, présence au travail, éviter les intérimaires mal formés. NE PAS utiliser pour : gain de productivité, capacité, isopérimètre, départs en retraite, flux, organisation des postes.",
       tags: %w[pharma absentéisme arrêts-maladie présence engagement management intérimaires] },
     { id: "N°07",
@@ -117,7 +117,8 @@ module RealisationCatalog
       type_orga: "usine industrielle automatisée",
       context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · agroalimentaire · 100 personnes",
       titre: "Refonte du management de proximité — formation et alignement des chefs d'équipe",
-      resultat: "Managers alignés · ambiance assainie · 0 tension syndicale · montée en compétences interne",
+      resultat: "−40% de pannes · 850 K€/an d'économies · 6 000h gagnées (200 K€/an) · managers alignés · " \
+                "0 tension syndicale",
       tags: %w[agro management formation chefs-équipe alignement-terrain coordination-équipes animation-équipe DDS rituels-management management-visuel pilotage-terrain IRP développement-managers coaching management-de-proximité] },
     { id: "N°17",
       scale: "ETI/GE (SOGEFI, équipementier automobile)",
