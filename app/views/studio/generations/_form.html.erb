@@ -15,7 +15,8 @@
     <h2 class="studio-card-subtitle">1. Type de contenu</h2>
     <div class="cf-themes-grid studio-kind-grid">
       <label class="cf-theme-card">
-        <%= f.radio_button :kind, "linkedin_post", checked: generation.kind.blank? || generation.linkedin_post? %>
+        <%= f.radio_button :kind, "linkedin_post", checked: generation.kind.blank? || generation.linkedin_post?,
+                            data: { action: "change->studio-generation#selectKind" } %>
         <div class="cf-theme-inner">
           <span class="cf-theme-icon">💼</span>
           <h3 class="cf-theme-title">Post LinkedIn</h3>
@@ -25,7 +26,8 @@
       </label>
 
       <label class="cf-theme-card">
-        <%= f.radio_button :kind, "cover_letter", checked: generation.cover_letter? %>
+        <%= f.radio_button :kind, "cover_letter", checked: generation.cover_letter?,
+                            data: { action: "change->studio-generation#selectKind" } %>
         <div class="cf-theme-inner">
           <span class="cf-theme-icon">✉️</span>
           <h3 class="cf-theme-title">Lettre de motivation</h3>
@@ -35,7 +37,8 @@
       </label>
 
       <label class="cf-theme-card">
-        <%= f.radio_button :kind, "commercial_proposal", checked: generation.commercial_proposal? %>
+        <%= f.radio_button :kind, "commercial_proposal", checked: generation.commercial_proposal?,
+                            data: { action: "change->studio-generation#selectKind" } %>
         <div class="cf-theme-inner">
           <span class="cf-theme-icon">📋</span>
           <h3 class="cf-theme-title">Proposition commerciale</h3>
@@ -45,7 +48,8 @@
       </label>
 
       <label class="cf-theme-card">
-        <%= f.radio_button :kind, "site_actu", checked: generation.site_actu? %>
+        <%= f.radio_button :kind, "site_actu", checked: generation.site_actu?,
+                            data: { action: "change->studio-generation#selectKind" } %>
         <div class="cf-theme-inner">
           <span class="cf-theme-icon">📰</span>
           <h3 class="cf-theme-title">Actu du site</h3>
@@ -64,6 +68,22 @@
                     { selected: generation.orientation.presence || "consultant" },
                     class: "cf-input" %>
       <p class="studio-field-hint">Surtout utile pour les posts LinkedIn — change le ton et l'appel à l'action.</p>
+    </div>
+  </div>
+
+  <div class="studio-card d-none" data-studio-generation-target="realisationField">
+    <h2 class="studio-card-subtitle">Réalisation à mettre en avant (optionnel)</h2>
+    <div class="cf-field">
+      <%= f.select :realisation_id,
+                    options_for_select(
+                      [["Laisser l'IA choisir", ""]] +
+                      RealisationCatalog::ITEMS.map { |r| ["#{r[:id]} — #{r[:titre]}", r[:id]] },
+                      generation.realisation_id
+                    ), {}, class: "cf-input" %>
+      <p class="studio-field-hint">
+        Si tu colles une source ou un brief, l'IA choisit elle-même la réalisation la plus pertinente — ce
+        sélecteur n'impose un choix que pour les posts générés sans source.
+      </p>
     </div>
   </div>
 

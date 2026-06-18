@@ -15,6 +15,11 @@
         <span class="studio-badge studio-badge--model">
           <%= Generation::LLM_MODELS.dig(@generation.llm_model, 0) || @generation.llm_model %>
         </span>
+        <% if @generation.realisation_id.present? %>
+          <span class="studio-badge" title="Réalisation utilisée pour ce post">
+            <%= @generation.realisation_id %>
+          </span>
+        <% end %>
       </div>
 
       <div class="studio-actions">

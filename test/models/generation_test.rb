@@ -86,4 +86,28 @@ class GenerationTest < ActiveSupport::TestCase
     )
     assert generation.valid?
   end
+
+  test "auto-assigns a realisation for a sourceless linkedin post" do
+    generation = build_generation
+    generation.save!
+    assert_includes RealisationCatalog::ITEMS.map { |r| r[:id] }, generation.realisation_id
+  end
+
+  test "does not auto-assign a realisation when a source is provided" do
+    generation = build_generation(input_text: "Un brief précis sur un sujet donné")
+    generation.save!
+    assert_nil generation.realisation_id
+  end
+
+  test "does not override a manually chosen realisation" do
+    generation = build_generation(realisation_id: "N°05")
+    generation.save!
+    assert_equal "N°05", generation.realisation_id
+  end
+
+  test "does not auto-assign a realisation for other kinds" do
+    generation = build_generation(kind: :site_actu)
+    generation.save!
+    assert_nil generation.realisation_id
+  end
 end

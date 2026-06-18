@@ -1,7 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["tabButton", "sourcePanel", "submitButton", "overlay"]
+  static targets = ["tabButton", "sourcePanel", "submitButton", "overlay", "realisationField"]
+
+  connect() {
+    this.toggleRealisationField()
+  }
+
+  selectKind() {
+    this.toggleRealisationField()
+  }
+
+  toggleRealisationField() {
+    if (!this.hasRealisationFieldTarget) return
+
+    const checked = this.element.querySelector('input[name="generation[kind]"]:checked')
+    this.realisationFieldTarget.classList.toggle("d-none", !checked || checked.value !== "linkedin_post")
+  }
 
   selectSource(event) {
     const source = event.currentTarget.dataset.source

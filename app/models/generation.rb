@@ -42,6 +42,8 @@ class Generation < ApplicationRecord
   validates :llm_model, inclusion: { in: LLM_MODELS.keys }
   validate :source_file_is_acceptable
 
+  before_save :assign_auto_realisation, if: :linkedin_post?
+
   def llm_provider
     LLM_MODELS.fetch(llm_model, ["", :default]).last
   end
@@ -76,6 +78,18 @@ class Generation < ApplicationRecord
   end
 
   private
+
+  # When a LinkedIn post has no source to work from, the model would otherwise invent
+  # both the topic and the realisation to cite — pick one upfront instead, so the prompt
+  # can frame the post around it (see ContentGenerator#linkedin_post_prompt).
+  def assign_auto_realisation
+    return if realisation_id.present?
+    return if input_text.present? || input_url.present? || source_file.attached?
+
+    recent_ids = user.generations.where(kind: :linkedin_post).where.not(realisation_id: [nil, ""])
+                     .order(created_at: :desc).limit(10).pluck(:realisation_id)
+    self.realisation_id = RealisationCatalog.pick_unused(exclude_ids: recent_ids)
+  end
 
   def source_file_is_acceptable
     return unless source_file.attached?

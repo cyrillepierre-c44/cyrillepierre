@@ -162,6 +162,45 @@ class ContentGenerator
     end.join("\n")
   end
 
+  def locked_realisation
+    return @locked_realisation if defined?(@locked_realisation)
+
+    @locked_realisation = generation.realisation_id.present? ? RealisationCatalog.find(generation.realisation_id) : nil
+  end
+
+  # When no source was provided, Generation#assign_auto_realisation (or a manual choice in the
+  # form) has already fixed a single realisation — frame the post around it and its semantic_scope
+  # instead of letting the model pick one after inventing a topic on its own.
+  def linkedin_realisations_block
+    return locked_realisation_block if locked_realisation
+
+    <<~TXT
+      RÉALISATIONS DE CYRILLE (à citer si pertinent, sans les identifiants internes type N°XX) :
+      #{realisations_str}
+
+      Avant de choisir laquelle citer, vérifie que son éventuel "semantic_scope" correspond bien au sujet ou au
+      brief fourni — certaines réalisations précisent explicitement pour quels sujets les utiliser ou ne pas
+      les utiliser.
+    TXT
+  end
+
+  def locked_realisation_block
+    r = locked_realisation
+    scope_line = "Cadre d'utilisation : #{r[:semantic_scope]}" if r[:semantic_scope].present?
+    <<~TXT
+      RÉALISATION À UTILISER POUR CE POST (obligatoire, n'en choisis pas une autre) :
+      #{r[:titre]} — #{r[:context]} — #{r[:resultat]}
+      #{scope_line}
+    TXT
+  end
+
+  def linkedin_realisation_choice_consigne
+    return if locked_realisation
+
+    "- Choisis une réalisation différente de celles déjà utilisées dans les posts récents listés ci-dessus, " \
+      "sauf si aucune autre ne convient au sujet"
+  end
+
   def cv_context
     "CV COMPLET DE CYRILLE (source la plus détaillée et la plus à jour — intitulés de poste exacts, dates, " \
     "clients, missions de conseil — à privilégier sur le catalogue ci-dessus en cas de détail manquant ou " \
@@ -188,8 +227,7 @@ class ContentGenerator
 
       #{ORIENTATION_GUIDANCE.fetch(generation.orientation, ORIENTATION_GUIDANCE['consultant'])}
 
-      RÉALISATIONS DE CYRILLE (à citer si pertinent, sans les identifiants internes type N°XX) :
-      #{realisations_str}
+      #{linkedin_realisations_block}
 
       #{cv_context}
 
@@ -212,8 +250,7 @@ class ContentGenerator
       CONSIGNES :
       - 150 à 250 mots
       - Phrases courtes, retours à la ligne fréquents (format LinkedIn, pas de gros pavés)
-      - Choisis une réalisation différente de celles déjà utilisées dans les posts récents listés ci-dessus,
-        sauf si aucune autre ne convient au sujet
+      #{linkedin_realisation_choice_consigne}
       - Quand c'est pertinent, traduis le résultat opérationnel en langage compréhensible par un décideur financier
         (ex. "moins d'arrêts machine non planifiés" → "un risque opérationnel mieux maîtrisé"), MAIS uniquement à
         partir des chiffres et faits réellement fournis dans les réalisations ou les sources — jamais de ratio,

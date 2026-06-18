@@ -191,5 +191,17 @@ module RealisationCatalog
       resultat: "DLE 70% → 88% immédiat · commandes intérimaires pilotées en temps réel",
       tags: %w[pharma KPI indicateurs MO suivi intérimaires DLE pilotage-RH tableau-de-bord optimisation-effectifs] }
   ].freeze
+
+  def self.find(id)
+    ITEMS.find { |item| item[:id] == id }
+  end
+
+  # Picks a realisation not present in exclude_ids, so that auto-generated posts (no
+  # source provided) rotate through the catalogue instead of always citing the same ones.
+  def self.pick_unused(exclude_ids: [])
+    available = ITEMS.map { |item| item[:id] } - exclude_ids
+    available = ITEMS.map { |item| item[:id] } if available.empty?
+    available.sample
+  end
 end
 # rubocop:enable Layout/LineLength, Metrics/ModuleLength
