@@ -57,7 +57,7 @@ Rails.application.configure do
   config.solid_queue.connects_to = { database: { writing: :queue } }
 
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_url_options = { host: "cyrillepierre.fr" }
+  config.action_mailer.default_url_options = { host: "cyrillepierre.com" }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.smtp_settings = {
