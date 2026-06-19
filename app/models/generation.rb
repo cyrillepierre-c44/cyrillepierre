@@ -40,11 +40,24 @@ class Generation < ApplicationRecord
   # :mammouth routes through the Mammouth.ai OpenAI-compatible gateway (MAMMOUTH_API_KEY).
   LLM_MODELS = {
     "gpt-4o" => ["GPT-4o", :default],
-    "gemini-3.5-flash" => ["Gemini 3.5 Flash (via Mammouth)", :mammouth]
+    "gemini-3.5-flash" => ["Gemini 3.5 Flash (via Mammouth)", :mammouth],
+    "claude-sonnet-4-6" => ["Claude Sonnet 4.6 (via Mammouth)", :mammouth],
+    "claude-opus-4-8" => ["Claude Opus 4.8 (via Mammouth)", :mammouth],
+    "mistral-large-3" => ["Mistral Large 3 (via Mammouth)", :mammouth],
+    "gpt-5.4" => ["GPT-5.4 (via Mammouth)", :mammouth]
+  }.freeze
+
+  # All routed through Mammouth (image generation isn't available via the app's default
+  # provider — see VisualGenerator). gpt-5.4-image-2 is deliberately excluded: it timed out
+  # (Cloudflare 524) on every attempt during evaluation.
+  IMAGE_MODELS = {
+    "gemini-2.5-flash-image" => "Gemini 2.5 Flash",
+    "gemini-3.1-flash-image-preview" => "Gemini 3.1 Flash (preview)"
   }.freeze
 
   validates :kind, presence: true
   validates :llm_model, inclusion: { in: LLM_MODELS.keys }
+  validates :image_model, inclusion: { in: IMAGE_MODELS.keys }
   validate :source_file_is_acceptable
 
   before_save :assign_auto_realisation, if: :linkedin_post?

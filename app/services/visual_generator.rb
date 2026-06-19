@@ -2,18 +2,23 @@
 # already used for text generation in ContentGenerator.
 class VisualGenerator
   MAMMOUTH_API_BASE = "https://api.mammouth.ai/v1"
-  IMAGE_MODEL = "gemini-2.5-flash-image"
 
   STYLE_PROMPT = <<~TXT
     Flat minimalist line-art illustration, dark navy (#1a2332) background, gold (#c9a961) lines only.
-    Set the scene inside a REAL industrial environment matching the context below: visible production
-    line, conveyor belt, machinery, control panel — never a generic abstract tech/network/globe
-    illustration floating in empty space.
+    Pick concrete visual elements that genuinely match the SPECIFIC subject described below — read it
+    carefully first. Examples of how the scene should adapt: a production line/conveyor/machinery for a
+    post about machines or production performance; a planning board, calendar grid or roster for a post
+    about staffing, shifts or working hours; an org chart, meeting table or HR-style folder/badge icons
+    for a post about people management, negotiation or training; a supply chain/truck/warehouse scene for
+    logistics. Never default to factory machinery if the subject is actually about people, schedules or
+    organisation — never a generic abstract tech/network/globe illustration either.
     Include a concrete visual metaphor for a measurable improvement tied to the result described below:
-    a control room screen or dashboard showing a bar chart where one bar is clearly cut in half versus
-    the other, or a gauge needle moving from a red zone to a green zone. This gauge/chart may use red,
-    yellow and green accents — every other element of the illustration stays navy/gold only.
-    No text, no readable letters or numbers, no human faces.
+    a screen or dashboard showing a bar chart where one bar is clearly cut in half versus the other, or a
+    gauge needle moving from a red zone to a green zone. This gauge/chart may use red, yellow and green
+    accents — every other element of the illustration stays navy/gold only.
+    No text, no readable letters or numbers. People, if shown at all, must be simple faceless
+    silhouettes or icons (no eyes, no nose, no mouth, no facial features, no head profile outline) —
+    like a generic pictogram, never a recognisable human face or profile.
   TXT
 
   def self.call(generation)
@@ -25,7 +30,7 @@ class VisualGenerator
   end
 
   def call
-    image = mammouth_context.paint(prompt, model: IMAGE_MODEL, provider: :openai, assume_model_exists: true)
+    image = mammouth_context.paint(prompt, model: image_model, provider: :openai, assume_model_exists: true)
     generation.visual.attach(io: StringIO.new(image.to_blob), filename: "visual.png", content_type: image.mime_type)
     generation
   rescue StandardError => e
@@ -36,6 +41,10 @@ class VisualGenerator
   private
 
   attr_reader :generation
+
+  def image_model
+    generation.image_model.presence || Generation::IMAGE_MODELS.keys.first
+  end
 
   def mammouth_context
     RubyLLM.context do |c|

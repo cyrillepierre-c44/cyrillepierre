@@ -186,6 +186,20 @@
   border-color: #ef4444 !important;
 }
 
+.studio-btn-success {
+  color: #10b981 !important;
+  border-color: #10b981 !important;
+}
+
+// "Modifier le texte" lives in the toolbar on wide screens (between Régénérer and Supprimer),
+// and below the text on narrow screens — only one of the two is ever shown at once.
+.studio-edit-toolbar-btn { display: none; }
+
+@media (min-width: 681px) {
+  .studio-edit-toolbar-btn { display: inline-flex; }
+  .studio-edit-mobile-btn { display: none; }
+}
+
 // ── List ─────────────────────────────────────────────────────
 .studio-empty {
   color: var(--cp-muted);
@@ -280,7 +294,7 @@
 .studio-regenerate-form {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
@@ -290,17 +304,63 @@
   font-size: 0.85rem;
 }
 
+.studio-output-box {
+  position: relative;
+}
+
 .studio-output {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--cp-border);
   border-radius: 0.6rem;
   padding: 1.25rem;
+  padding-right: 3rem;
   color: var(--cp-text);
   white-space: pre-wrap;
   font-family: $body-font;
   font-size: 0.95rem;
   line-height: 1.6;
   margin: 0;
+}
+
+// Small square icon button (copy icon) — used standalone, or floated over a box's
+// top-right corner via the --overlay modifier, like a code-block copy button.
+.studio-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--cp-border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cp-muted);
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    color: var(--cp-accent);
+    border-color: var(--cp-accent);
+    background: rgba(0, 212, 255, 0.1);
+  }
+
+  &--overlay {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+  }
+
+  // For use over a light/white background (e.g. the LinkedIn preview card).
+  &--light {
+    border-color: rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(0, 0, 0, 0.55);
+
+    &:hover {
+      color: #0a66c2;
+      border-color: #0a66c2;
+      background: rgba(10, 102, 194, 0.08);
+    }
+  }
 }
 
 .studio-section {
@@ -312,6 +372,7 @@
 // Mimics LinkedIn's own card (white background, system font, dark text) so the post
 // can be checked the way it will actually render, instead of in the app's dark theme.
 .studio-linkedin-preview {
+  position: relative;
   background: #ffffff;
   border-radius: 0.6rem;
   padding: 1rem 1.25rem 1.25rem;
@@ -410,7 +471,7 @@
   font-family: $headers-font;
   font-size: 1rem;
   color: var(--cp-accent);
-  margin: 0;
+  margin: 0 0 0.6rem;
 }
 
 .btn-cp-sm {
@@ -468,6 +529,8 @@
   .studio-card { padding: 1.25rem; }
 
   .studio-visual-action { max-width: 100%; }
+
+  .studio-btn-success { width: 100%; }
 
   .studio-actions,
   .studio-actions--top {

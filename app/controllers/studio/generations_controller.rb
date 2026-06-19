@@ -62,6 +62,7 @@ module Studio
     end
 
     def generate_visual
+      @generation.update!(image_model: generation_params[:image_model]) if generation_params[:image_model].present?
       VisualGenerator.call(@generation)
       redirect_to studio_generation_path(@generation), notice: "Visuel généré."
     end
@@ -83,7 +84,7 @@ module Studio
     def generation_params
       params.require(:generation).permit(
         :kind, :title, :input_text, :input_url, :extra_instructions, :source_file, :llm_model, :orientation,
-        :realisation_id, :output, :generate_visual
+        :realisation_id, :output, :generate_visual, :image_model
       )
     end
 

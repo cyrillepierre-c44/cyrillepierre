@@ -29,7 +29,7 @@
 </section>
 
 <div class="container pb-5">
-  <div class="studio-card">
+  <div class="studio-card" data-controller="studio-output-edit">
     <div class="studio-show-toolbar">
       <div class="studio-show-badges">
         <span class="studio-badge studio-badge--status-<%= @generation.status %>"><%= @generation.status.humanize %></span>
@@ -67,6 +67,13 @@
           <%= button_to "Dépublier", unpublish_studio_generation_path(@generation), method: :patch, class: "btn-cp-outline" %>
         <% end %>
 
+        <% if policy(@generation).update? && @generation.output.present? %>
+          <button type="button" class="btn-cp-outline studio-btn-success studio-edit-toolbar-btn"
+                  data-action="studio-output-edit#edit">
+            ✎ Modifier le texte
+          </button>
+        <% end %>
+
         <% if policy(@generation).destroy? %>
           <%= button_to "Supprimer", studio_generation_path(@generation), method: :delete,
                          class: "btn-cp-outline studio-btn-danger",
@@ -78,21 +85,24 @@
     <% if @generation.output.blank? %>
       <p class="studio-empty">Pas encore de contenu généré.</p>
     <% else %>
-      <div data-controller="studio-output-edit">
+      <div>
         <div data-studio-output-edit-target="display">
           <% if @generation.structured_output? %>
             <% @generation.sections.each do |key, content| %>
               <div class="studio-section" data-controller="studio-clipboard">
-                <div class="studio-section-header">
-                  <h3 class="studio-section-title"><%= Generation::SECTION_LABELS.fetch(key, key.to_s.humanize) %></h3>
-                  <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
+                <h3 class="studio-section-title"><%= Generation::SECTION_LABELS.fetch(key, key.to_s.humanize) %></h3>
+                <div class="studio-output-box">
+                  <pre class="studio-output" data-studio-clipboard-target="source"><%= content %></pre>
+                  <button type="button" class="studio-icon-btn studio-icon-btn--overlay" data-action="studio-clipboard#copy"
+                          title="Copier" aria-label="Copier">
+                    <i class="fa-regular fa-copy"></i>
+                  </button>
                 </div>
-                <pre class="studio-output" data-studio-clipboard-target="source"><%= content %></pre>
               </div>
             <% end %>
           <% elsif @generation.linkedin_post? %>
             <% formatted_post = LinkedinTextFormatter.call(@generation.output) %>
-            <div class="studio-linkedin-preview">
+            <div class="studio-linkedin-preview" data-controller="studio-clipboard">
               <div class="studio-linkedin-preview-header">
                 <img src="/images/cyrille.jpg" alt="Cyrille PIERRE" class="studio-linkedin-preview-avatar">
                 <div>
@@ -101,26 +111,27 @@
                     Consultant indépendant · Management de transition, Excellence opérationnelle &amp; Tech/IA
                   </div>
                 </div>
+                <button type="button" class="studio-icon-btn studio-icon-btn--overlay studio-icon-btn--light"
+                        data-action="studio-clipboard#copy" title="Copier" aria-label="Copier">
+                  <i class="fa-regular fa-copy"></i>
+                </button>
               </div>
               <p class="studio-linkedin-preview-body"><%= formatted_post %></p>
-            </div>
-
-            <div class="studio-section-header studio-section-header--end mt-3" data-controller="studio-clipboard">
-              <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
               <pre class="d-none" data-studio-clipboard-target="source"><%= formatted_post %></pre>
             </div>
           <% else %>
-            <div data-controller="studio-clipboard">
-              <div class="studio-section-header studio-section-header--end">
-                <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-clipboard#copy">Copier</button>
-              </div>
+            <div data-controller="studio-clipboard" class="studio-output-box">
               <pre class="studio-output" data-studio-clipboard-target="source"><%= @generation.output %></pre>
+              <button type="button" class="studio-icon-btn studio-icon-btn--overlay" data-action="studio-clipboard#copy"
+                      title="Copier" aria-label="Copier">
+                <i class="fa-regular fa-copy"></i>
+              </button>
             </div>
           <% end %>
 
           <% if policy(@generation).update? %>
-            <div class="studio-section-header--end mt-2">
-              <button type="button" class="btn-cp-outline btn-cp-sm" data-action="studio-output-edit#edit">
+            <div class="studio-section-header--end mt-4 studio-edit-mobile-btn">
+              <button type="button" class="btn-cp-outline studio-btn-success" data-action="studio-output-edit#edit">
                 ✎ Modifier le texte
               </button>
             </div>
@@ -155,7 +166,8 @@
 
       <% if policy(@generation).generate_visual? %>
         <%= form_for @generation, url: generate_visual_studio_generation_path(@generation), method: :patch,
-                      html: { data: { controller: "studio-generation", turbo: false,
+                      html: { class: "studio-regenerate-form mt-2",
+                              data: { controller: "studio-generation", turbo: false,
                                       action: "submit->studio-generation#submitting" } } do |f| %>
           <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
             <div class="studio-progress-box">
@@ -165,8 +177,11 @@
             </div>
           </div>
 
+          <%= f.select :image_model,
+                        Generation::IMAGE_MODELS.map { |value, label| [label, value] },
+                        { selected: @generation.image_model }, class: "cf-input studio-regenerate-select" %>
           <%= f.submit @generation.visual.attached? ? "Régénérer le visuel" : "Générer un visuel",
-                        class: "btn-cp-outline studio-visual-action mt-2",
+                        class: "btn-cp-outline",
                         data: { studio_generation_target: "submitButton" } %>
         <% end %>
       <% end %>
