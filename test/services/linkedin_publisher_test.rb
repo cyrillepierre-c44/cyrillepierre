@@ -26,17 +26,20 @@ class LinkedinPublisherTest < ActiveSupport::TestCase
     assert_raises(LinkedinPublisher::Error) { LinkedinPublisher.call(generation) }
   end
 
-  test "publishes the post and stamps linkedin_published_at" do
+  test "publishes the post, stamps linkedin_published_at and stores the post urn" do
     generation = Generation.create!(user: connected_user, kind: :linkedin_post, output: "Un **post** de test.")
 
     original_post = Faraday.method(:post)
     Faraday.define_singleton_method(:post) do |*_args, **_kwargs|
-      FakeResponse.new(201, { id: "urn:li:share:123" }.to_json)
+      FakeResponse.new(201, "", { "x-restli-id" => "urn:li:share:123" })
     end
 
     begin
       LinkedinPublisher.call(generation)
-      assert generation.reload.linkedin_published_at.present?
+      generation.reload
+      assert generation.linkedin_published_at.present?
+      assert_equal "urn:li:share:123", generation.linkedin_post_urn
+      assert_equal "https://www.linkedin.com/feed/update/urn:li:share:123/", generation.linkedin_post_url
     ensure
       Faraday.define_singleton_method(:post, original_post)
     end
