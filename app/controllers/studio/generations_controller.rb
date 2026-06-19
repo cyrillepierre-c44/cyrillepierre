@@ -62,7 +62,8 @@ module Studio
     end
 
     def generate_visual
-      @generation.update!(image_model: generation_params[:image_model]) if generation_params[:image_model].present?
+      image_model = params.dig(:generation, :image_model)
+      @generation.update!(image_model: image_model) if image_model.present?
       VisualGenerator.call(@generation)
       redirect_to studio_generation_path(@generation), notice: "Visuel généré."
     end

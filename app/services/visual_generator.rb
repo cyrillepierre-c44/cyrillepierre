@@ -55,21 +55,37 @@ class VisualGenerator
 
   # The generated post itself is the primary indication of what to depict — it carries the
   # actual angle/narrative the LLM chose, which the bare catalogue facts don't (especially when
-  # a brief steered the post toward a specific framing). The locked realisation's type_orga and
-  # resultat (when there is one) are added on top to anchor the scene in a real industrial
-  # setting and the exact figures, instead of letting the image model improvise or invent numbers.
+  # a brief steered the post toward a specific framing). When a specific realisation is locked
+  # (manual choice or auto-rotation — see Generation#assign_auto_realisation), its full text and
+  # the visual_hint describing its bespoke /realisations page illustration are added on top, so
+  # the image takes inspiration from the site's existing design instead of improvising. When no
+  # realisation is locked (a brief steered the LLM to pick its own angle freely), none of this
+  # applies — the model gets full creative freedom from the post text alone.
   def prompt
     parts = [STYLE_PROMPT, "Post LinkedIn à illustrer :\n#{generation.output}"]
-    parts << "Faits précis à respecter pour la scène : #{locked_realisation_facts}" if locked_realisation_facts
+    parts << locked_realisation_inspiration if locked_realisation
     parts.join("\n\n")
   end
 
-  def locked_realisation_facts
-    return unless generation.realisation_id.present?
+  def locked_realisation
+    return @locked_realisation if defined?(@locked_realisation)
 
-    r = RealisationCatalog.find(generation.realisation_id)
-    return unless r
+    @locked_realisation = generation.realisation_id.present? ? RealisationCatalog.find(generation.realisation_id) : nil
+  end
 
-    "#{r[:type_orga]} — résultat mesuré : #{r[:resultat]}"
+  def locked_realisation_inspiration
+    r = locked_realisation
+    if r[:visual_hint].present?
+      hint_line = "Inspiration pour la composition (illustration existante de cette réalisation sur le " \
+                  "site, à réinterpréter dans le style ci-dessus, jamais à copier littéralement) : " \
+                  "#{r[:visual_hint]}"
+    end
+
+    <<~TXT
+      Réalisation précise à illustrer (texte complet, faits à respecter pour la scène — ne jamais faire
+      apparaître de nom d'entreprise réel, même sous forme de logo ou de couleurs de marque) :
+      #{r[:titre]} — #{r[:scale]}, #{r[:type_orga]} — résultat mesuré : #{r[:resultat]}
+      #{hint_line}
+    TXT
   end
 end

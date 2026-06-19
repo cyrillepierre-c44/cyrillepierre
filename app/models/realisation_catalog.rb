@@ -7,6 +7,8 @@ module RealisationCatalog
       context: "Yoplait (marque General Mills, GE mondial) · site Vienne · agroalimentaire · 200 personnes · 3 unités de production",
       titre: "Fusion des silos Production / Maintenance / Process",
       resultat: "+8% TRS · 480 K€/an · −30% aléas",
+      visual_hint: "Graphique en barres avant/après (57%→65%) avec une rangée d'icônes engrenage, personnes et " \
+                   "poignée de main, et un encart montant en euros.",
       tags: %w[agro agroalimentaire TRS rendement performance silos management] },
     { id: "N°02",
       scale: "ETI (CENEXI, 400p, 3 sites)",
@@ -14,6 +16,8 @@ module RealisationCatalog
       context: "CENEXI (CMO pharma indépendant, 400 personnes, 3 sites) · site Fontenay-sous-Bois · lignes de remplissage aseptiques automatisées",
       titre: "Plan de réduction des rebuts sur 18 mois",
       resultat: "450 K€/an économisés",
+      visual_hint: "Courbe en pointillés descendante (rebuts), une petite icône d'ampoule injectable, encart " \
+                   "montant économisé.",
       tags: %w[pharma pharmaceutique rebuts qualité pertes SAP] },
     { id: "N°03",
       scale: "PME-site / filiale GE (Campbell Soup Co.)",
@@ -21,6 +25,8 @@ module RealisationCatalog
       context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · agroalimentaire · lignes de production automatisées",
       titre: "Digitalisation du pilotage de la performance (TRS)",
       resultat: "240 K€/an · −50% arrêts non identifiés",
+      visual_hint: "Un écran/tablette avec des barres de progression (OEE en direct), encadré par une icône " \
+                   "presse-papier se transformant en tablette.",
       tags: %w[agro agroalimentaire digital TRS OEE arrêts indicateurs tableau-de-bord] },
     { id: "N°04",
       scale: "PME-site / filiale GE (Campbell Soup Co.)",
@@ -28,6 +34,8 @@ module RealisationCatalog
       context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · agroalimentaire · supply chain & production",
       titre: "Standardisation du packaging barquette",
       resultat: "400 K€ de gains · supply chain + production",
+      visual_hint: "Petite grille de 6 boîtes ('Par 6') qui devient, via une flèche, une grille plus dense de " \
+                   "8 boîtes ('Par 8'), icône carton.",
       tags: %w[agro agroalimentaire standardisation packaging flux supply-chain] },
     { id: "N°05",
       scale: "PME-site / filiale GE (Campbell Soup Co.)",
@@ -35,6 +43,8 @@ module RealisationCatalog
       context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · 100 personnes · lignes automatisées",
       titre: "Organisation en Unités Autonomes de Production (UAP)",
       resultat: "TRS 57% → 67% · durées intervention ÷2",
+      visual_hint: "Deux boîtes séparées (Production / Maintenance) qui fusionnent via une flèche en une seule " \
+                   "boîte (UAP), encart TRS.",
       semantic_scope: "Pour : restructuration organisationnelle production/maintenance, création d'unités autonomes, amélioration TRS. NE PAS utiliser pour de l'animation d'équipe, de la motivation ou des rituels de management — utiliser N°16 pour ces sujets.",
       tags: %w[agro organisation UAP autonomie maintenance production TRS productivité capacité restructuration-orga] },
     { id: "N°06",
@@ -43,6 +53,8 @@ module RealisationCatalog
       context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes · production continue",
       titre: "Réduction de l'absentéisme de courte durée",
       resultat: "Absentéisme divisé par deux dès la 1ère année · +2 M ampoules/mois",
+      visual_hint: "Deux calendriers mensuels côte à côte, avant (plusieurs cases rouges d'absence) vs après " \
+                   "(presque aucune), icône médaille.",
       semantic_scope: "UNIQUEMENT : arrêts maladie répétés, absentéisme, présence au travail, éviter les intérimaires mal formés. NE PAS utiliser pour : gain de productivité, capacité, isopérimètre, départs en retraite, flux, organisation des postes.",
       tags: %w[pharma absentéisme arrêts-maladie présence engagement management intérimaires] },
     { id: "N°07",
@@ -51,6 +63,8 @@ module RealisationCatalog
       context: "LIEBIG (marque Campbell Soup Company) · site Le Pontet · budget CAPEX 4 M€/an · industrie agroalimentaire",
       titre: "Plan Directeur CAPEX à 3 ans — 10 M€",
       resultat: "10 M€ planifiés · validé Direction Monde",
+      visual_hint: "Une frise chronologique horizontale sur 3 ans avec 3 jalons et petites cartes projet, " \
+                   "badge 'Direction Monde validée'.",
       tags: %w[agro CAPEX investissement stratégie direction] },
     { id: "N°08",
       scale: "PME-site / filiale GE (Campbell Soup Co.)",
@@ -58,6 +72,8 @@ module RealisationCatalog
       context: "LIEBIG (marque Campbell Soup Company) · site Le Pontet · travaux neufs · industrie agroalimentaire",
       titre: "Mise aux normes HSE — LOTO, STEP, Bruit, Sprinklage",
       resultat: "930 K€ investis · conformité DREAL",
+      visual_hint: "Rangée de 4 icônes sécurité (cadenas, goutte d'eau, haut-parleur, douche) avec un court " \
+                   "libellé chacune, badge conformité.",
       tags: %w[HSE sécurité conformité réglementation travaux] },
     { id: "N°09",
       scale: "ETI (CENEXI, 400p, 3 sites)",
@@ -65,6 +81,8 @@ module RealisationCatalog
       context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 2 lignes de remplissage aseptiques automatisées",
       titre: "Organisation 7 jours/7 sur lignes aseptiques",
       resultat: "+500 000 ampoules/semaine",
+      visual_hint: "Deux bandeaux calendrier hebdomadaire, avant (5 jours couverts) vs après (7 jours " \
+                   "couverts), icône ampoule.",
       tags: %w[pharma capacité production organisation 7j7 weekend] },
     { id: "N°10",
       scale: "ETI/GE (client automobile)",
@@ -72,6 +90,8 @@ module RealisationCatalog
       context: "Mission EFESO Consulting · sous-traitant automobile · intervention COMEX d'une structure ETI/GE",
       titre: "Plan de progrès avec un COMEX non aligné",
       resultat: "Mission signée · 4 mois terrain · COMEX converti",
+      visual_hint: "Un organigramme simple : une boîte en haut (PDG) reliée à 3 boîtes en dessous (directeurs), " \
+                   "badge 'mission signée'.",
       semantic_scope: "UNIQUEMENT pour : résistance au changement au niveau COMEX ou Direction, alignement stratégique entre dirigeants, plan de progrès avec des parties prenantes C-suite. NE PAS utiliser pour : coordination d'équipes terrain, management de proximité, animation des opérateurs — ce sont des défis fondamentalement différents.",
       tags: %w[auto automobile consulting COMEX changement résistance alignement-direction stratégie] },
     { id: "N°11",
@@ -80,6 +100,8 @@ module RealisationCatalog
       context: "Centaur Bike · Lyon · micro-entreprise fondée et pilotée par Cyrille seul · 4 pivots en 4 ans : 2021 électrification vélos sur-mesure, 2022 reconditionnement + vente vélos électriques (pic 250 K€ CA, marge 39%), 2023 service mobile flottes professionnelles B2B, 2024 conseil Lean et organisationnel pour ateliers de reconditionnement vélos en libre-service",
       titre: "Création et pilotage d'une micro-entreprise avec 4 pivots stratégiques en 4 ans — de l'artisan au conseil",
       resultat: "4 pivots réussis · pic 250 K€ CA (2022) · passage du B2C artisanal au conseil B2B · 2ème prix pitch Rotary · capacité de remise en question et de réinvention permanente",
+      visual_hint: "Frise horizontale à 4 points (2021-2024) avec une icône différente à chaque étape (prise " \
+                   "électrique, recyclage, immeuble, graphique).",
       semantic_scope: "Pertinent pour : défis de création/démarrage TPE, pivots stratégiques, remise en question d'un modèle économique, développement commercial, structuration d'une petite organisation, conseil auprès d'ateliers de reconditionnement. Cyrille a vécu l'adaptabilité permanente en tant que dirigeant.",
       tags: %w[startup entrepreneuriat micro-entreprise TPE création pivot stratégie développement-commercial organisation reconditionnement vélo lean conseil adaptabilité réinvention B2B] },
     { id: "N°12",
@@ -88,6 +110,8 @@ module RealisationCatalog
       context: "Projet RE-PLAY · Enjoué · Lyon · association loi 1901 · atelier de reconditionnement artisanal de jouets · 20-50 personnes · travail exclusivement manuel · mission de mécénat de compétences (en cours)",
       titre: "Digitalisation des processus d'un atelier de reconditionnement manuel — UX inclusive zero-text, Poka-Yoke numérique",
       resultat: "Application Rails déployée en production · 6 points de contrôle qualité numérisés · traçabilité AGEC · opérateurs guidés sans texte",
+      visual_hint: "Maquette d'app mobile : photo d'un objet et une rangée de petites icônes rondes de " \
+                   "contrôle qualité, un flux de 3 boîtes (dons → contrôle → stock qualifié).",
       semantic_scope: "UNIQUEMENT pour : ateliers artisanaux manuels, structures d'insertion ou ESS, reconditionnement, digitalisation d'un processus manuel simple. NE PAS utiliser pour une PME industrielle classique (agroalimentaire, pharma, mécanique…) sous prétexte qu'elle a 20 personnes — le contexte est fondamentalement différent.",
       tags: %w[tech digital application Rails atelier manuel reconditionnement inclusion qualité traçabilité ESS association poka-yoke zero-text] },
     { id: "N°13",
@@ -96,6 +120,8 @@ module RealisationCatalog
       context: "Projet Démontés · Centaur Bike · Saint-Fons · atelier de reconditionnement manuel de pièces vélos · petite équipe artisanale",
       titre: "Industrialisation d'un atelier artisanal de reconditionnement : Lean 5S, standardisation des postes, SOP, formation",
       resultat: "16 rôles modélisés · postes 5S organisés · SOP rédigées · tutoriels vidéo · filière réemploi structurée",
+      visual_hint: "Flux horizontal en 4 étapes avec icônes (collecte → tri → reconditionnement → pièces " \
+                   "certifiées), petits badges méthode en dessous.",
       semantic_scope: "UNIQUEMENT pour : ateliers artisanaux manuels, structures sans process industriel formalisé, reconditionnement, économie circulaire. NE PAS utiliser pour une PME industrielle (agroalimentaire, pharma…) car le type de structure est différent malgré une taille similaire.",
       tags: %w[lean 5S VSM SOP atelier artisanal reconditionnement manuel organisation industrialisation éco-circulaire processus petite-équipe] },
     { id: "N°14",
@@ -104,6 +130,7 @@ module RealisationCatalog
       context: "GHM (ETI, 500 personnes) · fonderie · Sommevoire · site industriel lourd",
       titre: "Conduite autonome d'un chantier de génie civil",
       resultat: "300 K€ budget · délais tenus · 100 K€/an",
+      visual_hint: "Frise à 3 points (bureau d'étude → chantier → mise en service) avec petites cartes projet.",
       tags: %w[métallurgie fonderie génie-civil CAPEX travaux-neufs] },
     { id: "N°15",
       scale: "GE-site / filiale GE (STMicroelectronics, GE mondial)",
@@ -111,6 +138,8 @@ module RealisationCatalog
       context: "STMicroelectronics (GE mondial, semi-conducteurs) · site Crolles · 5 000 personnes sur site · salle blanche · production de semi-conducteurs",
       titre: "Management d'une équipe maintenance postée en salle blanche — TPM",
       resultat: "120 K€/an sur durée de vie équipements · 6 opérateurs managés · processus TPM structurés",
+      visual_hint: "Un encadré 'salle blanche' avec 3 icônes à l'intérieur (microscope, engrenage, " \
+                   "presse-papier), badges montant et échelle GE à côté.",
       tags: %w[semi-conducteurs maintenance TPM salle-blanche équipe-postée industrie-haute-tech GE] },
     { id: "N°16",
       scale: "PME-site / filiale GE (Campbell Soup Co.)",
@@ -119,6 +148,8 @@ module RealisationCatalog
       titre: "Refonte du management de proximité — formation et alignement des chefs d'équipe",
       resultat: "−40% de pannes · 850 K€/an d'économies · 6 000h gagnées (200 K€/an) · managers alignés · " \
                 "0 tension syndicale",
+      visual_hint: "Une icône manager centrale reliée par des traits à plusieurs icônes d'équipiers en dessous, " \
+                   "comme un petit schéma en étoile.",
       tags: %w[agro management formation chefs-équipe alignement-terrain coordination-équipes animation-équipe DDS rituels-management management-visuel pilotage-terrain IRP développement-managers coaching management-de-proximité] },
     { id: "N°17",
       scale: "ETI/GE (SOGEFI, équipementier automobile)",
@@ -126,6 +157,8 @@ module RealisationCatalog
       context: "SOGEFI (équipementier automobile, fabricant de barres de suspension) · mission EFESO Consulting · industrie automobile",
       titre: "Chantier WCM sur grenailleuse — groupe de travail pluridisciplinaire",
       resultat: "43 K€ économisés sur 3 mois · CAPEX 4 K€ · remise au standard · équipement fiabilisé",
+      visual_hint: "Une boîte machine/engrenage à gauche, une flèche avec la méthode en label, une boîte " \
+                   "résultat à droite.",
       tags: %w[auto automobile WCM chantier amélioration-continue pluridisciplinaire fiabilité équipement maintenance TPM forge traitement-surface] },
     { id: "N°18",
       scale: "PME-site / filiale GE (Campbell Soup Co.)",
@@ -133,6 +166,8 @@ module RealisationCatalog
       context: "LIEBIG (marque Campbell Soup Company, GE mondial) · site Le Pontet · agroalimentaire · 100 personnes",
       titre: "Réduction de la consommation MO cariste — méthode ECRS",
       resultat: "−3 ETP intérimaires · dimensionnement accepté sans conflit social · ECRS appliqué",
+      visual_hint: "Avant (deux icônes chariot élévateur) et après (une seule icône chariot) séparés par une " \
+                   "flèche, badge vert 'sans conflit'.",
       tags: %w[agro ECRS MO optimisation-effectifs logistique-interne manutention productivité lean intérimaires] },
     { id: "N°19",
       scale: "ETI (CENEXI, 400p, 3 sites)",
@@ -140,6 +175,8 @@ module RealisationCatalog
       context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes · lignes de remplissage aseptiques",
       titre: "Mise en place de nouveaux horaires 3×8 — négociation IRP et volontariat",
       resultat: "−10 ETP intérimaires · volume maintenu · accord IRP signé · démarrage sur volontariat",
+      visual_hint: "Un cadran d'horloge découpé en équipes (matin/après-midi/nuit) à côté d'un badge accord " \
+                   "signé.",
       tags: %w[pharma horaires organisation 3x8 IRP négociation-sociale intérimaires changement volontariat] },
     { id: "N°20",
       scale: "ETI (CENEXI, 400p, 3 sites)",
@@ -147,6 +184,8 @@ module RealisationCatalog
       context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes",
       titre: "Mise en place de la classification Leem et minima de salaire — fidélisation des opérateurs qualifiés",
       resultat: "Classification définie · minima salaires validés Direction · fidélisation renforcée en ZAC",
+      visual_hint: "Trois barres ascendantes de hauteurs différentes (niveaux C/B/A) à côté d'un badge " \
+                   "fidélisation.",
       tags: %w[pharma RH classification salaire fidélisation compétences convention-collective social emploi recrutement] },
     { id: "N°21",
       scale: "GE-site / filiale GE (STMicroelectronics, GE mondial)",
@@ -154,6 +193,8 @@ module RealisationCatalog
       context: "STMicroelectronics (GE mondial, semi-conducteurs) · site Crolles · 5 000 personnes · équipe postée 2×8 · salle blanche",
       titre: "Création d'un outil de passage de consignes en équipe postée",
       resultat: "Communication inter-équipes établie · problèmes récurrents tracés · bottleneck réduit",
+      visual_hint: "Trois boîtes en ligne : icône équipe de nuit → icône tableau/graphique partagé → icône " \
+                   "équipe de jour, reliées par des traits.",
       tags: %w[semi-conducteurs communication outil-digital passage-de-consignes équipe-postée traçabilité information partage] },
     { id: "N°22",
       scale: "GE-site / filiale GE (STMicroelectronics, GE mondial)",
@@ -161,6 +202,8 @@ module RealisationCatalog
       context: "STMicroelectronics (GE mondial, semi-conducteurs) · site Crolles · lignes CMP 300mm · salle blanche",
       titre: "Banc de test et procédures de réparation pour modules de polissage",
       resultat: "100% bon du 1er coup · économies consommables et temps machine · diagnostic fiabilisé",
+      visual_hint: "Une boîte 'diagnostic flou' avec une icône clé à outils, une flèche, puis une boîte avec " \
+                   "un petit cadran/jauge à aiguille verte.",
       tags: %w[semi-conducteurs maintenance TPM salle-blanche procédures fiabilité banc-test diagnostic modules] },
     { id: "N°23",
       scale: "GE-site / filiale GE (STMicroelectronics, GE mondial)",
@@ -168,6 +211,8 @@ module RealisationCatalog
       context: "STMicroelectronics (GE mondial, semi-conducteurs) · site Crolles · salle blanche · sous-traitance maintenance",
       titre: "Externalisation de la réparation des modules techniques",
       resultat: "Réparation totalement externalisée · techniciens ST libérés pour l'amélioration continue",
+      visual_hint: "Trois boîtes en séquence : icône équipe interne → flèche en pointillés 'transfert' → " \
+                   "icône sous-traitant → boîte résultat 'libéré'.",
       tags: %w[semi-conducteurs externalisation sous-traitance formation transfer-compétences maintenance optimisation-RH] },
     { id: "N°24",
       scale: "PME-site / filiale GE (Campbell Soup Co.)",
@@ -175,6 +220,8 @@ module RealisationCatalog
       context: "LIEBIG (marque Campbell Soup Company) · site Le Pontet · agroalimentaire · négociation internationale",
       titre: "Négociation et achat d'équipements industriels — support technique à l'acheteur Europe",
       resultat: "−5% objectif prix · intégré au Master Plan CAPEX 10 M€ · négociation anglais/IT/DE",
+      visual_hint: "Trois petites icônes drapeaux reliées par des flèches bidirectionnelles, représentant une " \
+                   "négociation internationale.",
       tags: %w[agro CAPEX négociation achats international fournisseurs technique investissement équipements] },
     { id: "N°25",
       scale: "PME-site / filiale GE (Campbell Soup Co.)",
@@ -182,6 +229,8 @@ module RealisationCatalog
       context: "LIEBIG (marque Campbell Soup Company) · site Le Pontet et BU Boulogne · 400 salariés · amphithéâtre",
       titre: "Présentation des résultats de l'unité aux salariés de l'équipe France",
       resultat: "400 salariés · présentation scène avec COMEX · compliment PDG · aisance reconnue",
+      visual_hint: "Un amphithéâtre stylisé : plusieurs rangées courbes de petites icônes personnes face à " \
+                   "une scène/icône micro en bas.",
       tags: %w[agro communication présentation scène COMEX amphithéâtre leadership visibilité résultats] },
     { id: "N°26",
       scale: "ETI (CENEXI, 400p, 3 sites)",
@@ -189,6 +238,8 @@ module RealisationCatalog
       context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes · pilotage MO",
       titre: "Mise en place d'indicateurs de suivi des consommations de main d'œuvre",
       resultat: "DLE 70% → 88% immédiat · commandes intérimaires pilotées en temps réel",
+      visual_hint: "Deux jauges horizontales côte à côte, l'une majoritairement rouge (avant) et l'autre " \
+                   "majoritairement remplie dans la couleur de marque (après).",
       tags: %w[pharma KPI indicateurs MO suivi intérimaires DLE pilotage-RH tableau-de-bord optimisation-effectifs] }
   ].freeze
 

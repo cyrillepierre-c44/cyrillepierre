@@ -93,6 +93,12 @@
           Générer aussi un visuel juste après le texte
         </label>
       </div>
+      <div class="cf-field">
+        <%= f.select :image_model,
+                      Generation::IMAGE_MODELS.map { |value, label| [label, value] },
+                      { selected: generation.image_model }, class: "cf-input" %>
+        <p class="studio-field-hint">Modèle utilisé si tu coches la case ci-dessus.</p>
+      </div>
     <% end %>
   </div>
 
