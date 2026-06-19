@@ -166,7 +166,8 @@
           </div>
 
           <%= f.submit @generation.visual.attached? ? "Régénérer le visuel" : "Générer un visuel",
-                        class: "btn-cp-outline mt-2", data: { studio_generation_target: "submitButton" } %>
+                        class: "btn-cp-outline studio-visual-action mt-2",
+                        data: { studio_generation_target: "submitButton" } %>
         <% end %>
       <% end %>
 
@@ -192,7 +193,8 @@
             </div>
 
             <%= f.submit @generation.linkedin_published_at.present? ? "Republier sur LinkedIn" : "Publier sur LinkedIn",
-                          class: "btn-cp-primary", data: { studio_generation_target: "submitButton" } %>
+                          class: "btn-cp-primary studio-visual-action",
+                          data: { studio_generation_target: "submitButton" } %>
           <% end %>
         <% else %>
           <p class="studio-card-sub mt-2">

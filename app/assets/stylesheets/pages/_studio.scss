@@ -237,6 +237,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .studio-list-item-date {
@@ -280,6 +281,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .studio-regenerate-select {
@@ -359,6 +361,15 @@
   margin-bottom: 0.5rem;
 }
 
+// "Régénérer le visuel" and "Publier/Republier sur LinkedIn" sit one above the other but in
+// separate forms with different label lengths — match their width so they don't look mismatched.
+.studio-visual-action {
+  display: flex;
+  width: 100%;
+  max-width: 320px;
+  justify-content: center;
+}
+
 .studio-editable-title {
   cursor: pointer;
   border-radius: 0.4rem;
@@ -408,6 +419,19 @@
 }
 
 .studio-sources-list {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cp-accent) transparent;
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: var(--cp-accent);
+    border-radius: 3px;
+  }
+
   dt {
     color: var(--cp-muted);
     font-size: 0.8rem;
@@ -419,6 +443,7 @@
   dd {
     color: var(--cp-text);
     margin-left: 0;
+    overflow-wrap: break-word;
   }
 }
 
@@ -429,4 +454,46 @@
   font-size: 0.9rem;
 
   &:hover { color: var(--cp-accent); }
+}
+
+// ── Mobile (index list + show page) ─────────────────────────
+// Badges and buttons have very different natural sizes (small pill vs full button) — on a
+// narrow viewport, mixing them in the same row produces uneven wrapping. Stack full-width
+// instead of trying to fit everything side by side.
+@media (max-width: 680px) {
+  .studio-card { padding: 1.25rem; }
+
+  .studio-visual-action { max-width: 100%; }
+
+  .studio-actions,
+  .studio-actions--top {
+    flex-direction: column;
+    align-items: stretch;
+
+    > a, > button, > form {
+      width: 100%;
+    }
+
+    > form button { width: 100%; }
+  }
+
+  .studio-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .studio-list-item-main { width: 100%; }
+
+  .studio-list-item-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .studio-show-toolbar { flex-direction: column; align-items: stretch; }
+
+  .studio-regenerate-form {
+    width: 100%;
+
+    .studio-regenerate-select { flex: 1; min-width: 0; }
+  }
 }
