@@ -211,7 +211,7 @@
     <dl class="studio-sources-list">
       <% if @generation.input_text.present? %>
         <dt>Texte collé</dt>
-        <dd><%= truncate(@generation.input_text, length: 300) %></dd>
+        <dd class="studio-sources-pre"><%= @generation.input_text %></dd>
       <% end %>
       <% if @generation.input_url.present? %>
         <dt>URL</dt>
@@ -223,7 +223,7 @@
       <% end %>
       <% if @generation.extra_instructions.present? %>
         <dt>Instructions complémentaires</dt>
-        <dd><%= @generation.extra_instructions %></dd>
+        <dd class="studio-sources-pre"><%= @generation.extra_instructions %></dd>
       <% end %>
     </dl>
   </div>
