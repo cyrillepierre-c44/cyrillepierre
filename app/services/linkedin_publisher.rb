@@ -66,9 +66,14 @@ class LinkedinPublisher
 
   def upload_visual
     upload = initialize_upload
-    Faraday.put(upload.fetch("uploadUrl"), generation.visual.download,
-                "Authorization" => "Bearer #{user.linkedin_access_token}")
-    upload.fetch("image")
+    put_response = Faraday.put(upload.fetch("uploadUrl"), generation.visual.download,
+                                "Authorization" => "Bearer #{user.linkedin_access_token}",
+                                "Content-Type" => "application/octet-stream")
+    raise Error, "Échec de l'envoi de l'image vers LinkedIn (#{put_response.status})." unless put_response.success?
+
+    image_urn = upload.fetch("image")
+    wait_for_image_ready(image_urn)
+    image_urn
   end
 
   def initialize_upload
@@ -80,6 +85,30 @@ class LinkedinPublisher
     raise Error, error_message(response) unless response.success?
 
     JSON.parse(response.body).fetch("value")
+  end
+
+  # LinkedIn processes an uploaded image asynchronously (PROCESSING -> AVAILABLE) — referencing
+  # it in a post immediately after the PUT can attach a not-yet-ready image, silently producing
+  # a broken/invisible post even though post creation itself returns 201. Poll briefly; if the
+  # status endpoint isn't accessible (some scopes don't allow reading it back), fall back to a
+  # short flat wait instead of failing the whole publish.
+  def wait_for_image_ready(image_urn)
+    5.times do
+      status = fetch_image_status(image_urn)
+      return if status == "AVAILABLE"
+
+      sleep 1
+    end
+  end
+
+  def fetch_image_status(image_urn)
+    encoded = URI.encode_www_form_component(image_urn)
+    response = Faraday.get("#{API_BASE}/rest/images/#{encoded}", nil, rest_headers)
+    return nil unless response.success?
+
+    JSON.parse(response.body)["status"]
+  rescue Faraday::Error
+    nil
   end
 
   def error_message(response)

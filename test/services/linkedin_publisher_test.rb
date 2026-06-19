@@ -45,6 +45,56 @@ class LinkedinPublisherTest < ActiveSupport::TestCase
     end
   end
 
+  test "uploads the visual, waits for it to be ready, then publishes with the image" do
+    generation = Generation.create!(user: connected_user, kind: :linkedin_post, output: "Un post avec image.")
+    generation.visual.attach(io: StringIO.new("fake png bytes"), filename: "visual.png", content_type: "image/png")
+
+    original_post = Faraday.method(:post)
+    original_put = Faraday.method(:put)
+    original_get = Faraday.method(:get)
+
+    Faraday.define_singleton_method(:post) do |url, *_rest|
+      if url.include?("initializeUpload")
+        FakeResponse.new(200, { value: { uploadUrl: "https://upload.example/abc", image: "urn:li:image:abc" } }.to_json)
+      else
+        FakeResponse.new(201, "", { "x-restli-id" => "urn:li:share:with-image" })
+      end
+    end
+    Faraday.define_singleton_method(:put) { |*_args, **_kwargs| FakeResponse.new(201, "") }
+    Faraday.define_singleton_method(:get) do |*_args, **_kwargs|
+      FakeResponse.new(200, { status: "AVAILABLE" }.to_json)
+    end
+
+    begin
+      LinkedinPublisher.call(generation)
+      assert_equal "urn:li:share:with-image", generation.reload.linkedin_post_urn
+    ensure
+      Faraday.define_singleton_method(:post, original_post)
+      Faraday.define_singleton_method(:put, original_put)
+      Faraday.define_singleton_method(:get, original_get)
+    end
+  end
+
+  test "raises when the image upload PUT fails" do
+    generation = Generation.create!(user: connected_user, kind: :linkedin_post, output: "Un post avec image.")
+    generation.visual.attach(io: StringIO.new("fake png bytes"), filename: "visual.png", content_type: "image/png")
+
+    original_post = Faraday.method(:post)
+    original_put = Faraday.method(:put)
+
+    Faraday.define_singleton_method(:post) do |*_args, **_kwargs|
+      FakeResponse.new(200, { value: { uploadUrl: "https://upload.example/abc", image: "urn:li:image:abc" } }.to_json)
+    end
+    Faraday.define_singleton_method(:put) { |*_args, **_kwargs| FakeResponse.new(500, "boom") }
+
+    begin
+      assert_raises(LinkedinPublisher::Error) { LinkedinPublisher.call(generation) }
+    ensure
+      Faraday.define_singleton_method(:post, original_post)
+      Faraday.define_singleton_method(:put, original_put)
+    end
+  end
+
   test "raises a readable error when LinkedIn rejects the post" do
     generation = Generation.create!(user: connected_user, kind: :linkedin_post, output: "Un post.")
 
