@@ -466,6 +466,8 @@ class ContentGenerator
 
       #{ANONYMIZE_COMPANIES_RULE}
 
+      #{ORIENTATION_GUIDANCE.fetch(generation.orientation, ORIENTATION_GUIDANCE['consultant'])}
+
       RÉALISATIONS DE CYRILLE (pour mise en contexte si pertinent, sans citer les identifiants internes type N°XX) :
       #{anonymized_realisations_str}
 
