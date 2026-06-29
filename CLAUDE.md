@@ -88,9 +88,10 @@ OAuth2 (`LinkedinAuthController#connect`/`callback`/`disconnect`, hors namespace
 Page standalone — elle n'utilise **pas** le layout Rails (`layout false` dans le controller). Tout le CSS et le JS sont inline dans le fichier.
 
 Fonctionnalités :
-- **Mode papier** : toggle via classe `paper-mode` sur `<body>`. Bouton affiche "🖨 Version papier" / "🎨 Version couleur" (texte doré en mode actif).
-- **URL param `?mode=papier`** : active automatiquement le mode papier au chargement (lu par un IIFE au bas de la page).
-- **Bouton Partager** : utilise `navigator.share` (Web Share API, natif mobile) avec fallback `navigator.clipboard` (copie du lien, feedback "✓ Lien copié !" 2 s). L'URL partagée inclut `?mode=papier` si le mode est actif.
+- **Mode papier** : toggle via classe `paper-mode` sur `<body>`. Bouton affiche "🖨 Version papier" / "🎨 Version couleur" (texte doré en mode actif). Le libellé s'adapte à la langue courante (`updatePaperBtn()`).
+- **Bascule FR/EN** : `<select id="langSelect">` (même style `.print-quality` que le sélecteur de qualité) appelle `applyLang(lang)` — met à jour via `innerHTML` tous les éléments identifiés par `id` (`cv-exp-1-title`, `cv-comp-3-desc`, etc.) à partir de l'objet `TRANSLATIONS` (défini dans le second bloc `<script>`). Chaque élément traduisible porte un `id` préfixé `cv-`. Le `<html lang>` est aussi mis à jour.
+- **URL params** : `?mode=papier` active le mode papier, `?lang=en` active l'anglais — les deux sont lus dans `DOMContentLoaded` (second bloc script). `shareCV` inclut les deux params si actifs.
+- **Bouton Partager** : utilise `navigator.share` (Web Share API, natif mobile) avec fallback `navigator.clipboard`. Feedback "✓ Lien copié !" / "✓ Link copied!" selon la langue. L'URL partagée inclut `?mode=papier` et/ou `?lang=en` si actifs.
 - **Impression** : `@media print` force les dimensions A4 exactes (794×1123 px). Le bouton "⎙ Imprimer" appelle `window.print()`. Un sélecteur "Qualité d'impression" (Standard/Compacte) permute la photo entre `/images/cyrille.jpg` et `/images/cyrille-print-compact.jpg` juste avant l'impression (`beforeprint`/`afterprint`) pour garder le PDF généré sous 2 Mo.
 - **Scaling mobile** : JS transform `scale()` sur `.page` pour les viewports < 830 px. Annulé avant impression (`beforeprint`) et restauré après (`afterprint`).
 - **Couleurs** : fond sombre `#1a2332`, accent doré `#c9a961`. Les boutons de la barre utilisent ces deux couleurs.
