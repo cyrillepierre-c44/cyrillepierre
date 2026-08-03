@@ -264,15 +264,15 @@ class ContactsController < ApplicationController
   end
 
   def call_llm(messages)
-    uri = URI("https://models.inference.ai.azure.com/chat/completions")
+    uri = URI("https://api.mammouth.ai/v1/chat/completions")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.read_timeout = 45
 
     req = Net::HTTP::Post.new(uri)
-    req["Authorization"] = "Bearer #{ENV.fetch('GITHUB_KEY', '')}"
+    req["Authorization"] = "Bearer #{ENV.fetch('MAMMOUTH_API_KEY', '')}"
     req["Content-Type"]  = "application/json"
-    req.body = { model: "gpt-4o-mini", messages: messages, max_tokens: 600, temperature: 0.7 }.to_json
+    req.body = { model: "gemini-3.5-flash", messages: messages, max_tokens: 600, temperature: 0.7 }.to_json
 
     response = http.request(req)
     data = JSON.parse(response.body)

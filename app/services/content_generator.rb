@@ -2,9 +2,9 @@
 # rubocop:disable Metrics/ClassLength
 class ContentGenerator
   MAMMOUTH_API_BASE = "https://api.mammouth.ai/v1"
-  # Proofreading always runs on GitHub Models (free tier) regardless of the model chosen
-  # for the draft, so the extra LLM call doesn't add cost.
-  PROOFREADING_MODEL = "gpt-4o-mini"
+  # Proofreading always runs on a fast/cheap Mammouth model regardless of the model chosen
+  # for the draft, to keep the extra LLM call quick.
+  PROOFREADING_MODEL = "gemini-3.5-flash"
 
   KIND_PROMPT_METHODS = {
     linkedin_post: :linkedin_post_prompt,
@@ -82,13 +82,11 @@ class ContentGenerator
   attr_reader :generation
 
   def new_chat
-    model = generation.llm_model
-    case generation.llm_provider
-    when :mammouth
-      mammouth_context.chat(model: model, provider: :openai, assume_model_exists: true)
-    else
-      RubyLLM.chat(model: model)
-    end
+    mammouth_chat(generation.llm_model)
+  end
+
+  def mammouth_chat(model)
+    mammouth_context.chat(model: model, provider: :openai, assume_model_exists: true)
   end
 
   def mammouth_context
@@ -101,7 +99,7 @@ class ContentGenerator
   def proofread(text)
     return text if text.blank?
 
-    RubyLLM.chat(model: PROOFREADING_MODEL).with_instructions(PROOFREADING_INSTRUCTIONS).ask(text).content.to_s
+    mammouth_chat(PROOFREADING_MODEL).with_instructions(PROOFREADING_INSTRUCTIONS).ask(text).content.to_s
   rescue StandardError => e
     Rails.logger.error "ContentGenerator proofread error: #{e.class} — #{e.message}"
     text

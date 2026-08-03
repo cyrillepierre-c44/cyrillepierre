@@ -36,16 +36,17 @@ class Generation < ApplicationRecord
     short: "Version courte"
   }.freeze
 
-  # value => [label, provider]. :default uses the app's main LLM config (GitHub Models),
-  # :mammouth routes through the Mammouth.ai OpenAI-compatible gateway (MAMMOUTH_API_KEY).
+  # value => label. All models are served by the Mammouth.ai OpenAI-compatible gateway
+  # (MAMMOUTH_API_KEY) — the former GitHub Models free tier expired and was removed.
   LLM_MODELS = {
-    "gpt-4o" => ["GPT-4o", :default],
-    "gemini-3.5-flash" => ["Gemini 3.5 Flash (via Mammouth)", :mammouth],
-    "claude-sonnet-4-6" => ["Claude Sonnet 4.6 (via Mammouth)", :mammouth],
-    "claude-opus-4-8" => ["Claude Opus 4.8 (via Mammouth)", :mammouth],
-    "mistral-large-3" => ["Mistral Large 3 (via Mammouth)", :mammouth],
-    "gpt-5.4" => ["GPT-5.4 (via Mammouth)", :mammouth]
+    "gemini-3.5-flash" => "Gemini 3.5 Flash",
+    "claude-sonnet-4-6" => "Claude Sonnet 4.6",
+    "claude-opus-4-8" => "Claude Opus 4.8",
+    "mistral-large-3" => "Mistral Large 3",
+    "gpt-5.4" => "GPT-5.4"
   }.freeze
+
+  DEFAULT_LLM_MODEL = "gemini-3.5-flash".freeze
 
   # All routed through Mammouth (image generation isn't available via the app's default
   # provider — see VisualGenerator). gpt-5.4-image-2 is deliberately excluded: it timed out
@@ -61,10 +62,6 @@ class Generation < ApplicationRecord
   validate :source_file_is_acceptable
 
   before_save :assign_auto_realisation, if: :linkedin_post?
-
-  def llm_provider
-    LLM_MODELS.fetch(llm_model, ["", :default]).last
-  end
 
   scope :published_site_actus, -> { where(kind: :site_actu, status: :published).order(published_at: :desc) }
 

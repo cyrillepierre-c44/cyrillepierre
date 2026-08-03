@@ -113,8 +113,8 @@
     <h2 class="studio-card-subtitle">4. Modèle IA</h2>
     <div class="cf-field">
       <%= f.select :llm_model,
-                    Generation::LLM_MODELS.map { |value, (label, _provider)| [label, value] },
-                    { selected: generation.llm_model.presence || "gpt-4o" },
+                    Generation::LLM_MODELS.map { |value, label| [label, value] },
+                    { selected: generation.llm_model.presence || Generation::DEFAULT_LLM_MODEL },
                     class: "cf-input" %>
     </div>
   </div>
