@@ -22,7 +22,7 @@ gem "jbuilder"
 # gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "tzinfo-data", platforms: %i[windows jruby]
 
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cache"
@@ -55,6 +55,11 @@ gem "pdf-reader"
 gem "cloudinary"
 # HTTP client for the LinkedIn OAuth + publishing API (was only a transitive dependency before)
 gem "faraday"
+# Error tracking in production (no-op unless SENTRY_DSN is set)
+gem "sentry-ruby"
+gem "sentry-rails"
+# Rate limiting — the contact chatbot endpoints call a paid LLM API on every request
+gem "rack-attack"
 
 gem "sprockets-rails"
 gem "bootstrap", "~> 5.3"
@@ -66,7 +71,7 @@ gem "sassc-rails"
 group :development, :test do
   gem "dotenv-rails"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "debug", platforms: %i[mri windows], require: "debug/prelude"
 
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false
@@ -87,4 +92,7 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+
+  # Test coverage reporting
+  gem "simplecov", require: false
 end

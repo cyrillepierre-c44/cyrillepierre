@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  lint:
+    name: Style — RuboCop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - run: bin/rubocop --parallel
+
+  security:
+    name: Sécurité — Brakeman, gems, importmap
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      # `bundle exec` et non `bin/brakeman` : le binstub généré par Rails ajoute
+      # `--ensure-latest`, qui fait sortir Brakeman en code 5 dès qu'une version plus récente
+      # du gem est publiée, sans le moindre problème de sécurité. La CI deviendrait rouge un
+      # matin sans qu'une ligne de code ait bougé. Dependabot se charge déjà des montées de
+      # version.
+      - name: Brakeman (analyse statique)
+        run: bundle exec brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+      - name: Audit des gems (CVE)
+        run: bin/bundler-audit
+      - name: Audit des paquets importmap
+        run: bin/importmap audit
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/cyrillepierre_test
+      # Clés factices : Active Record Encryption doit être configuré pour que les tests
+      # sur User#linkedin_access_token tournent. Aucune donnée réelle n'est chiffrée en CI.
+      AR_ENCRYPTION_PRIMARY_KEY: ci_primary_key_0000000000000000000
+      AR_ENCRYPTION_DETERMINISTIC_KEY: ci_deterministic_key_00000000000000
+      AR_ENCRYPTION_KEY_DERIVATION_SALT: ci_key_derivation_salt_000000000000
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Préparation de la base
+        run: bin/rails db:prepare
+
+      - name: Suite de tests
+        run: bin/rails test
+
+      - name: Seeds rejouables
+        run: bin/rails db:seed:replant

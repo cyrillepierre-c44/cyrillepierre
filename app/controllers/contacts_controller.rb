@@ -9,7 +9,8 @@ class ContactsController < ApplicationController
     return render json: { sector: nil, size: nil } if company.blank?
 
     messages = [
-      { role: "system", content: "Tu identifies des entreprises. Réponds uniquement en JSON valide, sans texte autour." },
+      { role: "system",
+        content: "Tu identifies des entreprises. Réponds uniquement en JSON valide, sans texte autour." },
       { role: "user", content: <<~PROMPT }
         Pour l'entreprise "#{company}", identifie UNIQUEMENT :
         1. Le secteur d'activité principal (ex : agroalimentaire, pharmaceutique, automobile, services numériques, etc.)
@@ -67,8 +68,8 @@ class ContactsController < ApplicationController
         role: "user",
         content: <<~PROMPT
           Tu es un analyste expert. À partir de la conversation ci-dessus, rédige un résumé en Markdown pour Cyrille PIERRE, consultant.
-          Thèmes sélectionnés : #{themes.join(", ")}.
-          #{contexte_line ? "Données vérifiées sur l'entreprise : #{contexte_line}." : ""}
+          Thèmes sélectionnés : #{themes.join(', ')}.
+          #{"Données vérifiées sur l'entreprise : #{contexte_line}." if contexte_line}
 
           CONSIGNES :
           - Corrige les artefacts de saisie vocale évidents : si un mot est phonétiquement proche d'un terme métier connu (ex : "île manufacturing" → "Lean Manufacturing", "trs" → "TRS", "capex" → "CAPEX"), utilise le terme correct sans le mentionner
@@ -82,7 +83,7 @@ class ContactsController < ApplicationController
 
           Format OBLIGATOIRE (avec emojis, en Markdown) :
 
-          🏭 **Contexte :** [#{contexte_line ? contexte_line + " + " : ""}type de structure + situation — n'invente PAS l'effectif s'il est inconnu]
+          🏭 **Contexte :** [#{"#{contexte_line} + " if contexte_line}type de structure + situation — n'invente PAS l'effectif s'il est inconnu]
 
           🎯 **Enjeu :** [la tension ou le défi réel, formulé avec précision — pas une reformulation, une analyse]
 
@@ -105,31 +106,33 @@ class ContactsController < ApplicationController
     summary = params[:contact_summary]
 
     ContactMailer.new_contact(
-      name:      name,
-      email:     email,
-      company:   params[:contact_company],
-      phone:     params[:contact_phone],
-      themes:    themes,
-      summary:   summary,
-      history:   params[:contact_history],
+      name: name,
+      email: email,
+      company: params[:contact_company],
+      phone: params[:contact_phone],
+      themes: themes,
+      summary: summary,
+      history: params[:contact_history],
       precision: params[:contact_precision],
-      sector:    params[:contact_sector],
-      size:      params[:contact_size]
+      sector: params[:contact_sector],
+      size: params[:contact_size]
     ).deliver_later
 
     ContactMailer.confirmation_to_client(
-      name:    name,
-      email:   email,
-      themes:  themes,
+      name: name,
+      email: email,
+      themes: themes,
       summary: summary
     ).deliver_later
 
     redirect_to root_path, notice: "Votre demande a bien été envoyée ! Je vous réponds sous 24h."
   end
 
-  private
-
+  # `private` ne s'applique pas aux constantes : la déclarer avant évite de laisser croire
+  # le contraire.
   REALISATIONS = RealisationCatalog::ITEMS
+
+  private
 
   def build_system_prompt(themes, sector = nil, size = nil)
     themes_str = themes.any? ? themes.join(", ") : "non précisés"
@@ -149,16 +152,16 @@ class ContactsController < ApplicationController
     visitor_context_lines << "Taille : #{size}"    if size.present?
 
     visitor_section = if visitor_context_lines.any?
-      <<~CTX
-        CONTEXTE VISITEUR (renseigné par le visiteur dans le formulaire) :
-        #{visitor_context_lines.join("\n")}
-        → Ces informations sont CERTAINES — ne pose AUCUNE question sur le secteur ou la taille.
-        → Utilise-les pour personnaliser l'accueil et matcher les réalisations dès Q1.
+                        <<~CTX
+                          CONTEXTE VISITEUR (renseigné par le visiteur dans le formulaire) :
+                          #{visitor_context_lines.join("\n")}
+                          → Ces informations sont CERTAINES — ne pose AUCUNE question sur le secteur ou la taille.
+                          → Utilise-les pour personnaliser l'accueil et matcher les réalisations dès Q1.
 
-      CTX
-    else
-      ""
-    end
+                        CTX
+                      else
+                        ""
+                      end
 
     <<~PROMPT
       Tu es l'assistant de contact de Cyrille PIERRE, consultant indépendant spécialisé en management de transition, excellence opérationnelle et tech/IA.
@@ -208,7 +211,7 @@ class ContactsController < ApplicationController
 
       [MESSAGE __START__]
       → Accueil chaleureux en 1-2 phrases.
-      #{visitor_context_lines.any? ? "  Le secteur#{size.present? ? ' et la taille' : ''} du visiteur #{size.present? ? 'sont connus' : 'est connu'} — mentionne-le brièvement pour personnaliser l'accueil. Ne pose PAS de question sur le secteur ou la taille." : ""}
+      #{"  Le secteur#{' et la taille' if size.present?} du visiteur #{size.present? ? 'sont connus' : 'est connu'} — mentionne-le brièvement pour personnaliser l'accueil. Ne pose PAS de question sur le secteur ou la taille." if visitor_context_lines.any?}
       → QUESTION 1 : "Quel est votre principal défi ou objectif ?"
 
       [APRÈS RÉPONSE 1 — défi connu]
@@ -282,7 +285,7 @@ class ContactsController < ApplicationController
       Rails.logger.error "ContactsController LLM bad response (HTTP #{response.code}): #{response.body.truncate(500)}"
     end
     content || "Je rencontre une difficulté technique. Écrivez directement à cyrille.pierre@gmail.com"
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "ContactsController LLM error: #{e.class} — #{e.message}"
     "Je rencontre une difficulté technique. Écrivez directement à cyrille.pierre@gmail.com"
   end

@@ -12,9 +12,9 @@ class ContactMailer < ApplicationMailer
     @size      = size
 
     mail(
-      to:       "cyrille.pierre@gmail.com",
+      to: "cyrille.pierre@gmail.com",
       reply_to: email,
-      subject:  "[cyrillepierre.fr] Nouveau contact — #{themes.join(' · ')} — #{name}"
+      subject: "[cyrillepierre.com] Nouveau contact — #{themes.join(' · ')} — #{name}"
     )
   end
 
@@ -24,7 +24,7 @@ class ContactMailer < ApplicationMailer
     @summary = summary
 
     mail(
-      to:      email,
+      to: email,
       subject: "Votre demande a bien été reçue — Cyrille PIERRE"
     )
   end
@@ -33,6 +33,7 @@ class ContactMailer < ApplicationMailer
 
   def parse_history(history)
     return [] if history.blank?
+
     JSON.parse(history)
   rescue JSON::ParserError
     []

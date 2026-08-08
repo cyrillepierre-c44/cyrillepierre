@@ -67,8 +67,8 @@ class LinkedinPublisher
   def upload_visual
     upload = initialize_upload
     put_response = Faraday.put(upload.fetch("uploadUrl"), generation.visual.download,
-                                "Authorization" => "Bearer #{user.linkedin_access_token}",
-                                "Content-Type" => "application/octet-stream")
+                               "Authorization" => "Bearer #{user.linkedin_access_token}",
+                               "Content-Type" => "application/octet-stream")
     raise Error, "Échec de l'envoi de l'image vers LinkedIn (#{put_response.status})." unless put_response.success?
 
     image_urn = upload.fetch("image")

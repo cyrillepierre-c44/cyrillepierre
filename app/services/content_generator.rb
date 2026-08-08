@@ -1,5 +1,4 @@
 # Builds the prompt for a Generation (based on its kind and sources) and calls the LLM.
-# rubocop:disable Metrics/ClassLength
 class ContentGenerator
   MAMMOUTH_API_BASE = "https://api.mammouth.ai/v1"
   # Proofreading always runs on a fast/cheap Mammouth model regardless of the model chosen
@@ -326,7 +325,6 @@ class ContentGenerator
     "#{intro}\n#{body}"
   end
 
-  # rubocop:disable Metrics/MethodLength
   def structured_output_instructions
     markers = Generation::SECTION_MARKERS
     <<~PROMPT
@@ -351,7 +349,6 @@ class ContentGenerator
       N'écris rien avant le premier marqueur ni après la dernière section.
     PROMPT
   end
-  # rubocop:enable Metrics/MethodLength
 
   def cover_letter_prompt
     <<~PROMPT
@@ -477,4 +474,3 @@ class ContentGenerator
     PROMPT
   end
 end
-# rubocop:enable Metrics/ClassLength

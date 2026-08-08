@@ -104,7 +104,7 @@
             <% formatted_post = LinkedinTextFormatter.call(@generation.output) %>
             <div class="studio-linkedin-preview" data-controller="studio-clipboard">
               <div class="studio-linkedin-preview-header">
-                <img src="/images/cyrille.jpg" alt="Cyrille PIERRE" class="studio-linkedin-preview-avatar">
+                <img src="/images/cyrille.jpg" alt="Cyrille PIERRE" class="studio-linkedin-preview-avatar" loading="lazy">
                 <div>
                   <div class="studio-linkedin-preview-name">Cyrille PIERRE</div>
                   <div class="studio-linkedin-preview-headline">
@@ -159,7 +159,7 @@
       <h2 class="studio-card-subtitle">Visuel</h2>
 
       <% if @generation.visual.attached? %>
-        <%= image_tag @generation.visual, class: "studio-visual-preview" %>
+        <%= image_tag @generation.visual, class: "studio-visual-preview", loading: "lazy" %>
       <% else %>
         <p class="studio-card-sub">Pas encore de visuel généré pour ce post.</p>
       <% end %>

@@ -1,5 +1,8 @@
 AllCops:
   NewCops: enable
+  # Redéfinir `Exclude` écrase la liste par défaut de RuboCop. En CI les gems sont
+  # vendorées dans vendor/bundle : sans `vendor/**/*` ci-dessous, RuboCop linte tout
+  # Rails et crache des milliers de fausses offenses invisibles en local.
   Exclude:
     - 'bin/**/*'
     - 'db/**/*'
@@ -9,6 +12,7 @@ AllCops:
     - 'support/**/*'
     - 'tmp/**/*'
     - 'test/**/*'
+    - 'vendor/**/*'
 
 Style/ConditionalAssignment:
   Enabled: false
@@ -21,6 +25,18 @@ Style/Documentation:
 Style/WordArray:
   Enabled: false
 Metrics/AbcSize:
+  Enabled: false
+# Les cops Metrics sont désactivés en bloc, comme AbcSize et CyclomaticComplexity l'étaient
+# déjà : les méthodes les plus longues de cette app construisent des prompts LLM sous forme de
+# heredocs d'une centaine de lignes. Les découper en méthodes de 10 lignes rendrait ces prompts
+# illisibles sans rien apporter.
+Metrics/MethodLength:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/ParameterLists:
   Enabled: false
 Style/MutableConstant:
   Enabled: false

@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: -> { "Cyrille PIERRE <#{ENV['GMAIL_USERNAME']}>" }
+  default from: -> { "Cyrille PIERRE <#{ENV.fetch('GMAIL_USERNAME', nil)}>" }
   layout "mailer"
 end

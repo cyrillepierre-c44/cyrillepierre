@@ -28,14 +28,16 @@ Rails.application.configure do
   # uploaded source files and generated visuals — store them on Cloudinary instead.
   config.active_storage.service = :cloudinary
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # Ne PAS activer `assume_ssl` sur Heroku : le routeur transmet déjà `X-Forwarded-Proto`.
+  # L'activer ferait croire à Rails que les requêtes HTTP en clair sont déjà en HTTPS, et la
+  # redirection de `force_ssl` ne se déclencherait plus (site servi en clair malgré force_ssl).
   # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  config.force_ssl = true
 
   # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
