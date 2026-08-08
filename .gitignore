@@ -30,12 +30,17 @@
 
 /public/assets
 
+# Rapports de couverture SimpleCov
+/coverage
+
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
 
 # Ignore .env file containing credentials.
 .env*
+# ...mais garder le template, qui ne contient aucune valeur.
+!.env.example
 
 # Ignore Mac and Linux file system files
 *.swp
@@ -43,3 +48,10 @@
 
 # Fichiers temporaires Word/Office
 ~$*
+
+# Métadonnées WSL/Windows sur les fichiers téléchargés
+*:Zone.Identifier
+
+# Documents de travail personnels (CV, diplômes, photos, notes) : ce dépôt est public,
+# ces fichiers n'ont pas à y figurer. Ils restent sur le disque, simplement non suivis.
+/doc/

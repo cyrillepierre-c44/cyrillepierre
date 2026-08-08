@@ -27,15 +27,31 @@ bin/ci                 # full CI: setup → rubocop → brakeman → bundler-aud
 
 **Background/cache/cable**: production uses four separate PostgreSQL databases (primary, cache, queue, cable) via solid_cache, solid_queue, solid_cable. In development/test a single DB is used.
 
-**Deployment**: Heroku. Deploy with `git push heroku master`. App Heroku : `cyrillepierre`. Site en production : **cyrillepierre.com** (pas cyrillepierre.fr).
+**Deployment**: Heroku. Deploy with `git push heroku master`. App Heroku : `cyrillepierre`. Site en production : **cyrillepierre.com** (pas cyrillepierre.fr). Les migrations tournent via la `release` phase du `Procfile`. `config.force_ssl` est actif ; **`assume_ssl` doit rester désactivé** sur Heroku (le routeur envoie déjà `X-Forwarded-Proto` ; l'activer empêche la redirection HTTP→HTTPS de se déclencher).
+
+**DNS / domaine nu** : `https://cyrillepierre.com` sans `www` n'est **pas** joignable (l'apex pointe sur la redirection HTTP-only de Namecheap, port 443 fermé). Runbook de correction dans `docs/runbook-dns-cloudflare.md`. Pas de DNSSEC sur ce domaine, donc le piège de la migration `costly.fr` ne s'applique pas.
 
 **CSS**: sassc-rails pipeline — stylesheets live in `app/assets/stylesheets/`. Bootstrap variables/overrides go before `@import "bootstrap"`.
 
-**Linting**: rubocop-rails-omakase style. Max line length 120. `bin/rubocop` is the wrapper. Rubocop excludes `bin/`, `db/`, `config/`, `test/`.
+**Linting**: `.rubocop.yml` est autonome (il n'hérite **pas** de `rubocop-rails-omakase`, malgré la présence du gem) — d'où une configuration à la main avec beaucoup de cops désactivés. Max line length 120. `bin/rubocop` is the wrapper. Exclusions : `bin/`, `db/`, `config/`, `test/`, **`vendor/`** (indispensable : en CI les gems sont vendorées, et redéfinir `AllCops.Exclude` écrase la liste par défaut de RuboCop, qui linterait alors tout Rails). Les cops `Metrics/*` sont désactivés : les méthodes les plus longues construisent des prompts LLM en heredocs de ~100 lignes.
 
-**Security CI steps**: brakeman (static analysis) and bundler-audit (gem CVEs) run as part of `bin/ci`.
+**Security CI steps** : `.github/workflows/ci.yml` rejoue sur chaque push et PR les étapes de `config/ci.rb` (RuboCop, Brakeman, bundler-audit, audit importmap, tests, seeds). Reproduire les échecs en local avec `CI=1 bin/rails test` (eager loading).
 
-**Auth & authorization**: Devise (`User` model, registrations disabled — comptes créés via `rails c`/seeds) + Pundit (`ApplicationPolicy`, `GenerationPolicy`). `User` a un `role` enum (`editor`/`admin`). `ApplicationController` inclut `Pundit::Authorization` et rescue `Pundit::NotAuthorizedError` en redirigeant avec une alerte.
+⚠️ **Piège Brakeman** : le binstub `bin/brakeman` généré par Rails ajoute `--ensure-latest`, qui fait sortir Brakeman en **code 5 dès qu'une version plus récente du gem est publiée**, sans aucun avertissement de sécurité. La CI utilise donc `bundle exec brakeman` — sinon elle passe au rouge un matin sans qu'une ligne de code ait bougé.
+
+**Rate limiting** : `rack-attack` (`config/initializers/rack_attack.rb`) protège les endpoints `/contact/chat`, `/contact/summarize`, `/contact/infer_company`, qui déclenchent chacun un appel Mammouth **payant** — c'est un garde-fou de facturation autant que de sécurité. En production le compteur s'appuie sur `Rails.cache` (solid_cache, qui gère bien `increment`).
+
+**Monitoring** : Sentry (`config/initializers/sentry.rb`) ne s'initialise **que** si `SENTRY_DSN` est présente — rien ne part depuis le développement, les tests ou la CI. `send_default_pii = false` (RGPD). Point de santé : `/up`.
+
+**Content Security Policy** (`config/initializers/content_security_policy.rb`) : active, avec les seules origines réellement chargées (fonts.googleapis.com / fonts.gstatic.com pour les polices, esm.sh pour le paquet `marked` de l'importmap, res.cloudinary.com pour Active Storage).
+
+⚠️ **Ne PAS revenir au nonce `request.session.id`** (la suggestion du template Rails) : aucune page publique n'écrit en session, donc `session.id` y vaut `nil`, le nonce sort **vide** (`'nonce-'`), et un nonce vide bloque toute balise inline — dont `<script type="importmap">`, ce qui tue Turbo, Stimulus et Bootstrap sur tout le site. Le nonce est donc aléatoire par réponse. Conséquence assumée : l'ETag change à chaque réponse, le cache conditionnel du HTML ne joue plus (coût faible, `must-revalidate` imposait déjà l'aller-retour). `test/controllers/security_headers_test.rb` verrouille tout ça, notamment le fait que la balise importmap porte bien le nonce.
+
+La CSP est **levée sur la seule page `/cv`** (`content_security_policy false, only: :cv` dans `PagesController`) : page autonome dont le CSS/JS est inline avec des gestionnaires `onclick`, qu'un nonce ne peut pas couvrir, et qui n'affiche aucune donnée saisie par un visiteur.
+
+**Couverture de tests** : SimpleCov écrit `coverage/index.html` à chaque `bin/rails test`. Environ **64 %** des lignes aujourd'hui (objectif 80 %). Le merge des workers parallèles est câblé dans `test_helper.rb` (`parallelize_setup`/`parallelize_teardown`), sans quoi seule la couverture du dernier worker serait rapportée.
+
+**Auth & authorization**: Devise (`User` model, registrations disabled — comptes créés via `rails c`/seeds) + Pundit (`ApplicationPolicy`, `GenerationPolicy`). `User` a un `role` enum (`editor`/`admin`). `ApplicationController` inclut `Pundit::Authorization` et rescue `Pundit::NotAuthorizedError` en redirigeant avec une alerte. Un `after_action :verify_pundit_authorization` global garantit qu'aucune action du Studio ne passe sans contrôle : callback unique qui dispatche sur `action_name` (`verify_policy_scoped` pour `index`, `verify_authorized` sinon), **sans `only:`/`except:`** — la variante `except: :index` casse dès qu'un controller n'a pas d'action `index`, `raise_on_missing_callback_actions` étant actif en test. `skip_pundit?` limite la vérification aux controllers sous `studio/` (les pages publiques et Devise n'ont rien à autoriser).
 
 **Stockage (Active Storage)** : service `:cloudinary` en production (`config/environments/production.rb`) — le disque Heroku est éphémère, `:local` perdait les fichiers à chaque redéploiement/restart. Le gem officiel `cloudinary` fournit `ActiveStorage::Service::CloudinaryService` et lit `CLOUDINARY_URL` automatiquement (rien à dupliquer dans `config/storage.yml`, juste `service: Cloudinary`). En développement, `:cloudinary` si `CLOUDINARY_URL` est présente dans `.env`, sinon fallback `:local` ; `test` reste toujours sur `:local`/`Disk` (pas de dépendance réseau dans la suite).
 
