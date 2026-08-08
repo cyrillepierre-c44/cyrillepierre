@@ -120,4 +120,40 @@ class GenerationTest < ActiveSupport::TestCase
     generation.save!
     assert_nil generation.realisation_id
   end
+
+  # Sans URN stocké, aucun moyen de reconstruire le permalien : mieux vaut ne rien afficher
+  # qu'un lien cassé (l'API ne donne pas de droit de relecture des posts).
+  test "linkedin_post_url is nil until the post urn is known" do
+    assert_nil build_generation.linkedin_post_url
+    assert_nil build_generation(linkedin_post_urn: "").linkedin_post_url
+  end
+
+  test "linkedin_post_url builds the public permalink from the urn" do
+    generation = build_generation(linkedin_post_urn: "urn:li:share:123")
+
+    assert_equal "https://www.linkedin.com/feed/update/urn:li:share:123/", generation.linkedin_post_url
+  end
+
+  test "unstructured kinds expose their whole output as the final section" do
+    generation = build_generation(kind: :linkedin_post, output: "Un post d'une seule pièce.")
+
+    assert_equal({ final: "Un post d'une seule pièce." }, generation.sections)
+  end
+
+  # Un marqueur suivi d'une section vide ne doit pas créer d'entrée : la vue afficherait un
+  # bloc au titre sans contenu.
+  test "sections skips a marker whose content is empty" do
+    output = [
+      Generation::SECTION_MARKERS[:final], "La lettre finale.",
+      Generation::SECTION_MARKERS[:personalize], "",
+      Generation::SECTION_MARKERS[:verify], "Vérifier la date."
+    ].join("\n")
+    generation = build_generation(kind: :cover_letter, output: output)
+
+    sections = generation.sections
+
+    assert_equal "La lettre finale.", sections[:final]
+    assert_equal "Vérifier la date.", sections[:verify]
+    assert_not sections.key?(:personalize)
+  end
 end

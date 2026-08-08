@@ -95,4 +95,10 @@ group :test do
 
   # Test coverage reporting
   gem "simplecov", require: false
+
+  # Stubs outgoing HTTP so the suite never touches Mammouth, LinkedIn or Cloudinary
+  gem "webmock", require: false
+
+  # Object#stub and Minitest::Mock, extracted out of minitest in its 6.0 release
+  gem "minitest-mock", require: false
 end

@@ -10,6 +10,19 @@ end
 require_relative "../config/environment"
 require "rails/test_help"
 
+# Fournit Object#stub, utilisé pour remplacer les passerelles LLM le temps d'un test.
+require "minitest/mock"
+
+# Aucun appel réseau réel depuis la suite : un test qui oublie de stubber une requête
+# échoue explicitement au lieu de taper sur Mammouth, LinkedIn ou Cloudinary.
+require "webmock/minitest"
+WebMock.disable_net_connect!(allow_localhost: true)
+
+# Les throttles compteraient les requêtes de toute la suite depuis la même IP et
+# renverraient des 429 sans rapport avec le test en cours. Réactivé explicitement dans
+# test/integration/rate_limiting_test.rb.
+Rack::Attack.enabled = false
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers

@@ -54,4 +54,17 @@ class GenerationPolicyTest < ActiveSupport::TestCase
     assert_includes scope, @own_generation
     assert_includes scope, @site_actu
   end
+
+  test "any authenticated user may list the Studio" do
+    assert GenerationPolicy.new(@editor, Generation).index?
+    assert GenerationPolicy.new(@admin, Generation).index?
+  end
+
+  test "edit follows update" do
+    own = GenerationPolicy.new(@editor, @own_generation)
+    foreign = GenerationPolicy.new(@other_editor, @own_generation)
+
+    assert_equal own.update?, own.edit?
+    assert_equal foreign.update?, foreign.edit?
+  end
 end
