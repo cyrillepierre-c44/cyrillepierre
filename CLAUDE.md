@@ -29,7 +29,7 @@ bin/ci                 # full CI: setup → rubocop → brakeman → bundler-aud
 
 **Deployment**: Heroku. Deploy with `git push heroku master`. App Heroku : `cyrillepierre`. Site en production : **cyrillepierre.com** (pas cyrillepierre.fr). Les migrations tournent via la `release` phase du `Procfile`. `config.force_ssl` est actif ; **`assume_ssl` doit rester désactivé** sur Heroku (le routeur envoie déjà `X-Forwarded-Proto` ; l'activer empêche la redirection HTTP→HTTPS de se déclencher).
 
-**DNS / domaine nu** : `https://cyrillepierre.com` sans `www` n'est **pas** joignable (l'apex pointe sur la redirection HTTP-only de Namecheap, port 443 fermé). Runbook de correction dans `docs/runbook-dns-cloudflare.md`. Pas de DNSSEC sur ce domaine, donc le piège de la migration `costly.fr` ne s'applique pas.
+**DNS / domaine nu** : depuis le 09/08/2026, les DNS sont **délégués à Cloudflare** (plan Free, NS `imani`/`lee.ns.cloudflare.com`, runbook suivi : `docs/runbook-dns-cloudflare.md`). L'apex `https://cyrillepierre.com` est proxifié par Cloudflare (SSL Full strict + Always Use HTTPS) et répond en 301 vers `www`, servi en direct par Heroku (`www` en DNS only). Les MX de transfert d'emails Namecheap (eforward) sont recréés à l'identique dans la zone Cloudflare. Étapes J+2 restantes au 09/08 : DNSSEC (côté Cloudflare + DS chez Namecheap), CAA, DMARC.
 
 **CSS**: sassc-rails pipeline — stylesheets live in `app/assets/stylesheets/`. Bootstrap variables/overrides go before `@import "bootstrap"`.
 
