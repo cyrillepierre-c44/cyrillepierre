@@ -113,10 +113,70 @@ HTTPS de l'apex et redirige vers `www`, ce que Namecheap ne sait pas faire.
 
 8. **Après 48 h de propagation** :
    - activer DNSSEC, côté Cloudflare cette fois, puis recopier l'enregistrement DS chez
-     Namecheap ;
-   - ajouter un enregistrement **CAA** autorisant les autorités réellement utilisées
-     (Let's Encrypt pour Heroku ACM, Google Trust Services pour Cloudflare) ;
-   - envisager un **DMARC** (`_dmarc` en TXT, `p=none` pour commencer, en observation).
+     Namecheap. ⚠️ Les registrars ne demandent pas tous la même chose : OVH veut une
+     **DNSKEY** (Key Tag / Flag 257 / Algorithme 13 / **clé publique**), Namecheap veut le
+     **DS** (Key Tag / Algorithme / Digest Type 2 / **digest**). Mélanger les deux formes
+     donne une chaîne invalide, donc un domaine en SERVFAIL — web *et* emails. Garder
+     l'onglet du registrar ouvert pour pouvoir supprimer la clé en quelques secondes ;
+   - envisager un **DMARC** (`_dmarc` en TXT, `p=none` pour commencer, en observation) ;
+   - le **CAA** est facultatif, et plutôt à éviter ici (voir ci-dessous).
+
+### Vérifier le DNSSEC après coup
+
+Le DS met de quelques minutes à ~1 h à apparaître au registre. Deux faux positifs à
+connaître pendant cette fenêtre, sinon on croit à tort avoir cassé la zone :
+
+- **SERVFAIL transitoire** : les résolveurs ont encore en cache l'état non signé. Une vraie
+  erreur de clé, elle, reste bloquée et fait tomber le site.
+- **`www` en `AD=false`** : `www` est un CNAME vers `herokudns.com`, une zone **non signée**.
+  Le CNAME est bien signé chez nous, mais les adresses finales viennent d'une zone qui ne
+  l'est pas, donc la réponse complète ne peut pas être marquée authentifiée. Normal, rien à
+  corriger — c'est l'apex et les MX qui doivent afficher `AD=true`.
+
+```bash
+# DS publié au registre ?
+curl -s "https://dns.google/resolve?name=DOMAINE&type=DS" | python3 -m json.tool
+# validation effective (Status=0 et AD=true attendus sur l'apex et les MX)
+curl -s "https://dns.google/resolve?name=DOMAINE&type=MX"
+# le résolveur valide-t-il vraiment ? (doit répondre Status=2 / SERVFAIL)
+curl -s "https://dns.google/resolve?name=dnssec-failed.org&type=A"
+```
+
+### CAA : pourquoi on s'abstient
+
+La tentation est de n'autoriser que les deux AC visibles (Let's Encrypt pour Heroku ACM,
+Google Trust Services pour Cloudflare). C'est **trop étroit** : Cloudflare fait tourner les
+autorités de son Universal SSL (GTS, mais aussi Let's Encrypt, SSL.com, DigiCert selon les
+moments), et un CAA restrictif casse un renouvellement des mois plus tard, sans alerte.
+Piège jumeau : ne **jamais** poser `issuewild ";"` pour interdire les wildcards — l'Universal
+SSL de Cloudflare couvre `*.domaine`, ça bloquerait son renouvellement.
+
+Sur un domaine dont tous les certificats sont émis automatiquement par Cloudflare et Heroku,
+le CAA apporte peu et son mode d'échec est différé et silencieux. Si on en veut un malgré
+tout, couvrir les quatre AC possibles, en `issue` **et** `issuewild` :
+
+```
+0 issue "letsencrypt.org"   0 issuewild "letsencrypt.org"
+0 issue "pki.goog"          0 issuewild "pki.goog"
+0 issue "ssl.com"           0 issuewild "ssl.com"
+0 issue "digicert.com"      0 issuewild "digicert.com"
+```
+
+### DMARC : l'adresse `rua` doit être sur le domaine
+
+`rua=mailto:...@gmail.com` ne fonctionne pas : la RFC 7489 §7.1 impose, pour une destination
+hors domaine, une autorisation publiée dans la zone du destinataire
+(`DOMAINE._report._dmarc.gmail.com`) — impossible chez Gmail. Google et Microsoft vérifient
+cette règle et n'envoient alors aucun rapport. Utiliser une adresse **du domaine lui-même**
+(`contact@domaine` ou un alias `dmarc@domaine` redirigé vers la boîte réelle), ce qui évite
+au passage d'exposer une adresse personnelle dans un enregistrement DNS public.
+
+Vérifier la valeur dans le DNS et pas seulement à l'écran du panneau — une coquille du type
+`@domaine.f` au lieu de `@domaine.fr` passe inaperçue dans une colonne tronquée :
+
+```bash
+curl -s "https://dns.google/resolve?name=_dmarc.DOMAINE&type=TXT"
+```
 
 ## Une fois l'apex joignable
 
