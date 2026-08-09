@@ -13,7 +13,10 @@
     <%= link_to "+ Nouvelle génération", new_studio_generation_path, class: "btn-cp-primary" %>
 
     <% if current_user.linkedin_connected? %>
-      <span class="studio-badge">LinkedIn connecté</span>
+      <span class="studio-badge studio-badge--stacked <%= linkedin_expiry_badge_modifier(current_user) %>">
+        LinkedIn connecté
+        <small><%= linkedin_expiry_label(current_user) %></small>
+      </span>
       <%= button_to "Déconnecter LinkedIn", linkedin_auth_disconnect_path, method: :delete, class: "btn-cp-outline" %>
     <% else %>
       <%= link_to (current_user.linkedin_access_token.present? ? "Reconnecter LinkedIn" : "Connecter mon compte LinkedIn"),

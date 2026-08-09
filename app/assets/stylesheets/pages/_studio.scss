@@ -272,6 +272,27 @@
   &--status-published { background: rgba(16, 185, 129, 0.15); color: #10b981; }
   &--status-generated { background: rgba(0, 212, 255, 0.15); color: var(--cp-accent); }
   &--model { background: rgba(139, 92, 246, 0.15); color: var(--cp-purple); }
+
+  // Badge sur deux lignes : libellé + échéance, pour porter l'information sans bouton.
+  &--stacked {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.25;
+    padding: 0.3rem 0.85rem;
+
+    small {
+      font-size: 0.68rem;
+      font-weight: 500;
+      opacity: 0.85;
+    }
+  }
+
+  // Reconnexion à anticiper : pas de refresh token côté LinkedIn.
+  &--warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+  // Dernière ligne droite (expire aujourd'hui ou demain) : reconnexion à faire maintenant.
+  &--danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 }
 
 // ── Show page ────────────────────────────────────────────────
