@@ -58,7 +58,7 @@
   }
 
   .footer-copy {
-    color: rgba(148, 163, 184, 0.45);
+    color: rgba(148, 163, 184, 0.8); // ≥ 4.5:1 sur le fond du footer (WCAG AA)
     font-size: 0.78rem;
     text-align: center;
     margin: 0;

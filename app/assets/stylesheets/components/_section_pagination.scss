@@ -43,7 +43,7 @@
 
 .section-pagination-count {
   font-size: 0.8rem;
-  color: rgba(148, 163, 184, 0.4);
+  color: rgba(148, 163, 184, 0.8); // ≥ 4.5:1 sur fond sombre (WCAG AA)
   font-family: $body-font;
   white-space: nowrap;
   flex-shrink: 0;

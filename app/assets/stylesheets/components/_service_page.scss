@@ -97,7 +97,7 @@
     }
 
     .result-company {
-      color: rgba(148, 163, 184, 0.55);
+      color: rgba(148, 163, 184, 0.8); // ≥ 4.5:1 sur fond sombre (WCAG AA)
       font-size: 0.73rem;
     }
   }
