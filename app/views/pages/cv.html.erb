@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CV — Cyrille PIERRE</title>
+<title>CV de Cyrille PIERRE — Directeur Industriel & Manager de Transition</title>
+<meta name="description" content="Ingénieur Arts et Métiers, plus de 20 ans en direction de production et d'opérations industrielles. Pharmacie, agroalimentaire, microélectronique, métallurgie. Lyon.">
+<link rel="canonical" href="https://www.cyrillepierre.com/cv">
+<%# Cette page se partage par lien depuis le bouton « Partager » : sans ces balises, l'aperçu
+    affiché par la messagerie du destinataire serait vide. %>
+<meta property="og:type" content="profile">
+<meta property="og:title" content="CV de Cyrille PIERRE — Directeur Industriel & Manager de Transition">
+<meta property="og:description" content="Ingénieur Arts et Métiers, plus de 20 ans en direction de production et d'opérations industrielles. Lyon.">
+<meta property="og:url" content="https://www.cyrillepierre.com/cv">
+<meta property="og:image" content="https://www.cyrillepierre.com/images/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<%# La CSP est levée sur cette page, `structured_data_tag` omet donc simplement le nonce. %>
+<%= structured_data_tag(person_schema.merge("@context" => "https://schema.org",
+                                            "mainEntityOfPage" => "https://www.cyrillepierre.com/cv")) %>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -191,8 +204,11 @@
     text-align: center;
     flex-shrink: 0;
   }
-  .name-block .last  { font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 900; line-height: 1.1; }
-  .name-block .first { font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 900; line-height: 1.1; }
+  /* Le nom est le h1 de la page : la balise porte le sens, les deux span gardent le rendu.
+     Sans cette neutralisation, la taille par défaut du h1 casserait la mise en page. */
+  .name-block h1 { font-size: inherit; font-weight: inherit; }
+  .name-block .last,
+  .name-block .first { display: block; font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 900; line-height: 1.1; }
   .name-block .subtitle {
     color: #c9a961;
     font-family: 'Segoe UI', Arial, sans-serif;
@@ -443,9 +459,11 @@
     </div>
 
     <div class="name-block">
-      <div class="last">PIERRE</div>
-      <div class="first">Cyrille</div>
-      <div class="subtitle" id="cv-subtitle">Management, Transition &amp; Projets<br>Excellence Opérationnelle</div>
+      <h1>
+        <span class="last">PIERRE</span>
+        <span class="first">Cyrille</span>
+      </h1>
+      <div class="subtitle" id="cv-subtitle">Directeur Industriel / Directeur de Production<br>Excellence Opérationnelle &amp; Transformation</div>
     </div>
 
     <hr class="divider">
@@ -467,28 +485,28 @@
       <div class="left-block">
         <div class="left-section-title" id="cv-section-competences">Compétences</div>
         <div class="comp-item">
-          <strong id="cv-comp-1-title">Autonomie &amp; Leadership</strong>
-          <span id="cv-comp-1-desc">Intrapreneur, proactif, force de propositions, passage à l'action.</span>
+          <strong id="cv-comp-1-title">Direction &amp; management</strong>
+          <span id="cv-comp-1-desc">Direction de site, comité de direction, équipes jusqu'à 200 personnes.</span>
         </div>
         <div class="comp-item">
-          <strong id="cv-comp-2-title">Management opérationnel</strong>
-          <span id="cv-comp-2-desc">Équipes jusqu'à 200 personnes en environnements exigeants.</span>
+          <strong id="cv-comp-2-title">Excellence opérationnelle</strong>
+          <span id="cv-comp-2-desc">Lean, TPM, WCM, Kaizen, 5S, SMED, VSM. KPI, TRS/OEE, analyse des pertes.</span>
         </div>
         <div class="comp-item">
-          <strong id="cv-comp-3-title">Change Management</strong>
-          <span id="cv-comp-3-desc">ADKAR, déploiement ERP, réorganisations, mobilisation des équipes.</span>
+          <strong id="cv-comp-3-title">Environnements réglementés</strong>
+          <span id="cv-comp-3-desc">BPF/GMP, aseptique, salle blanche Classe A et ISO 4, audits.</span>
         </div>
         <div class="comp-item">
-          <strong id="cv-comp-4-title">Excellence opérationnelle</strong>
-          <span id="cv-comp-4-desc">KPIs, routines d'animation, Lean, TPM, WCM, KAIZEN.</span>
+          <strong id="cv-comp-4-title">Projets &amp; investissements</strong>
+          <span id="cv-comp-4-desc">De l'étude à la mise en service, business cases, budgets. ICCF — HEC Paris.</span>
         </div>
         <div class="comp-item">
-          <strong id="cv-comp-5-title">Amélioration Continue</strong>
-          <span id="cv-comp-5-desc">Lean Six Sigma, analyse des pertes, réduction des gaspillages.</span>
+          <strong id="cv-comp-5-title">Transformation &amp; digital</strong>
+          <span id="cv-comp-5-desc">Conduite du changement (ADKAR), digitalisation, Ruby on Rails, IA appliquée.</span>
         </div>
         <div class="comp-item">
-          <strong id="cv-comp-6-title">Tech &amp; IA</strong>
-          <span id="cv-comp-6-desc">Développement web, IA appliquée, outils métier sur mesure.</span>
+          <strong id="cv-comp-6-title">Secteurs</strong>
+          <span id="cv-comp-6-desc">Pharmacie, microélectronique, plasturgie, agroalimentaire, métallurgie.</span>
         </div>
       </div>
 
@@ -497,7 +515,7 @@
         <div class="left-section-title" id="cv-section-langues">Langues</div>
         <div class="lang-item">
           <span id="cv-lang-1-name">Anglais</span>
-          <span class="lang-level" id="cv-lang-1-level">Courant</span>
+          <span class="lang-level" id="cv-lang-1-level">Courant — TOEIC 835</span>
         </div>
         <div class="lang-item">
           <span id="cv-lang-2-name">Français</span>
@@ -509,10 +527,11 @@
       <div class="left-block">
         <div class="left-section-title" id="cv-section-interets">Centres d'intérêt</div>
         <div class="interest-tags">
-          <span class="tag" id="cv-tag-1">Bachata</span>
-          <span class="tag" id="cv-tag-2">Ski Alpin</span>
-          <span class="tag" id="cv-tag-3">Randonnée</span>
-          <span class="tag" id="cv-tag-4">Informatique, code et IA</span>
+          <span class="tag" id="cv-tag-1">Informatique, code et IA</span>
+          <span class="tag" id="cv-tag-2">Transition écologique</span>
+          <span class="tag" id="cv-tag-3">Bachata</span>
+          <span class="tag" id="cv-tag-4">Ski alpin</span>
+          <span class="tag" id="cv-tag-5">Randonnée</span>
         </div>
       </div>
 
@@ -533,91 +552,82 @@
           <div class="exp-item">
             <div class="exp-header">
               <span class="exp-title" id="cv-exp-1-title">Consultant Excellence Opérationnelle &amp; Digitale</span>
-              <span class="exp-date" id="cv-exp-1-date">Mars 2026 → Mai 2026</span>
+              <span class="exp-date" id="cv-exp-1-date">Sept. 2025 → Aujourd'hui</span>
             </div>
-            <div class="exp-company" id="cv-exp-1-company">ENJOUÉ — Entreprise à But d'Emploi, Lyon</div>
-            <div class="exp-desc" id="cv-exp-1-desc">Transformation Lean de l'atelier de reconditionnement de jouets. Accompagnement modulaire (flux, valorisation, stocks, SI). Mécénat de compétences incluant le développement du logiciel métier RE-PLAY V1 (415h / 37 400 € HT) et IA de reconnaissance visuelle.</div>
+            <div class="exp-company" id="cv-exp-1-company">ENJOUÉ (Entreprise à But d'Emploi) et SFAIRE, Lyon</div>
+            <div class="exp-desc" id="cv-exp-1-desc">Transformation Lean d'ateliers de reconditionnement : flux, stocks, standards, montée en compétences. Logiciel métier RE-PLAY V1 (415 h / 37 400 € HT) et IA de reconnaissance visuelle. Création d'un atelier de pièces vélo (60 K€).</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-exp-2-title">Consultant Excellence Opérationnelle &amp; Création d'Atelier</span>
-              <span class="exp-date" id="cv-exp-2-date">Sept. 2025 → Fév. 2026</span>
+              <span class="exp-title" id="cv-exp-2-title">Fondateur &amp; Dirigeant (P&amp;L complet)</span>
+              <span class="exp-date" id="cv-exp-2-date">Jan. 2021 → Août 2025</span>
             </div>
-            <div class="exp-company" id="cv-exp-2-company">SFAIRE, Lyon</div>
-            <div class="exp-desc" id="cv-exp-2-desc">Création d'un atelier de reconditionnement de pièces détachées de vélos. Budget 60K€/660hrs. Déploiement Lean, structuration des flux, standards opérationnels et montée en compétences des équipes.</div>
+            <div class="exp-company" id="cv-exp-2-company">CENTAUR BIKE, Lyon 4ème</div>
+            <div class="exp-desc" id="cv-exp-2-desc">Électrification et reconditionnement de vélos, économie circulaire. Direction générale : produit, production, relation client B2C/B2B. Pilotage du P&amp;L : CA 250 K€/an, marge brute 39 %. Grands comptes et négociation fournisseurs.</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-exp-3-title">Créateur d'entreprise</span>
-              <span class="exp-date" id="cv-exp-3-date">Jan. 2021 → Août 2025</span>
+              <span class="exp-title" id="cv-exp-3-title">Directeur de Production</span>
+              <span class="exp-date" id="cv-exp-3-date">Oct. 2018 → Déc. 2020</span>
             </div>
-            <div class="exp-company" id="cv-exp-3-company">CENTAUR BIKE, Lyon 4ème</div>
-            <div class="exp-desc" id="cv-exp-3-desc">Électrification et reconditionnement de vélos électriques B2C/B2B. CA 250 K€/an, marge brute 39%. Mise en place de relations commerciales clients / grands comptes / fournisseurs.</div>
+            <div class="exp-company" id="cv-exp-3-company">YOPLAIT (General Mills), Vienne</div>
+            <div class="exp-desc" id="cv-exp-3-desc">3 unités en 3×8, 200 personnes, membre du comité de direction du site. Déploiement des KPI et des routines d'animation : −30 % d'aléas, +8 % de TRS, 480 K€/an d'économies. Dialogue social (CSE, délégués syndicaux).</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-exp-4-title">Directeur de Production</span>
-              <span class="exp-date" id="cv-exp-4-date">Oct. 2018 → Déc. 2020</span>
+              <span class="exp-title" id="cv-exp-4-title">Responsable Fabrication — Injectables Aseptiques</span>
+              <span class="exp-date" id="cv-exp-4-date">Juin 2016 → Sept. 2018</span>
             </div>
-            <div class="exp-company" id="cv-exp-4-company">YOPLAIT, Vienne</div>
-            <div class="exp-desc" id="cv-exp-4-desc">Management de 3 unités de production en 3*8, 200 personnes. Fabrication &amp; Pasteurisation/Stérilisation. Conditionnement : pots verres, préformés, thermoformés, tubes. Mise en place d'indicateurs de performance, de routines quotidiennes &amp; hebdo et d'outils d'animation. -30% des aléas, +8% TRS, 480 K€/an d'économies.</div>
+            <div class="exp-company" id="cv-exp-4-company">CENEXI (CDMO pharmaceutique), Fontenay-sous-Bois</div>
+            <div class="exp-desc" id="cv-exp-4-desc">170 personnes en 3×8 : remplissage aseptique d'ampoules en salle blanche Classe A (BPF/GMP), contrôle par mirage optique. Nouveaux horaires et équipes de week-end : absentéisme divisé par deux dès la 1ère année. Rebuts : 450 K€/an.</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-exp-5-title">Responsable Fabrication — Injectables Aseptiques</span>
-              <span class="exp-date" id="cv-exp-5-date">Juin 2016 → Sept. 2018</span>
+              <span class="exp-title" id="cv-exp-5-title">Consultant Sénior en Management Industriel</span>
+              <span class="exp-date" id="cv-exp-5-date">Oct. 2014 → Mai 2016</span>
             </div>
-            <div class="exp-company" id="cv-exp-5-company">CENEXI, Fontenay-sous-Bois</div>
-            <div class="exp-desc" id="cv-exp-5-desc">Management de 170 personnes. Équipes en 3*8, fabrication, remplissage ampoules en Classe A, contrôle non destructif par mirage optique. Mise en place nouveaux horaires, équipes de WE. Absentéisme divisé par deux dès la 1ère année. Réduction des rebuts : 450 K€/an.</div>
+            <div class="exp-company" id="cv-exp-5-company">EFESO Consulting, Paris</div>
+            <div class="exp-desc" id="cv-exp-5-desc">Conseil auprès de directions générales, CODIR et COMEX : master plans, harmonisation des standards. Analyse des pertes, chantiers SMED en plasturgie, coaching, formation WCM. Chiffrage et avant-vente.</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-exp-6-title">Consultant Sénior en Management Industriel</span>
-              <span class="exp-date" id="cv-exp-6-date">Oct. 2014 → Mai 2016</span>
+              <span class="exp-title" id="cv-exp-6-title">Responsable d'Unité de Production</span>
+              <span class="exp-date" id="cv-exp-6-date">Sept. 2011 → Sept. 2014</span>
             </div>
-            <div class="exp-company" id="cv-exp-6-company">EFESO Consulting, Paris</div>
-            <div class="exp-desc" id="cv-exp-6-desc">Conseil en stratégie opérationnelle auprès de CODIR et COMEX. Création de Master plans et coaching méthodologique, analyse des pertes, accompagnement terrain, formation WCM.</div>
+            <div class="exp-company" id="cv-exp-6-company">LIEBIG (Campbell's), Le Pontet</div>
+            <div class="exp-desc" id="cv-exp-6-desc">100 personnes en 3×8, environnement syndiqué. Lean Manufacturing et OEE Toolkit, reporting direction Europe. Formation des managers : −40 % de pannes, 850 K€/an. Flux et effectifs : 6 000 h gagnées (200 K€/an), emballage standardisé (400 K€/an).</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-exp-7-title">Responsable d'Unité de Production</span>
-              <span class="exp-date" id="cv-exp-7-date">Sept. 2011 → Sept. 2014</span>
+              <span class="exp-title" id="cv-exp-7-title">Responsable Travaux Neufs &amp; Services Généraux</span>
+              <span class="exp-date" id="cv-exp-7-date">Sept. 2010 → Août 2011</span>
             </div>
-            <div class="exp-company" id="cv-exp-7-company">LIEBIG, Le Pontet</div>
-            <div class="exp-desc" id="cv-exp-7-desc">100 personnes. Conditionnement aseptique. Formation des managers opérationnels au management de la performance : -40% de pannes, 850 K€/an d'économies. Optimisation des flux de production et des effectifs : 6 000h gagnées (200 K€/an).</div>
+            <div class="exp-company" id="cv-exp-7-company">LIEBIG (Campbell's), Le Pontet</div>
+            <div class="exp-desc" id="cv-exp-7-desc">Plan directeur à 3 ans : investissements pour de nouvelles lignes de production. Budget de 3,5 M€/an avec une équipe de 3 collaborateurs. Négociation fournisseurs, mises aux normes sécurité et environnement.</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-exp-8-title">Responsable Travaux Neufs</span>
-              <span class="exp-date" id="cv-exp-8-date">Sept. 2010 → Août 2011</span>
+              <span class="exp-title" id="cv-exp-8-title">Responsable Maintenance puis Ingénieur Équipement</span>
+              <span class="exp-date" id="cv-exp-8-date">Mars 2006 → Août 2010</span>
             </div>
-            <div class="exp-company" id="cv-exp-8-company">LIEBIG, Le Pontet</div>
-            <div class="exp-desc" id="cv-exp-8-desc">Suivi d'un budget de 3.5M€/an, de nombreux projets « cost saving » menés avec une équipe de 3 collaborateurs.</div>
+            <div class="exp-company" id="cv-exp-8-company">STMicroelectronics, Crolles</div>
+            <div class="exp-desc" id="cv-exp-8-desc">Maintenance d'un îlot en salle blanche ISO 4, environnement TPM, encadrement d'une équipe postée. Paramètres critiques et suivis statistiques : durée de vie des équipements (120 K€/an). Investissements (300 K€) pour réduire les arrêts.</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-exp-9-title">Chef d'Équipe Postée Maintenance</span>
-              <span class="exp-date" id="cv-exp-9-date">Mars 2006 → Août 2010</span>
+              <span class="exp-title" id="cv-exp-9-title">Ingénieur Travaux Neufs — Métallurgie &amp; Fonderie</span>
+              <span class="exp-date" id="cv-exp-9-date">Oct. 2003 → Fév. 2006</span>
             </div>
-            <div class="exp-company" id="cv-exp-9-company">STMicroelectronics, Crolles</div>
-            <div class="exp-desc" id="cv-exp-9-desc">Maintenance en salle blanche, microélectronique. Encadrement d'équipes postées.</div>
-          </div>
-
-          <div class="exp-item">
-            <div class="exp-header">
-              <span class="exp-title" id="cv-exp-10-title">Ingénieur Travaux Neufs</span>
-              <span class="exp-date" id="cv-exp-10-date">Oct. 2003 → Fév. 2006</span>
-            </div>
-            <div class="exp-company" id="cv-exp-10-company">GHM, Sommevoire</div>
-            <div class="exp-desc" id="cv-exp-10-desc">Gestion de projets d'investissement industriels en métallurgie.</div>
+            <div class="exp-company" id="cv-exp-9-company">GHM, Sommevoire</div>
+            <div class="exp-desc" id="cv-exp-9-desc">Maîtrise d'œuvre d'une installation de retraitement de sable de fonderie de 300 m² (350 K€) : études, procédés, négociation, travaux. Normes sécurité et environnement : 100 K€/an.</div>
           </div>
         </div>
 
@@ -628,20 +638,33 @@
           <div class="section-title" id="cv-section-formation">Formation</div>
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-form-1-title">Diplôme d'Ingénieur — Arts et Métiers</span>
-              <span class="exp-date" id="cv-form-1-date">2000 → 2003</span>
+              <span class="exp-title" id="cv-form-1-title">Formation First Finance ICCF — HEC Paris</span>
+              <span class="exp-date" id="cv-form-1-date">2026</span>
             </div>
-            <div class="exp-company" id="cv-form-1-company">ENSAM ParisTech, Cluny / Paris</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-form-2-title">DUT Génie Mécanique et Productique</span>
-              <span class="exp-date" id="cv-form-2-date">1998 → 2000</span>
+              <span class="exp-title" id="cv-form-2-title">Développeur Web Full-Stack (Ruby on Rails) — Le Wagon, Lyon</span>
+              <span class="exp-date" id="cv-form-2-date">2026</span>
             </div>
-            <div class="exp-company" id="cv-form-2-company">IUT Nancy-Brabois</div>
           </div>
-        </div>
+
+          <div class="exp-item">
+            <div class="exp-header">
+              <span class="exp-title" id="cv-form-3-title">Diplôme d'Ingénieur — Arts et Métiers</span>
+              <span class="exp-date" id="cv-form-3-date">2000 → 2003</span>
+            </div>
+            <div class="exp-company" id="cv-form-3-company">ENSAM ParisTech, Cluny / Paris</div>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-header">
+              <span class="exp-title" id="cv-form-4-title">DUT Génie Mécanique et Productique</span>
+              <span class="exp-date" id="cv-form-4-date">1998 → 2000</span>
+            </div>
+            <div class="exp-company" id="cv-form-4-company">IUT Nancy-Brabois</div>
+          </div>
 
       </div>
 
@@ -663,81 +686,82 @@
       'cv-btn-share':       '↗ Partager',
       'cv-quality-standard':'Qualité standard',
       'cv-quality-compact': 'Compacte (poids réduit)',
-      'cv-subtitle':        'Management, Transition &amp; Projets<br>Excellence Opérationnelle',
+      'cv-subtitle': 'Directeur Industriel / Directeur de Production<br>Excellence Opérationnelle &amp; Transformation',
       'cv-contact-location':'📍 Lyon 4ème',
       'cv-section-contact': 'Contact',
       'cv-section-competences': 'Compétences',
-      'cv-comp-1-title': 'Autonomie &amp; Leadership',
-      'cv-comp-1-desc':  'Intrapreneur, proactif, force de propositions, passage à l\'action.',
-      'cv-comp-2-title': 'Management opérationnel',
-      'cv-comp-2-desc':  'Équipes jusqu\'à 200 personnes en environnements exigeants.',
-      'cv-comp-3-title': 'Change Management',
-      'cv-comp-3-desc':  'ADKAR, déploiement ERP, réorganisations, mobilisation des équipes.',
-      'cv-comp-4-title': 'Excellence opérationnelle',
-      'cv-comp-4-desc':  'KPIs, routines d\'animation, Lean, TPM, WCM, KAIZEN.',
-      'cv-comp-5-title': 'Amélioration Continue',
-      'cv-comp-5-desc':  'Lean Six Sigma, analyse des pertes, réduction des gaspillages.',
-      'cv-comp-6-title': 'Tech &amp; IA',
-      'cv-comp-6-desc':  'Développement web, IA appliquée, outils métier sur mesure.',
       'cv-section-langues': 'Langues',
       'cv-lang-1-name':  'Anglais',
-      'cv-lang-1-level': 'Courant',
+      'cv-lang-1-level': 'Courant — TOEIC 835',
       'cv-lang-2-name':  'Français',
       'cv-lang-2-level': 'Langue maternelle',
       'cv-section-interets': 'Centres d\'intérêt',
-      'cv-tag-1': 'Bachata',
-      'cv-tag-2': 'Ski Alpin',
-      'cv-tag-3': 'Randonnée',
-      'cv-tag-4': 'Informatique, code et IA',
       'cv-section-exp': 'Expérience Professionnelle',
-      'cv-exp-1-title':   'Consultant Excellence Opérationnelle &amp; Digitale',
-      'cv-exp-1-date':    'Mars 2026 → Mai 2026',
-      'cv-exp-1-company': 'ENJOUÉ — Entreprise à But d\'Emploi, Lyon',
-      'cv-exp-1-desc':    'Transformation Lean de l\'atelier de reconditionnement de jouets. Accompagnement modulaire (flux, valorisation, stocks, SI). Mécénat de compétences incluant le développement du logiciel métier RE-PLAY V1 (415h / 37 400 € HT) et IA de reconnaissance visuelle.',
-      'cv-exp-2-title':   'Consultant Excellence Opérationnelle &amp; Création d\'Atelier',
-      'cv-exp-2-date':    'Sept. 2025 → Fév. 2026',
-      'cv-exp-2-company': 'SFAIRE, Lyon',
-      'cv-exp-2-desc':    'Création d\'un atelier de reconditionnement de pièces détachées de vélos. Budget 60K€/660hrs. Déploiement Lean, structuration des flux, standards opérationnels et montée en compétences des équipes.',
-      'cv-exp-3-title':   'Créateur d\'entreprise',
-      'cv-exp-3-date':    'Jan. 2021 → Août 2025',
-      'cv-exp-3-company': 'CENTAUR BIKE, Lyon 4ème',
-      'cv-exp-3-desc':    'Électrification et reconditionnement de vélos électriques B2C/B2B. CA 250 K€/an, marge brute 39%. Mise en place de relations commerciales clients / grands comptes / fournisseurs.',
-      'cv-exp-4-title':   'Directeur de Production',
-      'cv-exp-4-date':    'Oct. 2018 → Déc. 2020',
-      'cv-exp-4-company': 'YOPLAIT, Vienne',
-      'cv-exp-4-desc':    'Management de 3 unités de production en 3*8, 200 personnes. Fabrication &amp; Pasteurisation/Stérilisation. Conditionnement : pots verres, préformés, thermoformés, tubes. Mise en place d\'indicateurs de performance, de routines quotidiennes &amp; hebdo et d\'outils d\'animation. -30% des aléas, +8% TRS, 480 K€/an d\'économies.',
-      'cv-exp-5-title':   'Responsable Fabrication — Injectables Aseptiques',
-      'cv-exp-5-date':    'Juin 2016 → Sept. 2018',
-      'cv-exp-5-company': 'CENEXI, Fontenay-sous-Bois',
-      'cv-exp-5-desc':    'Management de 170 personnes. Équipes en 3*8, fabrication, remplissage ampoules en Classe A, contrôle non destructif par mirage optique. Mise en place nouveaux horaires, équipes de WE. Absentéisme divisé par deux dès la 1ère année. Réduction des rebuts : 450 K€/an.',
-      'cv-exp-6-title':   'Consultant Sénior en Management Industriel',
-      'cv-exp-6-date':    'Oct. 2014 → Mai 2016',
-      'cv-exp-6-company': 'EFESO Consulting, Paris',
-      'cv-exp-6-desc':    'Conseil en stratégie opérationnelle auprès de CODIR et COMEX. Création de Master plans et coaching méthodologique, analyse des pertes, accompagnement terrain, formation WCM.',
-      'cv-exp-7-title':   'Responsable d\'Unité de Production',
-      'cv-exp-7-date':    'Sept. 2011 → Sept. 2014',
-      'cv-exp-7-company': 'LIEBIG, Le Pontet',
-      'cv-exp-7-desc':    '100 personnes. Conditionnement aseptique. Formation des managers opérationnels au management de la performance : -40% de pannes, 850 K€/an d\'économies. Optimisation des flux de production et des effectifs : 6 000h gagnées (200 K€/an).',
-      'cv-exp-8-title':   'Responsable Travaux Neufs',
-      'cv-exp-8-date':    'Sept. 2010 → Août 2011',
-      'cv-exp-8-company': 'LIEBIG, Le Pontet',
-      'cv-exp-8-desc':    'Suivi d\'un budget de 3.5M€/an, de nombreux projets « cost saving » menés avec une équipe de 3 collaborateurs.',
-      'cv-exp-9-title':   'Chef d\'Équipe Postée Maintenance',
-      'cv-exp-9-date':    'Mars 2006 → Août 2010',
-      'cv-exp-9-company': 'STMicroelectronics, Crolles',
-      'cv-exp-9-desc':    'Maintenance en salle blanche, microélectronique. Encadrement d\'équipes postées.',
-      'cv-exp-10-title':   'Ingénieur Travaux Neufs',
-      'cv-exp-10-date':    'Oct. 2003 → Fév. 2006',
-      'cv-exp-10-company': 'GHM, Sommevoire',
-      'cv-exp-10-desc':    'Gestion de projets d\'investissement industriels en métallurgie.',
       'cv-section-formation': 'Formation',
-      'cv-form-1-title':   'Diplôme d\'Ingénieur — Arts et Métiers',
-      'cv-form-1-date':    '2000 → 2003',
-      'cv-form-1-company': 'ENSAM ParisTech, Cluny / Paris',
-      'cv-form-2-title':   'DUT Génie Mécanique et Productique',
-      'cv-form-2-date':    '1998 → 2000',
-      'cv-form-2-company': 'IUT Nancy-Brabois',
-      'cv-footer': 'Cyrille PIERRE — cyrille.pierre@gmail.com — 06 18 02 24 52 — www.cyrillepierre.com — Lyon 4ème'
+      'cv-footer': 'Cyrille PIERRE — cyrille.pierre@gmail.com — 06 18 02 24 52 — www.cyrillepierre.com — Lyon 4ème',
+      'cv-comp-1-title': 'Direction &amp; management',
+      'cv-comp-1-desc': 'Direction de site, comité de direction, équipes jusqu\'à 200 personnes.',
+      'cv-comp-2-title': 'Excellence opérationnelle',
+      'cv-comp-2-desc': 'Lean, TPM, WCM, Kaizen, 5S, SMED, VSM. KPI, TRS/OEE, analyse des pertes.',
+      'cv-comp-3-title': 'Environnements réglementés',
+      'cv-comp-3-desc': 'BPF/GMP, aseptique, salle blanche Classe A et ISO 4, audits.',
+      'cv-comp-4-title': 'Projets &amp; investissements',
+      'cv-comp-4-desc': 'De l\'étude à la mise en service, business cases, budgets. ICCF — HEC Paris.',
+      'cv-comp-5-title': 'Transformation &amp; digital',
+      'cv-comp-5-desc': 'Conduite du changement (ADKAR), digitalisation, Ruby on Rails, IA appliquée.',
+      'cv-comp-6-title': 'Secteurs',
+      'cv-comp-6-desc': 'Pharmacie, microélectronique, plasturgie, agroalimentaire, métallurgie.',
+      'cv-tag-1': 'Informatique, code et IA',
+      'cv-tag-2': 'Transition écologique',
+      'cv-tag-3': 'Bachata',
+      'cv-tag-4': 'Ski alpin',
+      'cv-tag-5': 'Randonnée',
+      'cv-form-1-title': 'Formation First Finance ICCF — HEC Paris',
+      'cv-form-1-date': '2026',
+      'cv-form-2-title': 'Développeur Web Full-Stack (Ruby on Rails) — Le Wagon, Lyon',
+      'cv-form-2-date': '2026',
+      'cv-form-3-title': 'Diplôme d\'Ingénieur — Arts et Métiers',
+      'cv-form-3-date': '2000 → 2003',
+      'cv-form-3-company': 'ENSAM ParisTech, Cluny / Paris',
+      'cv-form-4-title': 'DUT Génie Mécanique et Productique',
+      'cv-form-4-date': '1998 → 2000',
+      'cv-form-4-company': 'IUT Nancy-Brabois',
+      'cv-exp-1-title': 'Consultant Excellence Opérationnelle &amp; Digitale',
+      'cv-exp-1-date': 'Sept. 2025 → Aujourd\'hui',
+      'cv-exp-1-company': 'ENJOUÉ (Entreprise à But d\'Emploi) et SFAIRE, Lyon',
+      'cv-exp-1-desc': 'Transformation Lean d\'ateliers de reconditionnement : flux, stocks, standards, montée en compétences. Logiciel métier RE-PLAY V1 (415 h / 37 400 € HT) et IA de reconnaissance visuelle. Création d\'un atelier de pièces vélo (60 K€).',
+      'cv-exp-2-title': 'Fondateur &amp; Dirigeant (P&amp;L complet)',
+      'cv-exp-2-date': 'Jan. 2021 → Août 2025',
+      'cv-exp-2-company': 'CENTAUR BIKE, Lyon 4ème',
+      'cv-exp-2-desc': 'Électrification et reconditionnement de vélos, économie circulaire. Direction générale : produit, production, relation client B2C/B2B. Pilotage du P&amp;L : CA 250 K€/an, marge brute 39 %. Grands comptes et négociation fournisseurs.',
+      'cv-exp-3-title': 'Directeur de Production',
+      'cv-exp-3-date': 'Oct. 2018 → Déc. 2020',
+      'cv-exp-3-company': 'YOPLAIT (General Mills), Vienne',
+      'cv-exp-3-desc': '3 unités en 3×8, 200 personnes, membre du comité de direction du site. Déploiement des KPI et des routines d\'animation : −30 % d\'aléas, +8 % de TRS, 480 K€/an d\'économies. Dialogue social (CSE, délégués syndicaux).',
+      'cv-exp-4-title': 'Responsable Fabrication — Injectables Aseptiques',
+      'cv-exp-4-date': 'Juin 2016 → Sept. 2018',
+      'cv-exp-4-company': 'CENEXI (CDMO pharmaceutique), Fontenay-sous-Bois',
+      'cv-exp-4-desc': '170 personnes en 3×8 : remplissage aseptique d\'ampoules en salle blanche Classe A (BPF/GMP), contrôle par mirage optique. Nouveaux horaires et équipes de week-end : absentéisme divisé par deux dès la 1ère année. Rebuts : 450 K€/an.',
+      'cv-exp-5-title': 'Consultant Sénior en Management Industriel',
+      'cv-exp-5-date': 'Oct. 2014 → Mai 2016',
+      'cv-exp-5-company': 'EFESO Consulting, Paris',
+      'cv-exp-5-desc': 'Conseil auprès de directions générales, CODIR et COMEX : master plans, harmonisation des standards. Analyse des pertes, chantiers SMED en plasturgie, coaching, formation WCM. Chiffrage et avant-vente.',
+      'cv-exp-6-title': 'Responsable d\'Unité de Production',
+      'cv-exp-6-date': 'Sept. 2011 → Sept. 2014',
+      'cv-exp-6-company': 'LIEBIG (Campbell\'s), Le Pontet',
+      'cv-exp-6-desc': '100 personnes en 3×8, environnement syndiqué. Lean Manufacturing et OEE Toolkit, reporting direction Europe. Formation des managers : −40 % de pannes, 850 K€/an. Flux et effectifs : 6 000 h gagnées (200 K€/an), emballage standardisé (400 K€/an).',
+      'cv-exp-7-title': 'Responsable Travaux Neufs &amp; Services Généraux',
+      'cv-exp-7-date': 'Sept. 2010 → Août 2011',
+      'cv-exp-7-company': 'LIEBIG (Campbell\'s), Le Pontet',
+      'cv-exp-7-desc': 'Plan directeur à 3 ans : investissements pour de nouvelles lignes de production. Budget de 3,5 M€/an avec une équipe de 3 collaborateurs. Négociation fournisseurs, mises aux normes sécurité et environnement.',
+      'cv-exp-8-title': 'Responsable Maintenance puis Ingénieur Équipement',
+      'cv-exp-8-date': 'Mars 2006 → Août 2010',
+      'cv-exp-8-company': 'STMicroelectronics, Crolles',
+      'cv-exp-8-desc': 'Maintenance d\'un îlot en salle blanche ISO 4, environnement TPM, encadrement d\'une équipe postée. Paramètres critiques et suivis statistiques : durée de vie des équipements (120 K€/an). Investissements (300 K€) pour réduire les arrêts.',
+      'cv-exp-9-title': 'Ingénieur Travaux Neufs — Métallurgie &amp; Fonderie',
+      'cv-exp-9-date': 'Oct. 2003 → Fév. 2006',
+      'cv-exp-9-company': 'GHM, Sommevoire',
+      'cv-exp-9-desc': 'Maîtrise d\'œuvre d\'une installation de retraitement de sable de fonderie de 300 m² (350 K€) : études, procédés, négociation, travaux. Normes sécurité et environnement : 100 K€/an.'
     },
     en: {
       'cv-btn-home':        '← Home',
@@ -745,81 +769,82 @@
       'cv-btn-share':       '↗ Share',
       'cv-quality-standard':'Standard quality',
       'cv-quality-compact': 'Compact (smaller file)',
-      'cv-subtitle':        'Management, Transition &amp; Projects<br>Operational Excellence',
+      'cv-subtitle': 'Industrial / Production Director<br>Operational Excellence &amp; Transformation',
       'cv-contact-location':'📍 Lyon, France',
       'cv-section-contact': 'Contact',
       'cv-section-competences': 'Skills',
-      'cv-comp-1-title': 'Autonomy &amp; Leadership',
-      'cv-comp-1-desc':  'Intrapreneur, proactive, solution-driven, bias for action.',
-      'cv-comp-2-title': 'Operational Management',
-      'cv-comp-2-desc':  'Teams of up to 200 people in demanding environments.',
-      'cv-comp-3-title': 'Change Management',
-      'cv-comp-3-desc':  'ADKAR, ERP roll-out, reorganisations, team mobilisation.',
-      'cv-comp-4-title': 'Operational Excellence',
-      'cv-comp-4-desc':  'KPIs, management routines, Lean, TPM, WCM, KAIZEN.',
-      'cv-comp-5-title': 'Continuous Improvement',
-      'cv-comp-5-desc':  'Lean Six Sigma, loss analysis, waste reduction.',
-      'cv-comp-6-title': 'Tech &amp; AI',
-      'cv-comp-6-desc':  'Web development, applied AI, bespoke business tools.',
       'cv-section-langues': 'Languages',
       'cv-lang-1-name':  'English',
-      'cv-lang-1-level': 'Fluent',
+      'cv-lang-1-level': 'Fluent — TOEIC 835',
       'cv-lang-2-name':  'French',
       'cv-lang-2-level': 'Native',
       'cv-section-interets': 'Interests',
-      'cv-tag-1': 'Bachata',
-      'cv-tag-2': 'Alpine Skiing',
-      'cv-tag-3': 'Hiking',
-      'cv-tag-4': 'Tech, Coding &amp; AI',
       'cv-section-exp': 'Professional Experience',
-      'cv-exp-1-title':   'Operational &amp; Digital Excellence Consultant',
-      'cv-exp-1-date':    'Mar. 2026 → May 2026',
-      'cv-exp-1-company': 'ENJOUÉ — Social Employment Enterprise, Lyon',
-      'cv-exp-1-desc':    'Lean transformation of a toy refurbishment workshop. Modular consulting (flow, valuation, inventory, IS). Skills sponsorship including development of the RE-PLAY V1 business management software (415 hrs / €37,400 ex. VAT) and an AI-powered visual recognition tool.',
-      'cv-exp-2-title':   'Operational Excellence &amp; Workshop Set-up Consultant',
-      'cv-exp-2-date':    'Sep. 2025 → Feb. 2026',
-      'cv-exp-2-company': 'SFAIRE, Lyon',
-      'cv-exp-2-desc':    'Built a bicycle spare-parts refurbishment workshop from scratch. Budget €60K / 660 hrs. Lean deployment, flow structuring, operational standards and team capability building.',
-      'cv-exp-3-title':   'Founder &amp; CEO',
-      'cv-exp-3-date':    'Jan. 2021 → Aug. 2025',
-      'cv-exp-3-company': 'CENTAUR BIKE, Lyon',
-      'cv-exp-3-desc':    'Electrification and refurbishment of e-bikes, B2C/B2B. Revenue €250K/year, gross margin 39%. Built commercial relationships with individual clients, key accounts and suppliers.',
-      'cv-exp-4-title':   'Production Director',
-      'cv-exp-4-date':    'Oct. 2018 → Dec. 2020',
-      'cv-exp-4-company': 'YOPLAIT, Vienne',
-      'cv-exp-4-desc':    'Managed 3 production units on a 3-shift basis, 200 people. Manufacturing &amp; Pasteurisation/Sterilisation. Packaging lines: glass jars, preformed, thermoformed, tubes. Implemented KPIs, daily &amp; weekly management routines and shop-floor performance tools. –30% unplanned stoppages, +8% OEE, €480K/year in savings.',
-      'cv-exp-5-title':   'Manufacturing Manager — Aseptic Injectables',
-      'cv-exp-5-date':    'Jun. 2016 → Sep. 2018',
-      'cv-exp-5-company': 'CENEXI, Fontenay-sous-Bois',
-      'cv-exp-5-desc':    'Managed 170 people across 3-shift teams: manufacturing, vial filling in a Class A cleanroom, non-destructive control by optical mirage inspection. Introduced new shift schedules and weekend teams. Absenteeism halved in year one. Scrap reduction: €450K/year.',
-      'cv-exp-6-title':   'Senior Consultant — Industrial Management',
-      'cv-exp-6-date':    'Oct. 2014 → May 2016',
-      'cv-exp-6-company': 'EFESO Consulting, Paris',
-      'cv-exp-6-desc':    'Operational strategy consulting for Executive Committees and Boards. Developed Master Plans and provided methodological coaching, loss analysis, shop-floor support and WCM training.',
-      'cv-exp-7-title':   'Production Unit Manager',
-      'cv-exp-7-date':    'Sep. 2011 → Sep. 2014',
-      'cv-exp-7-company': 'LIEBIG, Le Pontet',
-      'cv-exp-7-desc':    '100 people. Aseptic packaging. Coached operational managers in performance management: –40% equipment breakdowns, €850K/year in savings. Optimised production flow and staffing: 6,000 hours saved (€200K/year).',
-      'cv-exp-8-title':   'Capital Projects Manager',
-      'cv-exp-8-date':    'Sep. 2010 → Aug. 2011',
-      'cv-exp-8-company': 'LIEBIG, Le Pontet',
-      'cv-exp-8-desc':    'Managed a €3.5M/year capital expenditure budget, delivering numerous cost-saving projects with a team of 3.',
-      'cv-exp-9-title':   'Shift Maintenance Team Leader',
-      'cv-exp-9-date':    'Mar. 2006 → Aug. 2010',
-      'cv-exp-9-company': 'STMicroelectronics, Crolles',
-      'cv-exp-9-desc':    'Shift maintenance in microelectronics cleanrooms. Shift team supervision.',
-      'cv-exp-10-title':   'Capital Projects Engineer',
-      'cv-exp-10-date':    'Oct. 2003 → Feb. 2006',
-      'cv-exp-10-company': 'GHM, Sommevoire',
-      'cv-exp-10-desc':    'Management of industrial investment projects in metallurgy.',
       'cv-section-formation': 'Education',
-      'cv-form-1-title':   'Master of Engineering — Arts et Métiers',
-      'cv-form-1-date':    '2000 → 2003',
-      'cv-form-1-company': 'ENSAM ParisTech, Cluny / Paris',
-      'cv-form-2-title':   'HND in Mechanical Engineering &amp; Production',
-      'cv-form-2-date':    '1998 → 2000',
-      'cv-form-2-company': 'IUT Nancy-Brabois',
-      'cv-footer': 'Cyrille PIERRE — cyrille.pierre@gmail.com — +33 6 18 02 24 52 — www.cyrillepierre.com — Lyon, France'
+      'cv-footer': 'Cyrille PIERRE — cyrille.pierre@gmail.com — +33 6 18 02 24 52 — www.cyrillepierre.com — Lyon, France',
+      'cv-comp-1-title': 'Leadership &amp; management',
+      'cv-comp-1-desc': 'Site management, executive committee, teams of up to 200 people.',
+      'cv-comp-2-title': 'Operational excellence',
+      'cv-comp-2-desc': 'Lean, TPM, WCM, Kaizen, 5S, SMED, VSM. KPIs, OEE, loss analysis.',
+      'cv-comp-3-title': 'Regulated environments',
+      'cv-comp-3-desc': 'GMP, aseptic, Class A and ISO 4 cleanrooms, audits.',
+      'cv-comp-4-title': 'Projects &amp; capital investment',
+      'cv-comp-4-desc': 'From study to commissioning, business cases, budgets. ICCF — HEC Paris.',
+      'cv-comp-5-title': 'Transformation &amp; digital',
+      'cv-comp-5-desc': 'Change management (ADKAR), digitalisation, Ruby on Rails, applied AI.',
+      'cv-comp-6-title': 'Industries',
+      'cv-comp-6-desc': 'Pharmaceuticals, microelectronics, plastics, food processing, metallurgy.',
+      'cv-tag-1': 'Tech, coding &amp; AI',
+      'cv-tag-2': 'Ecological transition',
+      'cv-tag-3': 'Bachata',
+      'cv-tag-4': 'Alpine skiing',
+      'cv-tag-5': 'Hiking',
+      'cv-exp-1-title': 'Operational &amp; Digital Excellence Consultant',
+      'cv-exp-1-date': 'Sep. 2025 → Present',
+      'cv-exp-1-company': 'ENJOUÉ (Social Employment Enterprise) and SFAIRE, Lyon',
+      'cv-exp-1-desc': 'Lean transformation of refurbishment workshops: flow, inventory, standards, team capability. Built the RE-PLAY V1 software (415 hrs / €37,400 ex. VAT) and an AI visual recognition tool. Set up a bicycle spare-parts workshop (€60K).',
+      'cv-exp-2-title': 'Founder &amp; Managing Director (full P&amp;L)',
+      'cv-exp-2-date': 'Jan. 2021 → Aug. 2025',
+      'cv-exp-2-company': 'CENTAUR BIKE, Lyon',
+      'cv-exp-2-desc': 'E-bike electrification and refurbishment, circular economy. General management: product, production, B2C/B2B customer relations. P&amp;L ownership: €250K revenue, 39% gross margin. Key accounts and supplier negotiation.',
+      'cv-exp-3-title': 'Production Director',
+      'cv-exp-3-date': 'Oct. 2018 → Dec. 2020',
+      'cv-exp-3-company': 'YOPLAIT (General Mills), Vienne',
+      'cv-exp-3-desc': '3 production units on 3 shifts, 200 people, member of the site executive committee. KPI and management routines: −30% unplanned stoppages, +8% OEE, €480K/year in savings. Labour relations (works council, unions).',
+      'cv-exp-4-title': 'Manufacturing Manager — Aseptic Injectables',
+      'cv-exp-4-date': 'Jun. 2016 → Sep. 2018',
+      'cv-exp-4-company': 'CENEXI (pharmaceutical CDMO), Fontenay-sous-Bois',
+      'cv-exp-4-desc': '170 people on 3 shifts: aseptic ampoule filling in a Class A cleanroom (GMP), optical inspection. New shift patterns and weekend teams: absenteeism halved in year one. Scrap: €450K/year.',
+      'cv-exp-5-title': 'Senior Consultant — Industrial Management',
+      'cv-exp-5-date': 'Oct. 2014 → May 2016',
+      'cv-exp-5-company': 'EFESO Consulting, Paris',
+      'cv-exp-5-desc': 'Consulting for general management, executive and steering committees: master plans, standard harmonisation across sites. Loss analysis, SMED projects in plastics, methodological coaching, WCM training. Scoping and pre-sales.',
+      'cv-exp-6-title': 'Production Unit Manager',
+      'cv-exp-6-date': 'Sep. 2011 → Sep. 2014',
+      'cv-exp-6-company': 'LIEBIG (Campbell\'s), Le Pontet',
+      'cv-exp-6-desc': '100 people on 3 shifts, unionised environment. Lean Manufacturing and OEE Toolkit, reporting to European management. Manager training: −40% breakdowns, €850K/year. Flow and staffing: 6,000 hours saved (€200K/year), packaging standardisation (€400K/year).',
+      'cv-exp-7-title': 'Capital Projects &amp; Facilities Manager',
+      'cv-exp-7-date': 'Sep. 2010 → Aug. 2011',
+      'cv-exp-7-company': 'LIEBIG (Campbell\'s), Le Pontet',
+      'cv-exp-7-desc': '3-year master plan: capital investment for new production lines. €3.5M/year budget with a team of 3. Supplier negotiation, safety and environmental compliance.',
+      'cv-exp-8-title': 'Maintenance Manager then Equipment Engineer',
+      'cv-exp-8-date': 'Mar. 2006 → Aug. 2010',
+      'cv-exp-8-company': 'STMicroelectronics, Crolles',
+      'cv-exp-8-desc': 'Maintenance of a production cell in an ISO 4 cleanroom, TPM environment, shift team leadership. Critical parameters and statistical monitoring: equipment lifetime extended (€120K/year). Investment scoping (€300K) to reduce line stoppages.',
+      'cv-exp-9-title': 'Capital Projects Engineer — Metallurgy &amp; Foundry',
+      'cv-exp-9-date': 'Oct. 2003 → Feb. 2006',
+      'cv-exp-9-company': 'GHM, Sommevoire',
+      'cv-exp-9-desc': 'Project management of a 300 m² foundry sand reprocessing plant (€350K): studies, process selection, negotiation, site supervision. Safety and environmental compliance: €100K/year saved.',
+      'cv-form-1-title': 'First Finance ICCF Programme — HEC Paris',
+      'cv-form-1-date': '2026',
+      'cv-form-2-title': 'Full-Stack Web Developer (Ruby on Rails) — Le Wagon, Lyon',
+      'cv-form-2-date': '2026',
+      'cv-form-3-title': 'Engineering Degree — Arts et Métiers',
+      'cv-form-3-date': '2000 → 2003',
+      'cv-form-3-company': 'ENSAM ParisTech, Cluny / Paris',
+      'cv-form-4-title': 'Two-year Technical Degree — Mechanical Engineering',
+      'cv-form-4-date': '1998 → 2000',
+      'cv-form-4-company': 'IUT Nancy-Brabois'
     }
   };
 

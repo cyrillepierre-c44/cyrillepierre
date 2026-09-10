@@ -223,6 +223,24 @@ OAuth2 (`LinkedinAuthController#connect`/`callback`/`disconnect`, hors namespace
 
 Page standalone — elle n'utilise **pas** le layout Rails (`layout false` dans le controller). Tout le CSS et le JS sont inline dans le fichier.
 
+**Source de vérité** : `doc/content/CV_Cyrille_PIERRE_MAITRE.pdf`. Toute mise à jour du parcours
+part de ce fichier, jamais de la page. `CvText` rend cette page et en extrait le texte pour
+`ContentGenerator` : l'enrichir améliore donc aussi tous les contenus générés par le Studio.
+
+⚠️ **La page est bornée à une feuille A4 et le dépassement est coupé SANS AVERTISSEMENT** :
+`@media print` fixe `height: 1123px` + `overflow: hidden` sur `.page`, `.left` et `.right`. Un
+paragraphe ajouté ne provoque aucune erreur, il disparaît simplement du PDF. Mesurer avant de
+committer, en rendant la page et en lisant la hauteur réelle :
+
+```bash
+bin/rails runner "File.write('/mnt/c/Windows/Temp/cv.html', PagesController.render(:cv, layout: false))"
+# puis, avec un script qui écrit page.getBoundingClientRect().height dans document.title :
+"/mnt/c/Program Files/Google/Chrome/Application/chrome.exe" --headless=new --dump-dom file:///C:/Windows/Temp/cv.html
+```
+
+Au 10/09/2026 la page mesure **1108 px**, soit 15 px de marge. Vérifier aussi en anglais
+(`applyLang('en')`) : les traductions remplacent le texte à la volée et peuvent être plus longues.
+
 Fonctionnalités :
 - **Mode papier** : toggle via classe `paper-mode` sur `<body>`. Bouton affiche "🖨 Version papier" / "🎨 Version couleur" (texte doré en mode actif). Le libellé s'adapte à la langue courante (`updatePaperBtn()`).
 - **Bascule FR/EN** : `<select id="langSelect">` (même style `.print-quality` que le sélecteur de qualité) appelle `applyLang(lang)` — met à jour via `innerHTML` tous les éléments identifiés par `id` (`cv-exp-1-title`, `cv-comp-3-desc`, etc.) à partir de l'objet `TRANSLATIONS` (défini dans le second bloc `<script>`). Chaque élément traduisible porte un `id` préfixé `cv-`. Le `<html lang>` est aussi mis à jour.

@@ -67,4 +67,26 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "nav.navbar-cp", 0
   end
+
+  # La page CV n'utilise pas le gabarit du site : ses balises doivent être posées à la main,
+  # et rien d'autre ne les protège d'une suppression accidentelle.
+  test "the CV page carries its own indexing and sharing tags" do
+    get cv_path
+
+    assert_select "h1", 1
+    assert_select "link[rel=canonical][href=?]", "https://www.cyrillepierre.com/cv"
+    assert_select "meta[name=description]"
+    assert_select "meta[property='og:image']"
+    assert_select "script[type='application/ld+json']", 1
+  end
+
+  test "the CV states the identity and the reach of the master CV" do
+    get cv_path
+
+    assert_select "h1", text: /PIERRE/
+    assert_includes @response.body, "Directeur Industriel"
+    assert_includes @response.body, "TOEIC 835"
+    assert_includes @response.body, "Sept. 2025 → Aujourd'hui"
+    assert_includes @response.body, "HEC Paris"
+  end
 end
