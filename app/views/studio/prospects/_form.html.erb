@@ -1,0 +1,78 @@
+<%= form_for prospect, url: url do |f| %>
+  <%= render "devise/shared/error_messages", resource: prospect %>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">Identité</h2>
+    <div class="cf-fields-grid">
+      <div class="cf-field">
+        <%= f.label :name, "Nom", class: "cf-label" %><span class="cf-required">*</span>
+        <%= f.text_field :name, class: "cf-input", required: true %>
+      </div>
+      <div class="cf-field">
+        <%= f.label :company, "Entreprise", class: "cf-label" %>
+        <%= f.text_field :company, class: "cf-input" %>
+      </div>
+      <div class="cf-field">
+        <%= f.label :email, "Email", class: "cf-label" %>
+        <%= f.email_field :email, class: "cf-input" %>
+      </div>
+      <div class="cf-field">
+        <%= f.label :phone, "Téléphone", class: "cf-label" %>
+        <%= f.text_field :phone, class: "cf-input" %>
+      </div>
+      <div class="cf-field">
+        <%= f.label :sector, "Secteur", class: "cf-label" %>
+        <%= f.text_field :sector, class: "cf-input", placeholder: "agroalimentaire, pharma, mécanique…" %>
+      </div>
+      <div class="cf-field">
+        <%= f.label :company_size, "Effectif", class: "cf-label" %>
+        <%= f.text_field :company_size, class: "cf-input", placeholder: "~200 personnes" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">Suivi</h2>
+    <div class="cf-fields-grid">
+      <div class="cf-field">
+        <%= f.label :source, "Origine", class: "cf-label" %>
+        <%= f.select :source, Prospect::SOURCES.map { |value, label| [label, value] }, {}, class: "cf-input" %>
+      </div>
+      <div class="cf-field">
+        <%= f.label :status, "Statut", class: "cf-label" %>
+        <%= f.select :status, Prospect::STATUSES.map { |value, label| [label, value] }, {}, class: "cf-input" %>
+      </div>
+      <div class="cf-field">
+        <%= f.label :next_action, "Prochaine action", class: "cf-label" %>
+        <%= f.text_field :next_action, class: "cf-input" %>
+      </div>
+      <div class="cf-field">
+        <%= f.label :next_action_on, "Date de relance", class: "cf-label" %>
+        <%= f.date_field :next_action_on, class: "cf-input" %>
+      </div>
+    </div>
+
+    <div class="cf-field">
+      <%= f.label :themes_text, "Thèmes", class: "cf-label" %>
+      <%= f.text_field :themes_text, value: prospect.themes_text, class: "cf-input",
+                       placeholder: "performance, digitalisation" %>
+      <p class="studio-field-hint">Séparés par des virgules.</p>
+    </div>
+
+    <div class="cf-field">
+      <%= f.label :summary, "Besoin exprimé", class: "cf-label" %>
+      <%= f.text_area :summary, rows: 5, class: "cf-input cf-textarea" %>
+    </div>
+
+    <div class="cf-field">
+      <%= f.label :notes, "Mes notes", class: "cf-label" %>
+      <%= f.text_area :notes, rows: 5, class: "cf-input cf-textarea" %>
+    </div>
+  </div>
+
+  <div class="studio-actions">
+    <%= f.submit submit_label, class: "btn-cp-primary" %>
+    <%= link_to "Annuler", prospect.persisted? ? studio_prospect_path(prospect) : studio_prospects_path,
+                class: "btn-cp-outline" %>
+  </div>
+<% end %>

@@ -11,6 +11,8 @@ class PagesController < ApplicationController
   def leadership; end
   def tech; end
   def realisations; end
+  def legal; end
+  def privacy; end
 
   def cv
     render layout: false

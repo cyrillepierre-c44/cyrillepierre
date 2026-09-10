@@ -1,0 +1,23 @@
+<%= link_to studio_prospect_path(prospect), class: "studio-list-item" do %>
+  <div class="studio-list-item-main">
+    <span class="studio-badge prospect-badge--<%= prospect.status %>"><%= prospect.status_label %></span>
+    <span class="studio-list-item-title">
+      <%= prospect.name %>
+      <% if prospect.company.present? %>
+        <small class="prospect-company">· <%= prospect.company %></small>
+      <% end %>
+    </span>
+  </div>
+  <div class="studio-list-item-meta">
+    <% if prospect.sector.present? %>
+      <span class="studio-badge studio-badge--model"><%= prospect.sector %></span>
+    <% end %>
+    <span class="studio-badge"><%= prospect.source_label %></span>
+    <% if prospect.next_action_on.present? %>
+      <span class="studio-badge <%= prospect.relance_due? ? 'studio-badge--danger' : 'studio-badge--warning' %>">
+        <%= prospect.next_action_on.strftime("%d/%m") %>
+      </span>
+    <% end %>
+    <span class="studio-list-item-date"><%= prospect.updated_at.strftime("%d/%m/%Y") %></span>
+  </div>
+<% end %>

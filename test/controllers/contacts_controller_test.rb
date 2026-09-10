@@ -192,6 +192,48 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Votre demande a bien été envoyée ! Je vous réponds sous 24h.", flash[:notice]
   end
 
+  test "create records the visitor as a prospect with the qualified context" do
+    history = [ { role: "assistant", content: "Quel est votre défi ?" },
+                { role: "user", content: "Le TRS baisse." } ].to_json
+
+    assert_difference("Prospect.count", 1) do
+      post contact_path, params: { contact_name: "Jean Dupont", contact_email: "jean@example.com",
+                                   contact_company: "Fonderie Sud", contact_phone: "0600000000",
+                                   contact_sector: "métallurgie", contact_size: "~120 personnes",
+                                   contact_themes: [ "Excellence opérationnelle" ],
+                                   contact_summary: "Résumé de la demande.",
+                                   contact_precision: "Urgent.", contact_history: history }
+    end
+
+    prospect = Prospect.order(:created_at).last
+    assert_equal "Fonderie Sud", prospect.company
+    assert_equal "métallurgie", prospect.sector
+    assert_equal "~120 personnes", prospect.company_size
+    assert_equal [ "Excellence opérationnelle" ], prospect.themes
+    assert prospect.source_site_contact?
+    assert prospect.nouveau?
+    assert_includes prospect.conversation, "Visiteur : Le TRS baisse."
+    assert_includes prospect.conversation, "Assistant : Quel est votre défi ?"
+  end
+
+  test "create keeps a non JSON history as is" do
+    post contact_path, params: { contact_name: "Jean Dupont", contact_email: "jean@example.com",
+                                 contact_history: "Historique déjà en texte" }
+
+    assert_equal "Historique déjà en texte", Prospect.order(:created_at).last.conversation
+  end
+
+  test "create still answers the visitor when the prospect cannot be saved" do
+    Prospect.stub(:record_contact_request, ->(**) { raise ActiveRecord::RecordInvalid.new(Prospect.new) }) do
+      assert_no_difference("Prospect.count") do
+        post contact_path, params: { contact_name: "Jean Dupont", contact_email: "jean@example.com" }
+      end
+    end
+
+    assert_redirected_to root_path
+    assert_equal "Votre demande a bien été envoyée ! Je vous réponds sous 24h.", flash[:notice]
+  end
+
   # --- call_llm : les chemins de panne --------------------------------------
 
   test "returns a fallback message when the gateway answers without any choice" do

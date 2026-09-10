@@ -21,6 +21,15 @@ module Studio
       assert_response :success
     end
 
+    test "new pre-fills the brief handed over by a prospect sheet" do
+      get new_studio_generation_path(kind: "commercial_proposal", title: "Proposition — Fonderie Sud",
+                                     input_text: "Client : Fonderie Sud")
+
+      assert_response :success
+      assert_select "input[name=?][value=?]", "generation[title]", "Proposition — Fonderie Sud"
+      assert_select "textarea[name=?]", "generation[input_text]", text: /Fonderie Sud/
+    end
+
     test "edit renders the edition form" do
       get edit_studio_generation_path(@generation)
 

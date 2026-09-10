@@ -1,0 +1,104 @@
+// Pages mentions légales et politique de confidentialité. Prose longue, lue une fois : mesure
+// de lecture courte, hiérarchie nette, aucun effet.
+
+.legal-prose {
+  max-width: 680px;
+  color: var(--cp-text);
+  line-height: 1.75;
+
+  h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 2.75rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--cp-border);
+  }
+
+  h2:first-child { margin-top: 0; }
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--cp-accent);
+    margin: 1.75rem 0 0.6rem;
+  }
+
+  p { margin-bottom: 1.15rem; }
+
+  a { color: var(--cp-accent); }
+}
+
+.legal-facts {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0 0 1.5rem;
+
+  dt {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cp-muted);
+    margin-bottom: 0.15rem;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--cp-text);
+  }
+}
+
+// Volontairement voyant : ces valeurs doivent être renseignées avant toute mise en ligne,
+// une mention légale incomplète ne doit pas passer inaperçue en relecture.
+.legal-todo {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border: 1px dashed #f59e0b;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  font-size: 0.85rem;
+}
+
+.legal-warning {
+  border: 1px solid var(--cp-border);
+  border-left: 3px solid #f59e0b;
+  background: var(--cp-bg-card);
+  padding: 1.1rem 1.3rem;
+  margin: 1.5rem 0;
+
+  p:last-child { margin-bottom: 0; }
+}
+
+.legal-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1.15rem;
+}
+
+.legal-table {
+  width: 100%;
+  min-width: 24rem;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  th, td {
+    text-align: left;
+    padding: 0.6rem 1rem 0.6rem 0;
+    border-bottom: 1px solid var(--cp-border);
+  }
+
+  th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cp-muted);
+    font-weight: 500;
+  }
+}
+
+.legal-updated {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--cp-border);
+  font-size: 0.85rem;
+  color: var(--cp-muted);
+}

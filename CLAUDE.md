@@ -87,6 +87,54 @@ Outil de génération de contenu par IA, réservé aux utilisateurs Devise authe
 
 **Fuseau horaire** : Paris (cf. commit "fuseau horaire Paris" du 18/06).
 
+## Pages légales (`/mentions-legales`, `/politique-de-confidentialite`)
+
+Deux pages publiques statiques (`PagesController#legal` / `#privacy`), liées depuis le pied de
+page et depuis la mention RGPD du formulaire de contact. Ajoutées quand le site s'est mis à
+**conserver** des prospects (voir ci-dessous) : informer devient obligatoire à partir de là.
+
+⚠️ **Valeurs à renseigner avant mise en ligne** : adresse professionnelle, téléphone, statut
+juridique et SIRET, TVA. Elles apparaissent dans la page entourées de `.legal-todo` (encadré
+orange pointillé, volontairement voyant) et un test — `pages_controller_test.rb` — vérifie leur
+présence. Une fois complétées, supprimer ce test.
+
+La politique de confidentialité annonce une conservation de **trois ans après le dernier
+contact**, appliquée par `ProspectPurgeJob` (planifié dans `config/recurring.yml`, production
+uniquement, tous les jours à 4h). Le seuil vit dans `Prospect::RETENTION` : le changer sans
+corriger la page rendrait celle-ci fausse, et inversement. `test/jobs/recurring_schedule_test.rb`
+vérifie que le YAML pointe toujours vers une classe existante — le job n'est appelé de nulle
+part ailleurs, un renommage le désactiverait en silence. Solid Queue tourne dans Puma via
+`SOLID_QUEUE_IN_PUMA` : sans cette variable sur Heroku, aucune tâche récurrente ne s'exécute.
+Et elle avertit
+que le contenu du chat part chez un prestataire LLM : à mettre à jour si le provider change
+(aujourd'hui Mammouth.ai), au même titre que la liste des sous-traitants (Heroku, Cloudflare,
+Cloudinary, Sentry, Gmail).
+
+## Pipeline commercial (`/studio/prospects`, `app/models/prospect.rb`)
+
+Colonne vertébrale du suivi commercial. Avant, l'assistant du formulaire de contact collectait
+défi, secteur, effectif et résumé, puis tout partait dans un mail et n'existait plus nulle part :
+aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qualification.
+
+- **Alimentation automatique** : `ContactsController#create` appelle `Prospect.record_contact_request`
+  après l'envoi des mails. L'écriture est **rescue** volontairement : la demande du visiteur est déjà
+  partie par mail, un échec d'écriture ne doit jamais lui afficher une erreur ni lui faire tout ressaisir.
+  L'historique du chat (JSON) est converti en transcription lisible (`contact_history_text`).
+- **Saisie manuelle** : pour les contacts du réseau (LinkedIn, Soce, Le Wagon, 60 000 rebonds),
+  d'où l'enum `source`.
+- **`user` est optionnel** : les demandes venues du site n'ont pas d'utilisateur connecté au moment
+  de leur création. `ProspectPolicy::Scope` les réserve donc aux admins ; un éditeur ne voit que ses
+  propres saisies. `has_many :prospects, dependent: :nullify` sur `User` — une piste commerciale
+  survit à la suppression d'un compte, contrairement aux générations.
+- **Pipeline** : `status` (nouveau → à contacter → en discussion → proposition → gagné/perdu/veille),
+  `next_action` + `next_action_on`. L'index remonte en tête les relances dues (`ouverts.en_retard`),
+  c'est la première chose à voir le matin.
+- **Pont vers le Studio** : `Prospect#brief_for_proposal` assemble le besoin déjà qualifié, et le
+  bouton « Rédiger une proposition » ouvre `new_studio_generation_path` avec `kind`, `title` et
+  `input_text` pré-remplis — d'où les paramètres acceptés par `Studio::GenerationsController#new`.
+- **RGPD** : la mention du formulaire de contact précise désormais la conservation des données le
+  temps du suivi. Des mentions légales et une politique de confidentialité restent à ajouter.
+
 ## Publication directe sur LinkedIn (`LinkedinAuthController`, `LinkedinPublisher`)
 
 OAuth2 (`LinkedinAuthController#connect`/`callback`/`disconnect`, hors namespace `studio`) : redirige vers LinkedIn, vérifie le `state` (anti-CSRF) au retour, échange le `code` puis appelle `/v2/userinfo` pour récupérer l'identité du membre. Stocke `linkedin_access_token` (chiffré), `linkedin_token_expires_at` (~60 jours, pas de refresh token simple pour ce niveau d'accès → reconnexion périodique), `linkedin_member_urn` sur `User`.

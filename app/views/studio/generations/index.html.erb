@@ -11,6 +11,7 @@
 <div class="container pb-5">
   <div class="studio-actions studio-actions--top">
     <%= link_to "+ Nouvelle génération", new_studio_generation_path, class: "btn-cp-primary" %>
+    <%= link_to "Mon pipeline", studio_prospects_path, class: "btn-cp-outline" %>
 
     <% if current_user.linkedin_connected? %>
       <span class="studio-badge studio-badge--stacked <%= linkedin_expiry_badge_modifier(current_user) %>">

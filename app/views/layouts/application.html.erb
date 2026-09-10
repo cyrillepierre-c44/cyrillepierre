@@ -67,6 +67,9 @@
             </li>
             <% if user_signed_in? %>
               <li class="nav-item">
+                <a class="nav-link <%= 'active' if current_page?(studio_prospects_path) %>" href="<%= studio_prospects_path %>">Prospects</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link <%= 'active' if current_page?(studio_generations_path) %>" href="<%= studio_generations_path %>">Studio</a>
               </li>
               <li class="nav-item">
@@ -173,7 +176,11 @@
           </div>
         </div>
         <hr class="footer-hr">
-        <p class="footer-copy">© <%= Date.current.year %> Cyrille PIERRE · Tous droits réservés</p>
+        <p class="footer-copy">
+          © <%= Date.current.year %> Cyrille PIERRE · Tous droits réservés ·
+          <a href="<%= legal_path %>">Mentions légales</a> ·
+          <a href="<%= privacy_path %>">Politique de confidentialité</a>
+        </p>
       </div>
     </footer>
   </body>

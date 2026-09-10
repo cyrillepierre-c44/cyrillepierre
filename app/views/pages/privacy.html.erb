@@ -1,0 +1,137 @@
+<% content_for :title, "Politique de confidentialité — Cyrille PIERRE" %>
+
+<section class="service-hero">
+  <div class="container">
+    <span class="section-eyebrow">Protection des données</span>
+    <h1>Politique de <span class="gradient-text">confidentialité</span></h1>
+    <p class="service-hero-sub">Ce qui est collecté sur ce site, pourquoi, pour combien de temps, et comment
+       en obtenir la suppression.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <div class="legal-prose">
+
+    <h2>Responsable du traitement</h2>
+    <p>
+      Cyrille PIERRE, éditeur du site cyrillepierre.com. Pour toute question ou demande relative
+      à vos données : <%= mail_to "cyrille.pierre@gmail.com" %>. Les coordonnées complètes
+      figurent dans les <%= link_to "mentions légales", legal_path %>.
+    </p>
+
+    <h2>Ce qui est collecté, et pourquoi</h2>
+
+    <h3>Le formulaire de contact et son assistant conversationnel</h3>
+    <p>
+      Lorsque vous remplissez le formulaire de contact, sont enregistrés : votre nom, votre
+      adresse email, le nom de votre entreprise, votre téléphone si vous le renseignez, le
+      secteur et l'effectif indiqués, les thèmes sélectionnés, l'intégralité de votre échange
+      avec l'assistant et le résumé qui en est tiré.
+    </p>
+    <p>
+      Ces informations servent uniquement à répondre à votre demande et à en assurer le suivi
+      jusqu'à son terme. La base légale est l'exécution de mesures précontractuelles prises à
+      votre demande, ainsi que l'intérêt légitime de l'éditeur à donner suite aux sollicitations
+      professionnelles qu'il reçoit.
+    </p>
+    <p>
+      Ces données sont conservées <strong>trois ans à compter de notre dernier contact</strong>,
+      puis supprimées.
+    </p>
+
+    <h3>Le compte d'administration</h3>
+    <p>
+      Le site comporte un espace privé réservé à son éditeur. Y sont conservés une adresse email,
+      un mot de passe sous forme d'empreinte non réversible et, le cas échéant, un jeton d'accès
+      LinkedIn chiffré en base. Aucune inscription n'est ouverte aux visiteurs.
+    </p>
+
+    <h3>Les journaux techniques</h3>
+    <p>
+      Les erreurs applicatives sont remontées à un outil de supervision, configuré pour ne
+      transmettre aucune donnée personnelle. Aucun outil de mesure d'audience, aucun traceur
+      publicitaire et aucun réseau social tiers ne sont installés sur ce site.
+    </p>
+
+    <h2>Ce que devient votre message</h2>
+    <div class="legal-warning">
+      <p>
+        L'assistant du formulaire de contact fonctionne à l'aide d'un modèle de langage.
+        <strong>Le contenu de votre conversation est transmis à un prestataire technique pour
+        être traité et obtenir une réponse.</strong> Merci de ne pas y saisir d'informations
+        confidentielles, de données couvertes par un secret professionnel, ni de données
+        personnelles concernant des tiers.
+      </p>
+    </div>
+
+    <h2>Qui d'autre y a accès</h2>
+    <p>
+      Vos données ne sont ni vendues, ni cédées, ni utilisées à des fins publicitaires. Elles
+      sont traitées par les prestataires techniques strictement nécessaires au fonctionnement
+      du site :
+    </p>
+    <div class="legal-table-wrap">
+      <table class="legal-table">
+        <thead>
+          <tr><th>Prestataire</th><th>Rôle</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Heroku (Salesforce)</td><td>Hébergement du site et de sa base de données</td></tr>
+          <tr><td>Cloudflare</td><td>Nom de domaine et diffusion des pages</td></tr>
+          <tr><td>Mammouth.ai</td><td>Traitement des conversations par des modèles de langage</td></tr>
+          <tr><td>Cloudinary</td><td>Stockage des fichiers joints</td></tr>
+          <tr><td>Sentry</td><td>Supervision des erreurs, sans donnée personnelle</td></tr>
+          <tr><td>Google (Gmail)</td><td>Acheminement des emails envoyés par le site</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Certains de ces prestataires sont établis hors de l'Union européenne. Les transferts
+      correspondants sont encadrés par les garanties prévues au chapitre V du RGPD, notamment
+      les clauses contractuelles types de la Commission européenne.
+    </p>
+
+    <h2>Cookies</h2>
+    <p>
+      Ce site dépose un seul cookie, strictement nécessaire à son fonctionnement : celui qui
+      maintient votre session pendant la navigation. Il ne sert à aucun suivi et disparaît à la
+      fermeture du navigateur. Un second cookie n'existe que pour l'éditeur connecté à son
+      espace privé.
+    </p>
+    <p>
+      Aucun cookie de mesure d'audience ni de publicité n'étant utilisé, aucun consentement
+      préalable n'est requis et aucune bannière ne vous est imposée.
+    </p>
+
+    <h2>Décisions automatisées</h2>
+    <p>
+      L'assistant conversationnel prépare une synthèse de votre demande, mais il ne prend
+      aucune décision produisant des effets juridiques à votre égard. Toute suite donnée à
+      votre demande relève d'une appréciation humaine.
+    </p>
+
+    <h2>Sécurité</h2>
+    <p>
+      Le site est servi exclusivement en HTTPS, protégé par une politique de sécurité de contenu
+      et par une limitation du nombre de requêtes sur les points d'entrée sensibles. L'accès aux
+      données de contact est restreint au seul éditeur, authentifié par mot de passe. Les jetons
+      d'accès aux services tiers sont chiffrés en base.
+    </p>
+
+    <h2>Vos droits</h2>
+    <p>
+      Vous disposez d'un droit d'accès à vos données, de rectification, d'effacement, de
+      limitation du traitement, d'opposition et de portabilité. Pour les exercer, écrivez à
+      <%= mail_to "cyrille.pierre@gmail.com" %> : une réponse vous sera apportée dans un délai
+      d'un mois.
+    </p>
+    <p>
+      Si la réponse ne vous satisfait pas, vous pouvez introduire une réclamation auprès de la
+      Commission nationale de l'informatique et des libertés,
+      <a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>,
+      3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07.
+    </p>
+
+    <p class="legal-updated">Dernière mise à jour : 10 septembre 2026.</p>
+  </div>
+</div>

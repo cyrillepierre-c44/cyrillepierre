@@ -1,0 +1,79 @@
+// Pipeline commercial du Studio. S'appuie sur les classes .studio-* existantes : seules les
+// spécificités du suivi (filtres par statut, pastilles de statut, fiche) vivent ici.
+
+.prospect-relances {
+  border-color: rgba(245, 158, 11, 0.35);
+
+  .studio-card-subtitle i { color: #f59e0b; margin-right: 0.4rem; }
+}
+
+.prospect-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.prospect-filter {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--cp-border);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--cp-muted);
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--cp-text);
+    border-color: var(--cp-accent);
+  }
+
+  &--active {
+    color: var(--cp-accent);
+    border-color: var(--cp-accent);
+    background: rgba(0, 212, 255, 0.1);
+  }
+}
+
+.prospect-company {
+  color: var(--cp-muted);
+  font-weight: 400;
+}
+
+// Les statuts ouverts partagent la teinte accent, les issues (gagné/perdu/veille) sont neutres
+// ou tranchées : on doit repérer d'un coup d'œil ce qui demande encore du travail.
+.prospect-badge {
+  &--nouveau       { background: rgba(0, 212, 255, 0.15);  color: var(--cp-accent); }
+  &--a_contacter   { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+  &--en_discussion { background: rgba(139, 92, 246, 0.15); color: var(--cp-purple); }
+  &--proposition   { background: rgba(139, 92, 246, 0.25); color: var(--cp-purple); }
+  &--gagne         { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  &--perdu         { background: rgba(239, 68, 68, 0.15);  color: #ef4444; }
+  &--en_veille     { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+}
+
+.prospect-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 0;
+
+  dt {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cp-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--cp-text);
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 680px) {
+  .prospect-filters { gap: 0.35rem; }
+  .prospect-filter { font-size: 0.75rem; }
+}

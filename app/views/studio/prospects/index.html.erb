@@ -1,0 +1,50 @@
+<% content_for :title, "Prospects — Studio" %>
+
+<section class="service-hero">
+  <div class="container">
+    <span class="section-eyebrow">Studio</span>
+    <h1>Mon <span class="gradient-text">pipeline</span></h1>
+    <p class="service-hero-sub">Les demandes venues du site et les contacts de mon réseau, avec leur prochaine action.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <div class="studio-actions studio-actions--top">
+    <%= link_to "+ Nouveau prospect", new_studio_prospect_path, class: "btn-cp-primary" %>
+    <%= link_to "Mes générations", studio_generations_path, class: "btn-cp-outline" %>
+  </div>
+
+  <% if @relances.any? %>
+    <div class="studio-card prospect-relances">
+      <h2 class="studio-card-subtitle">
+        <i class="fa-solid fa-bell"></i>
+        À relancer aujourd'hui (<%= @relances.size %>)
+      </h2>
+      <div class="studio-list">
+        <% @relances.each do |prospect| %>
+          <%= render "row", prospect: prospect %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="prospect-filters">
+    <%= link_to "Tous (#{@counts.values.sum})", studio_prospects_path,
+                class: "prospect-filter #{'prospect-filter--active' if @status_filter.blank?}" %>
+    <% Prospect::STATUSES.each do |value, label| %>
+      <% count = @counts[value.to_s].to_i %>
+      <%= link_to "#{label} (#{count})", studio_prospects_path(status: value),
+                  class: "prospect-filter #{'prospect-filter--active' if @status_filter == value.to_s}" %>
+    <% end %>
+  </div>
+
+  <% if @prospects.empty? %>
+    <p class="studio-empty">Aucun prospect pour le moment.</p>
+  <% else %>
+    <div class="studio-list">
+      <% @prospects.each do |prospect| %>
+        <%= render "row", prospect: prospect %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

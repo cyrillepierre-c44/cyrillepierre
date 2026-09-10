@@ -7,6 +7,9 @@ class User < ApplicationRecord
   enum :role, { editor: 0, admin: 1 }
 
   has_many :generations, dependent: :destroy
+  # Les prospects survivent à la suppression d'un compte : ce sont des pistes commerciales,
+  # pas des contenus appartenant à un éditeur.
+  has_many :prospects, dependent: :nullify
 
   encrypts :linkedin_access_token
 

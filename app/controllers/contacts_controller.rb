@@ -125,6 +125,8 @@ class ContactsController < ApplicationController
       summary: summary
     ).deliver_later
 
+    record_prospect(name: name, email: email, themes: themes, summary: summary)
+
     redirect_to root_path, notice: "Votre demande a bien été envoyée ! Je vous réponds sous 24h."
   end
 
@@ -133,6 +135,37 @@ class ContactsController < ApplicationController
   REALISATIONS = RealisationCatalog::ITEMS
 
   private
+
+  # Le mail reste le canal d'alerte ; le prospect est la trace suivable. Une erreur
+  # d'écriture ne doit jamais faire échouer l'envoi côté visiteur : sa demande est déjà
+  # partie par mail, il n'a rien à refaire.
+  def record_prospect(name:, email:, themes:, summary:)
+    Prospect.record_contact_request(
+      name: name,
+      email: email,
+      company: params[:contact_company],
+      phone: params[:contact_phone],
+      sector: params[:contact_sector],
+      size: params[:contact_size],
+      themes: themes,
+      summary: summary,
+      conversation: contact_history_text,
+      precision: params[:contact_precision]
+    )
+  rescue StandardError => e
+    Rails.logger.error "Prospect creation failed: #{e.class} — #{e.message}"
+  end
+
+  # L'historique arrive tantôt en JSON du chat, tantôt en texte brut selon le parcours du
+  # visiteur : on stocke une transcription lisible dans les deux cas.
+  def contact_history_text
+    raw = params[:contact_history]
+    return raw if raw.blank? || !raw.is_a?(String)
+
+    JSON.parse(raw).map { |m| "#{m['role'] == 'user' ? 'Visiteur' : 'Assistant'} : #{m['content']}" }.join("\n\n")
+  rescue JSON::ParserError
+    raw
+  end
 
   def build_system_prompt(themes, sector = nil, size = nil)
     themes_str = themes.any? ? themes.join(", ") : "non précisés"

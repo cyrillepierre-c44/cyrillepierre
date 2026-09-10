@@ -1,0 +1,101 @@
+<% content_for :title, "Mentions légales — Cyrille PIERRE" %>
+
+<section class="service-hero">
+  <div class="container">
+    <span class="section-eyebrow">Informations légales</span>
+    <h1>Mentions <span class="gradient-text">légales</span></h1>
+    <p class="service-hero-sub">Éditeur, hébergement et conditions d'utilisation du site cyrillepierre.com.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <div class="legal-prose">
+
+    <h2>Éditeur du site</h2>
+    <dl class="legal-facts">
+      <div>
+        <dt>Éditeur</dt>
+        <dd>Cyrille PIERRE, consultant indépendant en management de transition, excellence
+            opérationnelle et technologies.</dd>
+      </div>
+      <div>
+        <dt>Adresse</dt>
+        <dd><span class="legal-todo">à compléter : adresse professionnelle</span></dd>
+      </div>
+      <div>
+        <dt>Téléphone</dt>
+        <dd><span class="legal-todo">à compléter : numéro de téléphone</span></dd>
+      </div>
+      <div>
+        <dt>Email</dt>
+        <dd><%= mail_to "cyrille.pierre@gmail.com" %></dd>
+      </div>
+      <div>
+        <dt>Immatriculation</dt>
+        <dd><span class="legal-todo">à compléter : statut juridique et numéro SIRET</span></dd>
+      </div>
+      <div>
+        <dt>TVA</dt>
+        <dd><span class="legal-todo">à compléter : numéro de TVA intracommunautaire, ou mention
+            « TVA non applicable, article 293 B du CGI »</span></dd>
+      </div>
+      <div>
+        <dt>Directeur de la publication</dt>
+        <dd>Cyrille PIERRE</dd>
+      </div>
+    </dl>
+
+    <h2>Hébergement</h2>
+    <p>
+      Le site est hébergé par <strong>Heroku, Inc.</strong>, filiale de Salesforce, Inc.,
+      415 Mission Street, 3rd Floor, San Francisco, CA 94105, États-Unis.
+      Téléphone : +1 877 273 5763.
+    </p>
+    <p>
+      Le nom de domaine et la diffusion du site passent par <strong>Cloudflare, Inc.</strong>,
+      101 Townsend Street, San Francisco, CA 94107, États-Unis.
+    </p>
+
+    <h2>Propriété intellectuelle</h2>
+    <p>
+      Les textes, illustrations, mises en page et code source de ce site sont la propriété de
+      Cyrille PIERRE, sauf mention contraire. Toute reproduction ou réutilisation, totale ou
+      partielle, nécessite une autorisation écrite préalable.
+    </p>
+    <p>
+      Les noms d'entreprises et de marques cités dans les réalisations le sont à titre de
+      référence professionnelle. Ils restent la propriété de leurs titulaires respectifs et
+      leur mention n'implique aucun partenariat ni approbation de leur part.
+    </p>
+
+    <h2>Contenus produits avec l'aide de l'intelligence artificielle</h2>
+    <p>
+      Certaines actualités publiées sur ce site, ainsi que les illustrations qui les
+      accompagnent, sont rédigées ou générées avec l'aide de modèles de langage, puis relues
+      avant publication. Les chiffres et les faits cités proviennent de l'expérience
+      professionnelle de Cyrille PIERRE et sont vérifiés.
+    </p>
+
+    <h2>Liens vers d'autres sites</h2>
+    <p>
+      Ce site comporte des liens vers des ressources externes, notamment LinkedIn. Leur contenu
+      n'engage que leurs éditeurs respectifs et échappe au contrôle de l'éditeur de ce site.
+    </p>
+
+    <h2>Données personnelles</h2>
+    <p>
+      Le traitement des données collectées via le formulaire de contact et l'assistant
+      conversationnel est décrit dans la
+      <%= link_to "politique de confidentialité", privacy_path %>.
+    </p>
+
+    <h2>Droit applicable</h2>
+    <p>
+      Le présent site et ses mentions légales sont soumis au droit français. Toute question
+      relative à leur application peut être adressée à
+      <%= mail_to "cyrille.pierre@gmail.com" %>.
+    </p>
+
+    <p class="legal-updated">Dernière mise à jour : 10 septembre 2026.</p>
+  </div>
+</div>

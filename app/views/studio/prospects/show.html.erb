@@ -1,0 +1,118 @@
+<% content_for :title, "#{@prospect.name} — Prospects" %>
+
+<div class="container py-5">
+  <%= link_to "← Retour au pipeline", studio_prospects_path, class: "studio-back-link" %>
+
+  <div class="studio-card">
+    <div class="studio-show-toolbar">
+      <h1 class="studio-card-title"><%= @prospect.name %></h1>
+      <div class="studio-actions">
+        <%= link_to "Modifier", edit_studio_prospect_path(@prospect), class: "btn-cp-outline btn-cp-sm" %>
+        <%= link_to "Rédiger une proposition",
+                    new_studio_generation_path(kind: "commercial_proposal",
+                                               title: "Proposition — #{@prospect.display_company}",
+                                               input_text: @prospect.brief_for_proposal),
+                    class: "btn-cp-primary btn-cp-sm" %>
+        <%= button_to "Supprimer", studio_prospect_path(@prospect), method: :delete,
+                      class: "studio-btn-danger btn-cp-sm",
+                      form: { data: { turbo_confirm: "Supprimer ce prospect ?" } } %>
+      </div>
+    </div>
+
+    <div class="studio-show-badges">
+      <span class="studio-badge prospect-badge--<%= @prospect.status %>"><%= @prospect.status_label %></span>
+      <span class="studio-badge"><%= @prospect.source_label %></span>
+      <% if @prospect.sector.present? %>
+        <span class="studio-badge studio-badge--model"><%= @prospect.sector %></span>
+      <% end %>
+      <% if @prospect.company_size.present? %>
+        <span class="studio-badge studio-badge--model"><%= @prospect.company_size %></span>
+      <% end %>
+    </div>
+
+    <dl class="prospect-facts">
+      <div><dt>Entreprise</dt><dd><%= @prospect.display_company %></dd></div>
+      <div>
+        <dt>Email</dt>
+        <dd><%= @prospect.email.present? ? mail_to(@prospect.email) : "—" %></dd>
+      </div>
+      <div><dt>Téléphone</dt><dd><%= @prospect.phone.presence || "—" %></dd></div>
+      <div>
+        <dt>Dernier contact</dt>
+        <dd><%= @prospect.last_contact_at&.strftime("%d/%m/%Y à %H:%M") || "—" %></dd>
+      </div>
+      <div><dt>Thèmes</dt><dd><%= @prospect.themes_text.presence || "—" %></dd></div>
+    </dl>
+
+    <% if @prospect.summary.present? %>
+      <div class="studio-section">
+        <h2 class="studio-section-title">Résumé de la demande</h2>
+        <div class="studio-output-box">
+          <div class="studio-output"><%= simple_format @prospect.summary %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @prospect.visitor_precision.present? %>
+      <div class="studio-section">
+        <h2 class="studio-section-title">Précision ajoutée</h2>
+        <div class="studio-output-box">
+          <div class="studio-output"><%= simple_format @prospect.visitor_precision %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @prospect.notes.present? %>
+      <div class="studio-section">
+        <h2 class="studio-section-title">Mes notes</h2>
+        <div class="studio-output-box">
+          <div class="studio-output"><%= simple_format @prospect.notes %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @prospect.conversation.present? %>
+      <div class="studio-section">
+        <h2 class="studio-section-title">Conversation avec l'assistant</h2>
+        <div class="studio-sources-list">
+          <pre class="studio-sources-pre"><%= @prospect.conversation %></pre>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">Prochaine action</h2>
+    <%= form_for @prospect, url: studio_prospect_path(@prospect), method: :patch do |f| %>
+      <div class="cf-fields-grid">
+        <div class="cf-field">
+          <%= f.label :status, "Statut", class: "cf-label" %>
+          <%= f.select :status, Prospect::STATUSES.map { |v, l| [l, v] }, {}, class: "cf-input" %>
+        </div>
+        <div class="cf-field">
+          <%= f.label :next_action_on, "Date de relance", class: "cf-label" %>
+          <%= f.date_field :next_action_on, class: "cf-input" %>
+        </div>
+        <div class="cf-field">
+          <%= f.label :last_contact_at, "Dernier contact", class: "cf-label" %>
+          <%= f.date_field :last_contact_at, value: @prospect.last_contact_at&.to_date, class: "cf-input" %>
+          <p class="studio-field-hint">Point de départ des trois ans de conservation.</p>
+        </div>
+      </div>
+
+      <div class="cf-field">
+        <%= f.label :next_action, "Quoi faire", class: "cf-label" %>
+        <%= f.text_field :next_action, class: "cf-input", placeholder: "Appeler pour caler un premier échange" %>
+      </div>
+
+      <div class="cf-field">
+        <%= f.label :notes, "Mes notes", class: "cf-label" %>
+        <%= f.text_area :notes, rows: 5, class: "cf-input cf-textarea" %>
+      </div>
+
+      <div class="studio-actions">
+        <%= f.submit "Enregistrer", class: "btn-cp-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

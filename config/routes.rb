@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   get "realisations",              to: "pages#realisations",  as: :realisations
   get "cv",                        to: "pages#cv",            as: :cv
 
+  get "mentions-legales",             to: "pages#legal",   as: :legal
+  get "politique-de-confidentialite", to: "pages#privacy", as: :privacy
+
   get  "contact",           to: "contacts#new",       as: :contact
   post "contact",           to: "contacts#create"
   post "contact/chat",           to: "contacts#chat",           as: :contact_chat
@@ -21,6 +24,7 @@ Rails.application.routes.draw do
   delete "auth/linkedin",          to: "linkedin_auth#disconnect", as: :linkedin_auth_disconnect
 
   namespace :studio do
+    resources :prospects
     resources :generations do
       member do
         patch :regenerate

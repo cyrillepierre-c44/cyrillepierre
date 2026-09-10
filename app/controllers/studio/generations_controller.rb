@@ -9,7 +9,9 @@ module Studio
     end
 
     def new
-      @generation = Generation.new(kind: params[:kind])
+      # `title`/`input_text` permettent de pré-remplir le brief depuis une fiche prospect
+      # (voir Prospect#brief_for_proposal) : le besoin a déjà été qualifié, le retaper serait absurde.
+      @generation = Generation.new(kind: params[:kind], title: params[:title], input_text: params[:input_text])
       authorize @generation
     end
 

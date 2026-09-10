@@ -62,5 +62,14 @@
     font-size: 0.78rem;
     text-align: center;
     margin: 0;
+
+    // Souligné en permanence : sans lui, ces liens ne se distinguent du texte de copyright
+    // que par la couleur, ce qui échoue au critère WCAG 1.4.1.
+    a {
+      color: rgba(226, 232, 240, 0.9);
+      text-decoration: underline;
+
+      &:hover { color: var(--cp-accent); }
+    }
   }
 }

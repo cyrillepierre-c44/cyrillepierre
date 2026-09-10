@@ -1,0 +1,6 @@
+<% content_for :title, "Modifier #{@prospect.name} — Studio" %>
+
+<div class="container py-5">
+  <%= link_to "← Retour au prospect", studio_prospect_path(@prospect), class: "studio-back-link" %>
+  <%= render "form", prospect: @prospect, url: studio_prospect_path(@prospect), submit_label: "Enregistrer" %>
+</div>
