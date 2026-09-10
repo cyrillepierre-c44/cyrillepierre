@@ -6,7 +6,9 @@
   <div class="container">
     <%# Une actu publiée porte normalement sa date, mais rien en base ne l'impose : une valeur
    manquante ne doit pas faire tomber une page publique. %>
-    <span class="section-eyebrow"><%= (@actu.published_at || @actu.updated_at).strftime("%d/%m/%Y") %></span>
+    <span class="section-eyebrow">
+      <%= @actu.kind_label %> · <%= (@actu.published_at || @actu.updated_at).strftime("%d/%m/%Y") %>
+    </span>
     <h1><%= @actu.display_title %></h1>
   </div>
 </section>

@@ -1,25 +1,27 @@
-<% content_for :title, "Actus — Cyrille PIERRE" %>
+<% content_for :title, "Articles & actus — Cyrille PIERRE" %>
 <% content_for :description, "Retours de terrain, méthodes et analyses sur l'excellence opérationnelle, le management de transition et la digitalisation industrielle." %>
 
 <section class="service-hero">
   <div class="container">
     <div class="service-hero-icon">📰</div>
-    <span class="section-eyebrow">Actualités</span>
-    <h1>Mes <span class="gradient-text">Actus</span></h1>
+    <span class="section-eyebrow">Publications</span>
+    <h1>Articles &amp; <span class="gradient-text">actus</span></h1>
     <p class="service-hero-sub">Articles de fond et retours de terrain sur la performance industrielle.</p>
   </div>
 </section>
 
 <div class="container pb-5">
   <% if @actus.empty? %>
-    <p class="studio-empty">Aucune actualité publiée pour le moment.</p>
+    <p class="studio-empty">Rien de publié pour le moment.</p>
   <% else %>
     <div class="actus-grid">
       <% @actus.each do |actu| %>
         <%= link_to actu_path(actu), class: "actu-card" do %>
           <span class="actu-card-date">
             <%= (actu.published_at || actu.updated_at).strftime("%d/%m/%Y") %>
-            <% if actu.article? %><span class="actu-card-kind">Article</span><% end %>
+            <span class="actu-card-kind <%= "actu-card-kind--brief" unless actu.article? %>">
+              <%= actu.kind_label %>
+            </span>
           </span>
           <h2 class="actu-card-title"><%= actu.display_title %></h2>
           <p class="actu-card-excerpt"><%= actu.excerpt %></p>

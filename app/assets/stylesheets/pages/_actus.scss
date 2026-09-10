@@ -40,6 +40,14 @@
   font-size: 0.68rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  white-space: nowrap;
+
+  // La brève reste en gris : les deux formats sont signalés, mais c'est l'article de fond
+  // qu'on veut voir ressortir dans la grille.
+  &--brief {
+    border-color: var(--cp-border);
+    color: var(--cp-muted);
+  }
 }
 
 .actu-card-title {

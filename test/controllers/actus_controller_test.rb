@@ -32,4 +32,32 @@ class ActusControllerTest < ActionDispatch::IntegrationTest
     get actu_path(actu)
     assert_response :not_found
   end
+  test "the list badges both formats so the reader knows what he opens" do
+    Generation.create!(user: @user, kind: :site_actu, status: :published,
+                       published_at: 2.days.ago, output: "Une brève")
+    Generation.create!(user: @user, kind: :article, status: :published,
+                       published_at: 1.day.ago, title: "Un article", output: "## Section\n\nDu texte.")
+
+    get actus_path
+
+    assert_select ".actu-card-kind", 2
+    assert_select ".actu-card-kind--brief", 1
+    assert_select ".actu-card-kind", text: /Article/
+  end
+
+  test "the page announces both formats, not only the news" do
+    get actus_path
+
+    assert_select "h1", text: /Articles/
+    assert_select "title", text: /Articles & actus/
+  end
+
+  test "an entry names its format next to its date" do
+    article = Generation.create!(user: @user, kind: :article, status: :published,
+                                 published_at: Time.current, title: "Un article", output: "Du texte.")
+
+    get actu_path(article)
+
+    assert_select ".section-eyebrow", text: /Article ·/
+  end
 end

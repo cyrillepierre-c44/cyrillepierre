@@ -80,6 +80,13 @@ class Generation < ApplicationRecord
     title.presence || (article? ? "Article sans titre" : "Actualité")
   end
 
+  # Libellé de la pastille sur /actus. Une pastille sur les seuls articles laissait croire que
+  # les autres entrées n'étaient pas classées : le lecteur doit savoir dans les deux cas s'il
+  # ouvre trois lignes ou mille mots.
+  def kind_label
+    article? ? "Article" : "Actu"
+  end
+
   def excerpt(length: 220)
     ArticleFormatter.plain_text(output).truncate(length)
   end
