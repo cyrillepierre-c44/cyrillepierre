@@ -312,8 +312,29 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "800 à 1200 mots"
     assert_includes instructions, "répond à UNE question"
     assert_includes instructions, "première personne"
-    assert_includes instructions, "Ne jamais inventer"
     assert_includes instructions, "## Titre"
+  end
+
+  # Cyrille relit tout avant publication, donc la créativité du modèle n'est pas bridée :
+  # ce qui est interdit, c'est de faire passer une régularité du métier pour un souvenir daté.
+  test "the article prompt allows general observations but forbids invented specifics" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "Tu PEUX mobiliser ce qui se produit couramment"
+    assert_includes instructions, "Une régularité s'écrit comme une régularité"
+    assert_includes instructions, "interdit d'inventer un site, une mission, une date"
+    assert_includes instructions, "entre guillemets attribuée à quelqu'un"
+    assert_includes instructions, "pas de récit héroïque"
+  end
+
+  test "the article prompt fixes the order of the sections" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    assert_includes context.draft_chat.instructions, "Ordre imposé"
+    assert_includes context.draft_chat.instructions, "JAMAIS une section de méthode après celle"
   end
 
   test "the article prompt carries the catalogue it must draw from" do

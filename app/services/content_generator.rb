@@ -479,9 +479,24 @@ class ContentGenerator
       - L'article répond à UNE question, celle du titre, et rien d'autre. Il ne fait pas le tour d'un thème.
       - Écris à la première personne : c'est Cyrille qui parle de ce qu'il a vu et fait, pas un article de
         magazine à la troisième personne.
-      - Chaque affirmation de méthode doit s'appuyer sur une situation réellement vécue, tirée des
-        réalisations ci-dessus. Au moins un cas concret et chiffré, présenté sans nommer l'entreprise.
-      - Ne jamais inventer de chiffre, de date ou d'expérience qui ne figure pas dans les sources fournies.
+      - Au moins un cas concret et chiffré, tiré des réalisations ci-dessus, présenté sans nommer
+        l'entreprise.
+      - Tu PEUX mobiliser ce qui se produit couramment dans des situations comparables : les réactions
+        typiques d'une équipe, l'ordre dans lequel les objections arrivent, les erreurs que commettent
+        la plupart des directions. C'est cette connaissance du terrain qui rend un article utile, et
+        Cyrille la possède réellement.
+      - Mais la FORME doit dire ce que c'est. Une régularité s'écrit comme une régularité : « le plus
+        souvent », « dans la plupart des sites », « ce qui revient presque à chaque fois », « rarement ».
+        Un événement précis — daté, situé, chiffré, ou rapporté entre guillemets — est une affirmation
+        sur le passé de Cyrille : il ne peut venir QUE des réalisations fournies.
+      - Donc : interdit d'inventer un site, une mission, une date, une durée, un chiffre, ou une phrase
+        entre guillemets attribuée à quelqu'un. Autorisé, et même souhaitable, de décrire ce qui se
+        passe habituellement.
+      - Humilité : pas de récit héroïque. Cyrille n'a jamais « sauvé » un site, il a conduit un travail
+        avec des équipes — attribue les résultats au collectif quand c'est le cas. Pas de superlatif,
+        pas de « j'ai toujours constaté », pas de posture de sachant.
+      - Une seule observation générale par section au maximum. Au-delà, l'article cesse d'être un
+        retour d'expérience et devient un discours.
       - Dis aussi ce qui ne marche pas, ou ce que la méthode coûte. Un article qui ne concède rien n'est
         pas lu comme une expertise mais comme une publicité.
       - Pas de conclusion creuse ("en conclusion, l'excellence opérationnelle est un levier majeur"). La
@@ -492,6 +507,9 @@ class ContentGenerator
       - 800 à 1200 mots.
       - Structure en 4 à 6 sections, chacune introduite par un titre en markdown de niveau 2 (## Titre).
         Le titre de section est une affirmation ou une question, jamais un mot seul ("## Méthode").
+      - Ordre imposé : le constat, puis la méthode, puis ce que l'approche coûte, puis la dernière
+        section qui donne quelque chose à faire. Ne place JAMAIS une section de méthode après celle
+        sur les coûts — l'article se lit alors comme s'il repartait après sa fin.
       - Paragraphes courts, 2 à 4 phrases.
       - Le gras (**ainsi**) est réservé à quelques expressions clés, jamais à une phrase entière.
       - Listes à puces avec des tirets, uniquement quand le contenu est réellement une liste.
