@@ -280,7 +280,9 @@
   .lang-item span { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; }
   .lang-level { color: #c9a961; font-style: italic; font-size: 10px !important; }
 
-  .interest-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+  /* Calé à droite pour que le bord des pastilles retombe sur celui des niveaux de langue,
+     juste au-dessus : la colonne de gauche gagne une ligne de fuite verticale. */
+  .interest-tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; margin-top: 4px; }
   .tag {
     background: #2a3a52;
     color: #c9a961;
