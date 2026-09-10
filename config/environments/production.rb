@@ -70,7 +70,12 @@ Rails.application.configure do
     user_name:            ENV["GMAIL_USERNAME"],
     password:             ENV["GMAIL_PASSWORD"],
     authentication:       :plain,
-    enable_starttls_auto: true
+    enable_starttls_auto: true,
+    # Sans ces bornes, Net::SMTP attend indéfiniment que Gmail réponde : la livraison
+    # occupe un thread SolidQueue jusqu'au timeout par défaut, très long. Échouer vite
+    # laisse MailDeliveryJob reprendre la main.
+    open_timeout:         10,
+    read_timeout:         10
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

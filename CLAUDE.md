@@ -41,6 +41,18 @@ bin/ci                 # full CI: setup → rubocop → brakeman → bundler-aud
 
 **Rate limiting** : `rack-attack` (`config/initializers/rack_attack.rb`) protège les endpoints `/contact/chat`, `/contact/summarize`, `/contact/infer_company`, qui déclenchent chacun un appel Mammouth **payant** — c'est un garde-fou de facturation autant que de sécurité. En production le compteur s'appuie sur `Rails.cache` (solid_cache, qui gère bien `increment`).
 
+**Livraison des emails** : Gmail laisse parfois la poignée de main SMTP en suspens. Le 10/09/2026,
+la confirmation envoyée à une visiteuse a été perdue sur un `Net::ReadTimeout` dans `do_start`,
+sans reprise — elle avait pourtant vu « votre demande a bien été envoyée ». `MailDeliveryJob`
+(`config.action_mailer.delivery_job`, déclaré dans `config/application.rb` pour que les tests
+couvrent la même classe) rejoue les erreurs **réseau** cinq fois, et **jamais** les erreurs
+définitives (authentification, destinataire invalide) : les retenter ne ferait que retarder le
+diagnostic. `smtp_settings` porte aussi `open_timeout`/`read_timeout` à 10 s — sans bornes,
+`Net::SMTP` occupe un thread SolidQueue très longtemps avant d'abandonner.
+
+C'est aussi ce qui justifie le pipeline prospect : ce jour-là le mail est parti à la poubelle,
+la fiche est restée. Le mail est une **alerte**, jamais le stockage de la piste.
+
 **Monitoring** : Sentry (`config/initializers/sentry.rb`) ne s'initialise **que** si `SENTRY_DSN` est présente — rien ne part depuis le développement, les tests ou la CI. `send_default_pii = false` (RGPD). Point de santé : `/up`.
 
 **Content Security Policy** (`config/initializers/content_security_policy.rb`) : active, avec les seules origines réellement chargées (fonts.googleapis.com / fonts.gstatic.com pour les polices, esm.sh pour le paquet `marked` de l'importmap, res.cloudinary.com pour Active Storage).

@@ -28,6 +28,10 @@ module Cyrillepierre
     # in config/environments, which are processed later.
     #
     config.time_zone = "Paris"
+
+    # Reprend les livraisons perdues sur un incident réseau SMTP (voir MailDeliveryJob).
+    # Déclaré ici et pas dans production.rb pour que la suite de tests couvre la même classe.
+    config.action_mailer.delivery_job = "MailDeliveryJob"
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Encrypts sensitive Active Record attributes (e.g. User#linkedin_access_token). Keys come
