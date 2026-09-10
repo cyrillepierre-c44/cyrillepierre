@@ -22,7 +22,9 @@ class ActusControllerTest < ActionDispatch::IntegrationTest
     actu = Generation.create!(user: @user, kind: :site_actu, status: :published, published_at: Time.current, output: "Le contenu de l'actu")
     get actu_path(actu)
     assert_response :success
-    assert_includes @response.body, "Le contenu de l'actu"
+    # Le corps est rendu par ArticleFormatter, qui échappe l'apostrophe : on vérifie le texte
+    # affiché plutôt que la chaîne brute du HTML.
+    assert_select ".actu-body p", text: "Le contenu de l'actu"
   end
 
   test "show 404s for an unpublished actu" do

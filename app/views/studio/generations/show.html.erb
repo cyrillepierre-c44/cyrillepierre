@@ -127,6 +127,23 @@
                 <i class="fa-regular fa-copy"></i>
               </button>
             </div>
+
+            <%# Une actu non publiée renvoie un 404 sur /actus : sans cet aperçu, il faudrait
+                publier pour voir le rendu, donc relire la structure d'un article de 1000 mots
+                dans son markdown brut. %>
+            <% if @generation.article? && @generation.output.present? %>
+              <div class="studio-section">
+                <h3 class="studio-section-title">Aperçu de la page publiée</h3>
+                <div class="studio-article-preview actu-body">
+                  <h1><%= @generation.display_title %></h1>
+                  <%= ArticleFormatter.call(@generation.output) %>
+                </div>
+                <p class="studio-field-hint">
+                  <%= pluralize(ArticleFormatter.plain_text(@generation.output).split.size, "mot") %>.
+                  La cible est de 800 à 1200 mots.
+                </p>
+              </div>
+            <% end %>
           <% end %>
 
           <% if policy(@generation).update? %>

@@ -53,7 +53,18 @@
         <div class="cf-theme-inner">
           <span class="cf-theme-icon">📰</span>
           <h3 class="cf-theme-title">Actu du site</h3>
-          <p class="cf-theme-desc">Une actualité publiable sur /actus</p>
+          <p class="cf-theme-desc">Une brève publiable sur /actus</p>
+          <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+        </div>
+      </label>
+
+      <label class="cf-theme-card">
+        <%= f.radio_button :kind, "article", checked: generation.article?,
+                            data: { action: "change->studio-generation#selectKind" } %>
+        <div class="cf-theme-inner">
+          <span class="cf-theme-icon">📖</span>
+          <h3 class="cf-theme-title">Article de fond</h3>
+          <p class="cf-theme-desc">800 à 1200 mots qui répondent à une question précise</p>
           <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
         </div>
       </label>

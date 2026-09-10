@@ -9,7 +9,8 @@ class ContentGenerator
     linkedin_post: :linkedin_post_prompt,
     cover_letter: :cover_letter_prompt,
     commercial_proposal: :commercial_proposal_prompt,
-    site_actu: :site_actu_prompt
+    site_actu: :site_actu_prompt,
+    article: :article_prompt
   }.freeze
 
   ORIENTATION_GUIDANCE = {
@@ -451,6 +452,52 @@ class ContentGenerator
       - Longueur du texte final : 200 à 350 mots
 
       #{structured_output_instructions}
+    PROMPT
+  end
+
+  # Format long, pensé pour être trouvé par un moteur et cité par un assistant. Deux
+  # contraintes le distinguent de l'actu : il doit répondre à UNE question précise, et
+  # chaque affirmation doit pouvoir s'appuyer sur une réalisation réelle du catalogue —
+  # un article générique ne sera ni classé ni cité, et exposerait Cyrille en relecture.
+  def article_prompt
+    <<~PROMPT
+      Tu rédiges un article de fond pour le site de Cyrille PIERRE, manager de transition et consultant en
+      excellence opérationnelle (20 ans d'industrie, ingénieur Arts & Métiers). Le lecteur est un directeur
+      industriel, un directeur de site ou un dirigeant de PME qui cherche une réponse à une question précise,
+      souvent depuis un moteur de recherche ou un assistant IA.
+
+      #{ANONYMIZE_COMPANIES_RULE}
+
+      #{ORIENTATION_GUIDANCE.fetch(generation.orientation, ORIENTATION_GUIDANCE['consultant'])}
+
+      RÉALISATIONS DE CYRILLE (la matière de l'article — décrites par secteur et taille, jamais par nom) :
+      #{anonymized_realisations_str}
+
+      #{cv_context}
+
+      CONSIGNES DE FOND :
+      - L'article répond à UNE question, celle du titre, et rien d'autre. Il ne fait pas le tour d'un thème.
+      - Écris à la première personne : c'est Cyrille qui parle de ce qu'il a vu et fait, pas un article de
+        magazine à la troisième personne.
+      - Chaque affirmation de méthode doit s'appuyer sur une situation réellement vécue, tirée des
+        réalisations ci-dessus. Au moins un cas concret et chiffré, présenté sans nommer l'entreprise.
+      - Ne jamais inventer de chiffre, de date ou d'expérience qui ne figure pas dans les sources fournies.
+      - Dis aussi ce qui ne marche pas, ou ce que la méthode coûte. Un article qui ne concède rien n'est
+        pas lu comme une expertise mais comme une publicité.
+      - Pas de conclusion creuse ("en conclusion, l'excellence opérationnelle est un levier majeur"). La
+        dernière section donne au lecteur quelque chose à faire lundi matin.
+      - Aucun appel à l'action commercial dans le corps du texte : la crédibilité fait le travail.
+
+      FORMAT :
+      - 800 à 1200 mots.
+      - Structure en 4 à 6 sections, chacune introduite par un titre en markdown de niveau 2 (## Titre).
+        Le titre de section est une affirmation ou une question, jamais un mot seul ("## Méthode").
+      - Paragraphes courts, 2 à 4 phrases.
+      - Le gras (**ainsi**) est réservé à quelques expressions clés, jamais à une phrase entière.
+      - Listes à puces avec des tirets, uniquement quand le contenu est réellement une liste.
+      - N'écris PAS le titre de l'article : il est saisi à part. Commence directement par le premier
+        paragraphe d'introduction, avant la première section.
+      - Réponds uniquement avec le texte de l'article, sans commentaire autour.
     PROMPT
   end
 

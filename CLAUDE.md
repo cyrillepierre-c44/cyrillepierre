@@ -94,7 +94,7 @@ La CSP est **levée sur la seule page `/cv`** (`content_security_policy false, o
 
 Outil de génération de contenu par IA, réservé aux utilisateurs Devise authentifiés. Modèle `Generation` (`belongs_to :user`, `has_one_attached :source_file`, `has_one_attached :visual`).
 
-**Types de contenu** (`Generation::KIND`, enum `kind`) : `linkedin_post`, `cover_letter`, `commercial_proposal`, `site_actu`. Les deux derniers types "structurés" (lettre, proposition) utilisent un format de sortie en 4 sections marquées (`SECTION_MARKERS` : version finale / à personnaliser / à vérifier / version courte), parsées par `Generation#sections`.
+**Types de contenu** (enum `kind`) : `linkedin_post`, `cover_letter`, `commercial_proposal`, `site_actu`, `article`. Les deux derniers types "structurés" (lettre, proposition) utilisent un format de sortie en 4 sections marquées (`SECTION_MARKERS` : version finale / à personnaliser / à vérifier / version courte), parsées par `Generation#sections`.
 
 **Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées, certaines avec un `semantic_scope` précisant pour quels sujets les utiliser/ne pas utiliser).
 
@@ -114,7 +114,22 @@ Outil de génération de contenu par IA, réservé aux utilisateurs Devise authe
 
 **Catalogue de réalisations — `visual_hint`** : chaque entrée de `RealisationCatalog::ITEMS` a un champ `visual_hint` (texte court décrivant la composition de l'illustration SVG faite à la main pour cette réalisation sur `/realisations` — ex. boîtes qui fusionnent, jauge, frise chronologique). **Règle à respecter** : toute nouvelle réalisation ajoutée au catalogue doit avoir à la fois une nouvelle illustration SVG sur `/realisations` et son `visual_hint` correspondant — jamais l'un sans l'autre (sinon `VisualGenerator` se rabat silencieusement sur les faits bruts, sans inspiration de design).
 
-**Publication** : seul `site_actu` est publiable (`publishable?`) — actions `publish`/`unpublish` passent `status` à `published`/`generated` et fixent `published_at`. Les actus publiées s'affichent sur `/actus` (`ActusController`).
+**Article de fond (`article`)** : format long ajouté pour le référencement et la citation par
+les assistants — 800 à 1200 mots répondant à UNE question, à la première personne, structuré en
+sections `## `. Le `site_actu` reste la brève de 100 à 200 mots ; les deux se publient sur
+`/actus` (`Generation::PUBLISHABLE_KINDS`, scope `published_on_site`). Le prompt impose de
+s'appuyer sur une réalisation réelle et chiffrée du catalogue : un article générique ne serait
+ni classé ni cité, et exposerait Cyrille en relecture.
+
+`ArticleFormatter` (`app/services/article_formatter.rb`) rend le markdown restreint (titres
+`##`/`###`, paragraphes, listes, gras) — **pas de gem markdown à dessein** : le texte vient d'un
+LLM et il est échappé AVANT toute transformation, donc aucune balise du modèle ne peut atteindre
+la page. Un rendu markdown complet accepterait le HTML brut et rouvrirait cette porte.
+`ArticleFormatter.plain_text` sert aux extraits et aux meta descriptions, sinon les `##` s'y
+retrouvaient. La page de détail du Studio affiche un aperçu rendu et le nombre de mots : une
+actu non publiée renvoie 404 sur `/actus`, il faudrait sinon publier pour relire la structure.
+
+**Publication** : `site_actu` et `article` sont publiables (`publishable?`) — actions `publish`/`unpublish` passent `status` à `published`/`generated` et fixent `published_at`. Les actus publiées s'affichent sur `/actus` (`ActusController`).
 
 ⚠️ **Garde-fous anti-invention du prompt de contact** : la règle historique ne couvrait que les
 chiffres (« ne jamais inventer ni extrapoler des chiffres »), pas les **capacités**. Le modèle

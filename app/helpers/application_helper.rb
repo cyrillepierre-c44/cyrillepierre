@@ -74,7 +74,8 @@ module ApplicationHelper
     {
       "@context" => "https://schema.org",
       "@type" => "BlogPosting",
-      "headline" => actu.title.presence || "Actualité",
+      "headline" => actu.display_title,
+      "wordCount" => ArticleFormatter.plain_text(actu.output).split.size,
       "datePublished" => actu.published_at&.iso8601,
       "dateModified" => actu.updated_at.iso8601,
       "author" => { "@type" => "Person", "name" => "Cyrille PIERRE", "url" => CANONICAL_HOST },

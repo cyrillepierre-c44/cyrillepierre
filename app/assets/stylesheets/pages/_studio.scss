@@ -272,6 +272,7 @@
   &--status-published { background: rgba(16, 185, 129, 0.15); color: #10b981; }
   &--status-generated { background: rgba(0, 212, 255, 0.15); color: var(--cp-accent); }
   &--model { background: rgba(139, 92, 246, 0.15); color: var(--cp-purple); }
+  &--article { background: rgba(0, 212, 255, 0.15); color: var(--cp-accent); }
 
   // Badge sur deux lignes : libellé + échéance, pour porter l'information sans bouton.
   &--stacked {
@@ -382,6 +383,20 @@
       background: rgba(10, 102, 194, 0.08);
     }
   }
+}
+
+.studio-article-preview {
+  border: 1px solid var(--cp-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  max-width: 100%;
+
+  h1 {
+    font-size: 1.6rem;
+    margin: 0 0 1.5rem;
+  }
+
+  h2:first-of-type { margin-top: 0; }
 }
 
 .studio-section {

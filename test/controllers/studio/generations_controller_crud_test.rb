@@ -30,6 +30,18 @@ module Studio
       assert_select "textarea[name=?]", "generation[input_text]", text: /Fonderie Sud/
     end
 
+    test "an article shows its rendered preview and its word count" do
+      article = Generation.create!(user: @editor, kind: :article, title: "Pourquoi le TRS ment",
+                                   status: :generated, output: "## Une section\n\nDeux mots ici.")
+
+      get studio_generation_path(article)
+
+      assert_response :success
+      assert_select ".studio-article-preview h1", text: "Pourquoi le TRS ment"
+      assert_select ".studio-article-preview h2", text: "Une section"
+      assert_select ".studio-field-hint", text: /5 mots/
+    end
+
     test "edit renders the edition form" do
       get edit_studio_generation_path(@generation)
 

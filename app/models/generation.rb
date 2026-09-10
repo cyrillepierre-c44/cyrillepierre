@@ -10,7 +10,9 @@ class Generation < ApplicationRecord
   # generate a visual right after the text (see Studio::GenerationsController#create).
   attr_accessor :generate_visual
 
-  enum :kind, { linkedin_post: 0, cover_letter: 1, site_actu: 2, commercial_proposal: 3 }
+  # `article` : format long qui répond à une question précise, pensé pour être trouvé et cité.
+  # `site_actu` reste la brève. Les deux se publient sur /actus.
+  enum :kind, { linkedin_post: 0, cover_letter: 1, site_actu: 2, commercial_proposal: 3, article: 4 }
   enum :status, { draft: 0, generated: 1, published: 2 }
   enum :orientation, { consultant: 0, transition_management: 1, cdi_search: 2 }, prefix: true
 
@@ -63,10 +65,23 @@ class Generation < ApplicationRecord
 
   before_save :assign_auto_realisation, if: :linkedin_post?
 
-  scope :published_site_actus, -> { where(kind: :site_actu, status: :published).order(published_at: :desc) }
+  PUBLISHABLE_KINDS = %w[site_actu article].freeze
+
+  scope :published_on_site,
+        -> { where(kind: PUBLISHABLE_KINDS, status: :published).order(published_at: :desc) }
 
   def publishable?
-    site_actu?
+    kind.in?(PUBLISHABLE_KINDS)
+  end
+
+  # Titre visible et cliquable dans une liste ou un résultat de recherche : un article sans
+  # titre n'a aucune chance d'être cité, autant le signaler par un repli explicite.
+  def display_title
+    title.presence || (article? ? "Article sans titre" : "Actualité")
+  end
+
+  def excerpt(length: 220)
+    ArticleFormatter.plain_text(output).truncate(length)
   end
 
   def structured_output?

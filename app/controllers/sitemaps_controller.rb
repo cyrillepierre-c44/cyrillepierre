@@ -17,7 +17,7 @@ class SitemapsController < ApplicationController
   ].freeze
 
   def show
-    @actus = Generation.published_site_actus
+    @actus = Generation.published_on_site
     # La date de la dernière publication fait office de fraîcheur du site : sans elle, les
     # pages fixes n'auraient aucune date et les robots les recracheraient à leur rythme.
     @site_updated_at = @actus.first&.published_at || Time.current

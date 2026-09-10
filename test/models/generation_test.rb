@@ -17,6 +17,7 @@ class GenerationTest < ActiveSupport::TestCase
 
   test "only site_actu is publishable" do
     assert build_generation(kind: :site_actu).publishable?
+    assert build_generation(kind: :article).publishable?
     assert_not build_generation(kind: :linkedin_post).publishable?
     assert_not build_generation(kind: :cover_letter).publishable?
     assert_not build_generation(kind: :commercial_proposal).publishable?
@@ -155,5 +156,35 @@ class GenerationTest < ActiveSupport::TestCase
     assert_equal "La lettre finale.", sections[:final]
     assert_equal "Vérifier la date.", sections[:verify]
     assert_not sections.key?(:personalize)
+  end
+  test "published_on_site gathers the articles and the short news, newest first" do
+    user = User.create!(email: "article-scope@example.com", password: "password123")
+    actu = Generation.create!(user: user, kind: :site_actu, status: :published,
+                              published_at: 2.days.ago, output: "Brève")
+    article = Generation.create!(user: user, kind: :article, status: :published,
+                                 published_at: 1.day.ago, output: "## Titre\n\nUn article.")
+    Generation.create!(user: user, kind: :article, status: :generated, output: "Brouillon")
+    Generation.create!(user: user, kind: :linkedin_post, status: :published,
+                       published_at: Time.current, output: "Post")
+
+    assert_equal [ article.id, actu.id ], Generation.published_on_site.pluck(:id)
+  end
+
+  test "display_title names the kind when the title is missing" do
+    assert_equal "Article sans titre", build_generation(kind: :article).display_title
+    assert_equal "Actualité", build_generation(kind: :site_actu).display_title
+    assert_equal "Un titre", build_generation(kind: :article, title: "Un titre").display_title
+  end
+
+  test "excerpt drops the markdown so a list preview stays readable" do
+    generation = build_generation(kind: :article, output: "## Un titre\n\nUn texte **en gras**.")
+
+    assert_equal "Un titre Un texte en gras.", generation.excerpt
+  end
+
+  test "excerpt honours the requested length" do
+    generation = build_generation(kind: :article, output: "a" * 300)
+
+    assert_equal 155, generation.excerpt(length: 155).length
   end
 end

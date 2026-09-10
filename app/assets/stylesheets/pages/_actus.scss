@@ -25,6 +25,21 @@
 .actu-card-date {
   color: var(--cp-muted);
   font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// Distingue un article de fond d'une brève dans la liste : les deux cohabitent sur /actus,
+// et le lecteur doit savoir s'il ouvre trois lignes ou mille mots.
+.actu-card-kind {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--cp-accent);
+  border-radius: 999px;
+  color: var(--cp-accent);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .actu-card-title {
@@ -47,4 +62,30 @@
   margin-bottom: 2rem;
 
   p { margin-bottom: 1.25rem; }
+
+  // Un article de fond est structuré en sections : sans hiérarchie visible, mille mots
+  // deviennent un mur de texte que personne ne lit jusqu'au bout.
+  h2 {
+    font-family: $headers-font;
+    font-size: 1.45rem;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--cp-border);
+  }
+
+  h3 {
+    font-family: $headers-font;
+    font-size: 1.1rem;
+    color: var(--cp-accent);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  ul, ol {
+    margin: 0 0 1.25rem;
+    padding-left: 1.4rem;
+  }
+
+  li { margin-bottom: 0.5rem; }
+
+  strong { color: #fff; }
 }

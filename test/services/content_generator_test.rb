@@ -206,7 +206,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
   # Les contenus publics ne doivent jamais nommer une entreprise ; les contenus privés
   # (lettre, proposition) gardent les vrais noms, c'est ce qui fait leur crédibilité.
   test "public kinds carry the anonymisation rule and private ones do not" do
-    %w[linkedin_post site_actu].each do |kind|
+    %w[linkedin_post site_actu article].each do |kind|
       context = FakeContext.new(replies: [ "a", "b" ])
       run_generator(Generation.create!(user: @user, kind: kind), context)
 
@@ -299,5 +299,27 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     end
 
     assert_not_includes context.draft_chat.instructions, "CV COMPLET DE CYRILLE"
+  end
+  # --- article de fond -------------------------------------------------------
+
+  # Le format long n'a d'intérêt que s'il répond à une question et s'appuie sur du réel :
+  # un article générique ne serait ni classé ni cité, et exposerait Cyrille en relecture.
+  test "the article prompt asks for a long, sourced, first-person answer" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "800 à 1200 mots"
+    assert_includes instructions, "répond à UNE question"
+    assert_includes instructions, "première personne"
+    assert_includes instructions, "Ne jamais inventer"
+    assert_includes instructions, "## Titre"
+  end
+
+  test "the article prompt carries the catalogue it must draw from" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    assert_includes context.draft_chat.instructions, RealisationCatalog::ITEMS.first[:titre]
   end
 end
