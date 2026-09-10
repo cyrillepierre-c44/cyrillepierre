@@ -1,1 +1,14 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# https://www.robotstxt.org/robotstxt.html
+#
+# Les robots des assistants (OpenAI, Anthropic, Perplexity, Google-Extended…) sont
+# volontairement autorisés : l'objectif du site est d'être cité dans leurs réponses.
+# Aucun groupe par robot n'est déclaré à dessein — un groupe nommé remplace entièrement
+# le groupe « * » pour ce robot, et lui rouvrirait donc les zones privées ci-dessous.
+
+User-agent: *
+Allow: /
+Disallow: /studio/
+Disallow: /users/
+Disallow: /auth/
+
+Sitemap: https://www.cyrillepierre.com/sitemap.xml

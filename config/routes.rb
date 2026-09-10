@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   get "realisations",              to: "pages#realisations",  as: :realisations
   get "cv",                        to: "pages#cv",            as: :cv
 
+  get "sitemap", to: "sitemaps#show", as: :sitemap, defaults: { format: "xml" }
+
   get "mentions-legales",             to: "pages#legal",   as: :legal
   get "politique-de-confidentialite", to: "pages#privacy", as: :privacy
 

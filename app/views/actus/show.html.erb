@@ -1,8 +1,12 @@
 <% content_for :title, (@actu.title.presence || "Actu") + " — Cyrille PIERRE" %>
+<% content_for :description, @actu.output.to_s.squish.truncate(155) %>
+<% content_for :head do %><%= structured_data_tag(actu_schema(@actu)) %><% end %>
 
 <section class="service-hero">
   <div class="container">
-    <span class="section-eyebrow"><%= @actu.published_at.strftime("%d/%m/%Y") %></span>
+    <%# Une actu publiée porte normalement sa date, mais rien en base ne l'impose : une valeur
+   manquante ne doit pas faire tomber une page publique. %>
+    <span class="section-eyebrow"><%= (@actu.published_at || @actu.updated_at).strftime("%d/%m/%Y") %></span>
     <h1><%= @actu.title.presence || "Actualité" %></h1>
   </div>
 </section>

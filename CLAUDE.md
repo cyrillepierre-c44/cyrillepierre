@@ -31,6 +31,25 @@ bin/ci                 # full CI: setup → rubocop → brakeman → bundler-aud
 
 **DNS / domaine nu** : depuis le 09/08/2026, les DNS sont **délégués à Cloudflare** (plan Free, NS `imani`/`lee.ns.cloudflare.com`, runbook suivi : `docs/runbook-dns-cloudflare.md`). L'apex `https://cyrillepierre.com` est proxifié par Cloudflare (SSL Full strict + Always Use HTTPS) et répond en 301 vers `www`, servi en direct par Heroku (`www` en DNS only). Les MX de transfert d'emails Namecheap (eforward) sont recréés à l'identique dans la zone Cloudflare. Étapes J+2 restantes au 09/08 : DNSSEC (côté Cloudflare + DS chez Namecheap), CAA, DMARC.
 
+**Référencement & lisibilité par les assistants** : `/sitemap.xml` est **dynamique**
+(`SitemapsController`) — les actus s'y ajoutent d'elles-mêmes à la publication, un fichier
+statique aurait vieilli dès la première. `public/robots.txt` le déclare et laisse
+volontairement passer les robots des assistants (l'objectif est d'être cité dans leurs
+réponses) ; **ne pas y ajouter de groupe `User-agent:` nommé** — un groupe nommé remplace
+entièrement le groupe `*` pour ce robot et lui rouvrirait `/studio/`.
+
+Le balisage `schema.org` en JSON-LD (`ApplicationHelper#person_schema` /
+`#professional_service_schema`, injecté dans le layout) est la seule chose du site qui dise à
+une machine **qui** est Cyrille PIERRE, ce qu'il fait et où. Les actus portent en plus un
+`BlogPosting`. ⚠️ Ces balises sont des `<script>` inline : elles **doivent** porter le nonce CSP
+(`structured_data_tag` s'en charge), sinon la console se remplit d'erreurs de politique.
+
+`ApplicationHelper::CANONICAL_HOST` fixe l'hôte des URL canoniques et du sitemap à `www` :
+l'apex répond 301, déclarer l'apex reviendrait à annoncer des adresses qui redirigent. Chaque
+page publique définit son `content_for :description` — auparavant les cinq pages de services
+partageaient le même extrait dans les résultats de recherche. `test/controllers/seo_test.rb`
+verrouille l'ensemble, y compris le fait que deux pages ne partagent pas une description.
+
 **CSS**: sassc-rails pipeline — stylesheets live in `app/assets/stylesheets/`. Bootstrap variables/overrides go before `@import "bootstrap"`.
 
 **Linting**: `.rubocop.yml` est autonome (il n'hérite **pas** de `rubocop-rails-omakase`, malgré la présence du gem) — d'où une configuration à la main avec beaucoup de cops désactivés. Max line length 120. `bin/rubocop` is the wrapper. Exclusions : `bin/`, `db/`, `config/`, `test/`, **`vendor/`** (indispensable : en CI les gems sont vendorées, et redéfinir `AllCops.Exclude` écrase la liste par défaut de RuboCop, qui linterait alors tout Rails). Les cops `Metrics/*` sont désactivés : les méthodes les plus longues construisent des prompts LLM en heredocs de ~100 lignes.
