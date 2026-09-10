@@ -67,4 +67,36 @@ class ArticleFormatterTest < ActiveSupport::TestCase
   test "plain_text tolerates a missing output" do
     assert_equal "", ArticleFormatter.plain_text(nil)
   end
+  test "an internal link becomes a real link" do
+    html = ArticleFormatter.call("Voir [le passage en 3x8 sur volontariat](/actus/167) pour le détail.")
+
+    assert_includes html, '<a href="/actus/167">le passage en 3x8 sur volontariat</a>'
+  end
+
+  test "an external https link is marked noopener and nofollow" do
+    html = ArticleFormatter.call("Voir [la norme](https://exemple.fr/norme).")
+
+    assert_includes html, '<a href="https://exemple.fr/norme" rel="noopener nofollow">la norme</a>'
+  end
+
+  # La cible d'un lien vient du modèle : elle est validée, jamais recopiée telle quelle.
+  test "a dangerous or off-site target degrades to plain text" do
+    [ "javascript:alert(1)", "data:text/html,x", "//evil.example", "/\\evil.example", "http://exemple.fr" ]
+      .each do |href|
+        html = ArticleFormatter.call("Voir [le piège](#{href}).")
+
+        assert_includes html, "le piège", "le libellé doit rester lisible pour #{href}"
+        assert_not_includes html, "<a ", "#{href} ne doit pas produire de lien"
+      end
+  end
+
+  test "a link keeps the bold inside its label" do
+    html = ArticleFormatter.call("[le **vrai** sujet](/actus/12)")
+
+    assert_includes html, '<a href="/actus/12">le <strong>vrai</strong> sujet</a>'
+  end
+
+  test "plain_text keeps the label and drops the target" do
+    assert_equal "Voir le détail ici.", ArticleFormatter.plain_text("Voir [le détail](/actus/167) ici.")
+  end
 end

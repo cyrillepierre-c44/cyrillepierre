@@ -475,6 +475,8 @@ class ContentGenerator
 
       #{cv_context}
 
+      #{other_articles_block}
+
       CONSIGNES DE FOND :
       - L'article répond à UNE question, celle du titre, et rien d'autre. Il ne fait pas le tour d'un thème.
       - Écris à la première personne : c'est Cyrille qui parle de ce qu'il a vu et fait, pas un article de
@@ -517,6 +519,26 @@ class ContentGenerator
         paragraphe d'introduction, avant la première section.
       - Réponds uniquement avec le texte de l'article, sans commentaire autour.
     PROMPT
+  end
+
+  # Un article qui renvoie vers les autres sert le lecteur et le référencement : les moteurs
+  # comme les assistants lisent ces liens comme le signe d'un ensemble cohérent, pas d'une page
+  # isolée. Encore faut-il que le modèle connaisse les adresses — d'où cette liste.
+  def other_articles_block
+    others = Generation.published_on_site.where(kind: :article).where.not(id: generation.id).limit(15)
+    return "" if others.empty?
+
+    lines = others.map { |a| "- #{a.display_title} → #{Rails.application.routes.url_helpers.actu_path(a)}" }
+
+    <<~BLOCK
+      ARTICLES DÉJÀ PUBLIÉS SUR LE SITE (tu peux y renvoyer) :
+      #{lines.join("\n")}
+
+      Tu peux placer AU PLUS deux liens vers ces articles, au format markdown [texte du lien](/actus/12),
+      et uniquement là où le lien aide réellement le lecteur — quand tu effleures un sujet que l'un
+      d'eux traite en entier. Jamais de liste de liens en fin d'article, jamais de « lire aussi ».
+      Le texte du lien décrit ce qu'on y trouve, il ne dit pas « ici » ni « cet article ».
+    BLOCK
   end
 
   def site_actu_prompt

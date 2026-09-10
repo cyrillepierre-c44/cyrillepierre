@@ -7,6 +7,12 @@
 class ArticleFormatter
   HEADINGS = { "### " => "h3", "## " => "h2" }.freeze
   BOLD = /\*\*(.+?)\*\*/
+  LINK = /\[([^\[\]]+)\]\(([^()\s]+)\)/
+  # Un lien vient du modèle : sa cible est validée, jamais recopiée telle quelle. Seules deux
+  # formes passent — un chemin interne, ou une URL https. Tout le reste (javascript:, data:,
+  # //hote-externe) retombe en texte simple, sans lien.
+  INTERNAL_PATH = %r{\A/[^/\\]\S*\z}
+  EXTERNAL_URL = %r{\Ahttps://[^\s"'<>]+\z}
   BULLET = /\A[-*]\s+/
   NUMBERED = /\A\d+\.\s+/
 
@@ -19,6 +25,7 @@ class ArticleFormatter
   def self.plain_text(text)
     text.to_s
         .gsub(/^#{Regexp.union(HEADINGS.keys)}/, "")
+        .gsub(LINK, '\1')
         .gsub(BOLD, '\1')
         .gsub(/^[-*]\s+/, "")
         .squish
@@ -67,6 +74,15 @@ class ArticleFormatter
   # L'échappement se fait ici, en bout de chaîne, sur le texte brut du modèle. Le gras est
   # réintroduit après coup à partir des astérisques, qui ont survécu à l'échappement.
   def inline(fragment)
-    ERB::Util.html_escape(fragment.strip).gsub(BOLD, '<strong>\1</strong>')
+    escaped = ERB::Util.html_escape(fragment.strip)
+    linked = escaped.gsub(LINK) { link_tag(Regexp.last_match(1), Regexp.last_match(2)) }
+    linked.gsub(BOLD, '<strong>\1</strong>')
+  end
+
+  def link_tag(label, href)
+    return label unless href.match?(INTERNAL_PATH) || href.match?(EXTERNAL_URL)
+
+    rel = href.match?(EXTERNAL_URL) ? ' rel="noopener nofollow"' : ""
+    %(<a href="#{href}"#{rel}>#{label}</a>)
   end
 end

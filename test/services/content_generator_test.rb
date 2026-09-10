@@ -343,4 +343,35 @@ class ContentGeneratorTest < ActiveSupport::TestCase
 
     assert_includes context.draft_chat.instructions, RealisationCatalog::ITEMS.first[:titre]
   end
+  # Sans la liste des adresses, le modèle ne peut pas créer de lien interne : il ne connaît
+  # pas les URL du site.
+  test "the article prompt hands over the published articles it may link to" do
+    published = Generation.create!(user: @user, kind: :article, status: :published,
+                                   published_at: Time.current, title: "Passer en 3x8",
+                                   output: "Du texte.")
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "ARTICLES DÉJÀ PUBLIÉS"
+    assert_includes instructions, "Passer en 3x8 → /actus/#{published.id}"
+    assert_includes instructions, "AU PLUS deux liens"
+  end
+
+  test "an article never offers a link to itself" do
+    record = Generation.create!(user: @user, kind: :article, status: :published,
+                                published_at: Time.current, title: "Lui-même", output: "Du texte.")
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(record, context)
+
+    assert_not_includes context.draft_chat.instructions, "ARTICLES DÉJÀ PUBLIÉS"
+  end
+
+  test "the block disappears when nothing is published yet" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    assert_not_includes context.draft_chat.instructions, "ARTICLES DÉJÀ PUBLIÉS"
+  end
 end

@@ -183,9 +183,10 @@ module RealisationCatalog
       type_orga: "usine industrielle process continu",
       context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes",
       titre: "Mise en place de la classification Leem et minima de salaire — fidélisation des opérateurs qualifiés",
-      resultat: "Classification définie · minima salaires validés Direction · fidélisation renforcée en ZAC",
+      resultat: "Classification définie · minima salaires validés Direction · fidélisation renforcée en zone d'activité concurrentielle (bassin d'emploi où plusieurs employeurs se disputent les opérateurs qualifiés)",
       visual_hint: "Trois barres ascendantes de hauteurs différentes (niveaux C/B/A) à côté d'un badge " \
                    "fidélisation.",
+      semantic_scope: "Pour : fidélisation, turn-over, attractivité salariale, grilles de classification. Le bassin d'emploi est CONCURRENTIEL — plusieurs employeurs se disputent les opérateurs qualifiés ; ne jamais le décrire comme un marché de l'emploi détendu.",
       tags: %w[pharma RH classification salaire fidélisation compétences convention-collective social emploi recrutement] },
     { id: "N°21",
       scale: "GE-site / filiale GE (STMicroelectronics, GE mondial)",
