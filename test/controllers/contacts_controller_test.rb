@@ -249,6 +249,30 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Votre demande a bien été envoyée ! Je vous réponds sous 24h.", flash[:notice]
   end
 
+  # --- garde-fous anti-invention du prompt -----------------------------------
+
+  test "the system prompt forbids inventing experience Cyrille does not have" do
+    stub_llm("Bonjour")
+
+    post contact_chat_path, params: { message: "Je veux un assistant IA pour mon métier" }
+
+    system_prompt = last_llm_payload["messages"].first["content"]
+    assert_includes system_prompt, "Ne jamais inventer d'expérience"
+    assert_includes system_prompt, "il accompagne régulièrement"
+    assert_includes system_prompt, "emploie le singulier"
+  end
+
+  test "the system prompt keeps this site from passing as a client project" do
+    stub_llm("Bonjour")
+
+    post contact_chat_path, params: { message: "Je veux un site avec une IA" }
+
+    system_prompt = last_llm_payload["messages"].first["content"]
+    assert_includes system_prompt, "CE SITE N'EST PAS UNE MISSION CLIENT"
+    assert_includes system_prompt, "cyrillepierre.com"
+    assert_includes system_prompt, "Ne JAMAIS laisser entendre que Cyrille a déjà mené le projet"
+  end
+
   # --- call_llm : troncature par les tokens de réflexion ---------------------
 
   test "asks for a token budget large enough to survive the model's reasoning" do

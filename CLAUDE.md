@@ -85,6 +85,17 @@ Outil de génération de contenu par IA, réservé aux utilisateurs Devise authe
 
 **Publication** : seul `site_actu` est publiable (`publishable?`) — actions `publish`/`unpublish` passent `status` à `published`/`generated` et fixent `published_at`. Les actus publiées s'affichent sur `/actus` (`ActusController`).
 
+⚠️ **Garde-fous anti-invention du prompt de contact** : la règle historique ne couvrait que les
+chiffres (« ne jamais inventer ni extrapoler des chiffres »), pas les **capacités**. Le modèle
+répondait donc à un visiteur voulant faire construire un assistant IA que « Cyrille accompagne
+régulièrement la création d'outils digitaux intelligents » et qu'il « a conçu ce site internet »
+— formule qui, juste après que le visiteur a décrit SON projet, lui fait croire que Cyrille l'a
+déjà réalisé pour lui. Trois règles ajoutées : interdiction d'inventer une expérience, de
+transformer un cas unique en pratique courante (le pluriel compte comme une affirmation), et
+obligation de nommer explicitement `cyrillepierre.com` quand l'assistant se cite lui-même comme
+preuve. Verrouillées par `contacts_controller_test.rb`. **Toute réécriture du prompt doit les
+conserver** : ce sont des garde-fous de véracité, pas du style.
+
 ⚠️ **Piège des tokens de réflexion (`ContactsController::LLM_MAX_TOKENS`)** : Gemini 3.5 Flash
 raisonne avant de répondre, et ses tokens de réflexion sont décomptés du **même budget** que la
 réponse visible. Avec `max_tokens: 600`, il dépensait ~575 tokens à réfléchir et la réponse
