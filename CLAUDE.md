@@ -93,10 +93,14 @@ Deux pages publiques statiques (`PagesController#legal` / `#privacy`), liées de
 page et depuis la mention RGPD du formulaire de contact. Ajoutées quand le site s'est mis à
 **conserver** des prospects (voir ci-dessous) : informer devient obligatoire à partir de là.
 
-⚠️ **Valeurs à renseigner avant mise en ligne** : adresse professionnelle, téléphone, statut
-juridique et SIRET, TVA. Elles apparaissent dans la page entourées de `.legal-todo` (encadré
-orange pointillé, volontairement voyant) et un test — `pages_controller_test.rb` — vérifie leur
-présence. Une fois complétées, supprimer ce test.
+L'éditeur est la **SAS Centaur Bike**, au capital de 10 000 €, siège 13 rue Villeneuve 69004
+Lyon, SIRET 892 208 018 00010, RCS Lyon 892 208 018, TVA FR 52 892 208 018 — d'où les mentions
+propres aux sociétés (capital social, RCS) que n'exigerait pas une entreprise individuelle.
+Cyrille prévoit de changer de statut et de dénomination : ces valeurs sont à revoir ce jour-là,
+dans `legal.html.erb` et dans `pages_controller_test.rb` qui les verrouille.
+
+La classe `.legal-todo` (encadré orange pointillé, volontairement voyant) reste disponible pour
+signaler une valeur légale en attente. Un test vérifie qu'il n'en reste aucune en ligne.
 
 La politique de confidentialité annonce une conservation de **trois ans après le dernier
 contact**, appliquée par `ProspectPurgeJob` (planifié dans `config/recurring.yml`, production

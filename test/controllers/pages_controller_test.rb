@@ -19,10 +19,15 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "Directeur de la publication"
   end
 
-  test "mentions legales still flag the identifiers left to fill in" do
+  test "mentions legales carry the identifiers required of a company" do
     get legal_path
 
-    assert_select ".legal-todo", minimum: 1
+    assert_includes @response.body, "Centaur Bike"
+    assert_includes @response.body, "892 208 018 00010"
+    assert_includes @response.body, "FR 52 892 208 018"
+    assert_includes @response.body, "RCS"
+    assert_includes @response.body, "capital"
+    assert_select ".legal-todo", 0, "une valeur légale est encore en attente"
   end
 
   test "the privacy policy states the retention period and the LLM transfer" do
