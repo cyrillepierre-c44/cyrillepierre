@@ -85,6 +85,17 @@ Outil de génération de contenu par IA, réservé aux utilisateurs Devise authe
 
 **Publication** : seul `site_actu` est publiable (`publishable?`) — actions `publish`/`unpublish` passent `status` à `published`/`generated` et fixent `published_at`. Les actus publiées s'affichent sur `/actus` (`ActusController`).
 
+⚠️ **Piège des tokens de réflexion (`ContactsController::LLM_MAX_TOKENS`)** : Gemini 3.5 Flash
+raisonne avant de répondre, et ses tokens de réflexion sont décomptés du **même budget** que la
+réponse visible. Avec `max_tokens: 600`, il dépensait ~575 tokens à réfléchir et la réponse
+sortait **coupée en plein mot** — HTTP 200, aucune erreur, aucune trace : la 3e question du chat
+et le résumé (les deux appels aux consignes les plus longues) partaient tronqués par mail.
+Budget porté à 4 000 (réflexion mesurée à ~1 200 tokens au plus, elle ne gonfle pas pour remplir
+la marge). En repli, `call_llm` détecte `finish_reason == "length"` et rejoue une fois avec
+`reasoning_effort: "minimal"` — seule valeur qui ramène la réflexion à zéro : `"low"` est ignoré
+et `"none"` refusé par la passerelle (« Reasoning is mandatory for this endpoint »). Conséquence
+assumée : ~0,01 $ par appel au lieu de ~0,005 $, la réflexion étant facturée dans tous les cas.
+
 **Fuseau horaire** : Paris (cf. commit "fuseau horaire Paris" du 18/06).
 
 ## Pages légales (`/mentions-legales`, `/politique-de-confidentialite`)

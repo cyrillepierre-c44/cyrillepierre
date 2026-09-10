@@ -130,9 +130,23 @@ class ContactsController < ApplicationController
     redirect_to root_path, notice: "Votre demande a bien été envoyée ! Je vous réponds sous 24h."
   end
 
-  # `private` ne s'applique pas aux constantes : la déclarer avant évite de laisser croire
+  # `private` ne s'applique pas aux constantes : les déclarer avant évite de laisser croire
   # le contraire.
   REALISATIONS = RealisationCatalog::ITEMS
+
+  # Gemini 3.5 Flash est un modèle à raisonnement : ses tokens de réflexion sont décomptés du
+  # MÊME budget que la réponse visible. À 600, il dépensait ~575 tokens à réfléchir et la
+  # réponse sortait coupée en plein mot — sans erreur, sans code HTTP anormal. La 3e question
+  # du chat et le résumé, les deux appels aux consignes les plus longues, étaient les plus
+  # touchés. Mesuré à ~1 200 tokens de réflexion au plus, d'où cette marge.
+  LLM_MAX_TOKENS = 4_000
+
+  # Repli quand la réponse sort malgré tout tronquée. La passerelle refuse `"none"`
+  # (« Reasoning is mandatory for this endpoint ») ; `"minimal"` ramène bien la réflexion à
+  # zéro, là où `"low"` est ignoré.
+  NO_REASONING_EFFORT = "minimal".freeze
+
+  LLM_FALLBACK = "Je rencontre une difficulté technique. Écrivez directement à cyrille.pierre@gmail.com".freeze
 
   private
 
@@ -300,6 +314,25 @@ class ContactsController < ApplicationController
   end
 
   def call_llm(messages)
+    content, truncated = request_llm(messages)
+
+    # Réponse coupée en plein mot : on rejoue une fois sans réflexion plutôt que d'afficher
+    # une phrase inachevée au visiteur, ou de lui envoyer un résumé amputé par mail.
+    if truncated
+      Rails.logger.warn("ContactsController LLM truncated (finish_reason=length) — retry sans réflexion")
+      retried, = request_llm(messages, reasoning_effort: NO_REASONING_EFFORT)
+      content = retried if retried.present?
+    end
+
+    content.presence || LLM_FALLBACK
+  rescue StandardError => e
+    Rails.logger.error "ContactsController LLM error: #{e.class} — #{e.message}"
+    LLM_FALLBACK
+  end
+
+  # Renvoie [contenu, tronqué?]. `finish_reason == "length"` est le seul signal de troncature :
+  # la passerelle répond 200 avec une phrase coupée, sans erreur d'aucune sorte.
+  def request_llm(messages, reasoning_effort: nil)
     uri = URI("https://api.mammouth.ai/v1/chat/completions")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
@@ -308,18 +341,19 @@ class ContactsController < ApplicationController
     req = Net::HTTP::Post.new(uri)
     req["Authorization"] = "Bearer #{ENV.fetch('MAMMOUTH_API_KEY', '')}"
     req["Content-Type"]  = "application/json"
-    req.body = { model: "gemini-3.5-flash", messages: messages, max_tokens: 600, temperature: 0.7 }.to_json
+    body = { model: "gemini-3.5-flash", messages: messages, max_tokens: LLM_MAX_TOKENS, temperature: 0.7 }
+    body[:reasoning_effort] = reasoning_effort if reasoning_effort
+    req.body = body.to_json
 
     response = http.request(req)
     data = JSON.parse(response.body)
 
-    content = data.dig("choices", 0, "message", "content")
+    choice = data.dig("choices", 0)
+    content = choice&.dig("message", "content")
     unless content
       Rails.logger.error "ContactsController LLM bad response (HTTP #{response.code}): #{response.body.truncate(500)}"
     end
-    content || "Je rencontre une difficulté technique. Écrivez directement à cyrille.pierre@gmail.com"
-  rescue StandardError => e
-    Rails.logger.error "ContactsController LLM error: #{e.class} — #{e.message}"
-    "Je rencontre une difficulté technique. Écrivez directement à cyrille.pierre@gmail.com"
+
+    [content, choice&.dig("finish_reason") == "length"]
   end
 end

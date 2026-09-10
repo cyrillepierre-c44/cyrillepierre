@@ -14,6 +14,21 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
+  # La passerelle répond 200 avec une phrase coupée : seul finish_reason trahit la troncature.
+  def stub_truncated_then(content)
+    stub_request(:post, MAMMOUTH_URL)
+      .to_return(
+        status: 200,
+        body: { choices: [ { message: { content: "Un outil n'a de valeur que s" }, finish_reason: "length" } ] }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+      .then.to_return(
+        status: 200,
+        body: { choices: [ { message: { content: content }, finish_reason: "stop" } ] }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+  end
+
   def last_llm_payload
     JSON.parse(WebMock::RequestRegistry.instance.requested_signatures.hash.keys.last.body)
   end
@@ -232,6 +247,49 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to root_path
     assert_equal "Votre demande a bien été envoyée ! Je vous réponds sous 24h.", flash[:notice]
+  end
+
+  # --- call_llm : troncature par les tokens de réflexion ---------------------
+
+  test "asks for a token budget large enough to survive the model's reasoning" do
+    stub_llm("Bonjour")
+
+    post contact_chat_path, params: { message: "Bonjour" }
+
+    assert_equal ContactsController::LLM_MAX_TOKENS, last_llm_payload["max_tokens"]
+    assert_nil last_llm_payload["reasoning_effort"]
+  end
+
+  test "retries without reasoning when the answer comes back truncated" do
+    stub_truncated_then("L'adoption par les équipes terrain est la clé.")
+
+    post contact_chat_path, params: { message: "Comment faire adopter l'outil ?" }
+
+    assert_equal "L'adoption par les équipes terrain est la clé.", JSON.parse(response.body)["reply"]
+    assert_equal ContactsController::NO_REASONING_EFFORT, last_llm_payload["reasoning_effort"]
+    assert_requested :post, MAMMOUTH_URL, times: 2
+  end
+
+  test "a truncated summary is regenerated rather than sent as is" do
+    stub_truncated_then("🏭 **Contexte :** Atelier de production.\n\n🎯 **Enjeu :** Adoption terrain.")
+
+    post contact_summarize_path, params: { history: [ { role: "user", content: "Digitaliser l'atelier." } ] }
+
+    assert_includes JSON.parse(response.body)["summary"], "Enjeu"
+  end
+
+  test "keeps the truncated answer when the retry brings back nothing" do
+    stub_request(:post, MAMMOUTH_URL)
+      .to_return(
+        status: 200,
+        body: { choices: [ { message: { content: "Réponse coupée" }, finish_reason: "length" } ] }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+      .then.to_return(status: 500, body: { error: "boom" }.to_json)
+
+    post contact_chat_path, params: { message: "Bonjour" }
+
+    assert_equal "Réponse coupée", JSON.parse(response.body)["reply"]
   end
 
   # --- call_llm : les chemins de panne --------------------------------------
