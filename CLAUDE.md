@@ -151,6 +151,16 @@ la page. Un rendu markdown complet accepterait le HTML brut et rouvrirait cette 
 retrouvaient. La page de détail du Studio affiche un aperçu rendu et le nombre de mots : une
 actu non publiée renvoie 404 sur `/actus`, il faudrait sinon publier pour relire la structure.
 
+**Ancrage géographique** : une requête « métier + ville » cherche un professionnel situé quelque
+part. Avant le 11/09/2026, « Lyon » n'apparaissait qu'**une fois** par page de service — celle du
+pied de page — et la région nulle part : d'où une 8ᵉ page de résultats sur « consultant en
+excellence opérationnelle lyon » alors que Google avait parfaitement compris le positionnement.
+Le partiel `pages/_zone` énonce le périmètre sur les trois pages de services (les lieux cités sont
+ceux de missions réelles, pas une liste de villes pour le moteur), les descriptions le reprennent,
+et `professional_service_schema` déclare `areaServed` ville → région → pays plutôt qu'un simple
+« France ». Le levier le plus fort reste hors du site : une **fiche d'établissement Google**, qui
+n'existe pas encore.
+
 **Maillage interne** : `ContentGenerator::SITE_PAGES` liste les cinq pages de fond, cibles de lien
 les plus stables (leur adresse ne bouge pas, contrairement à celle d'un article dépublié). Le bloc
 est transmis aux prompts **article et brève** — une brève est une page comme une autre et doit mener

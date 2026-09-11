@@ -466,3 +466,19 @@
   font-size: 0.88rem;
   line-height: 1.55;
 }
+
+// ── Zone d'intervention (partiel pages/_zone) ────────────────────────
+.zone-block {
+  max-width: 680px;
+  margin: 2.5rem auto 0;
+  padding: 1rem 1.25rem;
+  border-left: 3px solid var(--cp-accent);
+  background: var(--cp-bg-card);
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: var(--cp-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+
+  i { color: var(--cp-accent); margin-right: 0.4rem; }
+  strong { color: var(--cp-text); font-weight: 600; }
+}

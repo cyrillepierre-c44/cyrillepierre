@@ -37,7 +37,13 @@ module ApplicationHelper
       "telephone" => "+33618022452",
       "sameAs" => ["https://www.linkedin.com/in/cyrille-pierre"],
       "alumniOf" => { "@type" => "CollegeOrUniversity", "name" => "Arts et Métiers ParisTech" },
-      "address" => { "@type" => "PostalAddress", "addressLocality" => "Lyon", "addressCountry" => "FR" },
+      "address" => {
+        "@type" => "PostalAddress",
+        "addressLocality" => "Lyon",
+        "addressRegion" => "Auvergne-Rhône-Alpes",
+        "addressCountry" => "FR"
+      },
+      "workLocation" => { "@type" => "Place", "name" => "Lyon, Auvergne-Rhône-Alpes, France" },
       "knowsAbout" => [
         "Management de transition", "Excellence opérationnelle", "Lean manufacturing",
         "TRS (taux de rendement synthétique)", "Conduite du changement", "Industrie agroalimentaire",
@@ -63,9 +69,16 @@ module ApplicationHelper
         "streetAddress" => "13 rue Villeneuve",
         "postalCode" => "69004",
         "addressLocality" => "Lyon",
+        "addressRegion" => "Auvergne-Rhône-Alpes",
         "addressCountry" => "FR"
       },
-      "areaServed" => { "@type" => "Country", "name" => "France" },
+      # Un simple « France » ne disait pas où se trouve Cyrille : on nomme la ville et la
+      # région avant le pays, puisque c'est ce que cherche une requête « métier + ville ».
+      "areaServed" => [
+        { "@type" => "City", "name" => "Lyon" },
+        { "@type" => "AdministrativeArea", "name" => "Auvergne-Rhône-Alpes" },
+        { "@type" => "Country", "name" => "France" }
+      ],
       "knowsLanguage" => ["fr", "en"]
     }
   end

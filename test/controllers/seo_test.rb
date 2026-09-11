@@ -92,6 +92,7 @@ class SeoTest < ActionDispatch::IntegrationTest
     assert_equal "Cyrille PIERRE", person["name"]
     assert_includes person["sameAs"], "https://www.linkedin.com/in/cyrille-pierre"
     assert_equal "Lyon", person["address"]["addressLocality"]
+    assert_equal "Auvergne-Rhône-Alpes", person["address"]["addressRegion"]
     assert_equal "Centaur Bike", service["legalName"]
     assert_equal person["@id"], service["founder"]["@id"]
   end
@@ -124,5 +125,37 @@ class SeoTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert css_select("script[type='application/ld+json']").first["nonce"].present?
+  end
+  # Une requête « métier + ville » cherche un professionnel situé quelque part. Le site disait
+  # ce que fait Cyrille, jamais où il est : « Lyon » n'apparaissait qu'une fois par page, dans
+  # le pied de page, et la région nulle part.
+  test "the structured data names the city and the region served" do
+    get root_path
+
+    graph = JSON.parse(css_select("script[type='application/ld+json']").first.text)["@graph"]
+    service = graph.find { |node| node["@type"] == "ProfessionalService" }
+    served = service["areaServed"].map { |a| a["name"] }
+
+    assert_equal [ "Lyon", "Auvergne-Rhône-Alpes", "France" ], served
+    assert_equal "Auvergne-Rhône-Alpes", service["address"]["addressRegion"]
+  end
+
+  test "each service page states where Cyrille actually works" do
+    [ operations_path, leadership_path, tech_path ].each do |path|
+      get path
+
+      assert_select ".zone-block", 1, "#{path} devrait annoncer sa zone d'intervention"
+      assert_select ".zone-block strong", text: "Lyon"
+      assert_select ".zone-block strong", text: "Auvergne-Rhône-Alpes"
+    end
+  end
+
+  test "the service descriptions carry the geography too" do
+    [ operations_path, leadership_path, tech_path ].each do |path|
+      get path
+
+      description = css_select("meta[name='description']").first["content"]
+      assert_includes description, "Lyon", "la description de #{path} devrait situer Cyrille"
+    end
   end
 end
