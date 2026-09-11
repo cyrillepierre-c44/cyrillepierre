@@ -183,6 +183,15 @@
   </div>
 </div>
 
+<%= render "pages/related", links: [
+  { path: realisations_path, title: "Les réalisations chiffrées",
+    desc: "Vingt-six missions avec leur contexte, la méthode employée et le gain obtenu." },
+  { path: tech_path, title: "Quand le pilotage doit passer au numérique",
+    desc: "Tableaux de bord, applications métier et IA appliquée, conçus pour le terrain." },
+  { path: actus_path, title: "Articles de fond sur la performance",
+    desc: "Le TRS qui progresse sans que la production suive, les chantiers qui ne tiennent pas." }
+] %>
+
 <div class="container" data-controller="reveal">
   <div class="cta-block reveal">
     <span class="section-eyebrow">Passons à l'action</span>

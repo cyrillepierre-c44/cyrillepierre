@@ -1543,6 +1543,15 @@
   </div>
 </div>
 
+<%= render "pages/related", links: [
+  { path: operations_path, title: "Excellence opérationnelle",
+    desc: "La méthode derrière ces résultats : analyse des pertes, Lean, TPM, indicateurs." },
+  { path: leadership_path, title: "Leadership et transformation",
+    desc: "Management de transition, conduite du changement et développement des managers." },
+  { path: tech_path, title: "Tech et intelligence artificielle",
+    desc: "Les outils métier construits sur mesure quand aucun logiciel du marché ne convient." }
+] %>
+
 <div class="container" data-controller="reveal">
   <div class="cta-block reveal">
     <span class="section-eyebrow">Votre projet</span>

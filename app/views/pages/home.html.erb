@@ -317,6 +317,15 @@
   </div>
 </section>
 
+<%= render "pages/related", links: [
+  { path: realisations_path, title: "Vingt-six réalisations détaillées",
+    desc: "Chaque mission avec son contexte, la méthode appliquée et le gain mesuré." },
+  { path: actus_path, title: "Articles de fond",
+    desc: "Retours de terrain sur la performance industrielle, le management et la digitalisation." },
+  { path: cv_path, title: "Le parcours complet",
+    desc: "Vingt ans de direction de production et d'opérations, en français ou en anglais." }
+] %>
+
 <%# ============================== CTA ============================== %>
 <section data-controller="reveal">
   <div class="container">

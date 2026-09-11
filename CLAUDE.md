@@ -151,6 +151,15 @@ la page. Un rendu markdown complet accepterait le HTML brut et rouvrirait cette 
 retrouvaient. La page de détail du Studio affiche un aperçu rendu et le nombre de mots : une
 actu non publiée renvoie 404 sur `/actus`, il faudrait sinon publier pour relire la structure.
 
+**Maillage interne** : `ContentGenerator::SITE_PAGES` liste les cinq pages de fond, cibles de lien
+les plus stables (leur adresse ne bouge pas, contrairement à celle d'un article dépublié). Le bloc
+est transmis aux prompts **article et brève** — une brève est une page comme une autre et doit mener
+ailleurs. Les brèves sont offertes comme cibles mais signalées comme telles, pour que le modèle ne
+renvoie pas vers trois lignes. Côté pages statiques, le partiel `pages/_related` pose trois liens
+contextuels en bas de l'accueil et des quatre pages de fond : avant, elles n'offraient qu'un lien
+vers le contact, donc un visiteur pas encore prêt à écrire n'avait nulle part où aller et les
+moteurs voyaient quatre culs-de-sac. `pages_controller_test.rb` verrouille les cibles.
+
 **Publication** : `site_actu` et `article` sont publiables (`publishable?`) — actions `publish`/`unpublish` passent `status` à `published`/`generated` et fixent `published_at`. Les actus publiées s'affichent sur `/actus` (`ActusController`).
 
 ⚠️ **Garde-fous anti-invention du prompt de contact** : la règle historique ne couvrait que les

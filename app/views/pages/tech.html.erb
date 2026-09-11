@@ -164,6 +164,15 @@
   </div>
 </div>
 
+<%= render "pages/related", links: [
+  { path: realisations_path, title: "Les réalisations chiffrées",
+    desc: "Applications déployées en production, outils de pilotage, digitalisation d'ateliers." },
+  { path: operations_path, title: "Le terrain avant l'outil",
+    desc: "Un processus flou ne se numérise pas : ce que l'excellence opérationnelle règle d'abord." },
+  { path: actus_path, title: "Articles de fond sur la digitalisation",
+    desc: "Concevoir un poste numérique pour des opérateurs qui ne lisent pas la consigne." }
+] %>
+
 <div class="container" data-controller="reveal">
   <div class="cta-block reveal">
     <span class="section-eyebrow">Construisons ensemble</span>

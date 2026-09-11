@@ -1,0 +1,19 @@
+<%# Maillage interne entre les pages de fond. Avant, les pages Excellence opérationnelle,
+    Leadership, Tech & IA et Réalisations n'offraient qu'un lien vers le contact : un visiteur
+    qui n'était pas prêt à écrire n'avait nulle part où aller, et les moteurs voyaient quatre
+    culs-de-sac plutôt qu'un ensemble. Les libellés décrivent la destination, jamais « ici ». %>
+<div class="container" data-controller="reveal">
+  <nav class="related-block reveal" aria-label="Pages liées">
+    <span class="section-eyebrow">Pour aller plus loin</span>
+    <ul class="related-list">
+      <% links.each do |link| %>
+        <li>
+          <a href="<%= link[:path] %>" class="related-link">
+            <span class="related-link-title"><%= link[:title] %></span>
+            <span class="related-link-desc"><%= link[:desc] %></span>
+          </a>
+        </li>
+      <% end %>
+    </ul>
+  </nav>
+</div>

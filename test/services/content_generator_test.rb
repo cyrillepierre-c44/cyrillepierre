@@ -353,26 +353,50 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     run_generator(Generation.create!(user: @user, kind: :article), context)
 
     instructions = context.draft_chat.instructions
-    assert_includes instructions, "ARTICLES DÉJÀ PUBLIÉS"
+    assert_includes instructions, "PAGES DU SITE VERS LESQUELLES TU PEUX RENVOYER"
     assert_includes instructions, "Passer en 3x8 → /actus/#{published.id}"
     assert_includes instructions, "Deux liens au maximum"
   end
 
-  test "an article never offers a link to itself" do
+  test "a content never offers a link to itself" do
     record = Generation.create!(user: @user, kind: :article, status: :published,
                                 published_at: Time.current, title: "Lui-même", output: "Du texte.")
     context = FakeContext.new(replies: [ "a", "b" ])
 
     run_generator(record, context)
 
-    assert_not_includes context.draft_chat.instructions, "ARTICLES DÉJÀ PUBLIÉS"
+    assert_not_includes context.draft_chat.instructions, "/actus/#{record.id}"
   end
 
-  test "the block disappears when nothing is published yet" do
+  # Les pages de fond sont les cibles les plus stables : elles restent offertes même quand rien
+  # n'est encore publié, alors que l'adresse d'un article peut disparaître à la dépublication.
+  test "the site pages are always offered, even before anything is published" do
     context = FakeContext.new(replies: [ "a", "b" ])
     run_generator(Generation.create!(user: @user, kind: :article), context)
 
-    assert_not_includes context.draft_chat.instructions, "ARTICLES DÉJÀ PUBLIÉS"
+    instructions = context.draft_chat.instructions
+    ContentGenerator::SITE_PAGES.each_key do |path|
+      assert_includes instructions, "→ #{path}"
+    end
+  end
+
+  # Une brève mérite le même maillage qu'un article : c'est aussi une page qui doit mener ailleurs.
+  test "the short news prompt also gets the link targets" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :site_actu), context)
+
+    assert_includes context.draft_chat.instructions, "PAGES DU SITE VERS LESQUELLES TU PEUX RENVOYER"
+    assert_includes context.draft_chat.instructions, "→ /realisations"
+  end
+
+  test "a short news is offered as a target but flagged as such" do
+    Generation.create!(user: @user, kind: :site_actu, status: :published,
+                       published_at: Time.current, title: "Une brève", output: "Court.")
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    assert_includes context.draft_chat.instructions, "(brève, à ne citer que si elle apporte"
   end
   # Le catalogue dit, pour certaines réalisations, à quels sujets elles ne s'appliquent PAS.
   # Le Studio ne l'a jamais reçu jusqu'ici : un article rattachait alors un chiffre au mauvais sujet.

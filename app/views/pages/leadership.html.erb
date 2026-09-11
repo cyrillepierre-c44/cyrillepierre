@@ -148,6 +148,15 @@
   </div>
 </div>
 
+<%= render "pages/related", links: [
+  { path: realisations_path, title: "Les réalisations chiffrées",
+    desc: "Réorganisations, négociations sociales et refontes du management de proximité." },
+  { path: operations_path, title: "L'excellence opérationnelle au quotidien",
+    desc: "Lean, TRS, rebuts et flux : ce que la transformation doit produire concrètement." },
+  { path: actus_path, title: "Articles de fond sur le management",
+    desc: "Repérer une équipe en surcharge managériale, changer les horaires sans conflit social." }
+] %>
+
 <div class="container" data-controller="reveal">
   <div class="cta-block reveal">
     <span class="section-eyebrow">Votre transformation</span>

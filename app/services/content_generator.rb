@@ -5,6 +5,16 @@ class ContentGenerator
   # for the draft, to keep the extra LLM call quick.
   PROOFREADING_MODEL = "gemini-3.5-flash"
 
+  # Les pages de fond du site, qui sont les cibles de lien les plus stables : leurs adresses ne
+  # bougent pas, contrairement à celle d'un article qu'on pourrait dépublier.
+  SITE_PAGES = {
+    "/" => "Profil de Cyrille PIERRE — parcours, chiffres clés et positionnement",
+    "/expertise-operationnelle" => "Excellence opérationnelle — Lean, TRS, rebuts, flux, analyse des pertes",
+    "/leadership-transformation" => "Leadership et transformation — management de transition, conduite du changement",
+    "/tech-ia" => "Tech et IA — digitalisation des processus, outils métier, IA appliquée",
+    "/realisations" => "Réalisations — 26 missions détaillées avec leur contexte et leur gain"
+  }.freeze
+
   KIND_PROMPT_METHODS = {
     linkedin_post: :linkedin_post_prompt,
     cover_letter: :cover_letter_prompt,
@@ -545,17 +555,19 @@ class ContentGenerator
     PROMPT
   end
 
-  # Un article qui renvoie vers les autres sert le lecteur et le référencement : les moteurs
+  # Un contenu qui renvoie vers les autres sert le lecteur et le référencement : les moteurs
   # comme les assistants lisent ces liens comme le signe d'un ensemble cohérent, pas d'une page
   # isolée. Encore faut-il que le modèle connaisse les adresses — d'où cette liste.
   def other_articles_block
-    others = Generation.published_on_site.where(kind: :article).where.not(id: generation.id).limit(15)
-    return "" if others.empty?
-
-    lines = others.map { |a| "- #{a.display_title} → #{Rails.application.routes.url_helpers.actu_path(a)}" }
+    others = Generation.published_on_site.where.not(id: generation.id).limit(15)
+    lines = SITE_PAGES.map { |path, label| "- #{label} → #{path}" }
+    lines += others.map do |a|
+      suffix = a.article? ? "" : " (brève, à ne citer que si elle apporte vraiment quelque chose)"
+      "- #{a.display_title}#{suffix} → #{Rails.application.routes.url_helpers.actu_path(a)}"
+    end
 
     <<~BLOCK
-      ARTICLES DÉJÀ PUBLIÉS SUR LE SITE (tu peux y renvoyer) :
+      PAGES DU SITE VERS LESQUELLES TU PEUX RENVOYER :
       #{lines.join("\n")}
 
       AVANT de rendre ta réponse, relis cette liste et confronte-la à ton texte : chaque fois que tu
@@ -578,6 +590,8 @@ class ContentGenerator
 
       RÉALISATIONS DE CYRILLE (pour mise en contexte si pertinent, sans citer les identifiants internes type N°XX) :
       #{anonymized_realisations_str}
+
+      #{other_articles_block}
 
       CONSIGNES :
       - 100 à 200 mots, ton factuel et clair, à la troisième personne

@@ -89,4 +89,28 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "Sept. 2025 → Aujourd'hui"
     assert_includes @response.body, "HEC Paris"
   end
+  # Avant, les quatre pages de fond n'offraient qu'un lien vers le contact : un visiteur pas
+  # encore prêt à écrire n'avait nulle part où aller, et les moteurs voyaient des culs-de-sac.
+  test "each deep page offers a way onward other than the contact form" do
+    { operations_path => [ realisations_path, tech_path, actus_path ],
+      leadership_path => [ realisations_path, operations_path, actus_path ],
+      tech_path => [ realisations_path, operations_path, actus_path ],
+      realisations_path => [ operations_path, leadership_path, tech_path ],
+      root_path => [ realisations_path, actus_path, cv_path ] }.each do |page, targets|
+      get page
+
+      assert_select ".related-list li", 3, "#{page} devrait proposer trois pages liées"
+      targets.each do |target|
+        assert_select ".related-link[href=?]", target, { count: 1 }, "#{page} ne renvoie pas vers #{target}"
+      end
+    end
+  end
+
+  test "the related links describe where they lead" do
+    get operations_path
+
+    assert_select ".related-link-title", text: "Les réalisations chiffrées"
+    assert_select ".related-link-desc", minimum: 3
+    assert_select ".related-link", text: /ici/i, count: 0
+  end
 end

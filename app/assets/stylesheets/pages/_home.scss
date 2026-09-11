@@ -420,3 +420,49 @@
     }
   }
 }
+
+// ── Maillage interne (partiel pages/_related) ────────────────────────
+.related-block {
+  border-top: 1px solid var(--cp-border);
+  padding-top: 2rem;
+  margin-top: 1rem;
+}
+
+.related-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.related-link {
+  display: block;
+  height: 100%;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--cp-border);
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: var(--cp-accent);
+    transform: translateY(-2px);
+  }
+}
+
+.related-link-title {
+  display: block;
+  color: var(--cp-accent);
+  font-weight: 600;
+  font-size: 0.98rem;
+  margin-bottom: 0.3rem;
+}
+
+.related-link-desc {
+  display: block;
+  color: var(--cp-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
