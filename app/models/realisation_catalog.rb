@@ -6,10 +6,11 @@ module RealisationCatalog
       type_orga: "usine industrielle automatisée",
       context: "Yoplait (marque General Mills, GE mondial) · site Vienne · agroalimentaire · 200 personnes · 3 unités de production",
       titre: "Fusion des silos Production / Maintenance / Process",
-      resultat: "+8% TRS · 480 K€/an · −30% aléas",
+      resultat: "+8% TRS · 480 K€/an · −30% aléas — résultat de SITE, produit par plusieurs chantiers menés de front (indicateurs de performance, routines quotidiennes et hebdomadaires, outils d'animation, fusion des silos, suivi des arrêts)",
       visual_hint: "Graphique en barres avant/après (57%→65%) avec une rangée d'icônes engrenage, personnes et " \
                    "poignée de main, et un encart montant en euros.",
-      tags: %w[agro agroalimentaire TRS rendement performance silos management] },
+      semantic_scope: "Huit points de TRS, c'est énorme en industrie : ce résultat n'est PAS attribuable à la seule fusion des silos. Il vient de chantiers simultanés dont la contribution individuelle n'est pas isolable — et qui ne produisent cet effet que pris ensemble. Ne jamais présenter ce chiffre comme le rendement d'une initiative isolée ; dire au contraire que c'est un résultat d'ensemble.",
+      tags: %w[agro agroalimentaire TRS rendement performance silos management résultat-systémique] },
     { id: "N°02",
       scale: "ETI (CENEXI, 400p, 3 sites)",
       type_orga: "usine industrielle process continu",

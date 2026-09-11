@@ -493,6 +493,12 @@ class ContentGenerator
         magazine à la troisième personne.
       - Au moins un cas concret et chiffré, tiré des réalisations ci-dessus, présenté sans nommer
         l'entreprise.
+      - Certains résultats sont des résultats de SITE, obtenus par plusieurs chantiers menés de front,
+        dont la contribution individuelle n'est pas isolable — c'est d'ailleurs souvent la condition
+        pour qu'ils produisent quoi que ce soit. Quand une réalisation le signale, ne présente jamais
+        le chiffre comme le rendement d'une initiative seule. Le dire est plus crédible que de
+        l'attribuer : un directeur industriel sait qu'un gain de cette ampleur ne vient jamais d'un
+        levier unique, et il vous croit davantage si vous le reconnaissez.
       - Un chiffre appartient à la réalisation qui l'a produit, et à elle seule. Ne rattache jamais
         un résultat à un sujet voisin parce que l'histoire serait plus jolie. Lis les lignes
         « ⚠ Périmètre » : elles disent à quels sujets une réalisation ne s'applique PAS. Tu peux

@@ -120,6 +120,15 @@ des contenus qui rattachaient un chiffre au sujet voisin. `semantic_scope_line` 
 dans `realisations_str` **et** `anonymized_realisations_str`, donc dans les cinq types de contenu.
 Toute nouvelle façon de rendre le catalogue vers un LLM doit le reprendre.
 
+⚠️ **Résultats de site, non décomposables** : les +8 % de TRS et −30 % d'aléas de la N°01 ne
+viennent pas de la fusion des silos seule. C'est un résultat de **site**, produit par des chantiers
+menés de front (indicateurs, routines d'animation, fusion des silos, suivi des arrêts), dont la
+contribution individuelle n'est pas isolable — et qui ne produisent cet effet que pris ensemble.
+Le `semantic_scope` de la N°01 l'interdit explicitement, et le prompt article demande de le dire
+plutôt que de l'attribuer : huit points de TRS, c'est énorme en industrie, et un directeur
+industriel croit davantage celui qui reconnaît qu'aucun levier unique ne produit ça.
+**Appliquer la même prudence à toute réalisation dont le chiffre agrège plusieurs chantiers.**
+
 **Catalogue de réalisations — `visual_hint`** : chaque entrée de `RealisationCatalog::ITEMS` a un champ `visual_hint` (texte court décrivant la composition de l'illustration SVG faite à la main pour cette réalisation sur `/realisations` — ex. boîtes qui fusionnent, jauge, frise chronologique). **Règle à respecter** : toute nouvelle réalisation ajoutée au catalogue doit avoir à la fois une nouvelle illustration SVG sur `/realisations` et son `visual_hint` correspondant — jamais l'un sans l'autre (sinon `VisualGenerator` se rabat silencieusement sur les faits bruts, sans inspiration de design).
 
 **Article de fond (`article`)** : format long ajouté pour le référencement et la citation par

@@ -414,4 +414,16 @@ class ContentGeneratorTest < ActiveSupport::TestCase
 
     assert_includes context.draft_chat.instructions, "cette vérification n'est pas facultative"
   end
+  # Huit points de TRS ne viennent jamais d'un levier unique. Présenter ce chiffre comme le
+  # rendement d'une seule initiative exposerait Cyrille à la première question d'un directeur
+  # industriel, qui sait que c'est impossible.
+  test "the prompt refuses to credit one lever for a whole-site result" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "résultats de SITE"
+    assert_includes instructions, "contribution individuelle n'est pas isolable"
+    assert_includes instructions, "n'est PAS attribuable à la seule fusion des silos"
+  end
 end
