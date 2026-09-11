@@ -309,7 +309,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     run_generator(Generation.create!(user: @user, kind: :article), context)
 
     instructions = context.draft_chat.instructions
-    assert_includes instructions, "800 à 1200 mots"
+    assert_includes instructions, "800 à 1100 mots"
     assert_includes instructions, "répond à UNE question"
     assert_includes instructions, "première personne"
     assert_includes instructions, "## Titre"
@@ -355,7 +355,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     instructions = context.draft_chat.instructions
     assert_includes instructions, "ARTICLES DÉJÀ PUBLIÉS"
     assert_includes instructions, "Passer en 3x8 → /actus/#{published.id}"
-    assert_includes instructions, "AU PLUS deux liens"
+    assert_includes instructions, "Deux liens au maximum"
   end
 
   test "an article never offers a link to itself" do
@@ -373,5 +373,45 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     run_generator(Generation.create!(user: @user, kind: :article), context)
 
     assert_not_includes context.draft_chat.instructions, "ARTICLES DÉJÀ PUBLIÉS"
+  end
+  # Le catalogue dit, pour certaines réalisations, à quels sujets elles ne s'appliquent PAS.
+  # Le Studio ne l'a jamais reçu jusqu'ici : un article rattachait alors un chiffre au mauvais sujet.
+  test "the prompts carry the semantic scope of the catalogue" do
+    scoped = RealisationCatalog::ITEMS.find { |r| r[:semantic_scope].present? }
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    assert_includes context.draft_chat.instructions, "⚠ Périmètre : #{scoped[:semantic_scope]}"
+  end
+
+  test "the private kinds carry the semantic scope too" do
+    scoped = RealisationCatalog::ITEMS.find { |r| r[:semantic_scope].present? }
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(Generation.create!(user: @user, kind: :commercial_proposal), context)
+
+    assert_includes context.draft_chat.instructions, "⚠ Périmètre : #{scoped[:semantic_scope]}"
+  end
+
+  test "the article prompt caps the sections and counts the mandatory ones" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "4 à 6 sections AU TOTAL"
+    assert_includes instructions, "quatre sections de fond"
+    assert_includes instructions, "au plus"
+    assert_includes instructions, "Un chiffre appartient à la réalisation qui l'a produit"
+  end
+
+  test "checking the other articles for a link is not optional" do
+    Generation.create!(user: @user, kind: :article, status: :published, published_at: Time.current,
+                       title: "Passer en 3x8", output: "Du texte.")
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(Generation.create!(user: @user, kind: :article), context)
+
+    assert_includes context.draft_chat.instructions, "cette vérification n'est pas facultative"
   end
 end

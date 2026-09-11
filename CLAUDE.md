@@ -112,6 +112,14 @@ Outil de génération de contenu par IA, réservé aux utilisateurs Devise authe
 - **Visuel généré par IA** : `VisualGenerator` (`app/services/visual_generator.rb`) appelle Mammouth pour produire une illustration (palette bleu marine/doré, jauge ou graphique rouge→vert comme métaphore de mesure, personnages en pictogrammes sans visage — "no human faces" seul ne suffit pas, les modèles dessinent quand même des profils, il faut expliciter "no eyes/nose/mouth"). Modèle choisi par génération (`Generation::IMAGE_MODELS` : `gemini-2.5-flash-image` par défaut, ou `gemini-3.1-flash-image-preview`) — `gpt-5.4-image-2` testé et écarté (timeout Cloudflare systématique sur Mammouth). Le prompt **adapte la scène au sujet réel** du post (production/usine si ça parle de machines, planning/calendrier si RH ou horaires, organigramme si management — jamais d'usine par défaut sous prétexte que c'est un post industriel). Quand une réalisation est verrouillée (voir ci-dessus), le prompt ajoute son texte complet et son `visual_hint` (description de l'illustration SVG existante pour cette réalisation sur `/realisations`, voir plus bas) pour que le visuel s'inspire du design du site ; sans réalisation verrouillée (l'IA a choisi librement le thème), aucune contrainte de design supplémentaire — liberté totale. Limite connue : malgré la consigne "no text", ces modèles ajoutent parfois du texte parasite/illisible dans l'image — pas de solution fiable trouvée, à régénérer si besoin. Bouton "Générer/Régénérer le visuel" sur la page de détail, ou case "Générer aussi un visuel" sur le formulaire de création (texte puis image dans la même requête ; la barre de progression switch de texte après un délai fixe côté JS, faute de suivi temps réel — requête synchrone, pas de polling).
 - **Édition manuelle** : titre (clic sur le `<h1>`) et texte généré (`output`) sont éditables en ligne sur la page de détail. Un seul `data-controller="studio-output-edit"` couvre toute la `.studio-card` (toolbar + contenu) — nécessaire pour que le bouton "Modifier le texte" dans la toolbar (desktop, entre Régénérer et Supprimer) et sa variante sous le texte (mobile, `.studio-edit-toolbar-btn`/`.studio-edit-mobile-btn` en CSS) partagent les mêmes targets `display`/`form`. PATCH sur l'action `update` existante.
 
+⚠️ **`semantic_scope` et le Studio** : le catalogue porte, pour sept réalisations, un périmètre
+qui dit explicitement à quels sujets elles ne s'appliquent **pas** (l'absentéisme n'est pas un
+sujet de productivité, une restructuration n'est pas de l'animation d'équipe). `ContactsController`
+l'a toujours transmis à son assistant ; `ContentGenerator` **jamais**, jusqu'au 11/09/2026 — d'où
+des contenus qui rattachaient un chiffre au sujet voisin. `semantic_scope_line` l'injecte désormais
+dans `realisations_str` **et** `anonymized_realisations_str`, donc dans les cinq types de contenu.
+Toute nouvelle façon de rendre le catalogue vers un LLM doit le reprendre.
+
 **Catalogue de réalisations — `visual_hint`** : chaque entrée de `RealisationCatalog::ITEMS` a un champ `visual_hint` (texte court décrivant la composition de l'illustration SVG faite à la main pour cette réalisation sur `/realisations` — ex. boîtes qui fusionnent, jauge, frise chronologique). **Règle à respecter** : toute nouvelle réalisation ajoutée au catalogue doit avoir à la fois une nouvelle illustration SVG sur `/realisations` et son `visual_hint` correspondant — jamais l'un sans l'autre (sinon `VisualGenerator` se rabat silencieusement sur les faits bruts, sans inspiration de design).
 
 **Article de fond (`article`)** : format long ajouté pour le référencement et la citation par
@@ -120,6 +128,11 @@ sections `## `. Le `site_actu` reste la brève de 100 à 200 mots ; les deux se 
 `/actus` (`Generation::PUBLISHABLE_KINDS`, scope `published_on_site`). Le prompt impose de
 s'appuyer sur une réalisation réelle et chiffrée du catalogue : un article générique ne serait
 ni classé ni cité, et exposerait Cyrille en relecture.
+
+Le prompt compte **4 à 6 sections au total, coûts et section finale compris** — la formulation
+précédente ne le disait pas et le modèle ouvrait une section par point, jusqu'à huit. La
+vérification des liens vers les autres articles est formulée comme une obligation de relecture,
+pas comme une permission : autorisé poliment, le modèle n'en plaçait aucun.
 
 `ArticleFormatter` (`app/services/article_formatter.rb`) rend le markdown restreint (titres
 `##`/`###`, paragraphes, listes, gras) — **pas de gem markdown à dessein** : le texte vient d'un

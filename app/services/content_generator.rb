@@ -168,8 +168,18 @@ class ContentGenerator
 
   def realisations_str
     RealisationCatalog::ITEMS.map do |r|
-      "#{r[:id]} #{r[:titre]} — #{r[:context]} — #{r[:resultat]}"
+      "#{r[:id]} #{r[:titre]} — #{r[:context]} — #{r[:resultat]}#{semantic_scope_line(r)}"
     end.join("\n")
+  end
+
+  # Le catalogue porte, pour certaines réalisations, un périmètre qui dit explicitement à quels
+  # sujets elles ne s'appliquent PAS (l'absentéisme n'est pas un sujet de productivité, une
+  # restructuration n'est pas de l'animation d'équipe). L'assistant de contact l'a toujours reçu,
+  # le Studio jamais : d'où des articles qui rattachaient un chiffre au mauvais sujet.
+  def semantic_scope_line(realisation)
+    return "" if realisation[:semantic_scope].blank?
+
+    "\n     ⚠ Périmètre : #{realisation[:semantic_scope]}"
   end
 
   # Same catalogue, but described by sector/scale instead of by company name — used for the
@@ -177,7 +187,7 @@ class ContentGenerator
   # even reaches the prompt, on top of the explicit ANONYMIZE_COMPANIES_RULE instruction.
   def anonymized_realisations_str
     RealisationCatalog::ITEMS.map do |r|
-      "#{r[:id]} #{r[:titre]} — #{r[:scale]}, #{r[:type_orga]} — #{r[:resultat]}"
+      "#{r[:id]} #{r[:titre]} — #{r[:scale]}, #{r[:type_orga]} — #{r[:resultat]}#{semantic_scope_line(r)}"
     end.join("\n")
   end
 
@@ -483,6 +493,10 @@ class ContentGenerator
         magazine à la troisième personne.
       - Au moins un cas concret et chiffré, tiré des réalisations ci-dessus, présenté sans nommer
         l'entreprise.
+      - Un chiffre appartient à la réalisation qui l'a produit, et à elle seule. Ne rattache jamais
+        un résultat à un sujet voisin parce que l'histoire serait plus jolie. Lis les lignes
+        « ⚠ Périmètre » : elles disent à quels sujets une réalisation ne s'applique PAS. Tu peux
+        citer une situation comme signal ou comme contexte sans en revendiquer le résultat chiffré.
       - Tu PEUX mobiliser ce qui se produit couramment dans des situations comparables : les réactions
         typiques d'une équipe, l'ordre dans lequel les objections arrivent, les erreurs que commettent
         la plupart des directions. C'est cette connaissance du terrain qui rend un article utile, et
@@ -506,9 +520,13 @@ class ContentGenerator
       - Aucun appel à l'action commercial dans le corps du texte : la crédibilité fait le travail.
 
       FORMAT :
-      - 800 à 1200 mots.
-      - Structure en 4 à 6 sections, chacune introduite par un titre en markdown de niveau 2 (## Titre).
-        Le titre de section est une affirmation ou une question, jamais un mot seul ("## Méthode").
+      - 800 à 1100 mots. C'est un plafond, pas un objectif : un article plus court qui répond
+        mieux vaut toujours mieux qu'un article long qui délaye.
+      - 4 à 6 sections AU TOTAL, celle sur les coûts et la section finale comprises. Donc au plus
+        quatre sections de fond. Si le sujet comporte plus de points que de sections disponibles,
+        regroupe-les — n'ouvre pas une section par point. Dépasser six est un défaut, pas un zèle.
+      - Chaque section est introduite par un titre en markdown de niveau 2 (## Titre), qui est une
+        affirmation ou une question, jamais un mot seul ("## Méthode").
       - Ordre imposé : le constat, puis la méthode, puis ce que l'approche coûte, puis la dernière
         section qui donne quelque chose à faire. Ne place JAMAIS une section de méthode après celle
         sur les coûts — l'article se lit alors comme s'il repartait après sa fin.
@@ -534,10 +552,12 @@ class ContentGenerator
       ARTICLES DÉJÀ PUBLIÉS SUR LE SITE (tu peux y renvoyer) :
       #{lines.join("\n")}
 
-      Tu peux placer AU PLUS deux liens vers ces articles, au format markdown [texte du lien](/actus/12),
-      et uniquement là où le lien aide réellement le lecteur — quand tu effleures un sujet que l'un
-      d'eux traite en entier. Jamais de liste de liens en fin d'article, jamais de « lire aussi ».
-      Le texte du lien décrit ce qu'on y trouve, il ne dit pas « ici » ni « cet article ».
+      AVANT de rendre ta réponse, relis cette liste et confronte-la à ton texte : chaque fois que tu
+      effleures en une phrase un sujet que l'un de ces articles traite en entier, place un lien à cet
+      endroit, au format markdown [texte du lien](/actus/12). Deux liens au maximum. Si vraiment aucun
+      recoupement n'existe, n'en place aucun — mais cette vérification n'est pas facultative.
+      Jamais de liste de liens en fin d'article, jamais de « lire aussi ». Le texte du lien décrit ce
+      qu'on y trouve, il ne dit pas « ici » ni « cet article ».
     BLOCK
   end
 
