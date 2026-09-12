@@ -30,6 +30,14 @@ module ApplicationHelper
       "@id" => "#{CANONICAL_HOST}/#person",
       "name" => "Cyrille PIERRE",
       "jobTitle" => "Manager de transition et consultant en excellence opérationnelle",
+      # Un homonyme très référencé existe : l'ambassadeur de France auprès de l'OCDE. Cette
+      # propriété de schema.org est faite pour distinguer deux entités qui portent le même nom.
+      # On décrit CE Cyrille PIERRE de façon spécifique, sans jamais nommer l'autre.
+      "disambiguatingDescription" => "Consultant indépendant et manager de transition en " \
+                                     "industrie, basé à Lyon 4e. Ingénieur Arts et Métiers, " \
+                                     "20 ans en direction de production et d'opérations " \
+                                     "industrielles (agroalimentaire, pharmaceutique, " \
+                                     "microélectronique, métallurgie).",
       "description" => DEFAULT_DESCRIPTION,
       "url" => CANONICAL_HOST,
       "image" => "#{CANONICAL_HOST}/images/cyrille.jpg",

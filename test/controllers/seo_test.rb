@@ -93,6 +93,10 @@ class SeoTest < ActionDispatch::IntegrationTest
     assert_includes person["sameAs"], "https://www.linkedin.com/in/cyrille-pierre"
     assert_equal "Lyon", person["address"]["addressLocality"]
     assert_equal "Auvergne-Rhône-Alpes", person["address"]["addressRegion"]
+    # Un homonyme très référencé porte le même nom : la description distinctive est le signal
+    # prévu par schema.org pour que les moteurs ne confondent pas les deux personnes.
+    assert_includes person["disambiguatingDescription"], "manager de transition en industrie"
+    assert_includes person["disambiguatingDescription"], "Lyon 4e"
     assert_equal "Centaur Bike", service["legalName"]
     assert_equal "https://www.cyrillepierre.com/images/logo-cp.png", service["logo"]
     assert_equal person["@id"], service["founder"]["@id"]
