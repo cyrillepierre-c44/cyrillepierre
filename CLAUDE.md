@@ -157,7 +157,9 @@ dossier `public/`, manifeste compris — un nom ou une icône corrigés n'atteig
 téléphone ayant déjà installé le site. La route lui donne une heure de cache, et `seo_test.rb`
 échoue si quelqu'un le remet dans `public/`. Corollaire : **les icônes portent un suffixe de
 version** (`-v3`), puisqu'elles, elles restent dans `public/` avec le cache d'un an — changer leur
-contenu sans changer leur nom ne sert à rien. Toutes les
+contenu sans changer leur nom ne sert à rien. Les adresses sans suffixe (`icon-192.png`,
+`icon-512.png`) sont **conservées en doublon du contenu à jour** : des appareils gardent en cache,
+pour un an, l'ancien manifeste statique qui les désignait, et un 404 leur donnerait une icône vide. Toutes les
 icônes dérivent d'un seul maître, `public/images/logo-cp.png` (1024×1024) : `icon.png` (96),
 `icon-192`, `icon-512` gardent les coins arrondis et la transparence ; `apple-touch-icon-v3` et
 `icon-maskable-512` sont à **fond plein**, car iOS et Android appliquent leur propre masque et des
