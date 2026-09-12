@@ -365,7 +365,8 @@ class ContentGeneratorTest < ActiveSupport::TestCase
 
     run_generator(record, context)
 
-    assert_not_includes context.draft_chat.instructions, "/actus/#{record.id}"
+    # Le prompt contient un exemple de lien « /actus/12 » : on vise la ligne de la liste, pas le texte.
+    assert_not_includes context.draft_chat.instructions, "→ /actus/#{record.id}"
   end
 
   # Les pages de fond sont les cibles les plus stables : elles restent offertes même quand rien

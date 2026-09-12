@@ -169,6 +169,14 @@ prudence » — après le masque d'Android, il n'en restait qu'un CP minuscule p
 C'est l'icône masquable qu'Android choisit pour l'écran d'accueil, donc elle décide du rendu. `seo_test.rb` vérifie que chaque icône déclarée existe et
 a réellement la taille annoncée — l'ancien manifeste en annonçait une de 512 qui en faisait 64.
 
+**Balisage schema.org** : les trois constructeurs vivent dans `app/services/structured_data.rb`,
+pas dans `ApplicationHelper` — sortis le 12/09/2026 parce que leur poids faisait dépasser
+`Metrics/ModuleLength` dès la ligne suivante ajoutée. Le helper ré-expose `CANONICAL_HOST` et
+`DEFAULT_DESCRIPTION` pour que gabarits et tests continuent de les nommer là.
+`Person#disambiguatingDescription` est **volontaire** : un homonyme très référencé existe
+(l'ambassadeur de France auprès de l'OCDE), et c'est la propriété que schema.org prévoit pour
+distinguer deux entités de même nom. Ne pas la retirer, et ne jamais y nommer l'autre personne.
+
 **Ancrage géographique** : une requête « métier + ville » cherche un professionnel situé quelque
 part. Avant le 11/09/2026, « Lyon » n'apparaissait qu'**une fois** par page de service — celle du
 pied de page — et la région nulle part : d'où une 8ᵉ page de résultats sur « consultant en
