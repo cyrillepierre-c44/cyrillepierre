@@ -151,6 +151,16 @@ la page. Un rendu markdown complet accepterait le HTML brut et rouvrirait cette 
 retrouvaient. La page de détail du Studio affiche un aperçu rendu et le nombre de mots : une
 actu non publiée renvoie 404 sur `/actus`, il faudrait sinon publier pour relire la structure.
 
+⚠️ **Icônes et manifeste PWA** : le manifeste servi est **`public/manifest.json`**, un fichier
+statique. Les vues `app/views/pwa/` du squelette Rails n'étaient routées nulle part et ont été
+supprimées le 12/09/2026 — leur présence avait déjà fait modifier le mauvais fichier. Toutes les
+icônes dérivent d'un seul maître, `public/images/logo-cp.png` (1024×1024) : `icon.png` (96),
+`icon-192`, `icon-512` gardent les coins arrondis et la transparence ; `apple-touch-icon-v3` et
+`icon-maskable-512` sont à **fond plein**, car iOS et Android appliquent leur propre masque et des
+coins transparents y ressortiraient en noir. La version maskable place le logo à 70 % pour tenir
+dans la zone sûre circulaire d'Android. `seo_test.rb` vérifie que chaque icône déclarée existe et
+a réellement la taille annoncée — l'ancien manifeste en annonçait une de 512 qui en faisait 64.
+
 **Ancrage géographique** : une requête « métier + ville » cherche un professionnel situé quelque
 part. Avant le 11/09/2026, « Lyon » n'apparaissait qu'**une fois** par page de service — celle du
 pied de page — et la région nulle part : d'où une 8ᵉ page de résultats sur « consultant en

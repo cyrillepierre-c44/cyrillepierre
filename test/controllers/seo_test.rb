@@ -94,6 +94,7 @@ class SeoTest < ActionDispatch::IntegrationTest
     assert_equal "Lyon", person["address"]["addressLocality"]
     assert_equal "Auvergne-Rhône-Alpes", person["address"]["addressRegion"]
     assert_equal "Centaur Bike", service["legalName"]
+    assert_equal "https://www.cyrillepierre.com/images/logo-cp.png", service["logo"]
     assert_equal person["@id"], service["founder"]["@id"]
   end
 
@@ -157,5 +158,37 @@ class SeoTest < ActionDispatch::IntegrationTest
       description = css_select("meta[name='description']").first["content"]
       assert_includes description, "Lyon", "la description de #{path} devrait situer Cyrille"
     end
+  end
+  # Le manifeste était resté celui du squelette Rails : un nom de projet, une description vide
+  # de sens, deux fois la même icône déclarée en 512 alors qu'elle en faisait 64, et un écran
+  # de démarrage ROUGE sur un site bleu nuit.
+  test "the installed app carries the brand, not the Rails scaffold" do
+    get "/manifest.json"
+
+    manifest = JSON.parse(@response.body)
+    assert_equal "Cyrille PIERRE", manifest["short_name"]
+    assert_equal "#050a15", manifest["theme_color"]
+    assert_equal "#050a15", manifest["background_color"]
+    assert_includes manifest["description"], "Lyon"
+  end
+
+  test "every declared icon exists and really has the declared size" do
+    require "digest"
+    get "/manifest.json"
+
+    JSON.parse(@response.body)["icons"].each do |icon|
+      path = Rails.root.join("public", icon["src"].delete_prefix("/"))
+      assert path.exist?, "#{icon['src']} est déclarée mais absente"
+      width = path.binread(24)[16, 4].unpack1("N")
+      assert_equal icon["sizes"].split("x").first.to_i, width, "#{icon['src']} n'a pas la taille déclarée"
+    end
+  end
+
+  test "one icon is maskable, cropped safely by Android" do
+    get "/manifest.json"
+
+    purposes = JSON.parse(@response.body)["icons"].map { |i| i["purpose"] }
+    assert_includes purposes, "maskable"
+    assert_includes purposes, "any"
   end
 end

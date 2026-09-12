@@ -59,6 +59,9 @@ module ApplicationHelper
       "@id" => "#{CANONICAL_HOST}/#service",
       "name" => "Cyrille PIERRE — Management de transition et excellence opérationnelle",
       "legalName" => "Centaur Bike",
+      # C'est ce que Google lit pour afficher une vignette de marque à côté du nom.
+      "logo" => "#{CANONICAL_HOST}/images/logo-cp.png",
+      "image" => "#{CANONICAL_HOST}/images/logo-cp.png",
       "url" => CANONICAL_HOST,
       "founder" => { "@id" => "#{CANONICAL_HOST}/#person" },
       "email" => "cyrille.pierre@gmail.com",

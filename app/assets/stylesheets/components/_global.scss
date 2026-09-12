@@ -199,15 +199,13 @@ section.py-5 {
 // ============================================================
 // Brand Logo Mark
 // ============================================================
+// Image depuis le 12/09/2026, plus un « CP » dessiné en CSS : le pied de page et l'icône de
+// l'application affichaient deux marques différentes, dégradé et blanc d'un côté, bleu nuit et
+// cyan de l'autre.
 .brand-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--cp-gradient);
-  border-radius: 8px;
-  font-family: $headers-font;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.03em;
-  text-decoration: none;
+  display: inline-block;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  vertical-align: middle;
 }
