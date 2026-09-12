@@ -8,7 +8,10 @@ class PwaController < ApplicationController
   def manifest
     expires_in MANIFEST_CACHE, public: true
     render json: {
-      name: "Cyrille PIERRE — Manager de transition",
+      # `name` est la phrase de la boîte d'installation : « Installer … ». Une accroche
+      # commerciale y sonne comme une publicité système ; le nom seul se lit comme une
+      # application ordinaire. L'accroche reste sur le site, à sa place.
+      name: "Cyrille PIERRE",
       short_name: "Cyrille PIERRE",
       description: "Manager de transition et consultant en excellence opérationnelle, basé à Lyon.",
       start_url: "/",

@@ -167,6 +167,8 @@ class SeoTest < ActionDispatch::IntegrationTest
 
     manifest = JSON.parse(@response.body)
     assert_equal "Cyrille PIERRE", manifest["short_name"]
+    # La boîte d'installation affiche `name` : « Installer Cyrille PIERRE », pas une accroche.
+    assert_equal "Cyrille PIERRE", manifest["name"]
     assert_equal "#050a15", manifest["theme_color"]
     assert_equal "#050a15", manifest["background_color"]
     assert_includes manifest["description"], "Lyon"
