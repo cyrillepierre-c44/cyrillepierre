@@ -172,8 +172,17 @@ class SeoTest < ActionDispatch::IntegrationTest
     assert_includes manifest["description"], "Lyon"
   end
 
+  # Servi depuis public/, le manifeste héritait d'un cache d'un an : un nom corrigé n'atteignait
+  # jamais un téléphone qui avait déjà installé le site.
+  test "the manifest can actually be refetched" do
+    get "/manifest.json"
+
+    assert_response :success
+    max_age = @response.headers["Cache-Control"][/max-age=(\d+)/, 1].to_i
+    assert max_age <= 1.day.to_i, "le manifeste est caché #{max_age} s, il ne se rafraîchira jamais"
+  end
+
   test "every declared icon exists and really has the declared size" do
-    require "digest"
     get "/manifest.json"
 
     JSON.parse(@response.body)["icons"].each do |icon|
