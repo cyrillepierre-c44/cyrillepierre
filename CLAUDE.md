@@ -163,8 +163,10 @@ pour un an, l'ancien manifeste statique qui les désignait, et un 404 leur donne
 icônes dérivent d'un seul maître, `public/images/logo-cp.png` (1024×1024) : `icon.png` (96),
 `icon-192`, `icon-512` gardent les coins arrondis et la transparence ; `apple-touch-icon-v3` et
 `icon-maskable-512` sont à **fond plein**, car iOS et Android appliquent leur propre masque et des
-coins transparents y ressortiraient en noir. La version maskable place le logo à 70 % pour tenir
-dans la zone sûre circulaire d'Android. `seo_test.rb` vérifie que chaque icône déclarée existe et
+coins transparents y ressortiraient en noir. La version maskable est à taille RÉELLE (v4) : les lettres n'occupent
+que 67 % de la largeur et tiennent donc dans la zone sûre de 80 %. La v3 les réduisait à 70 % « par
+prudence » — après le masque d'Android, il n'en restait qu'un CP minuscule perdu dans un disque.
+C'est l'icône masquable qu'Android choisit pour l'écran d'accueil, donc elle décide du rendu. `seo_test.rb` vérifie que chaque icône déclarée existe et
 a réellement la taille annoncée — l'ancien manifeste en annonçait une de 512 qui en faisait 64.
 
 **Ancrage géographique** : une requête « métier + ville » cherche un professionnel situé quelque
