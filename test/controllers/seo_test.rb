@@ -90,7 +90,10 @@ class SeoTest < ActionDispatch::IntegrationTest
     service = graph.find { |node| node["@type"] == "ProfessionalService" }
 
     assert_equal "Cyrille PIERRE", person["name"]
+    # Les deux profils extérieurs : c'est le seul lien machine entre le site et des plateformes
+    # bien plus anciennes et mieux classées que lui.
     assert_includes person["sameAs"], "https://www.linkedin.com/in/cyrille-pierre"
+    assert_includes person["sameAs"], "https://www.malt.fr/profile/cyrillepierre"
     assert_equal "Lyon", person["address"]["addressLocality"]
     assert_equal "Auvergne-Rhône-Alpes", person["address"]["addressRegion"]
     # Un homonyme très référencé porte le même nom : la description distinctive est le signal
@@ -100,6 +103,15 @@ class SeoTest < ActionDispatch::IntegrationTest
     assert_equal "Centaur Bike", service["legalName"]
     assert_equal "https://www.cyrillepierre.com/images/logo-cp.png", service["logo"]
     assert_equal person["@id"], service["founder"]["@id"]
+  end
+
+  # Un lecteur doit pouvoir suivre le même chemin qu'un moteur : les deux profils extérieurs
+  # déclarés dans le balisage sont aussi cliquables, en pied de page, sur toutes les pages.
+  test "the footer points to both external profiles" do
+    get root_path
+
+    assert_select "footer a[href=?]", "https://www.linkedin.com/in/cyrille-pierre"
+    assert_select "footer a[href=?]", "https://www.malt.fr/profile/cyrillepierre"
   end
 
   test "an actu is marked up as an article" do

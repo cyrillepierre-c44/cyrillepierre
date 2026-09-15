@@ -27,7 +27,13 @@ module StructuredData
       "image" => "#{HOST}/images/cyrille.jpg",
       "email" => "cyrille.pierre@gmail.com",
       "telephone" => "+33618022452",
-      "sameAs" => ["https://www.linkedin.com/in/cyrille-pierre"],
+      # Les profils extérieurs qui décrivent la même personne. C'est ce qui relie le site à une
+      # plateforme bien plus ancienne et bien mieux classée que lui : sans ce lien, un moteur voit
+      # deux pages sans rapport. N'y mettre qu'une adresse publique et vérifiée.
+      "sameAs" => [
+        "https://www.linkedin.com/in/cyrille-pierre",
+        "https://www.malt.fr/profile/cyrillepierre"
+      ],
       "alumniOf" => { "@type" => "CollegeOrUniversity", "name" => "Arts et Métiers ParisTech" },
       "address" => {
         "@type" => "PostalAddress",
