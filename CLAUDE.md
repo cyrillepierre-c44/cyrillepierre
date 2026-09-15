@@ -377,6 +377,18 @@ Fonctionnalités :
 
 **`<select>` sombres** : `.cf-input option` (`app/assets/stylesheets/pages/_contact.scss`) force un fond sombre opaque sur les `<option>` : le champ `<select>` a un fond quasi-transparent qui passe bien à l'écran, mais certains navigateurs rendent le menu déroulant natif avec un fond clair par défaut tout en gardant notre texte clair hérité — illisible sans ce correctif.
 
+⚠️ **Pied de page réduit au-dessus de 992 px, jamais supprimé** : sur grand écran la pagination
+de section fait office de fin de page, donc `_footer.scss` masque les trois colonnes et ne garde
+que la ligne basse. De mai à septembre 2026 il masquait le pied **entier** : les mentions légales
+et la politique de confidentialité, ajoutées entre-temps, n'étaient alors atteignables à la souris
+sur **aucune** page de bureau, ce qu'exige pourtant la loi. Les profils extérieurs (LinkedIn, Malt)
+sont repris dans cette ligne via `.footer-copy-profiles`, faute de colonne pour les porter.
+Corollaire : `pages_controller_test.rb` vérifie la **présence du balisage**, pas sa visibilité —
+aucun test Rails ne voit le CSS, c'est pourquoi la régression a tenu quatre mois. Toute règle qui
+masque une partie du pied se vérifie donc à l'œil, dans un navigateur large.
+Piège de cascade au passage : `.footer-copy-profiles` est déclaré masqué **avant** la media query,
+les deux sélecteurs ayant la même spécificité, c'est l'ordre qui tranche.
+
 **Flash messages** : `data-controller="flash"` (`app/javascript/controllers/flash_controller.js`) sur `.alert-flash-notice`/`.alert-flash-alert` (`app/views/layouts/application.html.erb`) — disparition automatique après 4s (`durationValue`), avant ça le message restait affiché jusqu'à la prochaine navigation.
 
 **Studio mobile** (`app/assets/stylesheets/pages/_studio.scss`, breakpoint `680px`) : boutons/formulaires en pleine largeur et empilés en colonne sous 680px (`.studio-actions`, `.studio-list-item`, `.studio-regenerate-form`...) — les badges et boutons ont des tailles très différentes par nature (pastille vs bouton plein), les mélanger dans une même ligne sur petit écran donnait un rendu incohérent.

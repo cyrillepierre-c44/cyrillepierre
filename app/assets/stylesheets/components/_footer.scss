@@ -4,7 +4,26 @@
   padding: 2rem 0 1.5rem;
   margin-top: 1.5rem;
 
-  @media (min-width: 992px) { display: none; }
+  // Repris de la colonne de droite sur grand écran, où celle-ci n'existe plus. Déclaré AVANT
+  // la media query : les deux sélecteurs ont la même spécificité, donc c'est l'ordre qui tranche.
+  .footer-copy-profiles { display: none; }
+
+  // Sur grand écran, la pagination de section joue le rôle de fin de page et le pied complet
+  // alourdirait le rythme. On n'en garde donc que la ligne basse — mais on la GARDE : les
+  // mentions légales doivent rester accessibles depuis toutes les pages, et de mai à septembre
+  // 2026 le pied entier était masqué au-dessus de 992 px, donc aucun lien légal n'était
+  // atteignable à la souris. Les profils extérieurs y remontent, faute de colonne pour les porter.
+  @media (min-width: 992px) {
+    background: transparent;
+    border-top: none;
+    padding: 0.5rem 0 1.25rem;
+    margin-top: 0;
+
+    .row,
+    .footer-hr { display: none; }
+
+    .footer-copy-profiles { display: inline; }
+  }
 
   .brand-logo {
     width: 36px;
