@@ -56,6 +56,11 @@ verrouille l'ensemble, y compris le fait que deux pages ne partagent pas une des
 
 **Security CI steps** : `.github/workflows/ci.yml` rejoue sur chaque push et PR les étapes de `config/ci.rb` (RuboCop, Brakeman, bundler-audit, audit importmap, tests, seeds). Reproduire les échecs en local avec `CI=1 bin/rails test` (eager loading).
 
+⚠️ **Lire le verdict, pas la présence d'un résumé** : chaîner les vérifications avant un commit
+avec `;` laisse passer un échec, et `grep` sur la seule ligne « runs, assertions » la trouve même
+quand elle annonce des échecs. Enchaîner avec `&&` et exiger la mention exacte
+`0 failures, 0 errors` — sinon un commit part avec la suite rouge, ce qui est arrivé le 15/09/2026.
+
 ⚠️ **Piège Brakeman** : le binstub `bin/brakeman` généré par Rails ajoute `--ensure-latest`, qui fait sortir Brakeman en **code 5 dès qu'une version plus récente du gem est publiée**, sans aucun avertissement de sécurité. La CI utilise donc `bundle exec brakeman` — sinon elle passe au rouge un matin sans qu'une ligne de code ait bougé.
 
 **Rate limiting** : `rack-attack` (`config/initializers/rack_attack.rb`) protège les endpoints `/contact/chat`, `/contact/summarize`, `/contact/infer_company`, qui déclenchent chacun un appel Mammouth **payant** — c'est un garde-fou de facturation autant que de sécurité. En production le compteur s'appuie sur `Rails.cache` (solid_cache, qui gère bien `increment`).
@@ -365,5 +370,12 @@ Fonctionnalités :
 **Flash messages** : `data-controller="flash"` (`app/javascript/controllers/flash_controller.js`) sur `.alert-flash-notice`/`.alert-flash-alert` (`app/views/layouts/application.html.erb`) — disparition automatique après 4s (`durationValue`), avant ça le message restait affiché jusqu'à la prochaine navigation.
 
 **Studio mobile** (`app/assets/stylesheets/pages/_studio.scss`, breakpoint `680px`) : boutons/formulaires en pleine largeur et empilés en colonne sous 680px (`.studio-actions`, `.studio-list-item`, `.studio-regenerate-form`...) — les badges et boutons ont des tailles très différentes par nature (pastille vs bouton plein), les mélanger dans une même ligne sur petit écran donnait un rendu incohérent.
+
+⚠️ **`studio-btn-danger` et `studio-btn-success` sont des modificateurs, pas des boutons** :
+ils ne posent qu'une couleur de texte et de bordure, et doivent toujours accompagner la classe de
+base `btn-cp-outline` (`components/_global.scss`), qui porte la forme, les marges et le rayon.
+Employé seul sur le bouton Supprimer d'un prospect, le modificateur donnait un lien nu au milieu de
+deux boutons dessinés — sans aucune erreur, le CSS s'appliquant parfaitement. Le test du contrôleur
+verrouille la paire de classes.
 
 **Bouton Copier** : icône seule (`fa-regular fa-copy`, classe `.studio-icon-btn`) superposée en haut à droite de la zone de texte concernée (`.studio-icon-btn--overlay`, le conteneur passe en `position: relative` via `.studio-output-box` ou `.studio-linkedin-preview`) plutôt qu'un bouton texte séparé en dessous — variante `--light` pour la carte blanche de l'aperçu LinkedIn. `studio_clipboard_controller.js` utilise `innerHTML` (pas `textContent`) pour le feedback "✓ copié", sinon l'icône `<i>` est détruite au moment de la restauration.
