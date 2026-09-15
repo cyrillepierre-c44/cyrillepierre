@@ -1,6 +1,17 @@
 # Publishes a Generation's LinkedIn post (text + optional visual) directly to the connected
 # user's LinkedIn profile, via LinkedIn's Posts API.
 class LinkedinPublisher
+  # Le champ `commentary` de l'API attend le « little text format » de LinkedIn, où ces caractères
+  # sont réservés. Non échappés, ils ne provoquent aucune erreur : LinkedIn accepte la requête,
+  # publie le post, et jette silencieusement TOUT ce qui suit le premier d'entre eux. Un post
+  # s'est ainsi retrouvé coupé net sur une parenthèse ouvrante, avant son lien et sa question
+  # finale, sans que rien ne le signale.
+  # Le dièse est volontairement ABSENT de cette liste : échappé, un hashtag deviendrait du texte
+  # ordinaire et perdrait son lien. Le prompt les place en toute fin de post, donc si LinkedIn
+  # butait malgré tout dessus, seuls les hashtags seraient perdus — le lien et la question, eux,
+  # sont déjà passés. Le risque est borné et se verrait immédiatement.
+  LITTLE_TEXT_RESERVED = ["\\", "|", "{", "}", "@", "[", "]", "(", ")", "<", ">", "*", "_", "~"].freeze
+
   API_BASE = "https://api.linkedin.com"
   # LinkedIn deprecates API versions after ~12 months — bump this at least once a year
   # (format YYYYMM, current month is generally safe).
@@ -44,10 +55,16 @@ class LinkedinPublisher
     }
   end
 
+  def escape_little_text(text)
+    # La barre oblique inverse d'abord, sinon on échapperait les échappements ajoutés ensuite.
+    # Forme à bloc obligatoire : dans une chaîne de remplacement, gsub interprète « \\ ».
+    LITTLE_TEXT_RESERVED.reduce(text.to_s) { |acc, char| acc.gsub(char) { "\\#{char}" } }
+  end
+
   def post_body(image_urn)
     body = {
       author: author_urn,
-      commentary: LinkedinTextFormatter.call(generation.output),
+      commentary: escape_little_text(LinkedinTextFormatter.call(generation.output)),
       visibility: "PUBLIC",
       distribution: { feedDistribution: "MAIN_FEED" },
       lifecycleState: "PUBLISHED",

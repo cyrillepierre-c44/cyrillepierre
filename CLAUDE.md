@@ -302,6 +302,16 @@ OAuth2 (`LinkedinAuthController#connect`/`callback`/`disconnect`, hors namespace
 
 `LinkedinPublisher` (`app/services/linkedin_publisher.rb`) publie le texte (`LinkedinTextFormatter.call`, donc avec le gras Unicode comme dans l'aperçu) et le visuel attaché s'il y en a un, via `/rest/posts` + `/rest/images`. Points à surveiller :
 - `LINKEDIN_VERSION` (header `LinkedIn-Version`, format YYYYMM) se périme après ~12 mois → erreur 426 "version not active". À rafraîchir au moins une fois par an.
+- ⚠️ **Le champ `commentary` attend le « little text format »** : `( ) [ ] { } < > @ | ~ _ * \` y sont
+  réservés. Non échappés, ils ne déclenchent **aucune erreur** — LinkedIn accepte la requête, publie
+  le post, et jette silencieusement tout ce qui suit le premier d'entre eux. Un post du 15/09/2026
+  s'est ainsi retrouvé coupé net sur une parenthèse ouvrante, avant son lien et sa question finale.
+  `LinkedinPublisher#escape_little_text` s'en charge, et l'échappement vit dans le **publisher**, pas
+  dans `LinkedinTextFormatter` : le formateur sert aussi l'aperçu du Studio, où des barres obliques
+  n'auraient rien à faire. Le **dièse est volontairement exclu** de la liste — l'échapper ferait
+  perdre le lien du hashtag, et comme le prompt les place en toute fin de post, le risque résiduel
+  se limite aux hashtags eux-mêmes. Attention au piège `gsub` : la forme à bloc est obligatoire,
+  une chaîne de remplacement interprétant `\\`.
 - L'upload d'image (`PUT` vers l'`uploadUrl` retournée par `initializeUpload`) **exige** l'en-tête `Content-Type: application/octet-stream`, sinon 400 silencieux côté LinkedIn — la réponse du `PUT` doit être vérifiée explicitement (bug déjà rencontré : post créé en référençant une image jamais réellement envoyée, LinkedIn retire alors le post après coup).
 - L'image uploadée est traitée de façon asynchrone (PROCESSING → AVAILABLE) — `wait_for_image_ready` poll brièvement `/rest/images/{id}`, avec repli sur une attente fixe si l'endpoint n'est pas accessible avec nos scopes (`w_member_social`/`openid`/`profile` ne donnent pas accès en lecture aux posts/images, juste en création).
 - L'URN du post créé (header `x-restli-id` de la réponse) est stocké dans `linkedin_post_urn` → `Generation#linkedin_post_url` construit le permalien public (`https://www.linkedin.com/feed/update/{urn}/`), affiché comme lien "voir le post" après publication. Sans ça, aucun moyen de vérifier après coup qu'un post a bien été créé (pas de droit de lecture via l'API).
