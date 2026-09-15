@@ -28,6 +28,12 @@
     <%= javascript_importmap_tags %>
     <%= structured_data_tag("@context" => "https://schema.org",
                             "@graph" => [person_schema, professional_service_schema]) %>
+    <%# Sans JavaScript, les blocs `.reveal` resteraient à opacité nulle : tout le contenu des
+        pages de fond disparaîtrait alors qu'il est présent dans le HTML. `style-src` autorise
+        l'inline, cette balise n'a donc pas besoin de nonce. %>
+    <noscript>
+      <style>.reveal { opacity: 1; transform: none; }</style>
+    </noscript>
     <%= yield :head %>
   </head>
 

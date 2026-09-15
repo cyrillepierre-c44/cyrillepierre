@@ -377,6 +377,16 @@ Fonctionnalités :
 
 **`<select>` sombres** : `.cf-input option` (`app/assets/stylesheets/pages/_contact.scss`) force un fond sombre opaque sur les `<option>` : le champ `<select>` a un fond quasi-transparent qui passe bien à l'écran, mais certains navigateurs rendent le menu déroulant natif avec un fond clair par défaut tout en gardant notre texte clair hérité — illisible sans ce correctif.
 
+⚠️ **`.reveal` cache le contenu tant que le JavaScript n'a pas tourné** : la classe part à
+`opacity: 0` et n'est révélée que par `reveal_controller.js` via un `IntersectionObserver`. Elle
+porte l'essentiel du contenu de l'accueil, des trois pages de fond, des réalisations et des deux
+partiels `_zone`/`_related`. Si Stimulus ne démarre pas — régression CSP, importmap cassée — ces
+pages s'affichent **vides** alors que le HTML est complet. Deux filets depuis le 15/09/2026 : un
+`<noscript>` dans le layout (`style-src` autorise l'inline, pas besoin de nonce) et une règle
+`prefers-reduced-motion: reduce`. Ne jamais poser `.reveal` sur un bloc sans vérifier que l'un des
+deux le rattrape. C'est le même piège que le pied de page ci-dessous : le balisage est là, les
+tests le voient, et pourtant l'écran est vide.
+
 ⚠️ **Pied de page réduit au-dessus de 992 px, jamais supprimé** : sur grand écran la pagination
 de section fait office de fin de page, donc `_footer.scss` masque les trois colonnes et ne garde
 que la ligne basse. De mai à septembre 2026 il masquait le pied **entier** : les mentions légales
