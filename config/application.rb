@@ -29,6 +29,14 @@ module Cyrillepierre
     #
     config.time_zone = "Paris"
 
+    # Cloudinary réencode les images au dépôt : le fichier qu'il rend n'est pas celui qu'on lui a
+    # confié (662 017 octets envoyés, 1 172 863 servis, checksums différents). ActiveStorage::AnalyzeJob
+    # télécharge la pièce jointe pour en extraire les métadonnées, vérifie le checksum et lève donc
+    # systématiquement ActiveStorage::IntegrityError sur chaque visuel généré. Rien dans l'application
+    # n'utilise ces métadonnées — ni variante, ni dimension — l'analyse est donc désactivée plutôt que
+    # de laisser une tâche échouer à chaque image.
+    config.active_storage.analyzers = []
+
     # Reprend les livraisons perdues sur un incident réseau SMTP (voir MailDeliveryJob).
     # Déclaré ici et pas dans production.rb pour que la suite de tests couvre la même classe.
     config.action_mailer.delivery_job = "MailDeliveryJob"

@@ -84,6 +84,15 @@ La CSP est **levée sur la seule page `/cv`** (`content_security_policy false, o
 
 **Auth & authorization**: Devise (`User` model, registrations disabled — comptes créés via `rails c`/seeds) + Pundit (`ApplicationPolicy`, `GenerationPolicy`). `User` a un `role` enum (`editor`/`admin`). `ApplicationController` inclut `Pundit::Authorization` et rescue `Pundit::NotAuthorizedError` en redirigeant avec une alerte. Un `after_action :verify_pundit_authorization` global garantit qu'aucune action du Studio ne passe sans contrôle : callback unique qui dispatche sur `action_name` (`verify_policy_scoped` pour `index`, `verify_authorized` sinon), **sans `only:`/`except:`** — la variante `except: :index` casse dès qu'un controller n'a pas d'action `index`, `raise_on_missing_callback_actions` étant actif en test. `skip_pundit?` limite la vérification aux controllers sous `studio/` (les pages publiques et Devise n'ont rien à autoriser).
 
+⚠️ **Analyse Active Storage désactivée** (`config.active_storage.analyzers = []`) : Cloudinary
+**réencode** les images au dépôt et rend un fichier différent de celui reçu — mesuré le 15/09/2026
+sur un visuel généré, 662 017 octets envoyés contre 1 172 863 servis, checksums différents.
+`ActiveStorage::AnalyzeJob` télécharge la pièce jointe, vérifie le checksum et lève donc
+`ActiveStorage::IntegrityError` sur **chaque** visuel. Rien dans l'application n'utilise ces
+métadonnées, ni variante ni dimension : l'analyse est coupée plutôt que de laisser une tâche
+échouer à chaque image. À rouvrir si un jour une variante devient nécessaire — il faudra alors
+regarder du côté de Cloudinary, pas d'Active Storage.
+
 **Stockage (Active Storage)** : service `:cloudinary` en production (`config/environments/production.rb`) — le disque Heroku est éphémère, `:local` perdait les fichiers à chaque redéploiement/restart. Le gem officiel `cloudinary` fournit `ActiveStorage::Service::CloudinaryService` et lit `CLOUDINARY_URL` automatiquement (rien à dupliquer dans `config/storage.yml`, juste `service: Cloudinary`). En développement, `:cloudinary` si `CLOUDINARY_URL` est présente dans `.env`, sinon fallback `:local` ; `test` reste toujours sur `:local`/`Disk` (pas de dépendance réseau dans la suite).
 
 **Mailer** : `config.action_mailer.default_url_options` doit utiliser `cyrillepierre.com` (pas `.fr`) en production — erreur déjà corrigée une fois, à ne pas réintroduire.
