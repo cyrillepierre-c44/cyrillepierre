@@ -5,6 +5,12 @@ class UserTest < ActiveSupport::TestCase
     User.new({ email: "user@example.com", password: "password123" }.merge(attrs))
   end
 
+  # Toutes les échéances ci-dessous sont relatives à maintenant, et `linkedin_days_remaining`
+  # compare des DATES, pas des instants. Sans horloge figée, « dans 2 heures » bascule au
+  # lendemain dès 22 h à Paris et le compte passe de 0 à 1 : la suite échouait donc chaque soir,
+  # en local comme en CI. Midi met tous les calculs loin des deux bornes de la journée.
+  setup { travel_to Time.zone.local(2026, 6, 15, 12, 0, 0) }
+
   test "defaults to the editor role" do
     user = build_user
     assert user.editor?

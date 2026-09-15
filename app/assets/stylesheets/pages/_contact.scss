@@ -15,6 +15,18 @@
   }
 }
 
+.cf-noscript {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+
+  a { color: var(--cp-accent); }
+}
+
 .cf-hero-sub {
   color: var(--cp-muted);
   font-size: 1.1rem;

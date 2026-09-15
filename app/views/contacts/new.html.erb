@@ -16,6 +16,17 @@
 
 <div class="cf-wrapper">
   <div class="container">
+    <%# Tout le parcours du formulaire est piloté par Stimulus : sans JavaScript, la conversation
+        ne démarre jamais et le bouton d'envoi reste désactivé. On donne donc l'adresse en clair
+        plutôt que de laisser un visiteur devant un formulaire qui ne peut pas aboutir. %>
+    <noscript>
+      <div class="cf-noscript">
+        <strong>Ce formulaire a besoin de JavaScript</strong> pour dérouler la conversation avec
+        l'assistant. Écrivez-moi directement à
+        <a href="mailto:cyrille.pierre@gmail.com">cyrille.pierre@gmail.com</a>, en décrivant votre
+        situation et votre échéance. Je réponds sous 24 h.
+      </div>
+    </noscript>
     <%= form_with url: contact_path, method: :post,
         data: { controller: "contact-chat", turbo: false } do %>
 

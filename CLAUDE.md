@@ -56,6 +56,13 @@ verrouille l'ensemble, y compris le fait que deux pages ne partagent pas une des
 
 **Security CI steps** : `.github/workflows/ci.yml` rejoue sur chaque push et PR les étapes de `config/ci.rb` (RuboCop, Brakeman, bundler-audit, audit importmap, tests, seeds). Reproduire les échecs en local avec `CI=1 bin/rails test` (eager loading).
 
+⚠️ **Horloge figée dans les tests d'échéance LinkedIn** : `User#linkedin_days_remaining` compare
+des **dates**, pas des instants. Les tests posaient une échéance « dans 2 heures », qui bascule au
+lendemain dès 22 h à Paris : deux d'entre eux échouaient donc tous les soirs, en local comme en CI,
+et passaient au vert le reste du temps — c'est la flakiness observée le 15/09/2026. `user_test.rb`
+et `application_helper_test.rb` figent l'horloge à midi (`travel_to`). Tout nouveau test d'échéance
+doit faire de même.
+
 ⚠️ **Lire le verdict, pas la présence d'un résumé** : chaîner les vérifications avant un commit
 avec `;` laisse passer un échec, et `grep` sur la seule ligne « runs, assertions » la trouve même
 quand elle annonce des échecs. Enchaîner avec `&&` et exiger la mention exacte
