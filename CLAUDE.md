@@ -201,6 +201,16 @@ et `professional_service_schema` déclare `areaServed` ville → région → pay
 « France ». Le levier le plus fort reste hors du site : une **fiche d'établissement Google**, qui
 n'existe pas encore.
 
+**Profils extérieurs (`sameAs`)** : le `Person` déclare LinkedIn et le profil Malt
+(`https://www.malt.fr/profile/cyrillepierre`, public depuis le 15/09/2026). C'est le seul signal
+qui dise à un moteur que ces pages décrivent la même personne, et Malt est bien plus ancien et
+mieux classé que le site. N'y déclarer qu'une adresse **publique et vérifiée** : un profil encore
+en validation renvoie une page que Google ne lit pas. Les deux profils sont repris en pied de page,
+mais **jamais dans la barre de navigation** : la valeur de Malt est entrante, et envoyer un visiteur
+déjà sur le site vers une plateforme à commission lui fait quitter le formulaire de contact, donc
+le pipeline prospect. `seo_test.rb` verrouille les deux adresses, dans le balisage et dans le pied
+de page.
+
 **Maillage interne** : `ContentGenerator::SITE_PAGES` liste les cinq pages de fond, cibles de lien
 les plus stables (leur adresse ne bouge pas, contrairement à celle d'un article dépublié). Le bloc
 est transmis aux prompts **article et brève** — une brève est une page comme une autre et doit mener
