@@ -382,7 +382,9 @@ de section fait office de fin de page, donc `_footer.scss` masque les trois colo
 que la ligne basse. De mai à septembre 2026 il masquait le pied **entier** : les mentions légales
 et la politique de confidentialité, ajoutées entre-temps, n'étaient alors atteignables à la souris
 sur **aucune** page de bureau, ce qu'exige pourtant la loi. Les profils extérieurs (LinkedIn, Malt)
-sont repris dans cette ligne via `.footer-copy-profiles`, faute de colonne pour les porter.
+sont repris dans cette ligne via `.footer-copy-profiles`, faute de colonne pour les porter — et
+ce `<span>` est masqué **sous** 992 px, sinon le mobile les afficherait deux fois, la colonne de
+droite les portant déjà.
 Corollaire : `pages_controller_test.rb` vérifie la **présence du balisage**, pas sa visibilité —
 aucun test Rails ne voit le CSS, c'est pourquoi la régression a tenu quatre mois. Toute règle qui
 masque une partie du pied se vérifie donc à l'œil, dans un navigateur large.
