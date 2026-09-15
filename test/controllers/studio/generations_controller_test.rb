@@ -2,6 +2,8 @@ require "test_helper"
 
 module Studio
   class GenerationsControllerTest < ActionDispatch::IntegrationTest
+    include ActiveJob::TestHelper
+
     setup do
       @editor = User.create!(email: "editor@example.com", password: "password123", role: :editor)
       @other_editor = User.create!(email: "other@example.com", password: "password123", role: :editor)
@@ -61,8 +63,10 @@ module Studio
       VisualGenerator.define_singleton_method(:call) { |_generation| visual_called = true }
 
       begin
-        post studio_generations_path,
-             params: { generation: { kind: "linkedin_post", input_text: "hello", generate_visual: "1" } }
+        perform_enqueued_jobs do
+          post studio_generations_path,
+               params: { generation: { kind: "linkedin_post", input_text: "hello", generate_visual: "1" } }
+        end
         assert visual_called
       ensure
         ContentGenerator.define_singleton_method(:call, original_content_call)
@@ -81,7 +85,9 @@ module Studio
       VisualGenerator.define_singleton_method(:call) { |_generation| visual_called = true }
 
       begin
-        post studio_generations_path, params: { generation: { kind: "linkedin_post", input_text: "hello" } }
+        perform_enqueued_jobs do
+          post studio_generations_path, params: { generation: { kind: "linkedin_post", input_text: "hello" } }
+        end
         assert_not visual_called
       ensure
         ContentGenerator.define_singleton_method(:call, original_content_call)

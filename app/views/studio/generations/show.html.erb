@@ -96,7 +96,25 @@
       </div>
     </div>
 
-    <% if @generation.output.blank? %>
+    <% if @generation.generating? %>
+      <%# Rafraîchissement côté serveur : la page cesse d'elle-même quand l'état change, et le
+          modèle borne l'attente à cinq minutes, donc aucune boucle infinie possible. %>
+      <% content_for :head do %><meta http-equiv="refresh" content="5"><% end %>
+      <div class="studio-progress-box studio-progress-inline">
+        <p class="studio-progress-text">Génération en cours…</p>
+        <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
+        <p class="studio-progress-hint">
+          Entre vingt secondes et une minute selon le modèle et la longueur de la source.
+          Cette page se met à jour toute seule.
+        </p>
+      </div>
+
+    <% elsif @generation.generation_stalled? %>
+      <p class="studio-empty">
+        La génération n'a pas abouti. Relancez-la avec le bouton Régénérer ci-dessus.
+      </p>
+
+    <% elsif @generation.output.blank? %>
       <p class="studio-empty">Pas encore de contenu généré.</p>
     <% else %>
       <div>

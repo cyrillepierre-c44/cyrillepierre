@@ -385,6 +385,14 @@
   }
 }
 
+// Le même bandeau de progression que celui du formulaire, mais posé dans la page plutôt qu'en
+// surimpression : ici l'attente est l'état de la page, pas une modale à traverser.
+.studio-progress-inline {
+  position: static;
+  margin: 1rem 0;
+  max-width: 480px;
+}
+
 .studio-article-preview {
   border: 1px solid var(--cp-border);
   border-radius: 0.75rem;

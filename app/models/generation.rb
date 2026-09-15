@@ -95,6 +95,18 @@ class Generation < ApplicationRecord
     ArticleFormatter.plain_text(output).truncate(length)
   end
 
+  # Vrai tant que la tâche de fond n'a pas rendu la main. Au-delà de ce délai on considère
+  # qu'elle a échoué : sans cette borne, une page resterait en attente indéfiniment.
+  GENERATION_TIMEOUT = 5.minutes
+
+  def generating?
+    generating_since.present? && generating_since > GENERATION_TIMEOUT.ago
+  end
+
+  def generation_stalled?
+    generating_since.present? && generating_since <= GENERATION_TIMEOUT.ago
+  end
+
   def structured_output?
     kind.in?(STRUCTURED_KINDS)
   end

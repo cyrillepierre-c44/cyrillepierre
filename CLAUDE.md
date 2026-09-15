@@ -274,6 +274,17 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
 - **RGPD** : la mention du formulaire de contact précise désormais la conservation des données le
   temps du suivi. Des mentions légales et une politique de confidentialité restent à ajouter.
 
+⚠️ **La génération tourne en tâche de fond** (`ContentGenerationJob`), pas dans la requête web.
+Mesuré en production le 15/09/2026 : **27 s** pour un post LinkedIn tiré d'un article, alors
+qu'Heroku coupe toute requête à **30 s** — le Studio rendait donc une page d'erreur `H12` sur les
+contenus les plus longs, c'est-à-dire ceux qui comptent. `generating_since` porte l'état : posé par
+le contrôleur **avant** d'enfiler la tâche (la page de destination doit déjà annoncer l'attente),
+remis à nil par la tâche dans un `ensure` — sans quoi un échec laisserait la page en attente
+éternelle. Au-delà de `Generation::GENERATION_TIMEOUT` (5 min) la page affiche un échec au lieu de
+continuer à se rafraîchir. La régénération **ne vide pas** le texte précédent : il reste lisible
+pendant que le nouveau se prépare. Les tests qui attendent l'effet doivent envelopper la requête
+dans `perform_enqueued_jobs`.
+
 **Du site vers LinkedIn** : un `linkedin_post` peut porter un `source_article` (auto-référence sur
 `generations`, article publié uniquement). Le bouton apparaît sur la page d'un **article publié** du
 Studio. Deux conséquences dans le code : `assign_auto_realisation` se désactive — le post a déjà son

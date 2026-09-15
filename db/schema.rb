@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_15_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_15_110000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,6 +45,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_100000) do
   create_table "generations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "extra_instructions"
+    t.datetime "generating_since"
     t.string "image_model", default: "gemini-2.5-flash-image", null: false
     t.text "input_text"
     t.string "input_url"

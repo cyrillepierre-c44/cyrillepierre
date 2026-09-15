@@ -3,6 +3,8 @@ require "test_helper"
 module Studio
   # Complète generations_controller_test.rb sur les actions d'édition restées non couvertes.
   class GenerationsControllerCrudTest < ActionDispatch::IntegrationTest
+    include ActiveJob::TestHelper
+
     setup do
       @editor = User.create!(email: "crud-editor@example.com", password: "password123", role: :editor)
       @admin = User.create!(email: "crud-admin@example.com", password: "password123", role: :admin)
@@ -73,6 +75,46 @@ module Studio
       assert_select ".studio-field-hint", text: /Passer en 3x8/
     end
 
+    # 27 secondes mesurées en production pour 30 autorisées par Heroku : la génération ne peut
+    # plus se faire dans la requête web.
+    test "creation hands the work to a background job instead of blocking the request" do
+      assert_enqueued_with(job: ContentGenerationJob) do
+        post studio_generations_path, params: { generation: { kind: "linkedin_post", input_text: "x" } }
+      end
+
+      created = Generation.order(:created_at).last
+      assert_redirected_to studio_generation_path(created)
+      assert created.generating?, "la page doit annoncer l'attente dès la redirection"
+    end
+
+    test "regeneration is enqueued too, and keeps the previous text meanwhile" do
+      assert_enqueued_with(job: ContentGenerationJob) do
+        patch regenerate_studio_generation_path(@generation),
+              params: { generation: { llm_model: @generation.llm_model } }
+      end
+
+      assert_equal "Un post.", @generation.reload.output
+      assert @generation.generating?
+    end
+
+    test "a generation in progress announces itself and refreshes on its own" do
+      @generation.update!(generating_since: Time.current)
+
+      get studio_generation_path(@generation)
+
+      assert_select ".studio-progress-inline", 1
+      assert_select "meta[http-equiv=refresh]", 1
+    end
+
+    test "a generation that never came back says so instead of waiting forever" do
+      @generation.update!(output: nil, generating_since: (Generation::GENERATION_TIMEOUT + 1.minute).ago)
+
+      get studio_generation_path(@generation)
+
+      assert_select "meta[http-equiv=refresh]", 0
+      assert_select ".studio-empty", text: /n'a pas abouti/
+    end
+
     test "edit renders the edition form" do
       get edit_studio_generation_path(@generation)
 
@@ -114,8 +156,10 @@ module Studio
 
     test "regenerate runs the generator again" do
       stubbing_generator do
-        patch regenerate_studio_generation_path(@generation),
-              params: { generation: { llm_model: @generation.llm_model } }
+        perform_enqueued_jobs do
+          patch regenerate_studio_generation_path(@generation),
+                params: { generation: { llm_model: @generation.llm_model } }
+        end
       end
 
       assert_redirected_to studio_generation_path(@generation)

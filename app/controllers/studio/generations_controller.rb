@@ -21,9 +21,8 @@ module Studio
       authorize @generation
 
       if @generation.save
-        ContentGenerator.call(@generation)
-        VisualGenerator.call(@generation) if generate_visual_requested?
-        redirect_to studio_generation_path(@generation), notice: "Contenu généré."
+        enqueue_generation(with_visual: generate_visual_requested?)
+        redirect_to studio_generation_path(@generation), notice: "Génération lancée."
       else
         render :new, status: :unprocessable_entity
       end
@@ -50,8 +49,8 @@ module Studio
 
     def regenerate
       @generation.update!(llm_model: generation_params[:llm_model]) if generation_params[:llm_model].present?
-      ContentGenerator.call(@generation)
-      redirect_to studio_generation_path(@generation), notice: "Contenu régénéré."
+      enqueue_generation
+      redirect_to studio_generation_path(@generation), notice: "Régénération lancée."
     end
 
     def publish
@@ -79,6 +78,13 @@ module Studio
     end
 
     private
+
+    # `generating_since` est posé ici, pas dans la tâche : la page de destination doit déjà
+    # annoncer l'attente, même si la file met une seconde à démarrer.
+    def enqueue_generation(with_visual: false)
+      @generation.update!(generating_since: Time.current)
+      ContentGenerationJob.perform_later(@generation, with_visual: with_visual)
+    end
 
     def set_generation
       @generation = policy_scope(Generation).find(params[:id])
