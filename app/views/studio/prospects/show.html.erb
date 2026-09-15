@@ -14,7 +14,7 @@
                                                input_text: @prospect.brief_for_proposal),
                     class: "btn-cp-primary btn-cp-sm" %>
         <%= button_to "Supprimer", studio_prospect_path(@prospect), method: :delete,
-                      class: "studio-btn-danger btn-cp-sm",
+                      class: "btn-cp-outline studio-btn-danger btn-cp-sm",
                       form: { data: { turbo_confirm: "Supprimer ce prospect ?" } } %>
       </div>
     </div>

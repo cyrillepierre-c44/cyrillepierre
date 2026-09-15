@@ -57,6 +57,16 @@ module Studio
       assert_select "form[action=?]", studio_prospect_path(@prospect)
     end
 
+    # `studio-btn-danger` n'est qu'un modificateur de couleur : sans la classe de base, le bouton
+    # sort sans forme ni marges, au milieu de deux boutons correctement dessinés.
+    test "the delete button is drawn like the other buttons of the page" do
+      sign_in @admin
+
+      get studio_prospect_path(@prospect)
+
+      assert_select "form[action=?] .btn-cp-outline.studio-btn-danger", studio_prospect_path(@prospect)
+    end
+
     test "an editor cannot open a prospect coming from the site" do
       site_lead = Prospect.create!(name: "Piste du site", source: :site_contact)
       sign_in @editor
