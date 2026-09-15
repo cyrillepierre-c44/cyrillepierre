@@ -3,6 +3,16 @@
                       data: { controller: "studio-generation", turbo: false, action: "submit->studio-generation#submitting" } } do |f| %>
   <%= render "devise/shared/error_messages", resource: generation %>
 
+  <%# Le rattachement vient de l'adresse et doit survivre à l'envoi du formulaire, sinon le
+      prompt ne saura plus quel article le post doit faire lire. %>
+  <%= f.hidden_field :source_article_id %>
+
+  <% if generation.source_article.present? %>
+    <p class="studio-field-hint">
+      Ce post annoncera l'article « <%= generation.source_article.display_title %> » et se terminera par son lien.
+    </p>
+  <% end %>
+
   <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
     <div class="studio-progress-box">
       <p class="studio-progress-text" data-studio-generation-target="progressText">Génération en cours…</p>

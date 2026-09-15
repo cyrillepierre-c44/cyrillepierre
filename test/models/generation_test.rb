@@ -187,4 +187,60 @@ class GenerationTest < ActiveSupport::TestCase
 
     assert_equal 155, generation.excerpt(length: 155).length
   end
+  # --- post LinkedIn tiré d'un article ---------------------------------------
+
+  def published_article(user)
+    Generation.create!(user: user, kind: :article, status: :published, published_at: Time.current,
+                       title: "Passer en 3x8", output: "## Section\n\nDu texte.")
+  end
+
+  test "a post can promote a published article" do
+    generation = build_generation(kind: :linkedin_post)
+    generation.source_article = published_article(generation.user)
+
+    assert generation.valid?
+  end
+
+  test "a post refuses to promote something that is not a published article" do
+    generation = build_generation(kind: :linkedin_post)
+    brouillon = Generation.create!(user: generation.user, kind: :article, output: "Brouillon")
+    generation.source_article = brouillon
+
+    assert_not generation.valid?
+    assert_includes generation.errors[:source_article], "doit être un article publié"
+  end
+
+  test "a post refuses to promote a short news rather than an article" do
+    generation = build_generation(kind: :linkedin_post)
+    breve = Generation.create!(user: generation.user, kind: :site_actu, status: :published,
+                               published_at: Time.current, output: "Brève")
+    generation.source_article = breve
+
+    assert_not generation.valid?
+  end
+
+  # Un post tiré d'un article a déjà son sujet : la rotation lui ferait parler d'autre chose.
+  test "promoting an article suspends the automatic realisation rotation" do
+    user = User.create!(email: "rotation@example.com", password: "password123")
+    article = published_article(user)
+
+    post = Generation.create!(user: user, kind: :linkedin_post, source_article: article)
+
+    assert_nil post.realisation_id
+  end
+
+  test "an ordinary post without source still gets its realisation" do
+    user = User.create!(email: "rotation-2@example.com", password: "password123")
+
+    post = Generation.create!(user: user, kind: :linkedin_post)
+
+    assert post.realisation_id.present?
+  end
+
+  test "public_url points at the page a reader can actually open" do
+    generation = build_generation(kind: :article)
+    generation.save!
+
+    assert_equal "https://www.cyrillepierre.com/actus/#{generation.id}", generation.public_url
+  end
 end

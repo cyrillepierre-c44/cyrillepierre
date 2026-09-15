@@ -36,6 +36,12 @@
         <span class="studio-badge studio-badge--model">
           <%= Generation::LLM_MODELS[@generation.llm_model] || @generation.llm_model %>
         </span>
+        <% if @generation.source_article.present? %>
+          <span class="studio-badge studio-badge--article" title="Article promu par ce post">
+            ↗ <%= @generation.source_article.display_title.truncate(40) %>
+          </span>
+        <% end %>
+
         <% if @generation.realisation_id.present? %>
           <span class="studio-badge" title="Réalisation utilisée pour ce post">
             <%= @generation.realisation_id %>
@@ -65,6 +71,14 @@
           <%= button_to "Publier sur /actus", publish_studio_generation_path(@generation), method: :patch, class: "btn-cp-primary" %>
         <% elsif policy(@generation).unpublish? && @generation.published? %>
           <%= button_to "Dépublier", unpublish_studio_generation_path(@generation), method: :patch, class: "btn-cp-outline" %>
+        <% end %>
+
+        <%# Un article publié mérite d'être annoncé : sans ce pont, les posts vivent sur LinkedIn
+            et le site n'en reçoit aucun lecteur. %>
+        <% if @generation.article? && @generation.published? %>
+          <%= link_to "Post LinkedIn pour cet article",
+                      new_studio_generation_path(kind: "linkedin_post", source_article_id: @generation.id),
+                      class: "btn-cp-outline" %>
         <% end %>
 
         <% if policy(@generation).update? && @generation.output.present? %>

@@ -451,4 +451,43 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "contribution individuelle n'est pas isolable"
     assert_includes instructions, "n'est PAS attribuable à la seule fusion des silos"
   end
+  # --- post LinkedIn qui promeut un article ---------------------------------
+
+  # Les consignes générales interdisent de pousser un lien, délibérément. Ce cas les lève, et
+  # c'est la seule situation où un post doit se terminer par une adresse.
+  test "a post promoting an article is told to end on its link" do
+    article = Generation.create!(user: @user, kind: :article, status: :published,
+                                 published_at: Time.current, title: "Passer en 3x8",
+                                 output: "## Une section\n\nUne idée contre-intuitive.")
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(Generation.create!(user: @user, kind: :linkedin_post, source_article: article), context)
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "CE POST PROMEUT UN ARTICLE DU SITE"
+    assert_includes instructions, "ces consignes l'emportent sur celles qui interdisent"
+    assert_includes instructions, "https://www.cyrillepierre.com/actus/#{article.id}"
+    assert_includes instructions, "Passer en 3x8"
+  end
+
+  test "the article text is handed over without its markdown" do
+    article = Generation.create!(user: @user, kind: :article, status: :published,
+                                 published_at: Time.current, title: "Un titre",
+                                 output: "## Une section\n\nUn texte **en gras**.")
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(Generation.create!(user: @user, kind: :linkedin_post, source_article: article), context)
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "Une section Un texte en gras."
+    assert_not_includes instructions, "## Une section"
+  end
+
+  test "an ordinary post is never told to push a link" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(Generation.create!(user: @user, kind: :linkedin_post), context)
+
+    assert_not_includes context.draft_chat.instructions, "CE POST PROMEUT UN ARTICLE DU SITE"
+  end
 end

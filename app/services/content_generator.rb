@@ -275,6 +275,8 @@ class ContentGenerator
 
       #{recent_posts_context}
 
+      #{linkedin_source_article_block}
+
       CANEVAS À SUIVRE (adapte la longueur de chaque partie au sujet, mais respecte cet enchaînement) :
       1. Hook — 1 à 2 lignes qui donnent envie de lire la suite (chiffre surprenant, affirmation tranchée, question
          directe). Pas de mise en contexte avant le hook.
@@ -329,6 +331,33 @@ class ContentGenerator
 
       Réponds uniquement avec le texte du post, sans titre ni commentaire autour.
     PROMPT
+  end
+
+  # Quand le post promeut un article, il change de nature : son but n'est plus de susciter une
+  # réaction dans le fil, mais de faire cliquer. Les consignes générales interdisent de pousser
+  # un lien — c'est délibéré pour les posts ordinaires, et c'est ici qu'on lève l'interdiction.
+  def linkedin_source_article_block
+    article = generation.source_article
+    return "" if article.blank?
+
+    <<~BLOCK
+      CE POST PROMEUT UN ARTICLE DU SITE — ces consignes l'emportent sur celles qui interdisent
+      de pousser un lien :
+      - Titre de l'article : #{article.display_title}
+      - Adresse : #{article.public_url}
+
+      Texte intégral de l'article, qui est la SEULE matière du post :
+      #{ArticleFormatter.plain_text(article.output)}
+
+      Comment procéder :
+      - Choisis UNE idée de l'article, la plus contre-intuitive, et construis le post autour d'elle.
+        Ne résume pas l'article : un résumé complet supprime la raison de le lire.
+      - Le post doit tenir debout seul. Quelqu'un qui ne clique pas doit quand même avoir appris
+        quelque chose — c'est ce qui donne envie de cliquer.
+      - Remplace l'Ouverture du canevas par une invitation à lire l'article, en une phrase, puis
+        l'adresse seule sur sa dernière ligne. Pas de « lien en commentaire », pas de « 👇 ».
+      - N'invente rien qui ne soit pas dans l'article.
+    BLOCK
   end
 
   def recent_posts_context

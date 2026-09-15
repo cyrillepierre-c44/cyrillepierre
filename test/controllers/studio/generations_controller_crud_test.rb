@@ -42,6 +42,37 @@ module Studio
       assert_select ".studio-field-hint", text: /5 mots/
     end
 
+    test "a published article offers to announce itself on LinkedIn" do
+      article = Generation.create!(user: @editor, kind: :article, status: :published,
+                                   published_at: Time.current, title: "Passer en 3x8",
+                                   output: "Du texte.")
+
+      get studio_generation_path(article)
+
+      assert_select "a[href=?]",
+                    new_studio_generation_path(kind: "linkedin_post", source_article_id: article.id)
+    end
+
+    test "an unpublished article offers nothing to announce" do
+      article = Generation.create!(user: @editor, kind: :article, status: :generated, output: "Du texte.")
+
+      get studio_generation_path(article)
+
+      assert_select "a[href*=?]", "source_article_id", count: 0
+    end
+
+    test "the creation form carries the article the post must promote" do
+      article = Generation.create!(user: @editor, kind: :article, status: :published,
+                                   published_at: Time.current, title: "Passer en 3x8",
+                                   output: "Du texte.")
+
+      get new_studio_generation_path(kind: "linkedin_post", source_article_id: article.id)
+
+      assert_response :success
+      assert_select "input[name=?][value=?]", "generation[source_article_id]", article.id.to_s
+      assert_select ".studio-field-hint", text: /Passer en 3x8/
+    end
+
     test "edit renders the edition form" do
       get edit_studio_generation_path(@generation)
 

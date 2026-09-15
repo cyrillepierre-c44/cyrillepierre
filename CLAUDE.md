@@ -274,6 +274,15 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
 - **RGPD** : la mention du formulaire de contact précise désormais la conservation des données le
   temps du suivi. Des mentions légales et une politique de confidentialité restent à ajouter.
 
+**Du site vers LinkedIn** : un `linkedin_post` peut porter un `source_article` (auto-référence sur
+`generations`, article publié uniquement). Le bouton apparaît sur la page d'un **article publié** du
+Studio. Deux conséquences dans le code : `assign_auto_realisation` se désactive — le post a déjà son
+sujet, une réalisation tirée au sort le ferait parler d'autre chose — et `linkedin_source_article_block`
+**lève explicitement** l'interdiction de pousser un lien, posée ailleurs dans le prompt et dans
+`ORIENTATION_GUIDANCE`. C'est la seule situation où un post doit se terminer par une adresse. Le prompt
+demande de bâtir le post sur UNE idée de l'article, pas de le résumer : un résumé complet supprime la
+raison de cliquer.
+
 ## Publication directe sur LinkedIn (`LinkedinAuthController`, `LinkedinPublisher`)
 
 OAuth2 (`LinkedinAuthController#connect`/`callback`/`disconnect`, hors namespace `studio`) : redirige vers LinkedIn, vérifie le `state` (anti-CSRF) au retour, échange le `code` puis appelle `/v2/userinfo` pour récupérer l'identité du membre. Stocke `linkedin_access_token` (chiffré), `linkedin_token_expires_at` (~60 jours, pas de refresh token simple pour ce niveau d'accès → reconnexion périodique), `linkedin_member_urn` sur `User`.

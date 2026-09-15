@@ -3,6 +3,9 @@ class Generation < ApplicationRecord
   MAX_FILE_SIZE = 10.megabytes
 
   belongs_to :user
+  # Un post LinkedIn peut promouvoir un article publié : c'est ce lien qui permet au prompt
+  # d'y renvoyer, et donc au lecteur d'arriver sur une page de fond plutôt que sur un profil.
+  belongs_to :source_article, class_name: "Generation", optional: true
   has_one_attached :source_file
   has_one_attached :visual
 
@@ -62,6 +65,7 @@ class Generation < ApplicationRecord
   validates :llm_model, inclusion: { in: LLM_MODELS.keys }
   validates :image_model, inclusion: { in: IMAGE_MODELS.keys }
   validate :source_file_is_acceptable
+  validate :source_article_is_a_published_article
 
   before_save :assign_auto_realisation, if: :linkedin_post?
 
@@ -93,6 +97,11 @@ class Generation < ApplicationRecord
 
   def structured_output?
     kind.in?(STRUCTURED_KINDS)
+  end
+
+  # Adresse publique de la page, pour qu'un post LinkedIn puisse y renvoyer.
+  def public_url
+    "#{StructuredData::HOST}#{Rails.application.routes.url_helpers.actu_path(self)}"
   end
 
   def linkedin_post_url
@@ -127,11 +136,21 @@ class Generation < ApplicationRecord
   # can frame the post around it (see ContentGenerator#linkedin_post_prompt).
   def assign_auto_realisation
     return if realisation_id.present?
+    # Un post tiré d'un article a déjà son sujet : lui imposer une réalisation par rotation le
+    # ferait parler d'autre chose que de l'article qu'il est censé faire lire.
+    return if source_article_id.present?
     return if input_text.present? || input_url.present? || source_file.attached?
 
     recent_ids = user.generations.where(kind: :linkedin_post).where.not(realisation_id: [nil, ""])
                      .order(created_at: :desc).limit(10).pluck(:realisation_id)
     self.realisation_id = RealisationCatalog.pick_unused(exclude_ids: recent_ids)
+  end
+
+  def source_article_is_a_published_article
+    return if source_article.blank?
+
+    errors.add(:source_article, "doit être un article publié") unless source_article.article? &&
+                                                                      source_article.published?
   end
 
   def source_file_is_acceptable
