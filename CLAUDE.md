@@ -335,7 +335,9 @@ bin/rails runner "File.write('/mnt/c/Windows/Temp/cv.html', PagesController.rend
 "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe" --headless=new --dump-dom file:///C:/Windows/Temp/cv.html
 ```
 
-Au 10/09/2026 la page mesure **1108 px**, soit 15 px de marge. Vérifier aussi en anglais
+Au 15/09/2026 la page mesure **1109 px**, soit 14 px de marge. L'espacement des entrées
+(`.exp-item`) est passé de 10 à 8 px pour loger la certification Green Belt : deux pixels repris
+sur quatorze entrées rendent une ligne entière, ce qui vaut mieux qu'amputer une description. Vérifier aussi en anglais
 (`applyLang('en')`) : les traductions remplacent le texte à la volée et peuvent être plus longues.
 
 Fonctionnalités :

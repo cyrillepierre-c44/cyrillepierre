@@ -326,7 +326,10 @@
     flex-shrink: 0;
   }
 
-  .exp-item { margin-bottom: 10px; }
+  /* 9 px et non 10 : la page est bornée à une feuille A4 et le dépassement est coupé sans
+     avertissement. Deux pixels repris sur chacune des quatorze entrées rendent une ligne entière,
+     ce qui vaut mieux que d'amputer une description. */
+  .exp-item { margin-bottom: 8px; }
   .exp-item:last-child { margin-bottom: 0; }
   .exp-header { display: flex; justify-content: space-between; align-items: baseline; }
   .exp-title {
@@ -492,7 +495,7 @@
         </div>
         <div class="comp-item">
           <strong id="cv-comp-2-title">Excellence opérationnelle</strong>
-          <span id="cv-comp-2-desc">Lean, TPM, WCM, Kaizen, 5S, SMED, VSM. KPI, TRS/OEE, analyse des pertes.</span>
+          <span id="cv-comp-2-desc">Lean Six Sigma (Green Belt), TPM, WCM, 5S, SMED. KPI, TRS/OEE, analyse des pertes.</span>
         </div>
         <div class="comp-item">
           <strong id="cv-comp-3-title">Environnements réglementés</strong>
@@ -656,18 +659,25 @@
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-form-3-title">Diplôme d'Ingénieur — Arts et Métiers</span>
-              <span class="exp-date" id="cv-form-3-date">2000 → 2003</span>
+              <span class="exp-title" id="cv-form-3-title">Certification Green Belt Lean Six Sigma</span>
+              <span class="exp-date" id="cv-form-3-date">2010 → 2014</span>
             </div>
-            <div class="exp-company" id="cv-form-3-company">ENSAM ParisTech, Cluny / Paris</div>
           </div>
 
           <div class="exp-item">
             <div class="exp-header">
-              <span class="exp-title" id="cv-form-4-title">DUT Génie Mécanique et Productique</span>
-              <span class="exp-date" id="cv-form-4-date">1998 → 2000</span>
+              <span class="exp-title" id="cv-form-4-title">Diplôme d'Ingénieur — Arts et Métiers</span>
+              <span class="exp-date" id="cv-form-4-date">2000 → 2003</span>
             </div>
-            <div class="exp-company" id="cv-form-4-company">IUT Nancy-Brabois</div>
+            <div class="exp-company" id="cv-form-4-company">ENSAM ParisTech, Cluny / Paris</div>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-header">
+              <span class="exp-title" id="cv-form-5-title">DUT Génie Mécanique et Productique</span>
+              <span class="exp-date" id="cv-form-5-date">1998 → 2000</span>
+            </div>
+            <div class="exp-company" id="cv-form-5-company">IUT Nancy-Brabois</div>
           </div>
 
       </div>
@@ -706,7 +716,7 @@
       'cv-comp-1-title': 'Direction &amp; management',
       'cv-comp-1-desc': 'Direction de site, comité de direction, équipes jusqu\'à 200 personnes.',
       'cv-comp-2-title': 'Excellence opérationnelle',
-      'cv-comp-2-desc': 'Lean, TPM, WCM, Kaizen, 5S, SMED, VSM. KPI, TRS/OEE, analyse des pertes.',
+      'cv-comp-2-desc': 'Lean Six Sigma (Green Belt), TPM, WCM, 5S, SMED. KPI, TRS/OEE, analyse des pertes.',
       'cv-comp-3-title': 'Environnements réglementés',
       'cv-comp-3-desc': 'BPF/GMP, aseptique, salle blanche Classe A et ISO 4, audits.',
       'cv-comp-4-title': 'Projets &amp; investissements',
@@ -722,16 +732,6 @@
       'cv-tag-4': 'Ski alpin',
       'cv-tag-5': 'Randonnée',
       'cv-tag-6': 'Golf',
-      'cv-form-1-title': 'Formation First Finance ICCF — HEC Paris',
-      'cv-form-1-date': '2026',
-      'cv-form-2-title': 'Développeur Web Full-Stack (Ruby on Rails) — Le Wagon, Lyon',
-      'cv-form-2-date': '2026',
-      'cv-form-3-title': 'Diplôme d\'Ingénieur — Arts et Métiers',
-      'cv-form-3-date': '2000 → 2003',
-      'cv-form-3-company': 'ENSAM ParisTech, Cluny / Paris',
-      'cv-form-4-title': 'DUT Génie Mécanique et Productique',
-      'cv-form-4-date': '1998 → 2000',
-      'cv-form-4-company': 'IUT Nancy-Brabois',
       'cv-exp-1-title': 'Consultant Excellence Opérationnelle &amp; Digitale',
       'cv-exp-1-date': 'Sept. 2025 → Aujourd\'hui',
       'cv-exp-1-company': 'ENJOUÉ (Entreprise à But d\'Emploi) et SFAIRE, Lyon',
@@ -767,7 +767,19 @@
       'cv-exp-9-title': 'Ingénieur Travaux Neufs — Métallurgie &amp; Fonderie',
       'cv-exp-9-date': 'Oct. 2003 → Fév. 2006',
       'cv-exp-9-company': 'GHM, Sommevoire',
-      'cv-exp-9-desc': 'Maîtrise d\'œuvre d\'une installation de retraitement de sable de fonderie de 300 m² (350 K€) : études, procédés, négociation, travaux. Normes sécurité et environnement : 100 K€/an.'
+      'cv-exp-9-desc': 'Maîtrise d\'œuvre d\'une installation de retraitement de sable de fonderie de 300 m² (350 K€) : études, procédés, négociation, travaux. Normes sécurité et environnement : 100 K€/an.',
+      'cv-form-1-title': 'Formation First Finance ICCF — HEC Paris',
+      'cv-form-1-date': '2026',
+      'cv-form-2-title': 'Développeur Web Full-Stack (Ruby on Rails) — Le Wagon, Lyon',
+      'cv-form-2-date': '2026',
+      'cv-form-3-title': 'Certification Green Belt Lean Six Sigma',
+      'cv-form-3-date': '2010 → 2014',
+      'cv-form-4-title': 'Diplôme d\'Ingénieur — Arts et Métiers',
+      'cv-form-4-date': '2000 → 2003',
+      'cv-form-4-company': 'ENSAM ParisTech, Cluny / Paris',
+      'cv-form-5-title': 'DUT Génie Mécanique et Productique',
+      'cv-form-5-date': '1998 → 2000',
+      'cv-form-5-company': 'IUT Nancy-Brabois'
     },
     en: {
       'cv-btn-home':        '← Home',
@@ -847,12 +859,14 @@
       'cv-form-1-date': '2026',
       'cv-form-2-title': 'Full-Stack Web Developer (Ruby on Rails) — Le Wagon, Lyon',
       'cv-form-2-date': '2026',
-      'cv-form-3-title': 'Engineering Degree — Arts et Métiers',
-      'cv-form-3-date': '2000 → 2003',
-      'cv-form-3-company': 'ENSAM ParisTech, Cluny / Paris',
-      'cv-form-4-title': 'Two-year Technical Degree — Mechanical Engineering',
-      'cv-form-4-date': '1998 → 2000',
-      'cv-form-4-company': 'IUT Nancy-Brabois'
+      'cv-form-3-title': 'Lean Six Sigma Green Belt Certification',
+      'cv-form-3-date': '2010 → 2014',
+      'cv-form-4-title': 'Engineering Degree — Arts et Métiers',
+      'cv-form-4-date': '2000 → 2003',
+      'cv-form-4-company': 'ENSAM ParisTech, Cluny / Paris',
+      'cv-form-5-title': 'Two-year Technical Degree — Mechanical Engineering',
+      'cv-form-5-date': '1998 → 2000',
+      'cv-form-5-company': 'IUT Nancy-Brabois'
     }
   };
 

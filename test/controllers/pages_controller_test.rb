@@ -88,6 +88,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "TOEIC 835"
     assert_includes @response.body, "Sept. 2025 → Aujourd'hui"
     assert_includes @response.body, "HEC Paris"
+    assert_includes @response.body, "Green Belt Lean Six Sigma"
   end
   # Avant, les quatre pages de fond n'offraient qu'un lien vers le contact : un visiteur pas
   # encore prêt à écrire n'avait nulle part où aller, et les moteurs voyaient des culs-de-sac.
