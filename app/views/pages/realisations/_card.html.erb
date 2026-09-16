@@ -1,0 +1,26 @@
+<% page = item[:page] %>
+<div class="real-card reveal reveal-delay-<%= delay %>">
+  <div class="real-illustration">
+    <%= render RealisationCatalog.illustration_partial(item) %>
+  </div>
+  <div class="real-body">
+    <div class="real-meta">
+      <span class="real-number"><%= item[:id] %></span>
+      <span class="real-company"><%= page[:company] %></span>
+    </div>
+    <h3><%= RealisationCatalog.page_title(item) %></h3>
+    <div class="real-result">
+      <i class="fa-solid <%= page[:icon] %>"></i>
+      <%= RealisationCatalog.page_result(item) %>
+    </div>
+    <% if page[:pivots] %>
+      <ul class="real-pivots">
+        <% page[:pivots].each do |pivot| %>
+          <li><span class="pivot-year"><%= pivot[:year] %></span><span class="pivot-text"><%= pivot[:text] %></span></li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="real-desc"><%= page[:description] %></p>
+    <% end %>
+  </div>
+</div>

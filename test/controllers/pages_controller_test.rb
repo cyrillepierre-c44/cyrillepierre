@@ -114,4 +114,19 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".related-link-desc", minimum: 3
     assert_select ".related-link", text: /ici/i, count: 0
   end
+
+
+  # La page est rendue depuis le catalogue : chaque réalisation y a sa carte, avec son numéro,
+  # son titre public et son illustration.
+  test "the realisations page shows one card per catalogue entry" do
+    get realisations_path
+
+    assert_select ".real-card", RealisationCatalog::ITEMS.size
+    assert_select ".real-card svg", RealisationCatalog::ITEMS.size
+    RealisationCatalog::ITEMS.each do |item|
+      assert_select ".real-number", text: item[:id]
+      assert_select ".real-card h3", text: RealisationCatalog.page_title(item)
+    end
+    assert_select ".real-pivots li", 4
+  end
 end

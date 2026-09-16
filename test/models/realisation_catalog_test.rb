@@ -58,4 +58,41 @@ class RealisationCatalogTest < ActiveSupport::TestCase
   test "an unknown prompt style is refused rather than rendered empty" do
     assert_raises(ArgumentError) { RealisationCatalog.to_prompt(:markdown) }
   end
+
+
+  # --- la page /realisations ----------------------------------------------------------------
+
+  # Une réalisation ajoutée au catalogue sans être placée dans une section n'apparaîtrait
+  # jamais sur la page, sans erreur ; placée deux fois, elle s'y répéterait.
+  test "every realisation sits in exactly one page section" do
+    placed = RealisationCatalog::PAGE_SECTIONS.flat_map { |section| section[:ids] }
+
+    assert_equal RealisationCatalog::ITEMS.map { |r| r[:id] }.sort, placed.sort
+    assert_equal placed.uniq, placed
+  end
+
+  # Les trois se créent ensemble : les données de page, l'illustration SVG et le visual_hint
+  # qui la décrit au générateur de visuels. La règle était orale, elle est maintenant testée.
+  test "every realisation has its page data, its illustration partial and its visual hint" do
+    RealisationCatalog::ITEMS.each do |item|
+      page = item[:page]
+      assert page.present?, "#{item[:id]} : pas de données de page"
+      assert page[:company].present?, "#{item[:id]} : pas d'entreprise affichée"
+      assert page[:icon].to_s.start_with?("fa-"), "#{item[:id]} : icône manquante"
+      assert page[:description].present? || page[:pivots].present?, "#{item[:id]} : ni description ni pivots"
+      assert item[:visual_hint].present?, "#{item[:id]} : pas de visual_hint"
+      partial = Rails.root.join("app/views/#{RealisationCatalog.illustration_partial(item).sub(%r{/(n\d\d)$}, '/_\\1')}.html.erb")
+      assert partial.exist?, "#{item[:id]} : illustration absente (#{partial})"
+    end
+  end
+
+  test "page title and result fall back on the catalogue wording" do
+    item = { id: "N°99", titre: "Titre catalogue", resultat: "Résultat catalogue", page: {} }
+    overridden = item.merge(page: { title: "Titre public", result: "Résultat public" })
+
+    assert_equal "Titre catalogue", RealisationCatalog.page_title(item)
+    assert_equal "Résultat catalogue", RealisationCatalog.page_result(item)
+    assert_equal "Titre public", RealisationCatalog.page_title(overridden)
+    assert_equal "Résultat public", RealisationCatalog.page_result(overridden)
+  end
 end

@@ -161,7 +161,16 @@ plutôt que de l'attribuer : huit points de TRS, c'est énorme en industrie, et 
 industriel croit davantage celui qui reconnaît qu'aucun levier unique ne produit ça.
 **Appliquer la même prudence à toute réalisation dont le chiffre agrège plusieurs chantiers.**
 
-**Catalogue de réalisations — `visual_hint`** : chaque entrée de `RealisationCatalog::ITEMS` a un champ `visual_hint` (texte court décrivant la composition de l'illustration SVG faite à la main pour cette réalisation sur `/realisations` — ex. boîtes qui fusionnent, jauge, frise chronologique). **Règle à respecter** : toute nouvelle réalisation ajoutée au catalogue doit avoir à la fois une nouvelle illustration SVG sur `/realisations` et son `visual_hint` correspondant — jamais l'un sans l'autre (sinon `VisualGenerator` se rabat silencieusement sur les faits bruts, sans inspiration de design).
+**Catalogue de réalisations = source unique** : depuis le 16/09/2026, la page `/realisations` est
+rendue depuis `RealisationCatalog` — `PAGE_SECTIONS` donne les sections et l'ordre éditorial des
+cartes, et chaque entrée porte un champ `page` (entreprise affichée, icône, description ou pivots,
+et `title`/`result` seulement quand la formulation publique diffère de celle destinée au modèle).
+L'illustration de chaque réalisation reste un SVG dessiné à la main, dans son propre partiel
+`app/views/pages/realisations/_nXX.html.erb`, décrit par le `visual_hint` que `VisualGenerator`
+transmet au modèle d'image. **Ajouter une réalisation = une entrée complète, une place dans
+`PAGE_SECTIONS`, un partiel SVG et un `visual_hint`** — `realisation_catalog_test.rb` échoue s'il
+en manque un, là où la règle n'était auparavant qu'orale et où la page et le catalogue décrivaient
+les mêmes vingt-six missions dans deux sources indépendantes.
 
 **Article de fond (`article`)** : format long ajouté pour le référencement et la citation par
 les assistants — 800 à 1200 mots répondant à UNE question, à la première personne, structuré en
