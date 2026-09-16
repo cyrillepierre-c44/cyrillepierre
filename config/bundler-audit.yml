@@ -1,5 +1,15 @@
 # Audit all gems listed in the Gemfile for known security problems by running bin/bundler-audit.
 # CVEs that are not relevant to the application can be enumerated on the ignore list below.
+# Chaque entrée doit dire pourquoi elle ne s'applique pas ET quand la réexaminer.
 
 ignore:
-  - CVE-THAT-DOES-NOT-APPLY
+  # ReDoS dans RubyLLM::Utils.underscore, publié le 16/09/2026. Trois raisons de l'ignorer ici :
+  # 1. l'avis vise Ruby 3.1.x ; ce site tourne sur 3.3 (Onigmo mémoïse depuis 3.2, l'explosion
+  #    polynomiale n'a pas lieu) ;
+  # 2. la fonction ne reçoit que des noms de classes, d'agents ou d'outils — ce site ne définit
+  #    ni outil ni agent, et n'y fait passer aucune donnée saisie par un visiteur (le chatbot du
+  #    contact appelle Mammouth en HTTP direct, hors RubyLLM) ;
+  # 3. le seul correctif est 2.0.0.rc1, une release candidate de version majeure : pas pour la
+  #    production.
+  # À retirer dès que ruby_llm 2.0.0 final est publié et que la mise à jour est faite.
+  - CVE-2026-67991
