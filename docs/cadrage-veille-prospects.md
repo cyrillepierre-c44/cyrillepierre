@@ -55,18 +55,27 @@ comparable — c'est ce qui la distingue d'une prospection ordinaire.
 
 ## Sources de la version de test
 
-Trois sources, toutes gratuites et officielles. On n'en ajoute pas avant la fin du test.
+Test du 16/09/2026 sur Indeed, quatre requêtes en région lyonnaise et Auvergne-Rhône-Alpes :
+une dizaine de vrais postes de direction (Medtronic, Mersen, LIMATEC, LYNKUS, MAPEI, SDEZ…),
+dont plusieurs **ouverts depuis deux à quatre mois**. La requête « manager de transition » ne
+rend que du bruit : les cabinets ne publient pas là.
 
-1. **France Travail — API Offres d'emploi v2.** Compte gratuit sur francetravail.io. Requêtes
-   par code ROME et département. Indeed, déjà connecté à l'outillage de Cyrille, sert de
-   recoupement manuel, pas de source automatique.
-2. **BODACC — données ouvertes** (API Opendatasoft, sans clé). Annonces par département et
-   nature : filtrer les entreprises industrielles, exclure les procédures collectives.
-3. **Presse par flux RSS** : Bref Eco, L'Usine Nouvelle (Auvergne-Rhône-Alpes), Les Echos
-   région, Le Progrès économie. Recherche par mots-clés dans les titres et résumés.
+**Règle tirée du test — l'ancienneté de l'annonce est le premier critère de score.** Un poste
+de direction de production ouvert depuis plus de six semaines, c'est une usine qui tourne sans
+son pilote. Aucune interprétation nécessaire.
 
-**Exclu explicitement : LinkedIn.** Ses conditions interdisent la collecte automatisée et
-l'API ne donne aucun droit de lecture avec les accès actuels. Source la plus riche, elle reste
+| Source | Rôle | Accès | Statut |
+|---|---|---|---|
+| **Indeed** | Postes de direction de production, opérations, amélioration continue | Pas d'API publique. Soit un agent Claude planifié (connecteur Indeed, chaque lundi) qui produit le condensé sans rien développer dans le site, soit un agrégateur ci-dessous | Source principale |
+| **Adzuna ou Jooble** | Agrégateurs avec API gratuite sur inscription ; reprennent une large part d'Indeed, HelloWork et APEC | Clé gratuite | À vérifier sur un échantillon avant de choisir |
+| **France Travail** | Son propre fonds vise surtout opérateurs et techniciens, mais l'API relaie les « offres partenaires » (origine indiquée par offre) | Compte gratuit francetravail.io | Recoupement, une heure d'essai |
+| **Cabinets de management de transition** | Missions industrielles publiées : Valtus, Delville, X-PM, Wayden, Robert Half | Une dizaine de pages lues une fois par semaine | Retenu |
+| **Alertes Google en RSS** + Bref Eco, L'Usine Nouvelle, Les Echos région | Presse : extension, investissement, incident qualité, restructuration | Flux gratuits | Retenu |
+| **BODACC** | Changement de dirigeant ; exclure les procédures collectives | API Opendatasoft, sans clé | Retenu, poids faible |
+
+**Écartés** : APEC en direct (pas d'API, mais repris par les agrégateurs et France Travail) ;
+Cadremploi (ni API ni flux, collecte interdite par ses conditions) ; **LinkedIn** (conditions
+et absence de droit de lecture avec les accès actuels). Source la plus riche, LinkedIn reste
 manuelle.
 
 ## Chaîne technique, dans le site existant
@@ -76,9 +85,12 @@ sont déjà en place.
 
 1. **`ProspectWatchJob`**, planifié dans `config/recurring.yml` le lundi à 6 h, production
    seulement, comme `ProspectPurgeJob`.
-2. **Trois collecteurs** (`Watch::FranceTravailSource`, `Watch::BodaccSource`,
-   `Watch::RssSource`), chacun rendant des signaux normalisés : entreprise, lieu, type,
-   texte, adresse source, date.
+2. **Un collecteur par source** (`Watch::AggregatorSource` pour Adzuna ou Jooble,
+   `Watch::FranceTravailSource`, `Watch::RssSource` pour la presse et les cabinets,
+   `Watch::BodaccSource`), chacun rendant des signaux normalisés : entreprise, lieu, type,
+   texte, adresse source, **date de publication**.
+   Variante sans développement pour Indeed : un agent Claude planifié qui interroge le
+   connecteur et envoie le condensé, à retenir si l'agrégateur ne couvre pas assez.
 3. **Dédoublonnage** dans une table `watch_signals` (empreinte entreprise + type + semaine) :
    un signal déjà vu n'est jamais remonté deux fois. Sans cette table, chaque lundi
    recréerait les mêmes fiches.
