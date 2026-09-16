@@ -161,6 +161,39 @@ section.py-5 {
   line-height: 1.6;
 }
 
+// Badges de compétences. Ils étaient imbriqués sous `.skills-section`, la section de
+// l'accueil : sur la page Tech, qui les emploie hors de cette section, ils s'affichaient en
+// texte nu — pendant des mois, sans qu'aucun test ne puisse le voir.
+.skill-badge {
+  display: inline-block;
+  padding: 0.38rem 0.9rem;
+  border-radius: 2rem;
+  font-size: 0.84rem;
+  font-weight: 500;
+  margin: 0.25rem;
+  transition: transform 0.2s ease;
+
+  &:hover { transform: translateY(-2px); }
+
+  &.sk-ops {
+    background: rgba(0, 212, 255, 0.08);
+    border: 1px solid rgba(0, 212, 255, 0.22);
+    color: var(--cp-accent);
+  }
+
+  &.sk-lead {
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.22);
+    color: #a78bfa;
+  }
+
+  &.sk-tech {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--cp-muted);
+  }
+}
+
 // Étiquette de catégorie (compétences, stack) : la même sur l'accueil et la page Tech.
 .skill-cat-label {
   font-size: 0.72rem;

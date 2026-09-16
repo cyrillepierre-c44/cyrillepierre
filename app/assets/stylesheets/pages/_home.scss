@@ -340,35 +340,6 @@
     .skill-cat-label { margin-bottom: 0.75rem; }
   }
 
-  .skill-badge {
-    display: inline-block;
-    padding: 0.38rem 0.9rem;
-    border-radius: 2rem;
-    font-size: 0.84rem;
-    font-weight: 500;
-    margin: 0.25rem;
-    transition: transform 0.2s ease;
-
-    &:hover { transform: translateY(-2px); }
-
-    &.sk-ops {
-      background: rgba(0, 212, 255, 0.08);
-      border: 1px solid rgba(0, 212, 255, 0.22);
-      color: var(--cp-accent);
-    }
-
-    &.sk-lead {
-      background: rgba(139, 92, 246, 0.08);
-      border: 1px solid rgba(139, 92, 246, 0.22);
-      color: #a78bfa;
-    }
-
-    &.sk-tech {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--cp-muted);
-    }
-  }
 }
 
 // ============================================================
