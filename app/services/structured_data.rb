@@ -25,7 +25,7 @@ module StructuredData
       "description" => DESCRIPTION,
       "url" => HOST,
       "image" => "#{HOST}/images/cyrille.jpg",
-      "email" => "cyrille.pierre@gmail.com",
+      "email" => "contact@cyrillepierre.com",
       "telephone" => "+33618022452",
       # Les profils extérieurs qui décrivent la même personne. C'est ce qui relie le site à une
       # plateforme bien plus ancienne et bien mieux classée que lui : sans ce lien, un moteur voit
@@ -62,7 +62,7 @@ module StructuredData
       "image" => "#{HOST}/images/logo-cp.png",
       "url" => HOST,
       "founder" => { "@id" => "#{HOST}/#person" },
-      "email" => "cyrille.pierre@gmail.com",
+      "email" => "contact@cyrillepierre.com",
       "telephone" => "+33618022452",
       "vatID" => "FR52892208018",
       "address" => {

@@ -10,11 +10,26 @@ class ContactMailerTest < ActionMailer::TestCase
     }.merge(overrides))
   end
 
+  def confirmation
+    ContactMailer.confirmation_to_client(name: "Jean Dupont", email: "jean@example.com",
+                                         themes: [ "Excellence opérationnelle" ], summary: "Enjeu.")
+  end
+
   test "the notification goes to Cyrille and replies to the prospect" do
     mail = new_contact
 
     assert_equal [ "cyrille.pierre@gmail.com" ], mail.to
     assert_equal [ "jean@example.com" ], mail.reply_to
+  end
+
+  # Depuis le 16/09/2026 le site parle depuis contact@cyrillepierre.com : c'est l'adresse que le
+  # visiteur voit et à laquelle il répond. L'alerte interne, elle, reste sur la boîte Gmail — via
+  # l'alias elle repasserait par Cloudflare et Gmail la dédupliquerait.
+  test "mails are sent from the domain address, never from the Gmail account" do
+    assert_equal [ "contact@cyrillepierre.com" ], new_contact.from
+    assert_equal [ "contact@cyrillepierre.com" ], confirmation.from
+    assert_not_includes confirmation.body.encoded, "gmail.com"
+    assert_includes confirmation.body.encoded, "contact@cyrillepierre.com"
   end
 
   # Le sujet portait cyrillepierre.fr, un domaine qui n'est pas celui du site.

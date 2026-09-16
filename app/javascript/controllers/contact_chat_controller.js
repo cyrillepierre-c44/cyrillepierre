@@ -146,7 +146,7 @@ export default class extends Controller {
       })
       return await response.json()
     } catch {
-      return { reply: "Je rencontre une difficulté. Écrivez à cyrille.pierre@gmail.com", ready: false, summary: "" }
+      return { reply: "Je rencontre une difficulté. Écrivez à contact@cyrillepierre.com", ready: false, summary: "" }
     }
   }
 

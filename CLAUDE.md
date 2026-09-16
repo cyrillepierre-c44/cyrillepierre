@@ -109,6 +109,15 @@ regarder du côté de Cloudinary, pas d'Active Storage.
 
 **Mailer** : `config.action_mailer.default_url_options` doit utiliser `cyrillepierre.com` (pas `.fr`) en production — erreur déjà corrigée une fois, à ne pas réintroduire.
 
+**Adresse de contact** : depuis le 16/09/2026 le site n'affiche que `contact@cyrillepierre.com`
+(pied de page, contact, pages légales, CV, schema.org, mail de confirmation, messages de repli du
+chatbot) et les mails partent avec cet expéditeur (`ApplicationMailer::SENDER`). Le SMTP reste le
+compte Gmail : Gmail ne conserve cet expéditeur que parce que `contact@` est un alias vérifié du
+compte — sinon il le réécrit en silence. Seule l'**alerte interne** de `ContactMailer#new_contact`
+garde la boîte Gmail en destinataire (`INTERNAL_ALERT_TO`) : via l'alias elle repasserait par
+Cloudflare et Gmail dédupliquerait un message qu'il a lui-même émis. `contact_mailer_test.rb` et
+`seo_test.rb` verrouillent les deux.
+
 **Chiffrement (Active Record Encryption)** : utilisé pour `User#linkedin_access_token`. Clés via ENV (`AR_ENCRYPTION_PRIMARY_KEY`/`AR_ENCRYPTION_DETERMINISTIC_KEY`/`AR_ENCRYPTION_KEY_DERIVATION_SALT`, générées une fois via `bin/rails db:encryption:init`), branchées dans `config/application.rb` — pas de `credentials.yml.enc`, comme tous les autres secrets de cette app.
 
 ## Studio (`/studio`, `app/controllers/studio/`, `app/models/generation.rb`)

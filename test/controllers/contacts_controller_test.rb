@@ -4,7 +4,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   include ActionMailer::TestHelper
 
   MAMMOUTH_URL = "https://api.mammouth.ai/v1/chat/completions".freeze
-  FALLBACK = "Je rencontre une difficulté technique. Écrivez directement à cyrille.pierre@gmail.com".freeze
+  FALLBACK = "Je rencontre une difficulté technique. Écrivez directement à contact@cyrillepierre.com".freeze
 
   def stub_llm(content, status: 200)
     stub_request(:post, MAMMOUTH_URL).to_return(

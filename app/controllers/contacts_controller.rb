@@ -146,7 +146,7 @@ class ContactsController < ApplicationController
   # zéro, là où `"low"` est ignoré.
   NO_REASONING_EFFORT = "minimal".freeze
 
-  LLM_FALLBACK = "Je rencontre une difficulté technique. Écrivez directement à cyrille.pierre@gmail.com".freeze
+  LLM_FALLBACK = "Je rencontre une difficulté technique. Écrivez directement à contact@cyrillepierre.com".freeze
 
   private
 

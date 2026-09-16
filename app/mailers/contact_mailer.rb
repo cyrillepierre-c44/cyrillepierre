@@ -1,4 +1,6 @@
 class ContactMailer < ApplicationMailer
+  INTERNAL_ALERT_TO = "cyrille.pierre@gmail.com".freeze
+
   def new_contact(name:, email:, company:, phone:, themes:, summary:, history:, precision: nil, sector: nil, size: nil)
     @name      = name
     @email     = email
@@ -11,8 +13,11 @@ class ContactMailer < ApplicationMailer
     @sector    = sector
     @size      = size
 
+    # Alerte interne : directement sur la boîte, pas via contact@. L'alias ferait faire au mail un
+    # aller-retour par Cloudflare pour revenir dans la même boîte, et Gmail déduplique un message
+    # qu'il a lui-même envoyé — l'alerte pourrait ne jamais apparaître en réception.
     mail(
-      to: "cyrille.pierre@gmail.com",
+      to: INTERNAL_ALERT_TO,
       reply_to: email,
       subject: "[cyrillepierre.com] Nouveau contact — #{themes.join(' · ')} — #{name}"
     )
