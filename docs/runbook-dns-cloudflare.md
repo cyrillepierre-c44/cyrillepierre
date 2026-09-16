@@ -244,6 +244,20 @@ qui lui revient et ne l'affiche pas en réception. Cloudflare envoie alors une n
 « Missing email from … » qui explique exactement cela — ce n'est pas une erreur de remise.
 Tester depuis une autre adresse, ou lire l'onglet *Activity log*.
 
-**Reste ouvert** : passer le DMARC en `p=reject` après quelques semaines de rapports. Si un jour
-Gmail est configuré pour *envoyer* en tant que `contact@`, ajouter `include:_spf.google.com` au
-SPF **avant**, sinon `p=reject` fera rejeter ces envois.
+**Envoi depuis Gmail « en tant que » `contact@`** — configuré le 16/09/2026 : Gmail → Comptes et
+importation → « Envoyer des e-mails en tant que », serveur `smtp.gmail.com`, port 587, TLS,
+identifiant = l'adresse Gmail, mot de passe = un **mot de passe d'application** dédié (Gmail
+pré-remplit le formulaire avec `route1.mx.cloudflare.net`, qui ne sait pas envoyer : à
+remplacer). Le code de confirmation arrive sur `contact@` via Email Routing. Cocher « Répondre
+avec l'adresse à laquelle le message a été envoyé ».
+
+Vérifié à la réception (*Afficher l'original*) : **SPF PASS pour `gmail.com`, aucun DKIM,
+DMARC FAIL** pour `cyrillepierre.com`. Gmail envoie avec une enveloppe `gmail.com` et ne signe
+pas pour un domaine étranger : rien n'est aligné. Sans conséquence en `p=none` (mail reçu en
+boîte de réception), mais ajouter `_spf.google.com` au SPF **ne changerait rien**, l'enveloppe
+n'étant pas sur le domaine.
+
+**Reste ouvert** : `p=reject` est **exclu tant que l'envoi passe par Gmail**. Pour un DMARC
+aligné, il faut un serveur qui signe DKIM pour `cyrillepierre.com`, branché dans ce même écran
+Gmail à la place de `smtp.gmail.com` : Google Workspace, ou un relais gratuit (Brevo, SMTP2GO)
+avec sa clé DKIM posée dans la zone. À faire le jour où un DMARC strict devient nécessaire.
