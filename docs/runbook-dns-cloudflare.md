@@ -47,9 +47,14 @@ emails.
 Absents et c'est normal : aucun sous-domaine de messagerie (`mail`, `imap`, `smtp`,
 `autodiscover`, `autoconfig`), aucun DS (DNSSEC), aucun CAA, aucun `_dmarc`.
 
-Les MX pointent vers le **transfert d'emails Namecheap**. Ce service est lié au registrar, pas
-aux serveurs de noms : il continue de fonctionner après une délégation à Cloudflare, à
-condition de recréer les MX et le SPF à l'identique.
+Les MX pointent vers le **transfert d'emails Namecheap**. ⚠️ Contrairement à ce que ce runbook
+affirmait jusqu'au 16/09/2026, ce service **ne survit pas** à la délégation : Namecheap ne fait
+de redirection d'emails qu'avec ses propres serveurs de noms, et son panneau *Redirect Email*
+le dit en clair une fois les NS changés (« you must first change your nameservers to Namecheap
+default »). Recopier les MX `eforward` dans Cloudflare ne sert donc à rien — ils pointent vers
+des serveurs qui ne connaissent plus le domaine. Si une adresse du domaine doit recevoir du
+courrier après la bascule, c'est **Email Routing** de Cloudflare (gratuit) qui la fournit, avec
+ses propres MX et son propre SPF en remplacement.
 
 ## À vérifier d'abord : la piste légère
 
@@ -189,3 +194,43 @@ Deux choses à reprendre côté application :
   « redirect_uri does not match ».
 - Ajouter un monitor **UptimeRobot** sur `https://cyrillepierre.com/up` en plus de celui sur
   `www`, pour être prévenu si l'apex retombe.
+
+## Journal — étapes J+2 réalisées le 16 septembre 2026
+
+Cinq semaines après la bascule au lieu de deux jours, sans conséquence. État vérifié avant de
+commencer : zone saine, apex en 301 vers `www`, mais aucune DNSKEY, aucun DS, aucun `_dmarc`.
+
+**DMARC** — posé via **Email → DMARC Management** de Cloudflare plutôt qu'à la main. L'outil
+ajoute au TXT `_dmarc` une adresse de rapport hébergée par Cloudflare
+(`<empreinte>@dmarc-reports.cloudflare.net`), autorisée dans sa propre zone comme l'exige la
+RFC 7489 §7.1 : le problème de l'adresse `rua` hors domaine disparaît, et les rapports se
+lisent dans le tableau de bord au lieu d'arriver en XML. Deux détails d'interface : l'outil
+**complète la réponse DNS à la volée** — le panneau *DNS → Records* montre l'enregistrement
+stocké, les résolveurs voient l'adresse Cloudflare ajoutée devant ; et il affiche un
+avertissement « no default RUA found » pendant quelques minutes après l'activation, simple
+retard de relecture. L'adresse `dmarc@cyrillepierre.com` saisie d'abord a été retirée du TXT :
+elle n'existe pas (voir l'inventaire, les `eforward` sont morts). Valeur finale :
+
+```
+v=DMARC1; p=none; rua=mailto:c7867c6888b34422a6abc4c2af10d8da@dmarc-reports.cloudflare.net
+```
+
+Comme aucun courrier légitime ne part du domaine — l'application envoie depuis Gmail — la cible
+raisonnable après quelques semaines d'observation est `p=reject`.
+
+**DNSSEC** — *DNS → Settings → Enable DNSSEC* côté Cloudflare, puis *Advanced DNS → DNSSEC →
+Add new* chez Namecheap avec Key Tag `2371`, Algorithm `13`, Digest Type `2`, Digest
+`F2EBFE80DB62D9A7533827A41881A09FC8B8077EEA0AD0AAF9BB3264B903508E`. Le DS a été recalculé
+localement à partir de la DNSKEY publiée (flag 257) avant la saisie, pour comparer à ce que
+le panneau affichait — script Python de quelques lignes, key tag RFC 4034 + SHA-256 de
+`owner + rdata`. Verisign a publié le DS en **moins d'une minute** ; `AD=true` sur l'apex, les
+MX et `www` dès la première requête, aucun SERVFAIL transitoire observé. Le point Quad9 sur le
+port 5053 ne répond pas depuis cette machine, ne pas l'utiliser pour vérifier.
+
+**CAA** — non posé, conformément à la section ci-dessus.
+
+**Reste ouvert** : les cinq MX `eforward` morts sont toujours dans la zone. Deux issues
+propres : activer Email Routing (qui les remplace et donne une adresse `contact@`), ou les
+remplacer par un *Null MX* (`MX 0 .`, RFC 7505) pour dire au monde que ce domaine ne reçoit
+pas de courrier. Les laisser fait rebondir les expéditeurs sur des serveurs qui ignorent le
+domaine, ce qui revient au même en plus lent.
