@@ -1496,36 +1496,12 @@
         </p>
       </div>
       <div class="col-lg-6 offset-lg-1 reveal reveal-delay-2">
-        <div class="row g-3">
-          <div class="col-6">
-            <div class="glass-card text-center p-3">
-              <div style="font-size: 2rem; margin-bottom: 0.5rem;">📏</div>
-              <div style="font-family: var(--cp-headers-font); font-weight: 600; font-size: 0.9rem; color: var(--cp-text);">Mesurer</div>
-              <div style="font-size: 0.78rem; color: var(--cp-muted); margin-top: 0.25rem;">SAP, OEE, flux réels</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="glass-card text-center p-3">
-              <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔎</div>
-              <div style="font-family: var(--cp-headers-font); font-weight: 600; font-size: 0.9rem; color: var(--cp-text);">Comprendre</div>
-              <div style="font-size: 0.78rem; color: var(--cp-muted); margin-top: 0.25rem;">Avec les équipes terrain</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="glass-card text-center p-3">
-              <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛠️</div>
-              <div style="font-family: var(--cp-headers-font); font-weight: 600; font-size: 0.9rem; color: var(--cp-text);">Agir</div>
-              <div style="font-size: 0.78rem; color: var(--cp-muted); margin-top: 0.25rem;">KAIZEN, TPM, digital</div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="glass-card text-center p-3">
-              <div style="font-size: 2rem; margin-bottom: 0.5rem;">📈</div>
-              <div style="font-family: var(--cp-headers-font); font-weight: 600; font-size: 0.9rem; color: var(--cp-text);">Factuel</div>
-              <div style="font-size: 0.78rem; color: var(--cp-muted); margin-top: 0.25rem;">En CODIR, chiffré</div>
-            </div>
-          </div>
-        </div>
+        <%= render "pages/method_steps", steps: [
+          { icon: "📏", title: "Mesurer",    desc: "SAP, OEE, flux réels" },
+          { icon: "🔎", title: "Comprendre", desc: "Avec les équipes terrain" },
+          { icon: "🛠️", title: "Agir",       desc: "KAIZEN, TPM, digital" },
+          { icon: "📈", title: "Factuel",    desc: "En CODIR, chiffré" }
+        ] %>
       </div>
     </div>
   </div>

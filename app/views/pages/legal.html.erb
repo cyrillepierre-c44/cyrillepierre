@@ -28,11 +28,11 @@
       </div>
       <div>
         <dt>Téléphone</dt>
-        <dd><a href="tel:+33618022452">06 18 02 24 52</a></dd>
+        <dd><a href="tel:<%= SiteIdentity::PHONE_E164 %>"><%= SiteIdentity::PHONE_DISPLAY %></a></dd>
       </div>
       <div>
         <dt>Email</dt>
-        <dd><%= mail_to "contact@cyrillepierre.com" %></dd>
+        <dd><%= mail_to SiteIdentity::EMAIL %></dd>
       </div>
       <div>
         <dt>SIRET</dt>
@@ -104,7 +104,7 @@
     <p>
       Le présent site et ses mentions légales sont soumis au droit français. Toute question
       relative à leur application peut être adressée à
-      <%= mail_to "contact@cyrillepierre.com" %>.
+      <%= mail_to SiteIdentity::EMAIL %>.
     </p>
 
     <p class="legal-updated">Dernière mise à jour : 10 septembre 2026.</p>

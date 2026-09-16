@@ -201,6 +201,17 @@ prudence » — après le masque d'Android, il n'en restait qu'un CP minuscule p
 C'est l'icône masquable qu'Android choisit pour l'écran d'accueil, donc elle décide du rendu. `seo_test.rb` vérifie que chaque icône déclarée existe et
 a réellement la taille annoncée — l'ancien manifeste en annonçait une de 512 qui en faisait 64.
 
+**Identité du site** : nom, hôte, description, email, téléphone, LinkedIn et Malt vivent dans
+**`SiteIdentity`** (`app/services/site_identity.rb`) et nulle part ailleurs — balisage, pied de page,
+mentions légales, mails et expéditeur les lisent là. Seule exception : la page CV, autonome et
+calquée sur le PDF, garde ses coordonnées en dur. Les dates s'affichent via `fr_date` /
+`fr_datetime` (`ApplicationHelper`), pas par un `strftime` dans la vue.
+
+**Styles en ligne** : aucun `style="…"` dans les vues depuis le 16/09/2026. Les compositions qui
+revenaient (icône / titre / texte d'une `glass-card`, étiquette `skill-cat-label`, les quatre
+cartes de méthode via le partiel `pages/_method_steps`) ont leurs classes dans `_global.scss` et
+`_service_page.scss`. Un nouveau style se pose dans la feuille, pas dans le gabarit.
+
 **Balisage schema.org** : les trois constructeurs vivent dans `app/services/structured_data.rb`,
 pas dans `ApplicationHelper` — sortis le 12/09/2026 parce que leur poids faisait dépasser
 `Metrics/ModuleLength` dès la ligne suivante ajoutée. Le helper ré-expose `CANONICAL_HOST` et

@@ -39,7 +39,7 @@
       <div><dt>Téléphone</dt><dd><%= @prospect.phone.presence || "—" %></dd></div>
       <div>
         <dt>Dernier contact</dt>
-        <dd><%= @prospect.last_contact_at&.strftime("%d/%m/%Y à %H:%M") || "—" %></dd>
+        <dd><%= fr_datetime(@prospect.last_contact_at) || "—" %></dd>
       </div>
       <div><dt>Thèmes</dt><dd><%= @prospect.themes_text.presence || "—" %></dd></div>
     </dl>

@@ -41,4 +41,14 @@ class ApplicationHelperTest < ActionView::TestCase
   test "leaves the badge neutral when the expiry is far away" do
     assert_nil linkedin_expiry_badge_modifier(user_expiring_in(60.days))
   end
+
+
+  test "french date helpers format the same way everywhere and tolerate nil" do
+    moment = Time.zone.local(2026, 9, 16, 17, 5)
+
+    assert_equal "16/09/2026", fr_date(moment)
+    assert_equal "16/09/2026 à 17:05", fr_datetime(moment)
+    assert_nil fr_date(nil)
+    assert_nil fr_datetime(nil)
+  end
 end

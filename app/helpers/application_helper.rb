@@ -29,6 +29,16 @@ module ApplicationHelper
     tag.script(raw(data.to_json), type: "application/ld+json", nonce: content_security_policy_nonce)
   end
 
+  # Dates à la française, au même format partout. Sept vues recopiaient le motif strftime,
+  # avec deux variantes pour l'heure selon la page.
+  def fr_date(time)
+    time&.strftime("%d/%m/%Y")
+  end
+
+  def fr_datetime(time)
+    time&.strftime("%d/%m/%Y à %H:%M")
+  end
+
   def linkedin_expiry_badge_modifier(user)
     return "studio-badge--danger" if user.linkedin_expiry_critical?
     return "studio-badge--warning" if user.linkedin_expiry_soon?

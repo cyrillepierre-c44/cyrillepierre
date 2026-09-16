@@ -1,0 +1,13 @@
+<%# La méthode en quatre temps, sur l'excellence opérationnelle et les réalisations. Les deux
+    pages portaient les mêmes quatre cartes avec leurs styles en ligne. %>
+<div class="row g-3">
+  <% steps.each do |step| %>
+    <div class="col-6">
+      <div class="glass-card method-step">
+        <div class="method-step-icon"><%= step[:icon] %></div>
+        <div class="method-step-title"><%= step[:title] %></div>
+        <div class="method-step-desc"><%= step[:desc] %></div>
+      </div>
+    </div>
+  <% end %>
+</div>

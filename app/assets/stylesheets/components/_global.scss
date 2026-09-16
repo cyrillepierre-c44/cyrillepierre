@@ -139,6 +139,37 @@ section.py-5 {
   }
 }
 
+// Contenu type d'une glass-card : une icône, un titre, un texte. Ces trois règles vivaient
+// en styles en ligne, recopiées carte après carte.
+.glass-card-icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.glass-card-title {
+  font-family: var(--cp-headers-font);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--cp-text);
+  margin-bottom: 0.5rem;
+}
+
+.glass-card-text {
+  color: var(--cp-muted);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+// Étiquette de catégorie (compétences, stack) : la même sur l'accueil et la page Tech.
+.skill-cat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cp-muted);
+}
+
 // ============================================================
 // Buttons
 // ============================================================

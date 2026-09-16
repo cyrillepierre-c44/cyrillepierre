@@ -159,6 +159,10 @@
     color: var(--cp-muted);
     line-height: 1.8;
     margin-bottom: 2.5rem;
+
+    // Deux paragraphes qui se suivent se rapprochent : la marge basse du premier est celle
+    // qui sépare le bloc de ce qui vient après, pas celle entre deux phrases du même propos.
+    + .about-text { margin-top: -1rem; }
   }
 
   .value-prop {
@@ -333,14 +337,7 @@
   .skill-category {
     margin-bottom: 2rem;
 
-    .skill-cat-label {
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--cp-muted);
-      margin-bottom: 0.75rem;
-    }
+    .skill-cat-label { margin-bottom: 0.75rem; }
   }
 
   .skill-badge {

@@ -40,7 +40,7 @@
             <span class="studio-badge studio-badge--model">
               <%= Generation::LLM_MODELS[generation.llm_model] || generation.llm_model %>
             </span>
-            <span class="studio-list-item-date"><%= generation.updated_at.strftime("%d/%m/%Y %H:%M") %></span>
+            <span class="studio-list-item-date"><%= fr_datetime(generation.updated_at) %></span>
           </div>
         <% end %>
       <% end %>

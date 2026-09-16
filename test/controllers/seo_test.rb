@@ -96,6 +96,7 @@ class SeoTest < ActionDispatch::IntegrationTest
     assert_includes person["sameAs"], "https://www.malt.fr/profile/cyrillepierre"
     # L'adresse du domaine, pas la Gmail : c'est celle que les moteurs et les assistants citent.
     assert_equal "contact@cyrillepierre.com", person["email"]
+    assert_equal SiteIdentity::PHONE_E164, person["telephone"]
     assert_equal "Lyon", person["address"]["addressLocality"]
     assert_equal "Auvergne-Rhône-Alpes", person["address"]["addressRegion"]
     # Un homonyme très référencé porte le même nom : la description distinctive est le signal

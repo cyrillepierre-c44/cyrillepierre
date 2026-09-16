@@ -16,7 +16,7 @@
     <h2>Responsable du traitement</h2>
     <p>
       La société éditrice du site cyrillepierre.com, représentée par Cyrille PIERRE. Pour toute
-      question ou demande relative à vos données : <%= mail_to "contact@cyrillepierre.com" %>,
+      question ou demande relative à vos données : <%= mail_to SiteIdentity::EMAIL %>,
       ou par courrier au 13 rue Villeneuve, 69004 Lyon. Les coordonnées complètes figurent dans
       les <%= link_to "mentions légales", legal_path %>.
     </p>
@@ -124,7 +124,7 @@
     <p>
       Vous disposez d'un droit d'accès à vos données, de rectification, d'effacement, de
       limitation du traitement, d'opposition et de portabilité. Pour les exercer, écrivez à
-      <%= mail_to "contact@cyrillepierre.com" %> : une réponse vous sera apportée dans un délai
+      <%= mail_to SiteIdentity::EMAIL %> : une réponse vous sera apportée dans un délai
       d'un mois.
     </p>
     <p>

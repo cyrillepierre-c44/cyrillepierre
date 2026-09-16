@@ -22,15 +22,15 @@
     <div class="section">
       <div class="label">Mes coordonnées</div>
       <div class="contact-block">
-        <div class="contact-line"><strong>Cyrille PIERRE</strong> — Consultant Indépendant</div>
+        <div class="contact-line"><strong><%= SiteIdentity::NAME %></strong> — Consultant Indépendant</div>
         <div class="contact-line">Ingénieur Arts & Métiers · Lyon</div>
-        <div class="contact-line">📧 <a href="mailto:contact@cyrillepierre.com">contact@cyrillepierre.com</a></div>
-        <div class="contact-line">📞 06 18 02 24 52</div>
-        <div class="contact-line">🔗 <a href="https://www.linkedin.com/in/cyrille-pierre">linkedin.com/in/cyrille-pierre</a></div>
+        <div class="contact-line">📧 <a href="mailto:<%= SiteIdentity::EMAIL %>"><%= SiteIdentity::EMAIL %></a></div>
+        <div class="contact-line">📞 <%= SiteIdentity::PHONE_DISPLAY %></div>
+        <div class="contact-line">🔗 <a href="<%= SiteIdentity::LINKEDIN_URL %>"><%= SiteIdentity::LINKEDIN_URL.delete_prefix("https://www.") %></a></div>
       </div>
     </div>
 
     <p class="footer">
-      Ce message a été envoyé depuis <a href="https://www.cyrillepierre.com">cyrillepierre.com</a>
+      Ce message a été envoyé depuis <a href="<%= SiteIdentity::HOST %>">cyrillepierre.com</a>
     </p>
   </div>

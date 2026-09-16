@@ -18,7 +18,7 @@
       <% @actus.each do |actu| %>
         <%= link_to actu_path(actu), class: "actu-card" do %>
           <span class="actu-card-date">
-            <%= (actu.published_at || actu.updated_at).strftime("%d/%m/%Y") %>
+            <%= fr_date(actu.published_at || actu.updated_at) %>
             <span class="actu-card-kind <%= "actu-card-kind--brief" unless actu.article? %>">
               <%= actu.kind_label %>
             </span>

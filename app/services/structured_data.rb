@@ -2,17 +2,14 @@
 # de données n'ont rien à faire dans un module de vues, et leur poids faisait dépasser la limite
 # de longueur de module à la première ligne ajoutée.
 module StructuredData
-  # L'apex répond 301 vers www : toute adresse déclarée ici doit désigner www.
-  HOST = "https://www.cyrillepierre.com".freeze
-
-  DESCRIPTION = "Cyrille PIERRE — Manager de transition et consultant en excellence " \
-                "opérationnelle. Ingénieur Arts & Métiers, 20 ans d'industrie. Lyon.".freeze
+  HOST = SiteIdentity::HOST
+  DESCRIPTION = SiteIdentity::DESCRIPTION
 
   def self.person
     {
       "@type" => "Person",
       "@id" => "#{HOST}/#person",
-      "name" => "Cyrille PIERRE",
+      "name" => SiteIdentity::NAME,
       "jobTitle" => "Manager de transition et consultant en excellence opérationnelle",
       # Un homonyme très référencé existe : l'ambassadeur de France auprès de l'OCDE. Cette
       # propriété de schema.org est faite pour distinguer deux entités qui portent le même nom.
@@ -25,15 +22,12 @@ module StructuredData
       "description" => DESCRIPTION,
       "url" => HOST,
       "image" => "#{HOST}/images/cyrille.jpg",
-      "email" => "contact@cyrillepierre.com",
-      "telephone" => "+33618022452",
+      "email" => SiteIdentity::EMAIL,
+      "telephone" => SiteIdentity::PHONE_E164,
       # Les profils extérieurs qui décrivent la même personne. C'est ce qui relie le site à une
       # plateforme bien plus ancienne et bien mieux classée que lui : sans ce lien, un moteur voit
       # deux pages sans rapport. N'y mettre qu'une adresse publique et vérifiée.
-      "sameAs" => [
-        "https://www.linkedin.com/in/cyrille-pierre",
-        "https://www.malt.fr/profile/cyrillepierre"
-      ],
+      "sameAs" => [SiteIdentity::LINKEDIN_URL, SiteIdentity::MALT_URL],
       "alumniOf" => { "@type" => "CollegeOrUniversity", "name" => "Arts et Métiers ParisTech" },
       "address" => {
         "@type" => "PostalAddress",
@@ -62,8 +56,8 @@ module StructuredData
       "image" => "#{HOST}/images/logo-cp.png",
       "url" => HOST,
       "founder" => { "@id" => "#{HOST}/#person" },
-      "email" => "contact@cyrillepierre.com",
-      "telephone" => "+33618022452",
+      "email" => SiteIdentity::EMAIL,
+      "telephone" => SiteIdentity::PHONE_E164,
       "vatID" => "FR52892208018",
       "address" => {
         "@type" => "PostalAddress",
@@ -92,7 +86,7 @@ module StructuredData
       "wordCount" => ArticleFormatter.plain_text(actu.output).split.size,
       "datePublished" => actu.published_at&.iso8601,
       "dateModified" => actu.updated_at.iso8601,
-      "author" => { "@type" => "Person", "name" => "Cyrille PIERRE", "url" => HOST },
+      "author" => { "@type" => "Person", "name" => SiteIdentity::NAME, "url" => HOST },
       "publisher" => { "@id" => "#{HOST}/#service" },
       "mainEntityOfPage" => "#{HOST}#{Rails.application.routes.url_helpers.actu_path(actu)}",
       "inLanguage" => "fr-FR"

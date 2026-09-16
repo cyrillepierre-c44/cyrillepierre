@@ -279,6 +279,27 @@
   }
 }
 
+// Method steps (partial pages/_method_steps)
+.method-step {
+  text-align: center;
+  padding: 1rem;
+
+  .method-step-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+  .method-step-title {
+    font-family: var(--cp-headers-font);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--cp-text);
+  }
+
+  .method-step-desc {
+    font-size: 0.78rem;
+    color: var(--cp-muted);
+    margin-top: 0.25rem;
+  }
+}
+
 // Differentiator box
 .differentiator-box {
   background: rgba(139, 92, 246, 0.06);
@@ -288,6 +309,9 @@
   margin: 3rem 0;
 
   @media (max-width: 991px) { margin: 1.5rem 0; }
+
+  // Collée sous le hero, sans la marge haute qui creuserait un trou.
+  &--flush { margin: 0 0 2rem; }
 
   .diff-quote {
     font-family: $headers-font;

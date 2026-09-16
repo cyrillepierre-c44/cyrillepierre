@@ -18,6 +18,6 @@
         <%= prospect.next_action_on.strftime("%d/%m") %>
       </span>
     <% end %>
-    <span class="studio-list-item-date"><%= prospect.updated_at.strftime("%d/%m/%Y") %></span>
+    <span class="studio-list-item-date"><%= fr_date(prospect.updated_at) %></span>
   </div>
 <% end %>
