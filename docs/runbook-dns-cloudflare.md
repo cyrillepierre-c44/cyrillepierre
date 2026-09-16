@@ -229,8 +229,21 @@ port 5053 ne répond pas depuis cette machine, ne pas l'utiliser pour vérifier.
 
 **CAA** — non posé, conformément à la section ci-dessus.
 
-**Reste ouvert** : les cinq MX `eforward` morts sont toujours dans la zone. Deux issues
-propres : activer Email Routing (qui les remplace et donne une adresse `contact@`), ou les
-remplacer par un *Null MX* (`MX 0 .`, RFC 7505) pour dire au monde que ce domaine ne reçoit
-pas de courrier. Les laisser fait rebondir les expéditeurs sur des serveurs qui ignorent le
-domaine, ce qui revient au même en plus lent.
+**Email Routing** — activé dans la foulée pour remplacer les `eforward` morts, depuis la vue
+*compte* (Email Service → Email Routing → *Onboard Domain*), la zone n'affichant pas l'entrée
+dans son menu Email. L'assistant liste les enregistrements qu'il va poser mais **ne supprime
+pas les conflits** : il faut retirer soi-même, dans *DNS → Records*, les MX étrangers et
+l'ancien SPF (deux SPF sur un nom = erreur permanente), puis revenir cliquer *Activate*.
+Il pose trois MX `route1/2/3.mx.cloudflare.net`, le SPF `v=spf1 include:_spf.mx.cloudflare.net
+~all` et une clé DKIM `cf2024-1._domainkey`. Ensuite, sur la page du domaine, onglet *Routing
+rules* : `contact@cyrillepierre.com` → Gmail de Cyrille, catch-all laissé sur *Drop* (sinon
+tout `*@cyrillepierre.com` arrive, spam compris). Réception seulement, rien ne change à l'envoi.
+
+⚠️ **Le test « je m'envoie un mail depuis Gmail » ne prouve rien** : Gmail déduplique un message
+qui lui revient et ne l'affiche pas en réception. Cloudflare envoie alors une notification
+« Missing email from … » qui explique exactement cela — ce n'est pas une erreur de remise.
+Tester depuis une autre adresse, ou lire l'onglet *Activity log*.
+
+**Reste ouvert** : passer le DMARC en `p=reject` après quelques semaines de rapports. Si un jour
+Gmail est configuré pour *envoyer* en tant que `contact@`, ajouter `include:_spf.google.com` au
+SPF **avant**, sinon `p=reject` fera rejeter ces envois.
