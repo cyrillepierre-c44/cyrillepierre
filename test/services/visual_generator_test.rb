@@ -53,7 +53,7 @@ class VisualGeneratorTest < ActiveSupport::TestCase
     config = nil
     with_painter(FakePainter.new) { |c| VisualGenerator.call(generation); config = c }
 
-    assert_equal VisualGenerator::MAMMOUTH_API_BASE, config.openai_api_base
+    assert_equal Mammouth::API_BASE, config.openai_api_base
   end
 
   test "uses the image model chosen on the generation" do

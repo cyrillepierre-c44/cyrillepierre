@@ -1,6 +1,9 @@
-RubyLLM.configure do |config|
-  # Mammouth.ai (OpenAI-compatible gateway) is the app's only LLM provider —
-  # the former GitHub Models free tier expired and was removed.
-  config.openai_api_key = ENV.fetch("MAMMOUTH_API_KEY", nil)
-  config.openai_api_base = "https://api.mammouth.ai/v1"
+# Configuration globale de RubyLLM, alignée sur le module Mammouth (app/services/mammouth.rb),
+# par lequel passent tous les appels des services. Un initialiseur s'exécute avant le chargement
+# automatique de app/ : d'où le `to_prepare`, qui attend que les constantes soient visibles.
+Rails.application.config.to_prepare do
+  RubyLLM.configure do |config|
+    config.openai_api_key = Mammouth.api_key
+    config.openai_api_base = Mammouth::API_BASE
+  end
 end

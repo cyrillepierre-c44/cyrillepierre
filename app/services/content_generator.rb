@@ -1,9 +1,8 @@
 # Builds the prompt for a Generation (based on its kind and sources) and calls the LLM.
 class ContentGenerator
-  MAMMOUTH_API_BASE = "https://api.mammouth.ai/v1"
   # Proofreading always runs on a fast/cheap Mammouth model regardless of the model chosen
   # for the draft, to keep the extra LLM call quick.
-  PROOFREADING_MODEL = "gemini-3.5-flash"
+  PROOFREADING_MODEL = Mammouth::DEFAULT_MODEL
 
   # Les pages de fond du site, qui sont les cibles de lien les plus stables : leurs adresses ne
   # bougent pas, contrairement à celle d'un article qu'on pourrait dépublier.
@@ -92,24 +91,13 @@ class ContentGenerator
   attr_reader :generation
 
   def new_chat
-    mammouth_chat(generation.llm_model)
-  end
-
-  def mammouth_chat(model)
-    mammouth_context.chat(model: model, provider: :openai, assume_model_exists: true)
-  end
-
-  def mammouth_context
-    @mammouth_context ||= RubyLLM.context do |c|
-      c.openai_api_key = ENV.fetch("MAMMOUTH_API_KEY", nil)
-      c.openai_api_base = MAMMOUTH_API_BASE
-    end
+    Mammouth.chat(model: generation.llm_model)
   end
 
   def proofread(text)
     return text if text.blank?
 
-    mammouth_chat(PROOFREADING_MODEL).with_instructions(PROOFREADING_INSTRUCTIONS).ask(text).content.to_s
+    Mammouth.chat(model: PROOFREADING_MODEL).with_instructions(PROOFREADING_INSTRUCTIONS).ask(text).content.to_s
   rescue StandardError => e
     Rails.logger.error "ContentGenerator proofread error: #{e.class} — #{e.message}"
     text
@@ -176,36 +164,20 @@ class ContentGenerator
     FileTextExtractor.call(generation.source_file)
   end
 
+  # Le catalogue se rend lui-même (voir RealisationCatalog.to_prompt), périmètre sémantique
+  # compris : c'est là que se joue l'interdiction de rattacher un chiffre au sujet voisin.
   def realisations_str
-    RealisationCatalog::ITEMS.map do |r|
-      "#{r[:id]} #{r[:titre]} — #{r[:context]} — #{r[:resultat]}#{semantic_scope_line(r)}"
-    end.join("\n")
-  end
-
-  # Le catalogue porte, pour certaines réalisations, un périmètre qui dit explicitement à quels
-  # sujets elles ne s'appliquent PAS (l'absentéisme n'est pas un sujet de productivité, une
-  # restructuration n'est pas de l'animation d'équipe). L'assistant de contact l'a toujours reçu,
-  # le Studio jamais : d'où des articles qui rattachaient un chiffre au mauvais sujet.
-  def semantic_scope_line(realisation)
-    return "" if realisation[:semantic_scope].blank?
-
-    "\n     ⚠ Périmètre : #{realisation[:semantic_scope]}"
+    RealisationCatalog.to_prompt(:named)
   end
 
   # Same catalogue, but described by sector/scale instead of by company name — used for the
   # public-facing kinds (LinkedIn posts, site actus) so the real employer/client name never
   # even reaches the prompt, on top of the explicit ANONYMIZE_COMPANIES_RULE instruction.
   def anonymized_realisations_str
-    RealisationCatalog::ITEMS.map do |r|
-      "#{r[:id]} #{r[:titre]} — #{r[:scale]}, #{r[:type_orga]} — #{r[:resultat]}#{semantic_scope_line(r)}"
-    end.join("\n")
+    RealisationCatalog.to_prompt(:anonymized)
   end
 
-  def locked_realisation
-    return @locked_realisation if defined?(@locked_realisation)
-
-    @locked_realisation = generation.realisation_id.present? ? RealisationCatalog.find(generation.realisation_id) : nil
-  end
+  delegate :locked_realisation, to: :generation
 
   # When no source was provided, Generation#assign_auto_realisation (or a manual choice in the
   # form) has already fixed a single realisation — frame the post around it and its semantic_scope

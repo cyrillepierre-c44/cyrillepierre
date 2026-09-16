@@ -249,6 +249,46 @@ module RealisationCatalog
     ITEMS.find { |item| item[:id] == id }
   end
 
+  # Le catalogue tel qu'un LLM doit le lire. Trois formes selon l'usage :
+  # - :named      — titre, contexte (qui nomme l'entreprise) et résultat : lettres et propositions ;
+  # - :anonymized — secteur et taille à la place du contexte : contenus publics (posts, actus) ;
+  # - :detailed   — une fiche par réalisation avec tags, pour l'assistant de contact qui doit
+  #                 choisir laquelle citer face à un visiteur.
+  # Toutes portent le périmètre sémantique quand il existe : c'est lui qui interdit de rattacher
+  # un chiffre au sujet voisin (l'absentéisme n'est pas de la productivité). Avant que le rendu
+  # soit unique, le Studio l'oubliait — d'où des articles faux le 11/09/2026.
+  PROMPT_STYLES = %i[named anonymized detailed].freeze
+
+  def self.to_prompt(style)
+    raise ArgumentError, "style inconnu : #{style.inspect}" unless PROMPT_STYLES.include?(style)
+
+    entries = ITEMS.map { |item| public_send("#{style}_prompt_entry", item) }
+    entries.join(style == :detailed ? "\n\n" : "\n")
+  end
+
+  def self.named_prompt_entry(item)
+    "#{item[:id]} #{item[:titre]} — #{item[:context]} — #{item[:resultat]}#{semantic_scope_line(item, indent: 5)}"
+  end
+
+  def self.anonymized_prompt_entry(item)
+    "#{item[:id]} #{item[:titre]} — #{item[:scale]}, #{item[:type_orga]} — #{item[:resultat]}#{semantic_scope_line(item, indent: 5)}"
+  end
+
+  def self.detailed_prompt_entry(item)
+    [
+      "#{item[:id]} [scale:#{item[:scale]}] [type:#{item[:type_orga]}] [tags:#{item[:tags].join(', ')}]",
+      "  Contexte : #{item[:context]}",
+      "  Réalisation : #{item[:titre]}",
+      "  Résultat : #{item[:resultat]}"
+    ].join("\n") + semantic_scope_line(item, indent: 2)
+  end
+
+  def self.semantic_scope_line(item, indent:)
+    return "" if item[:semantic_scope].blank?
+
+    "\n#{' ' * indent}⚠ Périmètre : #{item[:semantic_scope]}"
+  end
+
   # Picks a realisation not present in exclude_ids, so that auto-generated posts (no
   # source provided) rotate through the catalogue instead of always citing the same ones.
   def self.pick_unused(exclude_ids: [])

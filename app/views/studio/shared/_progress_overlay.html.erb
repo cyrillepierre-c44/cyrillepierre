@@ -1,0 +1,14 @@
+<%# Voile de progression posé sur un formulaire du Studio pendant une action longue. Le
+    formulaire porte `data-controller="studio-generation"`, qui affiche ce voile à l'envoi.
+    `text_target` : vrai quand le contrôleur doit pouvoir changer le message en cours de route
+    (formulaire de création, qui passe du texte au visuel). %>
+<div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
+  <div class="studio-progress-box">
+    <p class="studio-progress-text"
+       <% if local_assigns[:text_target] %>data-studio-generation-target="progressText"<% end %>><%= text %></p>
+    <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
+    <% if local_assigns[:hint].present? %>
+      <p class="studio-progress-hint"><%= hint %></p>
+    <% end %>
+  </div>
+</div>

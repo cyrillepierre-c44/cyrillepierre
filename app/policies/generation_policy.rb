@@ -39,19 +39,5 @@ class GenerationPolicy < ApplicationPolicy
     admin? && record.publishable?
   end
 
-  class Scope < ApplicationPolicy::Scope
-    def resolve
-      user.admin? ? scope.all : scope.where(user: user)
-    end
-  end
-
-  private
-
-  def owner_or_admin?
-    admin? || record.user_id == user.id
-  end
-
-  def admin?
-    user.admin?
-  end
+  Scope = ApplicationPolicy::OwnedScope
 end

@@ -50,4 +50,22 @@ class ApplicationPolicy
 
     attr_reader :user, :scope
   end
+
+  # Le cas de tous les enregistrements du Studio : un admin voit tout, un éditeur ne voit que
+  # ce qu'il a créé. Une policy l'adopte avec `Scope = ApplicationPolicy::OwnedScope`.
+  class OwnedScope < Scope
+    def resolve
+      user.admin? ? scope.all : scope.where(user: user)
+    end
+  end
+
+  private
+
+  def admin?
+    user.admin?
+  end
+
+  def owner_or_admin?
+    admin? || record.user_id == user.id
+  end
 end

@@ -2,8 +2,36 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <%# Les deux mails du site (alerte interne, confirmation au visiteur) partagent cette
+        feuille. Avant, chacun embarquait un document HTML complet avec sa propre copie des
+        règles — et le layout, vide, les enveloppait dans un second <html>. %>
     <style>
-      /* Email styles need to be inline */
+      body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 24px; color: #1a202c; margin: 0; }
+      .card { background: #fff; border-radius: 10px; padding: 40px; max-width: 640px; margin: 0 auto; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+      .logo { display: inline-block; background: linear-gradient(135deg, #00d4ff, #8b5cf6); border-radius: 8px; color: #fff; font-weight: 700; font-size: 18px; padding: 6px 14px; letter-spacing: 0.05em; margin-bottom: 24px; }
+      h1 { color: #0d1b2a; font-size: 22px; margin: 0 0 8px; }
+      .subtitle { color: #64748b; font-size: 15px; margin-bottom: 28px; line-height: 1.6; }
+      .themes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+      .badge { background: #e0f7ff; color: #0077aa; border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 600; }
+      .section { margin-bottom: 28px; }
+      .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #94a3b8; font-weight: 700; margin-bottom: 10px; }
+      .info-line { font-size: 15px; margin-bottom: 4px; }
+      .info-line--muted { margin-top: 6px; color: #64748b; font-size: 13px; }
+      .info-line--muted small { font-size: 11px; color: #94a3b8; }
+      .summary-box { background: #f8fafc; border-left: 4px solid #00d4ff; padding: 16px 20px; border-radius: 0 8px 8px 0; white-space: pre-line; font-size: 15px; line-height: 1.8; color: #1a202c; }
+      .summary-box--precision { border-left-color: #8b5cf6; }
+      .transcript { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+      .chat-line { padding: 10px 14px; border-bottom: 1px solid #f0f4f8; font-size: 14px; display: flex; gap: 10px; }
+      .chat-line:last-child { border-bottom: none; }
+      .chat-line.assistant { background: #f8fafc; }
+      .role { font-weight: 700; min-width: 80px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #8b5cf6; padding-top: 1px; }
+      .chat-line.user .role { color: #00d4ff; }
+      .contact-block { background: #f8fafc; border-radius: 8px; padding: 20px 24px; }
+      .contact-line { font-size: 15px; margin-bottom: 6px; color: #1a202c; }
+      .contact-line:last-child { margin-bottom: 0; }
+      a { color: #0077aa; text-decoration: none; }
+      hr { border: none; border-top: 1px solid #e2e8f0; margin: 28px 0; }
+      .footer { font-size: 13px; color: #94a3b8; text-align: center; margin-top: 24px; }
     </style>
   </head>
 

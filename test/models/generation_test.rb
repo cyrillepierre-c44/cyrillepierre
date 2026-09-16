@@ -243,4 +243,15 @@ class GenerationTest < ActiveSupport::TestCase
 
     assert_equal "https://www.cyrillepierre.com/actus/#{generation.id}", generation.public_url
   end
+
+
+  test "locked_realisation resolves the catalogue entry, or nothing when none is set" do
+    user = User.create!(email: "lock-#{SecureRandom.hex(4)}@example.com", password: "password123")
+    id = RealisationCatalog::ITEMS.first[:id]
+    locked = Generation.new(user: user, kind: :linkedin_post, realisation_id: id)
+    free = Generation.new(user: user, kind: :cover_letter, realisation_id: nil)
+
+    assert_equal id, locked.locked_realisation[:id]
+    assert_nil free.locked_realisation
+  end
 end

@@ -1,8 +1,6 @@
 # Generates an illustration to accompany a LinkedIn post, via the same Mammouth gateway
 # already used for text generation in ContentGenerator.
 class VisualGenerator
-  MAMMOUTH_API_BASE = "https://api.mammouth.ai/v1"
-
   STYLE_PROMPT = <<~TXT
     Flat minimalist line-art illustration, dark navy (#1a2332) background, gold (#c9a961) lines only.
     Pick concrete visual elements that genuinely match the SPECIFIC subject described below — read it
@@ -30,7 +28,7 @@ class VisualGenerator
   end
 
   def call
-    image = mammouth_context.paint(prompt, model: image_model, provider: :openai, assume_model_exists: true)
+    image = Mammouth.paint(prompt, model: image_model)
     generation.visual.attach(io: StringIO.new(image.to_blob), filename: "visual.png", content_type: image.mime_type)
     generation
   rescue StandardError => e
@@ -42,15 +40,10 @@ class VisualGenerator
 
   attr_reader :generation
 
+  delegate :locked_realisation, to: :generation
+
   def image_model
     generation.image_model.presence || Generation::IMAGE_MODELS.keys.first
-  end
-
-  def mammouth_context
-    RubyLLM.context do |c|
-      c.openai_api_key = ENV.fetch("MAMMOUTH_API_KEY", nil)
-      c.openai_api_base = MAMMOUTH_API_BASE
-    end
   end
 
   # The generated post itself is the primary indication of what to depict — it carries the
@@ -65,12 +58,6 @@ class VisualGenerator
     parts = [STYLE_PROMPT, "Post LinkedIn à illustrer :\n#{generation.output}"]
     parts << locked_realisation_inspiration if locked_realisation
     parts.join("\n\n")
-  end
-
-  def locked_realisation
-    return @locked_realisation if defined?(@locked_realisation)
-
-    @locked_realisation = generation.realisation_id.present? ? RealisationCatalog.find(generation.realisation_id) : nil
   end
 
   def locked_realisation_inspiration

@@ -1,0 +1,8 @@
+<%# Bouton « copier » en icône, superposé en haut à droite du bloc qu'il copie. Le conteneur
+    porte `data-controller="studio-clipboard"` et le texte source la cible `source`.
+    `light` : variante pour un fond clair (aperçu LinkedIn). %>
+<button type="button"
+        class="studio-icon-btn studio-icon-btn--overlay<%= " studio-icon-btn--light" if local_assigns[:light] %>"
+        data-action="studio-clipboard#copy" title="Copier" aria-label="Copier">
+  <i class="fa-regular fa-copy"></i>
+</button>

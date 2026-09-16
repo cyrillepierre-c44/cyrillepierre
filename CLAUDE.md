@@ -128,7 +128,7 @@ Outil de génération de contenu par IA, réservé aux utilisateurs Devise authe
 
 **Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées, certaines avec un `semantic_scope` précisant pour quels sujets les utiliser/ne pas utiliser).
 
-**Génération** : `ContentGenerator` (service) construit le prompt système (règles d'écriture anti-IA-générique + prompt spécifique au `kind`) et appelle le LLM via `RubyLLM`. Provider unique : **Mammouth.ai** (clé `MAMMOUTH_API_KEY`, endpoint OpenAI-compatible `https://api.mammouth.ai/v1`) — l'ancien provider GitHub Models (gratuit, `GITHUB_KEY`) a expiré et a été retiré en août 2026 (choix de modèle, relecture, chatbot contact : tout passe par Mammouth désormais). Modèles au choix par génération (`Generation::LLM_MODELS`) : Gemini 3.5 Flash (défaut, `Generation::DEFAULT_LLM_MODEL`), Claude Sonnet 4.6/Opus 4.8, Mistral Large 3, GPT-5.4. La relecture orthographique finale tourne toujours sur Gemini 3.5 Flash (`ContentGenerator::PROOFREADING_MODEL`, rapide/peu cher) quel que soit le modèle choisi pour le brouillon. Le chatbot du formulaire de contact (`ContactsController#call_llm`, appel HTTP direct hors RubyLLM) utilise aussi Mammouth avec Gemini 3.5 Flash.
+**Génération** : `ContentGenerator` (service) construit le prompt système (règles d'écriture anti-IA-générique + prompt spécifique au `kind`) et appelle le LLM via `RubyLLM`. Provider unique : **Mammouth.ai**, porté par le module **`Mammouth`** (`app/services/mammouth.rb` : adresse, clé `MAMMOUTH_API_KEY`, modèle par défaut, `Mammouth.chat`/`Mammouth.paint`) — l'adresse et le modèle ne s'écrivent nulle part ailleurs, l'assistant de contact inclus. ⚠️ L'initialiseur RubyLLM le lit dans un `to_prepare` : un initialiseur s'exécute avant le chargement automatique de `app/`, sans ça `Mammouth` est une constante inconnue au démarrage — l'ancien provider GitHub Models (gratuit, `GITHUB_KEY`) a expiré et a été retiré en août 2026 (choix de modèle, relecture, chatbot contact : tout passe par Mammouth désormais). Modèles au choix par génération (`Generation::LLM_MODELS`) : Gemini 3.5 Flash (défaut, `Generation::DEFAULT_LLM_MODEL`), Claude Sonnet 4.6/Opus 4.8, Mistral Large 3, GPT-5.4. La relecture orthographique finale tourne toujours sur Gemini 3.5 Flash (`ContentGenerator::PROOFREADING_MODEL`, rapide/peu cher) quel que soit le modèle choisi pour le brouillon. Le chatbot du formulaire de contact (`ContactsController#call_llm`, appel HTTP direct hors RubyLLM) utilise aussi Mammouth avec Gemini 3.5 Flash.
 
 **Réalisation verrouillée pour les posts sans source** : `Generation#assign_auto_realisation` (callback `before_save`, uniquement si `linkedin_post?` et aucune source) fixe `realisation_id` par rotation via `RealisationCatalog.pick_unused` (exclut les réalisations utilisées dans les 10 derniers posts de l'utilisateur). But : éviter que le LLM invente un sujet puis cherche après-coup une réalisation qui colle à peu près — la réalisation est choisie *avant* génération et son `semantic_scope` devient le cadre obligatoire du prompt (`ContentGenerator#locked_realisation_block`). Un sélecteur dans le formulaire (`_form.html.erb`, visible seulement pour `linkedin_post`) permet d'imposer une réalisation précise à la place de la rotation auto. Dès qu'une source/brief est fournie, ce verrouillage ne s'applique pas : le LLM garde le catalogue complet et choisit librement.
 
@@ -146,9 +146,11 @@ Outil de génération de contenu par IA, réservé aux utilisateurs Devise authe
 qui dit explicitement à quels sujets elles ne s'appliquent **pas** (l'absentéisme n'est pas un
 sujet de productivité, une restructuration n'est pas de l'animation d'équipe). `ContactsController`
 l'a toujours transmis à son assistant ; `ContentGenerator` **jamais**, jusqu'au 11/09/2026 — d'où
-des contenus qui rattachaient un chiffre au sujet voisin. `semantic_scope_line` l'injecte désormais
-dans `realisations_str` **et** `anonymized_realisations_str`, donc dans les cinq types de contenu.
-Toute nouvelle façon de rendre le catalogue vers un LLM doit le reprendre.
+des contenus qui rattachaient un chiffre au sujet voisin. Depuis le 16/09/2026 le catalogue
+se rend lui-même vers les prompts, **`RealisationCatalog.to_prompt(style)`** (`:named` pour
+lettres et propositions, `:anonymized` pour les contenus publics, `:detailed` pour l'assistant de
+contact), et les trois formes portent le périmètre. Ne jamais recréer un rendu du catalogue à
+côté : c'est précisément l'oubli qui a produit les contenus faux.
 
 ⚠️ **Résultats de site, non décomposables** : les +8 % de TRS et −30 % d'aléas de la N°01 ne
 viennent pas de la fusion des silos seule. C'est un résultat de **site**, produit par des chantiers
@@ -427,5 +429,14 @@ base `btn-cp-outline` (`components/_global.scss`), qui porte la forme, les marge
 Employé seul sur le bouton Supprimer d'un prospect, le modificateur donnait un lien nu au milieu de
 deux boutons dessinés — sans aucune erreur, le CSS s'appliquant parfaitement. Le test du contrôleur
 verrouille la paire de classes.
+
+**Partiels du Studio** (`app/views/studio/shared/`) : `_progress_overlay` (voile d'attente des
+formulaires longs, avec `text_target: true` quand le contrôleur Stimulus doit changer le message)
+et `_copy_button` (`light: true` sur fond clair). La page de détail les rendait quatre et trois
+fois en dur avant le 16/09/2026.
+
+**Mails** : les deux gabarits de `ContactMailer` ne contiennent que leur contenu ; la feuille de
+style commune vit dans `layouts/mailer.html.erb`. Avant, chacun était un document HTML complet
+que le layout, vide, enveloppait dans un second `<html>`.
 
 **Bouton Copier** : icône seule (`fa-regular fa-copy`, classe `.studio-icon-btn`) superposée en haut à droite de la zone de texte concernée (`.studio-icon-btn--overlay`, le conteneur passe en `position: relative` via `.studio-output-box` ou `.studio-linkedin-preview`) plutôt qu'un bouton texte séparé en dessous — variante `--light` pour la carte blanche de l'aperçu LinkedIn. `studio_clipboard_controller.js` utilise `innerHTML` (pas `textContent`) pour le feedback "✓ copié", sinon l'icône `<i>` est détruite au moment de la restauration.

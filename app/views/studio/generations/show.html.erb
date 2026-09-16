@@ -54,13 +54,8 @@
                       html: { class: "studio-regenerate-form",
                               data: { controller: "studio-generation", turbo: false,
                                       action: "submit->studio-generation#submitting" } } do |f| %>
-          <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
-            <div class="studio-progress-box">
-              <p class="studio-progress-text">Génération en cours…</p>
-              <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
-              <p class="studio-progress-hint">Ça peut prendre jusqu'à une minute selon la source fournie.</p>
-            </div>
-          </div>
+          <%= render "studio/shared/progress_overlay", text: "Génération en cours…",
+                     hint: "Ça peut prendre jusqu'à une minute selon la source fournie." %>
 
           <%= f.select :llm_model, Generation::LLM_MODELS.map { |value, label| [label, value] },
                         { selected: @generation.llm_model }, class: "cf-input studio-regenerate-select" %>
@@ -125,10 +120,7 @@
                 <h3 class="studio-section-title"><%= Generation::SECTION_LABELS.fetch(key, key.to_s.humanize) %></h3>
                 <div class="studio-output-box">
                   <pre class="studio-output" data-studio-clipboard-target="source"><%= content %></pre>
-                  <button type="button" class="studio-icon-btn studio-icon-btn--overlay" data-action="studio-clipboard#copy"
-                          title="Copier" aria-label="Copier">
-                    <i class="fa-regular fa-copy"></i>
-                  </button>
+                  <%= render "studio/shared/copy_button" %>
                 </div>
               </div>
             <% end %>
@@ -143,10 +135,7 @@
                     Consultant indépendant · Management de transition, Excellence opérationnelle &amp; Tech/IA
                   </div>
                 </div>
-                <button type="button" class="studio-icon-btn studio-icon-btn--overlay studio-icon-btn--light"
-                        data-action="studio-clipboard#copy" title="Copier" aria-label="Copier">
-                  <i class="fa-regular fa-copy"></i>
-                </button>
+                <%= render "studio/shared/copy_button", light: true %>
               </div>
               <p class="studio-linkedin-preview-body"><%= formatted_post %></p>
               <pre class="d-none" data-studio-clipboard-target="source"><%= formatted_post %></pre>
@@ -154,10 +143,7 @@
           <% else %>
             <div data-controller="studio-clipboard" class="studio-output-box">
               <pre class="studio-output" data-studio-clipboard-target="source"><%= @generation.output %></pre>
-              <button type="button" class="studio-icon-btn studio-icon-btn--overlay" data-action="studio-clipboard#copy"
-                      title="Copier" aria-label="Copier">
-                <i class="fa-regular fa-copy"></i>
-              </button>
+              <%= render "studio/shared/copy_button" %>
             </div>
 
             <%# Une actu non publiée renvoie un 404 sur /actus : sans cet aperçu, il faudrait
@@ -218,13 +204,8 @@
                       html: { class: "studio-regenerate-form mt-2",
                               data: { controller: "studio-generation", turbo: false,
                                       action: "submit->studio-generation#submitting" } } do |f| %>
-          <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
-            <div class="studio-progress-box">
-              <p class="studio-progress-text">Génération du visuel en cours…</p>
-              <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
-              <p class="studio-progress-hint">Ça peut prendre jusqu'à une minute.</p>
-            </div>
-          </div>
+          <%= render "studio/shared/progress_overlay", text: "Génération du visuel en cours…",
+                     hint: "Ça peut prendre jusqu'à une minute." %>
 
           <%= f.select :image_model,
                         Generation::IMAGE_MODELS.map { |value, label| [label, value] },
@@ -249,12 +230,7 @@
           <%= form_for @generation, url: publish_to_linkedin_studio_generation_path(@generation), method: :patch,
                         html: { class: "mt-2", data: { controller: "studio-generation", turbo: false,
                                         action: "submit->studio-generation#submitting" } } do |f| %>
-            <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
-              <div class="studio-progress-box">
-                <p class="studio-progress-text">Publication sur LinkedIn en cours…</p>
-                <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
-              </div>
-            </div>
+            <%= render "studio/shared/progress_overlay", text: "Publication sur LinkedIn en cours…" %>
 
             <%= f.submit @generation.linkedin_published_at.present? ? "Republier sur LinkedIn" : "Publier sur LinkedIn",
                           class: "btn-cp-primary studio-visual-action",

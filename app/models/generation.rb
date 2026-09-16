@@ -51,7 +51,7 @@ class Generation < ApplicationRecord
     "gpt-5.4" => "GPT-5.4"
   }.freeze
 
-  DEFAULT_LLM_MODEL = "gemini-3.5-flash".freeze
+  DEFAULT_LLM_MODEL = Mammouth::DEFAULT_MODEL
 
   # All routed through Mammouth (image generation isn't available via the app's default
   # provider — see VisualGenerator). gpt-5.4-image-2 is deliberately excluded: it timed out
@@ -114,6 +114,12 @@ class Generation < ApplicationRecord
   # Adresse publique de la page, pour qu'un post LinkedIn puisse y renvoyer.
   def public_url
     "#{StructuredData::HOST}#{Rails.application.routes.url_helpers.actu_path(self)}"
+  end
+
+  # La réalisation imposée à un post sans source, par rotation (assign_auto_realisation) ou
+  # choix manuel dans le formulaire. Les deux générateurs, texte et visuel, la lisent ici.
+  def locked_realisation
+    RealisationCatalog.find(realisation_id) if realisation_id.present?
   end
 
   def linkedin_post_url

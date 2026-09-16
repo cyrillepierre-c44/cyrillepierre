@@ -41,4 +41,16 @@ class ApplicationPolicyTest < ActiveSupport::TestCase
 
     assert_raises(NoMethodError) { scope.resolve }
   end
+
+
+  # Le scope « ses propres enregistrements, tout pour un admin » est celui de tout le Studio :
+  # il vit dans la policy de base pour que les deux policies n'en portent pas chacune une copie.
+  test "the owned scope gives an editor their records and an admin everything" do
+    admin = User.create!(email: "admin-#{SecureRandom.hex(4)}@example.com", password: "password123", role: :admin)
+    mine = Generation.create!(user: @user, kind: :linkedin_post)
+    theirs = Generation.create!(user: admin, kind: :linkedin_post)
+
+    assert_equal [mine.id], ApplicationPolicy::OwnedScope.new(@user, Generation.all).resolve.pluck(:id)
+    assert_equal [mine.id, theirs.id].sort, ApplicationPolicy::OwnedScope.new(admin, Generation.all).resolve.pluck(:id).sort
+  end
 end

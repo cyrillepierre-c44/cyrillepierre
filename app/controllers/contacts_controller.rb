@@ -132,7 +132,6 @@ class ContactsController < ApplicationController
 
   # `private` ne s'applique pas aux constantes : les déclarer avant évite de laisser croire
   # le contraire.
-  REALISATIONS = RealisationCatalog::ITEMS
 
   # Gemini 3.5 Flash est un modèle à raisonnement : ses tokens de réflexion sont décomptés du
   # MÊME budget que la réponse visible. À 600, il dépensait ~575 tokens à réfléchir et la
@@ -183,16 +182,7 @@ class ContactsController < ApplicationController
 
   def build_system_prompt(themes, sector = nil, size = nil)
     themes_str = themes.any? ? themes.join(", ") : "non précisés"
-    realisations_str = REALISATIONS.map do |r|
-      lines = [
-        "#{r[:id]} [scale:#{r[:scale]}] [type:#{r[:type_orga]}] [tags:#{r[:tags].join(', ')}]",
-        "  Contexte : #{r[:context]}",
-        "  Réalisation : #{r[:titre]}",
-        "  Résultat : #{r[:resultat]}"
-      ]
-      lines << "  ⚠ Périmètre sémantique : #{r[:semantic_scope]}" if r[:semantic_scope]
-      lines.join("\n")
-    end.join("\n\n")
+    realisations_str = RealisationCatalog.to_prompt(:detailed)
 
     visitor_context_lines = []
     visitor_context_lines << "Secteur : #{sector}" if sector.present?
@@ -336,15 +326,15 @@ class ContactsController < ApplicationController
   # Renvoie [contenu, tronqué?]. `finish_reason == "length"` est le seul signal de troncature :
   # la passerelle répond 200 avec une phrase coupée, sans erreur d'aucune sorte.
   def request_llm(messages, reasoning_effort: nil)
-    uri = URI("https://api.mammouth.ai/v1/chat/completions")
+    uri = URI(Mammouth::CHAT_COMPLETIONS_URL)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.read_timeout = 45
 
     req = Net::HTTP::Post.new(uri)
-    req["Authorization"] = "Bearer #{ENV.fetch('MAMMOUTH_API_KEY', '')}"
+    req["Authorization"] = "Bearer #{Mammouth.api_key}"
     req["Content-Type"]  = "application/json"
-    body = { model: "gemini-3.5-flash", messages: messages, max_tokens: LLM_MAX_TOKENS, temperature: 0.7 }
+    body = { model: Mammouth::DEFAULT_MODEL, messages: messages, max_tokens: LLM_MAX_TOKENS, temperature: 0.7 }
     body[:reasoning_effort] = reasoning_effort if reasoning_effort
     req.body = body.to_json
 

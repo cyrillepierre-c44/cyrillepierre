@@ -13,13 +13,8 @@
     </p>
   <% end %>
 
-  <div class="studio-progress-overlay d-none" data-studio-generation-target="overlay">
-    <div class="studio-progress-box">
-      <p class="studio-progress-text" data-studio-generation-target="progressText">Génération en cours…</p>
-      <div class="studio-progress-bar"><div class="studio-progress-bar-fill"></div></div>
-      <p class="studio-progress-hint">Ça peut prendre jusqu'à une minute selon la source fournie.</p>
-    </div>
-  </div>
+  <%= render "studio/shared/progress_overlay", text: "Génération en cours…", text_target: true,
+             hint: "Ça peut prendre jusqu'à une minute selon la source fournie." %>
 
   <div class="studio-card">
     <h2 class="studio-card-subtitle">1. Type de contenu</h2>
