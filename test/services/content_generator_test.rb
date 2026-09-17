@@ -518,6 +518,14 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     # (« Class A cleanroom », la manière d'obtenir un résultat). Deux interdictions de plus.
     assert_includes instructions, "NOTES INTERNES de Cyrille"
     assert_includes instructions, "contexte EXACT du catalogue"
+    # Même première note : « incidents » pour des aléas, « audited » pour des comptes déposés, le
+    # fonds nommé au lecteur, « gisements » laissé en français, et un « levier unique » contredit par
+    # la fin de la note. Glossaire, exactitude des qualificatifs et cohérence, en règles.
+    assert_includes instructions, "aléas → unplanned disruptions"
+    assert_includes instructions, "Des comptes « déposés » ne sont pas"
+    assert_includes instructions, "L'actionnaire ou le fonds ne se nomme jamais"
+    assert_includes instructions, "aucun mot français ne subsiste dans un texte anglais"
+    assert_includes instructions, "levier unique qui changerait tout"
   end
 
   test "the executive brief hands over the published articles as complementary reading" do

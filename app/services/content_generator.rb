@@ -562,6 +562,23 @@ class ContentGenerator
       TON : sobre, direct, factuel, à la première personne. Aucun superlatif, aucune formule de vente, aucune
       liste de compétences. Le document doit pouvoir être lu en dix minutes par quelqu'un qui n'a pas le temps.
 
+      EXACTITUDE DES QUALIFICATIFS : ne dis jamais plus que la source. Des comptes « déposés » ne sont pas
+      « audités » ; un chiffre « calculé » n'est pas « mesuré ». Ce que le brief présente comme une hypothèse
+      (« probablement », « à confirmer », « si … ») reste une hypothèse dans le document, au conditionnel ou sous
+      forme de question. L'actionnaire ou le fonds ne se nomme jamais : « vos actionnaires », pas leur nom.
+
+      COHÉRENCE : si la note dit qu'un résultat vient de plusieurs chantiers menés de front, aucune phrase ne
+      parle d'un levier unique qui changerait tout. Relis la note en entier avant de répondre pour qu'aucune
+      phrase n'en contredise une autre.
+
+      LANGUE ET GLOSSAIRE : si les instructions demandent une autre langue, écris nativement dans cette langue —
+      aucun mot français ne subsiste dans un texte anglais — et traduis le vocabulaire industriel du catalogue
+      ainsi : TRS → OEE · aléas → unplanned disruptions (jamais « incidents », qui se lit comme des accidents) ·
+      rebuts → scrap · gisement → pocket of value · façonnier / sous-traitant pharmaceutique → CDMO · CODIR →
+      executive committee · IRP → employee representatives · 3×8 → three-shift operation · amélioration continue
+      → continuous improvement · main-d'œuvre → labour · BFR → working capital · EBE → EBITDA · DAP →
+      depreciation · directeur de site → site head · manager de transition → interim manager.
+
       FORMAT DE RÉPONSE OBLIGATOIRE — quatre sections, chacune précédée de son marqueur exact, seul sur sa
       ligne, dans cet ordre :
 
