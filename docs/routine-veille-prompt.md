@@ -7,7 +7,9 @@ Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environ
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
 connecteurs, ce qu'a montré le premier passage). Version 3 le 17/09 après le second passage :
 la presse se juge sur le flux, sans lire l'article ; seul Robert Half publie ses missions ; la
-date du condensé est le lundi de la semaine en cours. ⚠ Ne jamais lancer deux passages dans la
+date du condensé est le lundi de la semaine en cours ; v3.1 : elle lit aussi les articles publiés
+sur le site (`www.cyrillepierre.com` ajouté aux domaines autorisés de l'environnement) pour les
+citer dans l'accroche. ⚠ Ne jamais lancer deux passages dans la
 même heure : le second du 17/09 a trouvé le quota Indeed épuisé (erreur 429) par le premier. Ce fichier est la copie de
 référence de sa consigne : modifier ici, puis reporter dans la routine. Cadrage complet :
 `docs/cadrage-veille-prospects.md`.*
@@ -28,6 +30,10 @@ par mail. Tu n'écris ni ne commites rien dans le dépôt : tu le lis seulement.
   signal retenu tu citeras la réalisation la plus comparable, en respectant strictement le
   champ `semantic_scope` quand il existe (il dit à quels sujets une réalisation ne s'applique
   PAS). Ne jamais attribuer un chiffre à un autre sujet que le sien.
+- Les articles publiés sur le site : lis `https://www.cyrillepierre.com/sitemap.xml`, puis chaque
+  page `/actus/…` qu'il liste (le titre et les premiers paragraphes suffisent). Quand un article
+  traite du sujet exact d'un signal, l'accroche le cite en une phrase avec son adresse : c'est la
+  seule pièce qui montre la compétence sans l'affirmer. Sans article sur le sujet, ne force pas.
 
 ## 2. Collecte, dans cet ordre
 
