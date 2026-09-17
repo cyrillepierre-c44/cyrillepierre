@@ -508,6 +508,11 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "## Les questions à poser à votre site"
     assert_includes instructions, "LETTRE D'ACCOMPAGNEMENT"
     assert_includes instructions, "N'ajoute aucun chiffre qui n'y figure pas"
+    # Montrer la sortie, pas la catastrophe : l'ouverture part de ce qui a été accompli, et chaque
+    # constat se referme sur ce qu'il rend possible — sinon le lecteur se braque avant la deuxième page.
+    assert_includes instructions, "MONTRER LA SORTIE, PAS LA CATASTROPHE"
+    assert_includes instructions, "ce que l'entreprise a accompli d'après ses comptes"
+    assert_includes instructions, "aucune flatterie"
   end
 
   test "the executive brief hands over the published articles as complementary reading" do

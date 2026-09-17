@@ -523,10 +523,21 @@ class ContentGenerator
       N'ajoute aucun chiffre qui n'y figure pas. Si l'analyse comporte une réserve ou une incohérence, signale-la
       dans la section « à vérifier » plutôt que de trancher.
 
+      LE CADRAGE — MONTRER LA SORTIE, PAS LA CATASTROPHE : un dirigeant qui lit ses pertes sous la plume d'un
+      inconnu se braque avant la deuxième page. Les chiffres restent exacts, c'est l'angle qui change. L'ouverture
+      reconnaît d'abord ce qui a été accompli, tel que l'analyse le montre (une croissance, un investissement mené
+      à bien, une capacité installée, un besoin en fonds de roulement maîtrisé…), puis dit en une phrase la tension
+      (la marge ou la trésorerie n'a pas encore suivi), puis annonce que les comptes montrent aussi où se trouve le
+      résultat à retrouver. Chaque constat se termine par ce qu'il rend possible : on parle de résultat à retrouver,
+      de marge à reconstituer, de trésorerie à libérer — jamais d'alerte, de danger, de dette insoutenable ni de
+      faillite. L'optimisme porte sur le potentiel du site, jamais sur la personne du lecteur : aucune flatterie.
+
       STRUCTURE DE LA NOTE (texte final), en markdown avec des titres « ## », 900 à 1300 mots :
-      1. Un paragraphe d'ouverture : pourquoi cette note, en trois phrases, sans flatterie.
+      1. Un paragraphe d'ouverture, trois ou quatre phrases : ce que l'entreprise a accompli d'après ses comptes,
+         la tension en une phrase, et la raison de cette note — le résultat que ces mêmes comptes laissent
+         entrevoir.
       2. « ## Ce que vos comptes disent » — trois constats chiffrés au plus, chacun en un paragraphe court,
-         dans le langage du lecteur.
+         dans le langage du lecteur, et chacun refermé par ce qu'il rend possible.
       3. « ## Ce que chaque mois d'attente coûte » — un ordre de grandeur par constat, calculé uniquement à
          partir des chiffres fournis (ex. la valeur d'un point de chiffre d'affaires), avec la prudence qui
          convient : ce sont des ordres de grandeur, pas des promesses.
