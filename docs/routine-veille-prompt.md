@@ -4,8 +4,11 @@
 https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans le cloud
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
-« Veille » (accès réseau personnalisé : presse et cabinets autorisés — l'environnement par défaut
-bloquait tout hors connecteurs, ce qu'a montré le premier passage). Ce fichier est la copie de
+« Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
+connecteurs, ce qu'a montré le premier passage). Version 3 le 17/09 après le second passage :
+la presse se juge sur le flux, sans lire l'article ; seul Robert Half publie ses missions ; la
+date du condensé est le lundi de la semaine en cours. ⚠ Ne jamais lancer deux passages dans la
+même heure : le second du 17/09 a trouvé le quota Indeed épuisé (erreur 429) par le premier. Ce fichier est la copie de
 référence de sa consigne : modifier ici, puis reporter dans la routine. Cadrage complet :
 `docs/cadrage-veille-prospects.md`.*
 
@@ -48,19 +51,23 @@ publication, lien.
 **B. Presse et actualité (Bash + curl sur les flux Google Actualités, sans clé).** Pour
 chacune de ces requêtes, lis le flux
 `https://news.google.com/rss/search?q=<requête encodée>&hl=fr&gl=FR&ceid=FR:fr` et retiens
-les articles de moins de 30 jours concernant une entreprise industrielle de la région :
-« usine Auvergne-Rhône-Alpes investissement », « usine Rhône extension », « usine Isère
-nouvelle ligne », « usine Loire modernisation », « site industriel Ain recrutement »,
+les articles de moins de 30 jours dont le titre concerne une entreprise industrielle de la
+région : « usine Auvergne-Rhône-Alpes investissement », « usine Rhône extension », « usine
+Isère nouvelle ligne », « usine Loire modernisation », « site industriel Ain recrutement »,
 « usine Lyon rappel produit », « usine Auvergne-Rhône-Alpes nouveau directeur »,
-« industriel Auvergne-Rhône-Alpes montée en cadence ».
+« industriel Auvergne-Rhône-Alpes montée en cadence ». Le flux donne le titre, la date et le
+lien : c'est suffisant pour signaler. N'essaie pas de lire l'article lui-même — les sites de
+presse refusent les lectures automatiques, et ce n'est pas un échec : Cyrille le lira. Un
+signal de presse se décrit donc par son titre, sa date, sa source et le lien, sans rien
+ajouter que le titre ne dise pas.
 
-**C. Cabinets de management de transition.** Lis (WebFetch) les pages « missions » ou
-« offres de mission » de Delville Management, X-PM, Wayden et Robert Half Management de
-transition, et relève les missions industrielles en Auvergne-Rhône-Alpes ou vallée du Rhône :
-direction de site, direction de production, direction industrielle, amélioration continue.
-Valtus n'a pas de page publique de missions (constaté le 17/09/2026) : ne pas insister. Une
-mission ne compte que si tu as lu la page qui la décrit ; un extrait de moteur de recherche
-n'est pas une source.
+**C. Cabinets de management de transition.** Lis (WebFetch) la page des missions de Robert
+Half Management de transition et relève les missions industrielles en Auvergne-Rhône-Alpes ou
+vallée du Rhône : direction de site, direction de production, direction industrielle,
+amélioration continue. Constaté le 17/09/2026 : Valtus, Delville Management et Wayden ne
+publient pas de liste de missions, X-PM refuse les lectures automatiques — une tentative au
+plus pour chacun, sans insister ni le compter comme un échec. Une mission ne compte que si tu
+as lu la page qui la décrit ; un extrait de moteur de recherche n'est pas une source.
 
 Ne consulte jamais LinkedIn, ni aucun site dont tu ne peux lire le contenu sans te connecter.
 
@@ -90,7 +97,8 @@ dis-le : un condensé vide et honnête vaut mieux qu'un condensé rempli.
 ## 5. Envoie le condensé par mail (connecteur Gmail)
 
 Destinataire : cyrille.pierre@gmail.com. Objet : « Veille signaux d'affaires — semaine du
-<date du lundi, format JJ/MM/AAAA> ». Corps en français, sobre, dans cet ordre :
+<date du lundi de la semaine EN COURS, format JJ/MM/AAAA — si tu tournes un autre jour que
+lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, sobre, dans cet ordre :
 
 1. **Les 5 signaux à regarder** (au plus cinq, classés par score décroissant). Pour chacun :
    - entreprise, lieu, secteur (si connu) ;
@@ -104,7 +112,9 @@ Destinataire : cyrille.pierre@gmail.com. Objet : « Veille signaux d'affaires �
 2. **Les autres signaux vus**, en une ligne chacun avec le lien, pour que Cyrille juge
    lui-même ce que tu as écarté du top 5.
 3. **Ce que tu as consulté** : nombre d'annonces lues par source, flux presse lus, pages de
-   cabinets lues, et ce qui n'a pas répondu.
+   cabinets lues, et ce qui n'a pas répondu. Une erreur Indeed « 429 » ou « rate limit » est
+   un quota épuisé, pas une panne : attends, puis reprends ; ne conclus jamais que la source
+   est hors service sans avoir réessayé après le délai indiqué.
 4. Une ligne finale : le temps que la collecte t'a pris, et une chose que tu changerais
    dans la consigne si tu pouvais.
 
