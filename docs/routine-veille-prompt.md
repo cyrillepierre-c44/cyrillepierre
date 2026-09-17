@@ -3,8 +3,11 @@
 *Routine créée le 17/09/2026, identifiant `trig_01ELuLnG7oSDJH3YMy4wmhY4`, page :
 https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans le cloud
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
-Gmail, dépôt en lecture seule. Ce fichier est la copie de référence de sa consigne : modifier
-ici, puis reporter dans la routine. Cadrage complet : `docs/cadrage-veille-prospects.md`.*
+Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
+« Veille » (accès réseau personnalisé : presse et cabinets autorisés — l'environnement par défaut
+bloquait tout hors connecteurs, ce qu'a montré le premier passage). Ce fichier est la copie de
+référence de sa consigne : modifier ici, puis reporter dans la routine. Cadrage complet :
+`docs/cadrage-veille-prospects.md`.*
 
 ---
 
@@ -25,12 +28,17 @@ par mail. Tu n'écris ni ne commites rien dans le dépôt : tu le lis seulement.
 
 ## 2. Collecte, dans cet ordre
 
-**A. Indeed (connecteur Indeed, pays FR).** Lance ces recherches, chacune sur « Lyon »,
-« Grenoble », « Saint-Étienne », « Annecy », « Clermont-Ferrand » et « Valence » :
-« directeur de production », « directeur de site industriel », « directeur d'usine »,
-« directeur des opérations industrie », « responsable de production », « responsable
-amélioration continue », « responsable lean manufacturing », « responsable maintenance
-industrielle ». Ne retiens que les postes d'encadrement en industrie manufacturière
+Travaille seul et en séquence : ne lance pas de sous-agents en parallèle. Le connecteur Indeed
+limite le débit ; en cas de réponse « rate limit », attends le délai indiqué (outil Monitor)
+puis reprends là où tu en étais. Si un canal est inaccessible (réseau bloqué, site en panne),
+dis-le dans le mail plutôt que de le remplacer par des extraits non vérifiés.
+
+**A. Indeed (connecteur Indeed, pays FR).** Lance ces recherches une par une, chacune sur
+« Lyon », « Grenoble », « Saint-Étienne », « Annecy », « Clermont-Ferrand » et « Valence » :
+« directeur de production », « directeur de site industriel », « directeur des opérations »,
+« responsable de production », « responsable amélioration continue » (30 recherches). Ne
+demande le détail d'une annonce (`get_job_details`) que pour les candidates au top 5, huit
+appels au plus. Ne retiens que les postes d'encadrement en industrie manufacturière
 (agroalimentaire, pharma, chimie, mécanique, métallurgie, plasturgie, électronique,
 textile technique). Écarte les postes d'opérateur, technicien, commercial, BTP, logistique
 pure, intérim d'exécution, et les annonces de cabinets de recrutement sans entreprise
@@ -46,11 +54,13 @@ nouvelle ligne », « usine Loire modernisation », « site industriel Ain recru
 « usine Lyon rappel produit », « usine Auvergne-Rhône-Alpes nouveau directeur »,
 « industriel Auvergne-Rhône-Alpes montée en cadence ».
 
-**C. Cabinets de management de transition.** Cherche sur le web les pages « missions » ou
-« offres de mission » de Valtus, Delville Management, X-PM, Wayden et Robert Half
-Management de transition, et relève les missions industrielles en Auvergne-Rhône-Alpes ou
-vallée du Rhône : direction de site, direction de production, direction industrielle,
-amélioration continue.
+**C. Cabinets de management de transition.** Lis (WebFetch) les pages « missions » ou
+« offres de mission » de Delville Management, X-PM, Wayden et Robert Half Management de
+transition, et relève les missions industrielles en Auvergne-Rhône-Alpes ou vallée du Rhône :
+direction de site, direction de production, direction industrielle, amélioration continue.
+Valtus n'a pas de page publique de missions (constaté le 17/09/2026) : ne pas insister. Une
+mission ne compte que si tu as lu la page qui la décrit ; un extrait de moteur de recherche
+n'est pas une source.
 
 Ne consulte jamais LinkedIn, ni aucun site dont tu ne peux lire le contenu sans te connecter.
 
