@@ -540,6 +540,7 @@ DEPENDENCIES
   jbuilder
   kamal
   letter_opener_web
+  matrix
   minitest-mock
   nokogiri
   pdf-reader

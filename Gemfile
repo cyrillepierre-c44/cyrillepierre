@@ -53,6 +53,10 @@ gem "pdf-reader"
 # La note de diagnostic en PDF paginé A4, générée côté serveur (pure Ruby, polices vendorées
 # dans vendor/fonts — les polices intégrées de Prawn ne couvrent pas « → », « × » ou « ≈ »)
 gem "prawn"
+# Prawn exige `matrix`, gem « bundled » de Ruby 3.1+ qui n'est plus chargeable sans être déclarée.
+# En local elle arrivait par Capybara (groupe test) ; en production elle manquait, et Heroku
+# refusait le build (« error while trying to load the gem 'prawn' »).
+gem "matrix"
 # Active Storage backend in production — Heroku's filesystem is ephemeral, so :local would
 # lose uploaded/generated files on every deploy or dyno restart.
 gem "cloudinary"
