@@ -574,8 +574,9 @@ class ContentGenerator
 
     lines = articles.map { |a| "- #{a.display_title} → #{a.public_url}" }
     <<~BLOCK
-      ARTICLES PUBLIÉS PAR CYRILLE (à proposer en lecture complémentaire quand le sujet correspond, avec
-      l'adresse ; jamais pour en recopier le contenu) :
+      ARTICLES PUBLIÉS PAR CYRILLE (à proposer en lecture complémentaire quand le sujet correspond, sous la
+      forme d'un lien markdown [titre de l'article](adresse) — une adresse nue ne devient pas cliquable ;
+      jamais pour en recopier le contenu) :
       #{lines.join("\n")}
     BLOCK
   end
