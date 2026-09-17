@@ -244,6 +244,28 @@ module Studio
                            status: :generated, output: output }.merge(attrs))
     end
 
+    # --- formulaire : l'ordre suit la pensée, pas l'histoire du code -----------------------------
+
+    test "the form asks in the order one thinks: what, from what, how, title, model" do
+      get new_studio_generation_path
+
+      assert_response :success
+      titles = css_select(".studio-card-subtitle").map(&:text).map(&:strip)
+      assert_equal [ "1. Type de contenu", "2. Source", "3. Précisions", "4. Titre (optionnel)", "5. Modèle IA" ], titles
+    end
+
+    # L'orientation ne concerne que les contenus publics, la réalisation que le post, et l'aide de la
+    # source change par type : le gabarit porte les types concernés, le contrôleur Stimulus affiche.
+    test "the form scopes its optional fields and hints to the kinds they concern" do
+      get new_studio_generation_path(kind: "executive_brief")
+
+      assert_select "[data-studio-generation-target=orientationField][data-kinds=?]", "linkedin_post site_actu article"
+      assert_select "[data-studio-generation-target=realisationField]", 1
+      assert_select "[data-studio-generation-target=sourceHint][data-kinds=executive_brief]", text: /analyse financière validée/
+      assert_select "[data-studio-generation-target=sourceHint][data-kinds=?]", "site_actu article"
+      assert_select "input[type=checkbox][name=?]", "generation[generate_visual]", 1
+    end
+
     test "the executive brief opens as a standalone printable document" do
       brief = executive_brief
 

@@ -87,67 +87,11 @@
     </div>
   </div>
 
+  <%# L'ordre suit la pensée de celui qui remplit, pas l'histoire du code : ce que j'écris, à partir
+      de quoi, comment, sous quel titre, avec quel modèle. Le formulaire avait été bâti pour le post
+      LinkedIn et posait l'orientation et le modèle avant la source. %>
   <div class="studio-card">
-    <h2 class="studio-card-subtitle">2. Orientation</h2>
-    <div class="cf-field">
-      <%= f.select :orientation,
-                    Generation::ORIENTATION_LABELS.map { |value, label| [label, value] },
-                    { selected: generation.orientation.presence || "consultant" },
-                    class: "cf-input" %>
-      <p class="studio-field-hint">Utile pour les posts LinkedIn et les actus du site — change le ton et l'appel à l'action.</p>
-    </div>
-  </div>
-
-  <div class="studio-card d-none" data-studio-generation-target="realisationField">
-    <h2 class="studio-card-subtitle">Réalisation à mettre en avant (optionnel)</h2>
-    <div class="cf-field">
-      <%= f.select :realisation_id,
-                    options_for_select(
-                      [["Laisser l'IA choisir", ""]] +
-                      RealisationCatalog::ITEMS.map { |r| ["#{r[:id]} — #{r[:titre]}", r[:id]] },
-                      generation.realisation_id
-                    ), {}, class: "cf-input" %>
-      <p class="studio-field-hint">
-        Si tu colles une source ou un brief, l'IA choisit elle-même la réalisation la plus pertinente — ce
-        sélecteur n'impose un choix que pour les posts générés sans source.
-      </p>
-    </div>
-
-    <% if local_assigns.fetch(:show_generate_visual_option, false) %>
-      <div class="cf-field cf-field--checkbox">
-        <label>
-          <%= f.check_box :generate_visual %>
-          Générer aussi un visuel juste après le texte
-        </label>
-      </div>
-      <div class="cf-field">
-        <%= f.select :image_model,
-                      Generation::IMAGE_MODELS.map { |value, label| [label, value] },
-                      { selected: generation.image_model }, class: "cf-input" %>
-        <p class="studio-field-hint">Modèle utilisé si tu coches la case ci-dessus.</p>
-      </div>
-    <% end %>
-  </div>
-
-  <div class="studio-card">
-    <h2 class="studio-card-subtitle">3. Titre (optionnel)</h2>
-    <div class="cf-field">
-      <%= f.text_field :title, class: "cf-input", placeholder: "Donne un nom à cette génération" %>
-    </div>
-  </div>
-
-  <div class="studio-card">
-    <h2 class="studio-card-subtitle">4. Modèle IA</h2>
-    <div class="cf-field">
-      <%= f.select :llm_model,
-                    Generation::LLM_MODELS.map { |value, label| [label, value] },
-                    { selected: generation.llm_model.presence || Generation::DEFAULT_LLM_MODEL },
-                    class: "cf-input" %>
-    </div>
-  </div>
-
-  <div class="studio-card">
-    <h2 class="studio-card-subtitle">5. Source</h2>
+    <h2 class="studio-card-subtitle">2. Source</h2>
 
     <div class="studio-source-tabs" role="tablist">
       <button type="button" class="studio-source-tab studio-source-tab--active"
@@ -163,9 +107,22 @@
 
     <div class="cf-field studio-source-panel" data-studio-generation-target="sourcePanel" data-source="text">
       <%= f.text_area :input_text, class: "cf-input cf-textarea", rows: 8, placeholder: "Colle ici le texte source (brief, offre d'emploi, notes…)" %>
-      <p class="studio-field-hint">
-        Laisse vide pour que l'IA invente un post à partir du profil de Cyrille (CV, réalisations).
-        Pour une note de diagnostic, colle ici l'analyse financière validée, à la suite du brief prospect.
+      <%# Une aide par type, la bonne étant affichée par le contrôleur Stimulus selon le type coché. %>
+      <p class="studio-field-hint" data-studio-generation-target="sourceHint" data-kinds="linkedin_post">
+        Laisse vide pour que l'IA invente un post à partir du profil de Cyrille (CV, réalisations), ou colle un brief, un article, des notes.
+      </p>
+      <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="cover_letter">
+        Colle l'offre d'emploi ou de mission : la lettre s'écrit contre elle.
+      </p>
+      <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="commercial_proposal">
+        Colle le brief client — il est pré-rempli quand tu viens d'une fiche prospect.
+      </p>
+      <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="executive_brief">
+        Le brief prospect est pré-rempli depuis la fiche. Colle à sa suite l'<strong>analyse financière validée</strong> :
+        la note ne prend aucun chiffre qui n'y figure pas.
+      </p>
+      <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="site_actu article">
+        Colle la matière (notes, source, question à traiter), ou laisse vide pour partir du catalogue de réalisations.
       </p>
     </div>
 
@@ -180,9 +137,71 @@
   </div>
 
   <div class="studio-card">
-    <h2 class="studio-card-subtitle">6. Instructions complémentaires (optionnel)</h2>
+    <h2 class="studio-card-subtitle">3. Précisions</h2>
+
+    <%# L'orientation ne change le ton que des contenus publics : la montrer pour une lettre ou une
+        note posait une question sans objet. %>
+    <div class="cf-field d-none" data-studio-generation-target="orientationField" data-kinds="linkedin_post site_actu article">
+      <%= f.label :orientation, "Orientation", class: "cf-label" %>
+      <%= f.select :orientation,
+                    Generation::ORIENTATION_LABELS.map { |value, label| [label, value] },
+                    { selected: generation.orientation.presence || "consultant" },
+                    class: "cf-input" %>
+      <p class="studio-field-hint">Change le ton et l'appel à l'action des posts LinkedIn, des actus et des articles.</p>
+    </div>
+
+    <div class="d-none" data-studio-generation-target="realisationField">
+      <div class="cf-field">
+        <%= f.label :realisation_id, "Réalisation à mettre en avant (optionnel)", class: "cf-label" %>
+        <%= f.select :realisation_id,
+                      options_for_select(
+                        [["Laisser l'IA choisir", ""]] +
+                        RealisationCatalog::ITEMS.map { |r| ["#{r[:id]} — #{r[:titre]}", r[:id]] },
+                        generation.realisation_id
+                      ), {}, class: "cf-input" %>
+        <p class="studio-field-hint">
+          Si tu colles une source ou un brief, l'IA choisit elle-même la réalisation la plus pertinente — ce
+          sélecteur n'impose un choix que pour les posts générés sans source.
+        </p>
+      </div>
+
+      <% if local_assigns.fetch(:show_generate_visual_option, false) %>
+        <div class="cf-field cf-field--checkbox">
+          <label>
+            <%= f.check_box :generate_visual %>
+            Générer aussi un visuel juste après le texte
+          </label>
+        </div>
+        <div class="cf-field">
+          <%= f.select :image_model,
+                        Generation::IMAGE_MODELS.map { |value, label| [label, value] },
+                        { selected: generation.image_model }, class: "cf-input" %>
+          <p class="studio-field-hint">Modèle utilisé si tu coches la case ci-dessus.</p>
+        </div>
+      <% end %>
+    </div>
+
     <div class="cf-field">
+      <%= f.label :extra_instructions, "Instructions complémentaires (optionnel)", class: "cf-label" %>
       <%= f.text_area :extra_instructions, class: "cf-input cf-textarea", rows: 3, placeholder: "Ton à adopter, points à mettre en avant…" %>
+    </div>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">4. Titre (optionnel)</h2>
+    <div class="cf-field">
+      <%= f.text_field :title, class: "cf-input", placeholder: "Donne un nom à cette génération" %>
+    </div>
+  </div>
+
+  <div class="studio-card">
+    <h2 class="studio-card-subtitle">5. Modèle IA</h2>
+    <div class="cf-field">
+      <%= f.select :llm_model,
+                    Generation::LLM_MODELS.map { |value, label| [label, value] },
+                    { selected: generation.llm_model.presence || Generation::DEFAULT_LLM_MODEL },
+                    class: "cf-input" %>
+      <p class="studio-field-hint">Gemini par défaut : rapide et suffisant pour un premier jet. À changer si le résultat déçoit.</p>
     </div>
   </div>
 

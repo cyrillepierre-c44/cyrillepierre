@@ -1,7 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["tabButton", "sourcePanel", "submitButton", "overlay", "realisationField", "progressText"]
+  static targets = ["tabButton", "sourcePanel", "submitButton", "overlay", "realisationField", "progressText",
+                    "orientationField", "sourceHint"]
 
   // Generating an article with a visual is two sequential backend calls (text, then image) in a
   // single synchronous request — there is no real-time progress to poll, so we approximate it by
@@ -10,18 +11,30 @@ export default class extends Controller {
   static TEXT_STAGE_DURATION_MS = 12000
 
   connect() {
-    this.toggleRealisationField()
+    this.applyKind()
   }
 
   selectKind() {
-    this.toggleRealisationField()
+    this.applyKind()
   }
 
-  toggleRealisationField() {
-    if (!this.hasRealisationFieldTarget) return
-
+  // Chaque type de contenu n'a pas les mêmes questions : la réalisation et le visuel ne concernent
+  // que le post LinkedIn, l'orientation que les contenus publics, et l'aide de la source change.
+  // Un élément porte `data-kinds="a b"` : il n'est visible que si le type coché en fait partie.
+  applyKind() {
     const checked = this.element.querySelector('input[name="generation[kind]"]:checked')
-    this.realisationFieldTarget.classList.toggle("d-none", !checked || checked.value !== "linkedin_post")
+    const kind = checked ? checked.value : null
+
+    if (this.hasRealisationFieldTarget) {
+      this.realisationFieldTarget.classList.toggle("d-none", kind !== "linkedin_post")
+    }
+    this.orientationFieldTargets.forEach((field) => this.showForKind(field, kind))
+    this.sourceHintTargets.forEach((hint) => this.showForKind(hint, kind))
+  }
+
+  showForKind(element, kind) {
+    const kinds = (element.dataset.kinds || "").split(" ")
+    element.classList.toggle("d-none", !kind || !kinds.includes(kind))
   }
 
   selectSource(event) {
