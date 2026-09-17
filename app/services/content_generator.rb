@@ -522,6 +522,14 @@ class ContentGenerator
       SOURCES : l'analyse financière et le brief prospect collés par Cyrille sont la seule matière chiffrée.
       N'ajoute aucun chiffre qui n'y figure pas. Si l'analyse comporte une réserve ou une incohérence, signale-la
       dans la section « à vérifier » plutôt que de trancher.
+      ⚠ Le brief contient aussi des NOTES INTERNES de Cyrille — consignes à lui-même, jugements sur le lecteur ou
+      sur l'entreprise, historique social, allusions à l'actionnaire, tactique d'approche. Elles servent à
+      comprendre la situation, JAMAIS à être reprises : rien de ce qui est écrit pour Cyrille ne passe dans le
+      document, ni en substance ni en formulation. Le lecteur ne doit trouver aucune phrase qui parle de lui, de
+      son fonds ou de son passé social autrement que par les chiffres de ses comptes.
+      ⚠ Les réalisations se citent avec le contexte EXACT du catalogue et du CV : aucun détail technique ajouté
+      (classe de salle blanche, type de contrôle, équipement), aucune description de la manière dont le résultat
+      a été obtenu. Un résultat = un contexte + un chiffre + une durée, rien d'autre.
 
       LE CADRAGE — MONTRER LA SORTIE, PAS LA CATASTROPHE : un dirigeant qui lit ses pertes sous la plume d'un
       inconnu se braque avant la deuxième page. Les chiffres restent exacts, c'est l'angle qui change. L'ouverture

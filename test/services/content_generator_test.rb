@@ -513,6 +513,11 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "MONTRER LA SORTIE, PAS LA CATASTROPHE"
     assert_includes instructions, "ce que l'entreprise a accompli d'après ses comptes"
     assert_includes instructions, "aucune flatterie"
+    # Première note réelle (17/09/2026) : le modèle avait recopié des notes internes du brief
+    # (« a fund that doesn't need me for a redundancy plan ») et brodé sur les réalisations
+    # (« Class A cleanroom », la manière d'obtenir un résultat). Deux interdictions de plus.
+    assert_includes instructions, "NOTES INTERNES de Cyrille"
+    assert_includes instructions, "contexte EXACT du catalogue"
   end
 
   test "the executive brief hands over the published articles as complementary reading" do
