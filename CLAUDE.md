@@ -345,6 +345,29 @@ que le contenu du chat part chez un prestataire LLM : à mettre à jour si le pr
 (aujourd'hui Mammouth.ai), au même titre que la liste des sous-traitants (Heroku, Cloudflare,
 Cloudinary, Sentry, Gmail).
 
+**Formulaire de création du Studio** (`_form.html.erb`) : l'ordre suit la pensée de celui qui remplit,
+pas l'histoire du code — 1. type, 2. source, 3. précisions, 4. titre, 5. modèle IA. Il avait été bâti
+pour le post LinkedIn et posait l'orientation et le modèle avant la source. Chaque champ ou aide
+optionnel porte `data-kinds="a b"` et le contrôleur Stimulus `studio_generation_controller.js`
+(`applyKind`) ne l'affiche que pour ces types : l'orientation pour post/actu/article, la réalisation et
+le visuel pour le post, une aide de source par type (pour la note de diagnostic : « colle l'analyse
+financière validée à la suite du brief »). Un test verrouille l'ordre des cinq blocs.
+
+## Veille de signaux d'affaires (routine cloud, hors du code du site)
+
+Depuis le 17/09/2026, une **routine Claude planifiée** (cloud Anthropic, lundi 6 h Paris, connecteurs
+Indeed et Gmail, environnement « Veille » à accès réseau personnalisé) cherche les entreprises
+industrielles d'Auvergne-Rhône-Alpes qui montrent un besoin — postes de direction de production
+ouverts depuis longtemps, presse, missions de cabinets — et envoie un condensé par mail. Elle **lit ce
+dépôt** en lecture seule : `docs/cadrage-veille-prospects.md` (périmètre, grille de score, critère de
+succès du test de deux semaines) et `app/models/realisation_catalog.rb` (réalisation comparable par
+signal), plus le sitemap et les `/actus` publiés pour citer un article. Sa consigne est versionnée dans
+`docs/routine-veille-prompt.md` — **modifier là, puis reporter dans la routine**, jamais l'inverse.
+Rien ne tourne sur Heroku pour ça : la phase 2 (signaux → fiches `Prospect` créées par un job, valeur
+`veille` dans l'enum `source`, actions « chercher les contacts » et « réécrire l'accroche ») se décide
+au bilan du test, vers le 1er octobre 2026. Renommer ou déplacer le cadrage, le catalogue ou les
+articles casse la routine en silence : elle le signalera dans son mail du lundi, pas avant.
+
 ## Pipeline commercial (`/studio/prospects`, `app/models/prospect.rb`)
 
 Colonne vertébrale du suivi commercial. Avant, l'assistant du formulaire de contact collectait
