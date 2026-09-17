@@ -13,6 +13,12 @@
                                                title: "Proposition — #{@prospect.display_company}",
                                                input_text: @prospect.brief_for_proposal),
                     class: "btn-cp-primary btn-cp-sm" %>
+        <%# La note de diagnostic part du même brief ; l'analyse financière validée se colle à la suite. %>
+        <%= link_to "Rédiger une note de diagnostic",
+                    new_studio_generation_path(kind: "executive_brief",
+                                               title: "Note de diagnostic — #{@prospect.display_company}",
+                                               input_text: @prospect.brief_for_proposal),
+                    class: "btn-cp-outline btn-cp-sm" %>
         <%= button_to "Supprimer", studio_prospect_path(@prospect), method: :delete,
                       class: "btn-cp-outline studio-btn-danger btn-cp-sm",
                       form: { data: { turbo_confirm: "Supprimer ce prospect ?" } } %>

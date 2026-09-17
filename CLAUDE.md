@@ -124,7 +124,24 @@ Cloudflare et Gmail dédupliquerait un message qu'il a lui-même émis. `contact
 
 Outil de génération de contenu par IA, réservé aux utilisateurs Devise authentifiés. Modèle `Generation` (`belongs_to :user`, `has_one_attached :source_file`, `has_one_attached :visual`).
 
-**Types de contenu** (enum `kind`) : `linkedin_post`, `cover_letter`, `commercial_proposal`, `site_actu`, `article`. Les deux derniers types "structurés" (lettre, proposition) utilisent un format de sortie en 4 sections marquées (`SECTION_MARKERS` : version finale / à personnaliser / à vérifier / version courte), parsées par `Generation#sections`.
+**Types de contenu** (enum `kind`) : `linkedin_post`, `cover_letter`, `commercial_proposal`, `site_actu`, `article`, `executive_brief`. Les types "structurés" (lettre, proposition, note de diagnostic) utilisent un format de sortie en 4 sections marquées (`SECTION_MARKERS` : version finale / à personnaliser / à vérifier / version courte), parsées par `Generation#sections` ; les libellés viennent de `Generation#section_labels`, qui renomme la quatrième section « Lettre d'accompagnement » pour la note. `Generation#kind_name` donne le libellé français d'un type (`kind.humanize` affichait « Executive brief »).
+
+**Note de diagnostic dirigeant (`executive_brief`)**, ajoutée le 17/09/2026 : le seul contenu du
+Studio qui parte du chiffre. Source = le brief prospect (bouton « Rédiger une note de diagnostic »
+sur la fiche) suivi de l'**analyse financière validée** collée par Cyrille ; le prompt injecte le
+catalogue avec les vrais noms (document privé), le CV et les articles publiés comme lectures
+complémentaires. ⚠️ **`ContentGenerator::NO_PRESCRIPTION_RULE`, le diagnostic sans l'ordonnance** :
+la note nomme les symptômes, ce qu'ils coûtent, les questions à poser au site et les résultats
+comparables de Cyrille, et **jamais le comment** — aucun plan d'action, aucune méthode avec son mode
+d'emploi, aucun outil, aucun calendrier. Un dirigeant qui reçoit le plan essaie seul avec son équipe
+et n'appelle jamais. C'est un garde-fou commercial, pas du style : toute réécriture du prompt doit
+le garder, `content_generator_test.rb` le verrouille. La quatrième section est la lettre
+d'accompagnement, qui nomme la source publique du signal (RGPD art. 14). Le rendu propre passe par
+`Studio::GenerationsController#document` (`/studio/generations/:id/document`) : page autonome sans
+layout, style inline autorisé par la CSP, aucun script, `noindex`, à imprimer en PDF depuis le
+navigateur ; 404 pour tout autre type ou tant que rien n'est généré ; `GenerationPolicy#document?`
+suit `show?`. Le document ne part qu'après relecture de la section « à vérifier » — jamais avec un
+chiffre que l'analyse n'a pas validé.
 
 **Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées, certaines avec un `semantic_scope` précisant pour quels sujets les utiliser/ne pas utiliser).
 

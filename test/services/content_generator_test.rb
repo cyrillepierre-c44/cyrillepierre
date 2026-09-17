@@ -214,7 +214,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
                       "#{kind} devrait être anonymisé"
     end
 
-    %w[cover_letter commercial_proposal].each do |kind|
+    %w[cover_letter commercial_proposal executive_brief].each do |kind|
       context = FakeContext.new(replies: [ "a", "b" ])
       run_generator(Generation.create!(user: @user, kind: kind), context)
 
@@ -489,5 +489,34 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     run_generator(Generation.create!(user: @user, kind: :linkedin_post), context)
 
     assert_not_includes context.draft_chat.instructions, "CE POST PROMEUT UN ARTICLE DU SITE"
+  end
+
+
+  # --- note de diagnostic dirigeant ------------------------------------------------------------
+
+  # Le document doit donner envie d'un entretien, jamais permettre de s'en passer : le garde-fou
+  # « pas de comment » est une règle absolue du prompt, comme l'anonymisation pour les contenus
+  # publics. Il se vérifie par présence, ce que les modèles respectent.
+  test "the executive brief forbids any prescription and names the real companies" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :executive_brief), context)
+    instructions = context.draft_chat.instructions
+
+    assert_includes instructions, "LE DIAGNOSTIC SANS L'ORDONNANCE"
+    assert_includes instructions, "aucun plan d'action"
+    assert_includes instructions, "Yoplait"
+    assert_includes instructions, "## Les questions à poser à votre site"
+    assert_includes instructions, "LETTRE D'ACCOMPAGNEMENT"
+    assert_includes instructions, "N'ajoute aucun chiffre qui n'y figure pas"
+  end
+
+  test "the executive brief hands over the published articles as complementary reading" do
+    article = Generation.create!(user: @user, kind: :article, title: "Réduire les rebuts en pharma",
+                                 status: :published, published_at: Time.current, output: "## Un\n\nTexte.")
+    context = FakeContext.new(replies: [ "a", "b" ])
+    run_generator(Generation.create!(user: @user, kind: :executive_brief), context)
+
+    assert_includes context.draft_chat.instructions, "ARTICLES PUBLIÉS PAR CYRILLE"
+    assert_includes context.draft_chat.instructions, article.public_url
   end
 end

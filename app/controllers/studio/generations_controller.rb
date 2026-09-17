@@ -2,7 +2,8 @@ module Studio
   class GenerationsController < ApplicationController
     before_action :authenticate_user!
     before_action :set_generation,
-                  only: %i[show edit update destroy regenerate publish unpublish generate_visual publish_to_linkedin]
+                  only: %i[show edit update destroy regenerate publish unpublish generate_visual publish_to_linkedin
+                           document]
 
     def index
       @generations = policy_scope(Generation).order(updated_at: :desc)
@@ -68,6 +69,14 @@ module Studio
       @generation.update!(image_model: image_model) if image_model.present?
       VisualGenerator.call(@generation)
       redirect_to studio_generation_path(@generation), notice: "Visuel généré."
+    end
+
+    # La note de diagnostic, en page autonome aux couleurs du site, à imprimer en PDF depuis le
+    # navigateur. Sans layout : la page doit tenir seule, sans navigation ni pied de page du Studio.
+    def document
+      raise ActiveRecord::RecordNotFound unless @generation.executive_brief? && @generation.output.present?
+
+      render layout: false
     end
 
     def publish_to_linkedin

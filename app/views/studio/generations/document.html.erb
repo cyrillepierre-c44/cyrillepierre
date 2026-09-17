@@ -1,0 +1,68 @@
+<%# Note de diagnostic dirigeant, en page autonome : à imprimer en PDF depuis le navigateur.
+    Le style est inline (la CSP autorise les styles inline, pas les scripts) et il n'y a aucun
+    script : la page n'a besoin que d'être lue. Les couleurs sont celles de la page CV. %>
+<% body = @generation.sections[:final].to_s %>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+  <title><%= @generation.display_title %> — Cyrille PIERRE</title>
+  <style>
+    :root { --ink: #1a2332; --gold: #c9a961; --muted: #5b6573; --rule: #dfe3e8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f4f6; color: var(--ink); font: 15px/1.6 Georgia, "Times New Roman", serif; }
+    .page { max-width: 794px; margin: 2rem auto; background: #fff; padding: 56px 64px; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+    header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--gold); padding-bottom: 14px; margin-bottom: 28px; }
+    .brand { font-family: "Helvetica Neue", Arial, sans-serif; }
+    .brand strong { display: block; font-size: 17px; letter-spacing: .02em; }
+    .brand span { color: var(--muted); font-size: 12.5px; }
+    .meta { text-align: right; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 12.5px; color: var(--muted); }
+    .meta .confidential { color: var(--gold); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: 11px; }
+    h1 { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 24px; line-height: 1.25; margin: 0 0 22px; }
+    .doc h2 { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 15.5px; letter-spacing: .01em; margin: 26px 0 8px; padding-top: 10px; border-top: 1px solid var(--rule); color: var(--ink); }
+    .doc h3 { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14px; margin: 18px 0 6px; }
+    .doc p { margin: 0 0 12px; }
+    .doc ul, .doc ol { margin: 0 0 12px 22px; padding: 0; }
+    .doc li { margin-bottom: 5px; }
+    .doc strong { color: var(--ink); }
+    .doc a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--gold); }
+    footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--rule); font-family: "Helvetica Neue", Arial, sans-serif; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .print-hint { max-width: 794px; margin: 0 auto 2rem; text-align: center; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; color: var(--muted); }
+    @media print {
+      body { background: #fff; }
+      .page { max-width: none; margin: 0; padding: 0; box-shadow: none; }
+      .print-hint { display: none; }
+      @page { size: A4; margin: 18mm 16mm; }
+      .doc h2 { break-after: avoid; }
+      .doc p, .doc li { orphans: 3; widows: 3; }
+    }
+  </style>
+</head>
+<body>
+  <p class="print-hint">Imprimer en PDF depuis le navigateur (Ctrl+P, « Enregistrer au format PDF »). Cette page n'est pas indexée.</p>
+  <article class="page">
+    <header>
+      <div class="brand">
+        <strong><%= SiteIdentity::NAME %></strong>
+        <span>Manager de transition · Excellence opérationnelle · <%= SiteIdentity::HOST.delete_prefix("https://") %></span>
+      </div>
+      <div class="meta">
+        <div class="confidential">Confidentiel</div>
+        <div><%= fr_date(@generation.updated_at) %></div>
+      </div>
+    </header>
+
+    <h1><%= @generation.display_title %></h1>
+
+    <div class="doc">
+      <%= ArticleFormatter.call(body) %>
+    </div>
+
+    <footer>
+      <span><%= SiteIdentity::NAME %> · <%= SiteIdentity::PHONE_DISPLAY %> · <%= SiteIdentity::EMAIL %></span>
+      <span>Note établie à partir de comptes et d'informations publics · Aucun engagement contractuel</span>
+    </footer>
+  </article>
+</body>
+</html>

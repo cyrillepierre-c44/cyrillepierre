@@ -163,5 +163,15 @@ module Studio
 
       assert_redirected_to studio_prospects_path
     end
+
+    # La note de diagnostic part du même brief que la proposition : le pont est sur la fiche.
+    test "show offers to draft an executive brief from the prospect sheet" do
+      sign_in @admin
+
+      get studio_prospect_path(@prospect)
+
+      assert_response :success
+      assert_select "a[href*=?]", "kind=executive_brief", text: /note de diagnostic/
+    end
   end
 end

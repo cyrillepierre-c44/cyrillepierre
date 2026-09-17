@@ -2,7 +2,7 @@
 
 <section class="service-hero">
   <div class="container">
-    <span class="section-eyebrow"><%= @generation.kind.humanize %></span>
+    <span class="section-eyebrow"><%= @generation.kind_name %></span>
 
     <% if policy(@generation).update? %>
       <div data-controller="studio-output-edit">
@@ -76,6 +76,11 @@
                       class: "btn-cp-outline" %>
         <% end %>
 
+        <% if @generation.executive_brief? && @generation.output.present? %>
+          <%= link_to "Ouvrir le document imprimable", document_studio_generation_path(@generation),
+                      class: "btn-cp-primary", target: "_blank", rel: "noopener" %>
+        <% end %>
+
         <% if policy(@generation).update? && @generation.output.present? %>
           <button type="button" class="btn-cp-outline studio-btn-success studio-edit-toolbar-btn"
                   data-action="studio-output-edit#edit">
@@ -117,7 +122,7 @@
           <% if @generation.structured_output? %>
             <% @generation.sections.each do |key, content| %>
               <div class="studio-section" data-controller="studio-clipboard">
-                <h3 class="studio-section-title"><%= Generation::SECTION_LABELS.fetch(key, key.to_s.humanize) %></h3>
+                <h3 class="studio-section-title"><%= @generation.section_labels.fetch(key, key.to_s.humanize) %></h3>
                 <div class="studio-output-box">
                   <pre class="studio-output" data-studio-clipboard-target="source"><%= content %></pre>
                   <%= render "studio/shared/copy_button" %>

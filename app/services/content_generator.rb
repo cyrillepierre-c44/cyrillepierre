@@ -19,8 +19,25 @@ class ContentGenerator
     cover_letter: :cover_letter_prompt,
     commercial_proposal: :commercial_proposal_prompt,
     site_actu: :site_actu_prompt,
-    article: :article_prompt
+    article: :article_prompt,
+    executive_brief: :executive_brief_prompt
   }.freeze
+
+  # Le diagnostic sans l'ordonnance. Un dirigeant qui reçoit le plan d'action essaiera de le faire
+  # seul avec son équipe, et échouera le plus souvent ; il n'appellera jamais. La note nomme donc
+  # les symptômes, ce qu'ils coûtent, les questions à poser, la preuve que Cyrille a déjà résolu
+  # cela ailleurs — et jamais le comment. Contrainte de présence et d'interdiction, que les
+  # modèles respectent, contrairement aux comptages.
+  NO_PRESCRIPTION_RULE = <<~TXT
+    RÈGLE ABSOLUE — LE DIAGNOSTIC SANS L'ORDONNANCE : ce document doit donner envie d'un entretien, pas
+    permettre de s'en passer. Tu nommes ce qui cloche, ce que cela coûte, les questions qu'un dirigeant
+    devrait poser à son site, et ce que Cyrille a obtenu dans des situations comparables. Tu ne donnes
+    JAMAIS le comment : aucun plan d'action, aucune liste d'étapes, aucune méthode nommée avec son mode
+    d'emploi (pas de « mettre en place un chantier 5S », « instaurer des routines quotidiennes »,
+    « déployer un tableau de bord TRS »), aucun outil, aucun ordre de priorité des leviers, aucun
+    calendrier de mise en œuvre. Un résultat passé se cite avec son chiffre et son contexte, jamais
+    avec la manière dont il a été obtenu. Si une phrase explique comment faire, supprime-la.
+  TXT
 
   ORIENTATION_GUIDANCE = {
     "consultant" => <<~TXT,
@@ -474,6 +491,93 @@ class ContentGenerator
 
       #{structured_output_instructions}
     PROMPT
+  end
+
+  # La note de diagnostic dirigeant : la seule pièce du Studio qui parte du chiffre. Elle combine
+  # l'analyse financière collée en source (validée par Cyrille avant génération), la fiche prospect,
+  # le catalogue avec les vrais noms (document privé), le CV et les articles publiés comme preuves.
+  def executive_brief_prompt
+    <<~PROMPT
+      Tu rédiges une NOTE DE DIAGNOSTIC pour Cyrille PIERRE, manager de transition et consultant en excellence
+      opérationnelle (20 ans d'industrie, ingénieur Arts & Métiers, formation ICCF HEC en analyse financière),
+      à l'attention du dirigeant, du directeur de pôle ou du board d'une entreprise industrielle. Ce document
+      part des COMPTES de l'entreprise (analyse financière fournie en source) et les relie à ce qui se passe
+      dans ses ateliers. Son seul but : obtenir un entretien.
+
+      #{NO_PRESCRIPTION_RULE}
+
+      LE LECTEUR : il rend des comptes en EBITDA, en dette et en trésorerie, pas en TRS. Chaque constat est
+      d'abord dit dans son langage (marge, coût par point de chiffre d'affaires, mois de trésorerie), puis relié
+      en une phrase à sa cause d'atelier probable, posée comme une hypothèse ou une question — jamais comme une
+      certitude sur une usine que Cyrille n'a pas visitée.
+
+      RÉALISATIONS DE CYRILLE (preuves à citer avec leurs chiffres et leur contexte réel — document privé, les
+      noms d'entreprises sont autorisés — sans jamais décrire la méthode ; sans les identifiants internes N°XX) :
+      #{realisations_str}
+
+      #{cv_context}
+
+      #{published_articles_block}
+
+      SOURCES : l'analyse financière et le brief prospect collés par Cyrille sont la seule matière chiffrée.
+      N'ajoute aucun chiffre qui n'y figure pas. Si l'analyse comporte une réserve ou une incohérence, signale-la
+      dans la section « à vérifier » plutôt que de trancher.
+
+      STRUCTURE DE LA NOTE (texte final), en markdown avec des titres « ## », 900 à 1300 mots :
+      1. Un paragraphe d'ouverture : pourquoi cette note, en trois phrases, sans flatterie.
+      2. « ## Ce que vos comptes disent » — trois constats chiffrés au plus, chacun en un paragraphe court,
+         dans le langage du lecteur.
+      3. « ## Ce que chaque mois d'attente coûte » — un ordre de grandeur par constat, calculé uniquement à
+         partir des chiffres fournis (ex. la valeur d'un point de chiffre d'affaires), avec la prudence qui
+         convient : ce sont des ordres de grandeur, pas des promesses.
+      4. « ## Les questions à poser à votre site » — cinq questions au plus, dont les réponses révèlent les
+         causes sans les nommer ni indiquer quoi faire.
+      5. « ## Ce que j'ai obtenu dans des situations comparables » — deux ou trois réalisations, chacune avec
+         son contexte, son chiffre et sa durée ; quand un résultat est un résultat de site obtenu par plusieurs
+         chantiers de front, le dire. Aucune méthode.
+      6. « ## Ce que produirait une mission » — en résultats attendus et en gouvernance (qui décide, à quel
+         rythme, comment le dirigeant garde la main), jamais en méthode ni en étapes ; une phase de diagnostic
+         sur place de quelques semaines, puis la mission. Pas de prix.
+      7. Une phrase de clôture qui propose un échange de trente minutes.
+
+      TON : sobre, direct, factuel, à la première personne. Aucun superlatif, aucune formule de vente, aucune
+      liste de compétences. Le document doit pouvoir être lu en dix minutes par quelqu'un qui n'a pas le temps.
+
+      FORMAT DE RÉPONSE OBLIGATOIRE — quatre sections, chacune précédée de son marqueur exact, seul sur sa
+      ligne, dans cet ordre :
+
+      #{Generation::SECTION_MARKERS[:final]}
+      La note complète, selon la structure ci-dessus.
+
+      #{Generation::SECTION_MARKERS[:personalize]}
+      Liste à puces de ce que Cyrille doit relire ou adapter avant envoi (nom du destinataire, formulations
+      à ajuster à ce qu'il sait du contexte).
+
+      #{Generation::SECTION_MARKERS[:verify]}
+      Liste à puces de chaque chiffre, date ou fait repris de l'analyse qui mérite une vérification avant
+      envoi, y compris les réserves ou incohérences relevées dans la source.
+
+      #{Generation::SECTION_MARKERS[:short]}
+      La LETTRE D'ACCOMPAGNEMENT de la note, 120 à 180 mots, adressée au destinataire, qui nomme la source
+      publique d'où vient le signal (une annonce, un article, des comptes déposés) et qui donne envie d'ouvrir
+      la note sans en répéter le contenu.
+
+      N'écris rien avant le premier marqueur ni après la dernière section.
+    PROMPT
+  end
+
+  # Les articles publiés sont les seules pièces publiques qui montrent la compétence sans
+  # l'affirmer : la note peut y renvoyer en lecture complémentaire, avec leur adresse.
+  def published_articles_block
+    articles = Generation.published_on_site.where(kind: :article)
+    return "" if articles.empty?
+
+    lines = articles.map { |a| "- #{a.display_title} → #{a.public_url}" }
+    <<~BLOCK
+      ARTICLES PUBLIÉS PAR CYRILLE (à proposer en lecture complémentaire quand le sujet correspond, avec
+      l'adresse ; jamais pour en recopier le contenu) :
+      #{lines.join("\n")}
+    BLOCK
   end
 
   # Format long, pensé pour être trouvé par un moteur et cité par un assistant. Deux

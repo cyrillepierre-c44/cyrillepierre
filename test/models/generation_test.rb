@@ -21,11 +21,13 @@ class GenerationTest < ActiveSupport::TestCase
     assert_not build_generation(kind: :linkedin_post).publishable?
     assert_not build_generation(kind: :cover_letter).publishable?
     assert_not build_generation(kind: :commercial_proposal).publishable?
+    assert_not build_generation(kind: :executive_brief).publishable?
   end
 
   test "cover_letter and commercial_proposal use structured output" do
     assert build_generation(kind: :cover_letter).structured_output?
     assert build_generation(kind: :commercial_proposal).structured_output?
+    assert build_generation(kind: :executive_brief).structured_output?
     assert_not build_generation(kind: :linkedin_post).structured_output?
     assert_not build_generation(kind: :site_actu).structured_output?
   end
@@ -253,5 +255,17 @@ class GenerationTest < ActiveSupport::TestCase
 
     assert_equal id, locked.locked_realisation[:id]
     assert_nil free.locked_realisation
+  end
+
+
+  # La note de diagnostic partage le format en quatre sections, mais sa quatrième section est la
+  # lettre d'accompagnement, pas un résumé : le libellé doit le dire dans le Studio.
+  test "the executive brief names its sections and its kind in French" do
+    brief = build_generation(kind: :executive_brief)
+
+    assert_equal "Lettre d'accompagnement", brief.section_labels[:short]
+    assert_equal "Version courte", build_generation(kind: :cover_letter).section_labels[:short]
+    assert_equal "Note de diagnostic dirigeant", brief.kind_name
+    assert_equal "Note de diagnostic", brief.display_title
   end
 end

@@ -234,5 +234,61 @@ module Studio
       assert actu.generated?
       assert_nil actu.published_at
     end
+
+    # --- note de diagnostic : document imprimable ----------------------------------------------
+
+    def executive_brief(**attrs)
+      output = "#{Generation::SECTION_MARKERS[:final]}\nIntro.\n\n## Ce que vos comptes disent\n\nUn **constat**.\n" \
+               "#{Generation::SECTION_MARKERS[:short]}\nLa lettre."
+      Generation.create!({ user: @editor, kind: :executive_brief, title: "Note — Fonderie Sud",
+                           status: :generated, output: output }.merge(attrs))
+    end
+
+    test "the executive brief opens as a standalone printable document" do
+      brief = executive_brief
+
+      get document_studio_generation_path(brief)
+
+      assert_response :success
+      assert_select "nav.navbar", 0, "le document ne doit pas embarquer la navigation du site"
+      assert_select "h1", text: "Note — Fonderie Sud"
+      assert_select ".doc h2", text: "Ce que vos comptes disent"
+      assert_select ".doc strong", text: "constat"
+      assert_select ".meta .confidential", text: "Confidentiel"
+      assert_select "meta[name=robots][content=?]", "noindex, nofollow"
+      assert_not_includes @response.body, "La lettre", "la lettre d'accompagnement ne fait pas partie du document"
+    end
+
+    test "the printable document does not exist for another kind of content" do
+      get document_studio_generation_path(@generation)
+
+      assert_response :not_found
+    end
+
+    test "the printable document does not exist before the brief is generated" do
+      get document_studio_generation_path(executive_brief(output: nil))
+
+      assert_response :not_found
+    end
+
+    test "the printable document is reserved to its owner or an admin" do
+      brief = executive_brief
+      other = User.create!(email: "crud-other@example.com", password: "password123", role: :editor)
+      sign_in other
+
+      get document_studio_generation_path(brief)
+
+      assert_response :not_found
+    end
+
+    test "the show page links to the printable document for an executive brief" do
+      brief = executive_brief
+
+      get studio_generation_path(brief)
+
+      assert_response :success
+      assert_select "a[href=?]", document_studio_generation_path(brief), text: /document imprimable/
+      assert_select ".studio-section-title", text: "Lettre d'accompagnement"
+    end
   end
 end

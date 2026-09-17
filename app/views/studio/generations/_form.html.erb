@@ -64,6 +64,17 @@
       </label>
 
       <label class="cf-theme-card">
+        <%= f.radio_button :kind, "executive_brief", checked: generation.executive_brief?,
+                            data: { action: "change->studio-generation#selectKind" } %>
+        <div class="cf-theme-inner">
+          <span class="cf-theme-icon">📑</span>
+          <h3 class="cf-theme-title">Note de diagnostic dirigeant</h3>
+          <p class="cf-theme-desc">Les comptes reliés au terrain, sans l'ordonnance — pour un PDG ou un board</p>
+          <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+        </div>
+      </label>
+
+      <label class="cf-theme-card">
         <%= f.radio_button :kind, "article", checked: generation.article?,
                             data: { action: "change->studio-generation#selectKind" } %>
         <div class="cf-theme-inner">
@@ -154,6 +165,7 @@
       <%= f.text_area :input_text, class: "cf-input cf-textarea", rows: 8, placeholder: "Colle ici le texte source (brief, offre d'emploi, notes…)" %>
       <p class="studio-field-hint">
         Laisse vide pour que l'IA invente un post à partir du profil de Cyrille (CV, réalisations).
+        Pour une note de diagnostic, colle ici l'analyse financière validée, à la suite du brief prospect.
       </p>
     </div>
 

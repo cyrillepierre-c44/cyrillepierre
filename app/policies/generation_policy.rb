@@ -23,6 +23,10 @@ class GenerationPolicy < ApplicationPolicy
     update?
   end
 
+  def document?
+    show?
+  end
+
   def generate_visual?
     update?
   end

@@ -32,7 +32,7 @@
       <% @generations.each do |generation| %>
         <%= link_to studio_generation_path(generation), class: "studio-list-item" do %>
           <div class="studio-list-item-main">
-            <span class="studio-badge studio-badge--<%= generation.kind %>"><%= generation.kind.humanize %></span>
+            <span class="studio-badge studio-badge--<%= generation.kind %>"><%= generation.kind_name %></span>
             <span class="studio-list-item-title"><%= generation.title.presence || "(sans titre)" %></span>
           </div>
           <div class="studio-list-item-meta">

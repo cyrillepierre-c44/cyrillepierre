@@ -15,7 +15,20 @@ class Generation < ApplicationRecord
 
   # `article` : format long qui répond à une question précise, pensé pour être trouvé et cité.
   # `site_actu` reste la brève. Les deux se publient sur /actus.
-  enum :kind, { linkedin_post: 0, cover_letter: 1, site_actu: 2, commercial_proposal: 3, article: 4 }
+  # `executive_brief` : la note de diagnostic dirigeant — un diagnostic chiffré tiré des comptes et du
+  # terrain, SANS l'ordonnance (voir ContentGenerator::NO_PRESCRIPTION_RULE), pour donner à un PDG ou à
+  # un board l'envie d'un entretien. Document privé, jamais publié, rendu imprimable par `document`.
+  enum :kind, { linkedin_post: 0, cover_letter: 1, site_actu: 2, commercial_proposal: 3, article: 4,
+                executive_brief: 5 }
+
+  KIND_LABELS = {
+    "linkedin_post" => "Post LinkedIn",
+    "cover_letter" => "Lettre de motivation",
+    "commercial_proposal" => "Proposition commerciale",
+    "site_actu" => "Actu du site",
+    "article" => "Article de fond",
+    "executive_brief" => "Note de diagnostic dirigeant"
+  }.freeze
   enum :status, { draft: 0, generated: 1, published: 2 }
   enum :orientation, { consultant: 0, transition_management: 1, cdi_search: 2 }, prefix: true
 
@@ -25,7 +38,7 @@ class Generation < ApplicationRecord
     "cdi_search" => "Recherche de poste en CDI"
   }.freeze
 
-  STRUCTURED_KINDS = %w[cover_letter commercial_proposal].freeze
+  STRUCTURED_KINDS = %w[cover_letter commercial_proposal executive_brief].freeze
 
   SECTION_MARKERS = {
     final: "###VERSION_FINALE###",
@@ -40,6 +53,13 @@ class Generation < ApplicationRecord
     verify: "Éléments à vérifier",
     short: "Version courte"
   }.freeze
+
+  # Pour la note de diagnostic, la quatrième section n'est pas un résumé mais la lettre qui
+  # accompagne le document : le libellé doit le dire, sinon on l'enverrait comme un condensé.
+  EXECUTIVE_BRIEF_SECTION_LABELS = SECTION_LABELS.merge(
+    final: "La note (document imprimable)",
+    short: "Lettre d'accompagnement"
+  ).freeze
 
   # value => label. All models are served by the Mammouth.ai OpenAI-compatible gateway
   # (MAMMOUTH_API_KEY) — the former GitHub Models free tier expired and was removed.
@@ -81,7 +101,14 @@ class Generation < ApplicationRecord
   # Titre visible et cliquable dans une liste ou un résultat de recherche : un article sans
   # titre n'a aucune chance d'être cité, autant le signaler par un repli explicite.
   def display_title
-    title.presence || (article? ? "Article sans titre" : "Actualité")
+    title.presence || default_title
+  end
+
+  def default_title
+    return "Article sans titre" if article?
+    return "Note de diagnostic" if executive_brief?
+
+    "Actualité"
   end
 
   # Libellé de la pastille sur /actus. Une pastille sur les seuls articles laissait croire que
@@ -89,6 +116,15 @@ class Generation < ApplicationRecord
   # ouvre trois lignes ou mille mots.
   def kind_label
     article? ? "Article" : "Actu"
+  end
+
+  # Libellé du type dans le Studio, en français ; `kind.humanize` donnait « Executive brief ».
+  def kind_name
+    KIND_LABELS.fetch(kind, kind.humanize)
+  end
+
+  def section_labels
+    executive_brief? ? EXECUTIVE_BRIEF_SECTION_LABELS : SECTION_LABELS
   end
 
   def excerpt(length: 220)
