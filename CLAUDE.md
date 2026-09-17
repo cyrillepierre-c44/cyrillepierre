@@ -135,7 +135,11 @@ la note nomme les symptômes, ce qu'ils coûtent, les questions à poser au site
 comparables de Cyrille, et **jamais le comment** — aucun plan d'action, aucune méthode avec son mode
 d'emploi, aucun outil, aucun calendrier. Un dirigeant qui reçoit le plan essaie seul avec son équipe
 et n'appelle jamais. C'est un garde-fou commercial, pas du style : toute réécriture du prompt doit
-le garder, `content_generator_test.rb` le verrouille. La quatrième section est la lettre
+le garder, `content_generator_test.rb` le verrouille. Second cadrage verrouillé de la même façon,
+**« montrer la sortie, pas la catastrophe »** : l'ouverture part de ce que l'entreprise a accompli
+d'après ses comptes, chaque constat se referme sur ce qu'il rend possible, jamais d'alerte ni de
+faillite, et aucune flatterie — un dirigeant qui lit ses pertes sous la plume d'un inconnu se braque
+avant la deuxième page. La quatrième section est la lettre
 d'accompagnement, qui nomme la source publique du signal (RGPD art. 14). Le rendu propre passe par
 `Studio::GenerationsController#document` (`/studio/generations/:id/document`) : page autonome sans
 layout, style inline autorisé par la CSP, aucun script, `noindex`, à imprimer en PDF depuis le
