@@ -16,6 +16,8 @@
 }
 
 .real-card {
+  // Cible d'ancre (#n01…) : sans cette marge, la barre de navigation fixe recouvre le haut de la carte.
+  scroll-margin-top: 96px;
   background: var(--cp-bg-card);
   border: 1px solid var(--cp-border);
   border-radius: 1rem;

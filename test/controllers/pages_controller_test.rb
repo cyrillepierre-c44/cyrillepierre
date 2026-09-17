@@ -128,5 +128,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
       assert_select ".real-card h3", text: RealisationCatalog.page_title(item)
     end
     assert_select ".real-pivots li", 4
+    # Les ancres servent de cible aux liens de la note de diagnostic.
+    RealisationCatalog::ITEMS.each { |item| assert_select ".real-card##{RealisationCatalog.anchor(item)}", 1 }
   end
 end

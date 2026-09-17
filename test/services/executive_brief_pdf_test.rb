@@ -38,6 +38,16 @@ class ExecutiveBriefPdfTest < ActiveSupport::TestCase
     assert_not_includes text, "](https"
   end
 
+  # Un lien markdown devient une annotation cliquable dans le PDF : c'est ce qui permet de
+  # renvoyer vers un article ou vers la fiche d'une réalisation sur le site.
+  test "markdown links become clickable pdf annotations" do
+    url = RealisationCatalog.public_url(RealisationCatalog::ITEMS.first)
+    pdf = ExecutiveBriefPdf.call(brief("At [Yoplait](#{url}) the site gained **8 points**."))
+
+    assert_includes pdf, url, "l'adresse doit figurer dans l'annotation de lien"
+    assert_match(/\/URI/, pdf)
+  end
+
   test "escapes markup coming from the model and keeps unusual characters" do
     final = "Un <b>faux</b> gras & un vrai **gras** → 3×8 ≈ 450 K€"
     _reader, text = text_of(ExecutiveBriefPdf.call(brief(final)))

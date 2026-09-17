@@ -95,4 +95,11 @@ class RealisationCatalogTest < ActiveSupport::TestCase
     assert_equal "Titre public", RealisationCatalog.page_title(overridden)
     assert_equal "Résultat public", RealisationCatalog.page_result(overridden)
   end
+
+  test "each realisation has a public anchor on the realisations page" do
+    item = RealisationCatalog.find("N°07")
+
+    assert_equal "n07", RealisationCatalog.anchor(item)
+    assert_equal "https://www.cyrillepierre.com/realisations#n07", RealisationCatalog.public_url(item)
+  end
 end

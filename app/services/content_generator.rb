@@ -515,6 +515,10 @@ class ContentGenerator
       noms d'entreprises sont autorisés — sans jamais décrire la méthode ; sans les identifiants internes N°XX) :
       #{realisations_str}
 
+      ADRESSE PUBLIQUE DE CHAQUE RÉALISATION (sa fiche illustrée sur le site) — chaque réalisation citée dans la
+      note porte un lien markdown vers sa fiche, posé sur le nom de l'entreprise ou sur le résultat, jamais sur un
+      « ici » : #{realisation_links}
+
       #{cv_context}
 
       #{published_articles_block}
@@ -562,6 +566,11 @@ class ContentGenerator
       TON : sobre, direct, factuel, à la première personne. Aucun superlatif, aucune formule de vente, aucune
       liste de compétences. Le document doit pouvoir être lu en dix minutes par quelqu'un qui n'a pas le temps.
 
+      MISE EN RELIEF : dans chaque paragraphe de constat et dans chaque réalisation citée, UN seul passage en gras
+      (**ainsi**), le chiffre clé avec son unité — jamais une phrase entière, jamais deux passages dans le même
+      paragraphe. Les liens (réalisations, articles) sont en markdown [texte](adresse) : ils sont cliquables dans
+      le PDF, une adresse nue ne l'est pas.
+
       EXACTITUDE DES QUALIFICATIFS : ne dis jamais plus que la source. Des comptes « déposés » ne sont pas
       « audités » ; un chiffre « calculé » n'est pas « mesuré ». Ce que le brief présente comme une hypothèse
       (« probablement », « à confirmer », « si … ») reste une hypothèse dans le document, au conditionnel ou sous
@@ -600,6 +609,10 @@ class ContentGenerator
 
       N'écris rien avant le premier marqueur ni après la dernière section.
     PROMPT
+  end
+
+  def realisation_links
+    RealisationCatalog::ITEMS.map { |item| "#{item[:id]} → #{RealisationCatalog.public_url(item)}" }.join(" · ")
   end
 
   # Les articles publiés sont les seules pièces publiques qui montrent la compétence sans

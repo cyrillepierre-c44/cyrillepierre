@@ -151,7 +151,13 @@ répondent 404 pour tout autre type ou tant que rien n'est généré, et leurs p
 `show?`. Les tests relisent le PDF avec `pdf-reader` (taille A4, textes, numérotation). ⚠️ Le lien de
 téléchargement porte `data-turbo="false"` : sinon Turbo intercepte le clic, attend une page HTML
 qui n'arrive jamais et laisse sa barre de progression traîner en haut de l'écran alors que le
-fichier est déjà là — vu sur téléphone le 17/09/2026. Même règle pour tout lien qui renvoie un fichier. Le document ne part qu'après relecture de la section « à vérifier » — jamais avec un
+fichier est déjà là — vu sur téléphone le 17/09/2026. Même règle pour tout lien qui renvoie un fichier.
+Lisibilité du PDF (demande de Cyrille du 17/09) : texte justifié, un seul passage en gras par
+constat (le chiffre clé, imposé par le prompt), repères et puces dorés, liens cliquables en doré
+sombre. Chaque réalisation citée renvoie à sa carte sur `/realisations` par une ancre
+`#nXX` (`RealisationCatalog.anchor` / `.public_url`, `id` posé par le partiel `_card`, avec un
+`scroll-margin-top` pour passer sous la barre fixe) ; les articles à leur adresse. Le prompt reçoit
+la liste des adresses (`realisation_links`). Le document ne part qu'après relecture de la section « à vérifier » — jamais avec un
 chiffre que l'analyse n'a pas validé.
 
 **Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées, certaines avec un `semantic_scope` précisant pour quels sujets les utiliser/ne pas utiliser).

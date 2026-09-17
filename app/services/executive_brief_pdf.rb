@@ -11,6 +11,7 @@ class ExecutiveBriefPdf
   GOLD = "C9A961"
   MUTED = "5B6573"
   RULE = "DFE3E8"
+  LINK_COLOR = "7A5C1E" # doré assombri : lisible en noir sur blanc, reconnaissable comme un lien
 
   BOLD = /\*\*(.+?)\*\*/
   LINK = /\[([^\[\]]+)\]\(([^()\s]+)\)/
@@ -116,6 +117,8 @@ class ExecutiveBriefPdf
     end
   end
 
+  # Un repère doré identique devant chaque titre de section : le lecteur retrouve la structure
+  # d'une page à l'autre sans lire.
   def heading(text, size:, rule:)
     pdf.move_down 6
     if rule
@@ -124,7 +127,12 @@ class ExecutiveBriefPdf
       pdf.stroke_horizontal_rule
       pdf.move_down 9
     end
-    pdf.font("Sans") { pdf.text inline(text), size: size, style: :bold, inline_format: true }
+    pdf.fill_color GOLD
+    pdf.fill_rectangle [pdf.bounds.left, pdf.cursor - 2], 4, size
+    pdf.fill_color INK
+    pdf.indent(10) do
+      pdf.font("Sans") { pdf.text inline(text), size: size, style: :bold, inline_format: true }
+    end
     pdf.move_down 5
   end
 
@@ -137,11 +145,13 @@ class ExecutiveBriefPdf
     lines = block.lines.map(&:strip)
     numbered = lines.first.match?(NUMBERED)
     lines.each_with_index do |line, index|
-      marker = numbered ? "#{index + 1}." : "•"
+      marker = numbered ? "#{index + 1}." : "▪"
       item = line.sub(numbered ? NUMBERED : BULLET, "")
       pdf.indent(18) do
-        pdf.draw_text marker, at: [-14, pdf.cursor - 9], size: 10.5
-        pdf.text inline(item), size: 10.5, leading: 3, inline_format: true
+        pdf.fill_color GOLD
+        pdf.draw_text marker, at: [-14, pdf.cursor - 9], size: numbered ? 10.5 : 9
+        pdf.fill_color INK
+        pdf.text inline(item), size: 10.5, leading: 3, inline_format: true, align: :justify
       end
       pdf.move_down 3
     end
@@ -149,7 +159,7 @@ class ExecutiveBriefPdf
   end
 
   def paragraph(block)
-    pdf.text inline(block.gsub("\n", " ")), size: 10.5, leading: 3.5, inline_format: true
+    pdf.text inline(block.gsub("\n", " ")), size: 10.5, leading: 3.5, inline_format: true, align: :justify
     pdf.move_down 8
   end
 
@@ -157,7 +167,7 @@ class ExecutiveBriefPdf
   def inline(fragment)
     escaped = escape(fragment.strip)
     linked = escaped.gsub(LINK) do
-      %(<link href="#{Regexp.last_match(2)}"><color rgb="#{INK}"><u>#{Regexp.last_match(1)}</u></color></link>)
+      %(<link href="#{Regexp.last_match(2)}"><color rgb="#{LINK_COLOR}"><u>#{Regexp.last_match(1)}</u></color></link>)
     end
     linked.gsub(BOLD, '<b>\1</b>')
   end

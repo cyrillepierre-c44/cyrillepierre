@@ -522,6 +522,9 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     # fonds nommé au lecteur, « gisements » laissé en français, et un « levier unique » contredit par
     # la fin de la note. Glossaire, exactitude des qualificatifs et cohérence, en règles.
     assert_includes instructions, "aléas → unplanned disruptions"
+    # Chaque réalisation citée renvoie à sa fiche sur le site, et le chiffre clé est en gras.
+    assert_includes instructions, RealisationCatalog.public_url(RealisationCatalog::ITEMS.first)
+    assert_includes instructions, "UN seul passage en gras"
     assert_includes instructions, "Des comptes « déposés » ne sont pas"
     assert_includes instructions, "L'actionnaire ou le fonds ne se nomme jamais"
     assert_includes instructions, "aucun mot français ne subsiste dans un texte anglais"

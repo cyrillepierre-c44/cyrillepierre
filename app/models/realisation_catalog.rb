@@ -377,6 +377,11 @@ module RealisationCatalog
   def self.page_result(item) = item.dig(:page, :result) || item[:resultat]
   def self.illustration_partial(item) = "pages/realisations/n#{item[:id].delete_prefix('N°')}"
 
+  # Ancre de la carte sur /realisations, et adresse publique complète : la note de diagnostic y
+  # renvoie pour que le lecteur vérifie une réalisation d'un clic.
+  def self.anchor(item) = "n#{item[:id].delete_prefix('N°')}"
+  def self.public_url(item) = "#{SiteIdentity::HOST}/realisations##{anchor(item)}"
+
   def self.find(id)
     ITEMS.find { |item| item[:id] == id }
   end
