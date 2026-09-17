@@ -3,7 +3,7 @@ module Studio
     before_action :authenticate_user!
     before_action :set_generation,
                   only: %i[show edit update destroy regenerate publish unpublish generate_visual publish_to_linkedin
-                           document]
+                           document pdf]
 
     def index
       @generations = policy_scope(Generation).order(updated_at: :desc)
@@ -78,9 +78,16 @@ module Studio
     # La note de diagnostic, en page autonome aux couleurs du site, à imprimer en PDF depuis le
     # navigateur. Sans layout : la page doit tenir seule, sans navigation ni pied de page du Studio.
     def document
-      raise ActiveRecord::RecordNotFound unless @generation.executive_brief? && @generation.output.present?
-
+      ensure_printable!
       render layout: false
+    end
+
+    # Le même document, paginé en A4 côté serveur : sur téléphone, l'impression du navigateur ne
+    # donnait qu'un long ruban.
+    def pdf
+      ensure_printable!
+      send_data ExecutiveBriefPdf.call(@generation), filename: pdf_filename, type: "application/pdf",
+                                                     disposition: "attachment"
     end
 
     def publish_to_linkedin
@@ -91,6 +98,14 @@ module Studio
     end
 
     private
+
+    def ensure_printable!
+      raise ActiveRecord::RecordNotFound unless @generation.executive_brief? && @generation.output.present?
+    end
+
+    def pdf_filename
+      "#{@generation.display_title.parameterize.presence || 'note-de-diagnostic'}.pdf"
+    end
 
     def prefill_from_prospect
       prospect = policy_scope(Prospect).find(params[:prospect_id])

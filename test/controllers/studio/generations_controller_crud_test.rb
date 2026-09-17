@@ -314,6 +314,37 @@ module Studio
       assert_not_includes @response.body, "La lettre", "la lettre d'accompagnement ne fait pas partie du document"
     end
 
+    test "the executive brief downloads as a paginated A4 pdf" do
+      brief = executive_brief
+
+      get pdf_studio_generation_path(brief)
+
+      assert_response :success
+      assert_equal "application/pdf", @response.media_type
+      assert_match(/attachment; filename="note-fonderie-sud.pdf"/, @response.headers["Content-Disposition"])
+      reader = PDF::Reader.new(StringIO.new(@response.body))
+      assert_equal [ 0, 0, 595.28, 841.89 ], reader.pages.first.attributes[:MediaBox].map { |v| v.to_f.round(2) }
+      text = reader.pages.map(&:text).join
+      assert_includes text, "Note — Fonderie Sud"
+      assert_includes text, "Ce que vos comptes disent"
+      assert_includes text, "constat"
+      assert_not_includes text, "La lettre"
+    end
+
+    test "the pdf follows the same rules as the printable document" do
+      get pdf_studio_generation_path(@generation)
+      assert_response :not_found
+    end
+
+    test "the show page offers the pdf and the preview for an executive brief" do
+      brief = executive_brief
+
+      get studio_generation_path(brief)
+
+      assert_select "a[href=?]", pdf_studio_generation_path(brief), text: "Télécharger le PDF"
+      assert_select "a[href=?]", document_studio_generation_path(brief), text: "Aperçu du document"
+    end
+
     test "the printable document does not exist for another kind of content" do
       get document_studio_generation_path(@generation)
 
@@ -342,7 +373,7 @@ module Studio
       get studio_generation_path(brief)
 
       assert_response :success
-      assert_select "a[href=?]", document_studio_generation_path(brief), text: /document imprimable/
+      assert_select "a[href=?]", document_studio_generation_path(brief), text: /Aperçu du document/
       assert_select ".studio-section-title", text: "Lettre d'accompagnement"
     end
   end

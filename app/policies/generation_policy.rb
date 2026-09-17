@@ -27,6 +27,10 @@ class GenerationPolicy < ApplicationPolicy
     show?
   end
 
+  def pdf?
+    show?
+  end
+
   def generate_visual?
     update?
   end

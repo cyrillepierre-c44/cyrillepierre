@@ -140,11 +140,15 @@ le garder, `content_generator_test.rb` le verrouille. Second cadrage verrouillé
 d'après ses comptes, chaque constat se referme sur ce qu'il rend possible, jamais d'alerte ni de
 faillite, et aucune flatterie — un dirigeant qui lit ses pertes sous la plume d'un inconnu se braque
 avant la deuxième page. La quatrième section est la lettre
-d'accompagnement, qui nomme la source publique du signal (RGPD art. 14). Le rendu propre passe par
-`Studio::GenerationsController#document` (`/studio/generations/:id/document`) : page autonome sans
-layout, style inline autorisé par la CSP, aucun script, `noindex`, à imprimer en PDF depuis le
-navigateur ; 404 pour tout autre type ou tant que rien n'est généré ; `GenerationPolicy#document?`
-suit `show?`. Le document ne part qu'après relecture de la section « à vérifier » — jamais avec un
+d'accompagnement, qui nomme la source publique du signal (RGPD art. 14). Deux rendus : **`#pdf`** (`/studio/generations/:id/pdf`,
+bouton « Télécharger le PDF ») génère un PDF A4 paginé côté serveur avec **Prawn**
+(`ExecutiveBriefPdf`, même grammaire restreinte qu'`ArticleFormatter`, texte échappé avant toute
+interprétation, polices DejaVu vendorées dans `vendor/fonts` parce que les polices intégrées de
+Prawn ignorent « → », « × », « ≈ ») — ajouté le 17/09/2026 parce que l'impression navigateur ne
+donnait qu'un long ruban sur téléphone ; et **`#document`** (`/document`, « Aperçu du document »),
+page autonome sans layout, style inline autorisé par la CSP, aucun script, `noindex`. Les deux
+répondent 404 pour tout autre type ou tant que rien n'est généré, et leurs politiques suivent
+`show?`. Les tests relisent le PDF avec `pdf-reader` (taille A4, textes, numérotation). Le document ne part qu'après relecture de la section « à vérifier » — jamais avec un
 chiffre que l'analyse n'a pas validé.
 
 **Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées, certaines avec un `semantic_scope` précisant pour quels sujets les utiliser/ne pas utiliser).

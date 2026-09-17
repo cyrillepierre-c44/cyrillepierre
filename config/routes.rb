@@ -36,6 +36,7 @@ Rails.application.routes.draw do
         patch :generate_visual
         patch :publish_to_linkedin
         get :document
+        get :pdf
       end
     end
   end

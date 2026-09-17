@@ -77,8 +77,9 @@
         <% end %>
 
         <% if @generation.executive_brief? && @generation.output.present? %>
-          <%= link_to "Ouvrir le document imprimable", document_studio_generation_path(@generation),
-                      class: "btn-cp-primary", target: "_blank", rel: "noopener" %>
+          <%= link_to "Télécharger le PDF", pdf_studio_generation_path(@generation), class: "btn-cp-primary" %>
+          <%= link_to "Aperçu du document", document_studio_generation_path(@generation),
+                      class: "btn-cp-outline", target: "_blank", rel: "noopener" %>
         <% end %>
 
         <% if policy(@generation).update? && @generation.output.present? %>

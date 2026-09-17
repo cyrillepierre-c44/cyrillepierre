@@ -50,6 +50,9 @@ gem "pundit"
 gem "nokogiri"
 # Text extraction from uploaded PDF files (pure Ruby, no native dependency)
 gem "pdf-reader"
+# La note de diagnostic en PDF paginé A4, générée côté serveur (pure Ruby, polices vendorées
+# dans vendor/fonts — les polices intégrées de Prawn ne couvrent pas « → », « × » ou « ≈ »)
+gem "prawn"
 # Active Storage backend in production — Heroku's filesystem is ephemeral, so :local would
 # lose uploaded/generated files on every deploy or dyno restart.
 gem "cloudinary"
