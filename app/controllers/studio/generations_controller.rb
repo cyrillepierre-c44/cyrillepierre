@@ -10,10 +10,14 @@ module Studio
     end
 
     def new
-      # `title`/`input_text` permettent de pré-remplir le brief depuis une fiche prospect
+      # Depuis une fiche prospect, le brief est pré-rempli côté serveur à partir de `prospect_id`
       # (voir Prospect#brief_for_proposal) : le besoin a déjà été qualifié, le retaper serait absurde.
+      # Le brief ne passe plus dans l'adresse — une fiche fournie dépasse la taille d'URL acceptée
+      # par Heroku (400), et des données de prospect n'ont rien à faire dans des journaux d'accès.
+      # `title`/`input_text` restent acceptés pour les liens simples.
       @generation = Generation.new(kind: params[:kind], title: params[:title], input_text: params[:input_text],
                                    source_article_id: params[:source_article_id])
+      prefill_from_prospect if params[:prospect_id].present?
       authorize @generation
     end
 
@@ -87,6 +91,17 @@ module Studio
     end
 
     private
+
+    def prefill_from_prospect
+      prospect = policy_scope(Prospect).find(params[:prospect_id])
+      @generation.input_text = prospect.brief_for_proposal
+      @generation.title ||= default_title_for(prospect)
+    end
+
+    def default_title_for(prospect)
+      prefix = @generation.executive_brief? ? "Note de diagnostic" : "Proposition"
+      "#{prefix} — #{prospect.display_company}"
+    end
 
     # `generating_since` est posé ici, pas dans la tâche : la page de destination doit déjà
     # annoncer l'attente, même si la file met une seconde à démarrer.

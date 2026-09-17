@@ -8,16 +8,14 @@
       <h1 class="studio-card-title"><%= @prospect.name %></h1>
       <div class="studio-actions">
         <%= link_to "Modifier", edit_studio_prospect_path(@prospect), class: "btn-cp-outline btn-cp-sm" %>
+        <%# Le brief est reconstruit côté serveur depuis l'identifiant : passé dans l'adresse, une
+            fiche fournie dépassait la taille d'URL acceptée par Heroku (erreur 400). %>
         <%= link_to "Rédiger une proposition",
-                    new_studio_generation_path(kind: "commercial_proposal",
-                                               title: "Proposition — #{@prospect.display_company}",
-                                               input_text: @prospect.brief_for_proposal),
+                    new_studio_generation_path(kind: "commercial_proposal", prospect_id: @prospect.id),
                     class: "btn-cp-primary btn-cp-sm" %>
         <%# La note de diagnostic part du même brief ; l'analyse financière validée se colle à la suite. %>
         <%= link_to "Rédiger une note de diagnostic",
-                    new_studio_generation_path(kind: "executive_brief",
-                                               title: "Note de diagnostic — #{@prospect.display_company}",
-                                               input_text: @prospect.brief_for_proposal),
+                    new_studio_generation_path(kind: "executive_brief", prospect_id: @prospect.id),
                     class: "btn-cp-outline btn-cp-sm" %>
         <%= button_to "Supprimer", studio_prospect_path(@prospect), method: :delete,
                       class: "btn-cp-outline studio-btn-danger btn-cp-sm",

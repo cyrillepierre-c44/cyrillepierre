@@ -171,7 +171,10 @@ module Studio
       get studio_prospect_path(@prospect)
 
       assert_response :success
-      assert_select "a[href*=?]", "kind=executive_brief", text: /note de diagnostic/
+      assert_select "a[href=?]", new_studio_generation_path(kind: "executive_brief", prospect_id: @prospect.id),
+                    text: /note de diagnostic/
+      assert_select "a[href=?]", new_studio_generation_path(kind: "commercial_proposal", prospect_id: @prospect.id),
+                    text: /proposition/
     end
   end
 end

@@ -351,9 +351,14 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
 - **Pipeline** : `status` (nouveau → à contacter → en discussion → proposition → gagné/perdu/veille),
   `next_action` + `next_action_on`. L'index remonte en tête les relances dues (`ouverts.en_retard`),
   c'est la première chose à voir le matin.
-- **Pont vers le Studio** : `Prospect#brief_for_proposal` assemble le besoin déjà qualifié, et le
-  bouton « Rédiger une proposition » ouvre `new_studio_generation_path` avec `kind`, `title` et
-  `input_text` pré-remplis — d'où les paramètres acceptés par `Studio::GenerationsController#new`.
+- **Pont vers le Studio** : `Prospect#brief_for_proposal` assemble le besoin déjà qualifié, et les
+  boutons « Rédiger une proposition » / « Rédiger une note de diagnostic » ouvrent
+  `new_studio_generation_path` avec `kind` et **`prospect_id`** ; `Studio::GenerationsController#new`
+  reconstruit le brief et le titre côté serveur (fiche cherchée dans le `policy_scope`). ⚠️ Le brief
+  passait d'abord dans l'adresse (`input_text`) : sur la première vraie fiche, 9 000 caractères de
+  notes ont dépassé la taille d'URL acceptée par Heroku, erreur 400 le 17/09/2026 — et des données
+  de prospect n'ont rien à faire dans des journaux d'accès. `title`/`input_text` restent acceptés
+  pour les liens simples.
 - **RGPD** : la mention du formulaire de contact précise désormais la conservation des données le
   temps du suivi. Des mentions légales et une politique de confidentialité restent à ajouter.
 

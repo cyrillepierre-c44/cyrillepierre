@@ -32,6 +32,39 @@ module Studio
       assert_select "textarea[name=?]", "generation[input_text]", text: /Fonderie Sud/
     end
 
+    # Le brief ne voyage plus dans l'adresse : une fiche fournie (9 000 caractères de notes) faisait
+    # dépasser la taille d'URL acceptée par Heroku, d'où un 400 le 17/09/2026 sur le premier vrai cas.
+    test "new builds the brief server-side from the prospect id" do
+      prospect = Prospect.create!(user: @editor, name: "Marie Durand", company: "Fonderie Sud",
+                                  summary: "Rebuts en hausse.", notes: "x" * 12_000)
+
+      get new_studio_generation_path(kind: "executive_brief", prospect_id: prospect.id)
+
+      assert_response :success
+      assert_select "input[name=?][value=?]", "generation[title]", "Note de diagnostic — Fonderie Sud"
+      assert_select "textarea[name=?]", "generation[input_text]", text: /Rebuts en hausse/
+      assert_select "input[name=?][value=?]", "generation[kind]", "executive_brief"
+    end
+
+    test "new keeps an explicit title and defaults to a proposal title otherwise" do
+      prospect = Prospect.create!(user: @editor, name: "Marie Durand", company: "Fonderie Sud")
+
+      get new_studio_generation_path(kind: "commercial_proposal", prospect_id: prospect.id, title: "Mon titre")
+      assert_select "input[name=?][value=?]", "generation[title]", "Mon titre"
+
+      get new_studio_generation_path(kind: "commercial_proposal", prospect_id: prospect.id)
+      assert_select "input[name=?][value=?]", "generation[title]", "Proposition — Fonderie Sud"
+    end
+
+    test "new refuses a prospect that is not in the editor's scope" do
+      other = User.create!(email: "crud-stranger@example.com", password: "password123", role: :editor)
+      prospect = Prospect.create!(user: other, name: "Ailleurs")
+
+      get new_studio_generation_path(kind: "commercial_proposal", prospect_id: prospect.id)
+
+      assert_response :not_found
+    end
+
     test "an article shows its rendered preview and its word count" do
       article = Generation.create!(user: @editor, kind: :article, title: "Pourquoi le TRS ment",
                                    status: :generated, output: "## Une section\n\nDeux mots ici.")
