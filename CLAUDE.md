@@ -148,7 +148,10 @@ Prawn ignorent « → », « × », « ≈ ») — ajouté le 17/09/2026 parce q
 donnait qu'un long ruban sur téléphone ; et **`#document`** (`/document`, « Aperçu du document »),
 page autonome sans layout, style inline autorisé par la CSP, aucun script, `noindex`. Les deux
 répondent 404 pour tout autre type ou tant que rien n'est généré, et leurs politiques suivent
-`show?`. Les tests relisent le PDF avec `pdf-reader` (taille A4, textes, numérotation). Le document ne part qu'après relecture de la section « à vérifier » — jamais avec un
+`show?`. Les tests relisent le PDF avec `pdf-reader` (taille A4, textes, numérotation). ⚠️ Le lien de
+téléchargement porte `data-turbo="false"` : sinon Turbo intercepte le clic, attend une page HTML
+qui n'arrive jamais et laisse sa barre de progression traîner en haut de l'écran alors que le
+fichier est déjà là — vu sur téléphone le 17/09/2026. Même règle pour tout lien qui renvoie un fichier. Le document ne part qu'après relecture de la section « à vérifier » — jamais avec un
 chiffre que l'analyse n'a pas validé.
 
 **Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées, certaines avec un `semantic_scope` précisant pour quels sujets les utiliser/ne pas utiliser).

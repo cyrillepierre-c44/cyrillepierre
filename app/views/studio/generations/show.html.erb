@@ -77,7 +77,10 @@
         <% end %>
 
         <% if @generation.executive_brief? && @generation.output.present? %>
-          <%= link_to "Télécharger le PDF", pdf_studio_generation_path(@generation), class: "btn-cp-primary" %>
+          <%# `turbo: false` : Turbo intercepterait le clic, attendrait une page HTML qui n'arrive jamais
+              (la réponse est un fichier) et laisserait sa barre de progression traîner en haut de l'écran. %>
+          <%= link_to "Télécharger le PDF", pdf_studio_generation_path(@generation), class: "btn-cp-primary",
+                      data: { turbo: false } %>
           <%= link_to "Aperçu du document", document_studio_generation_path(@generation),
                       class: "btn-cp-outline", target: "_blank", rel: "noopener" %>
         <% end %>

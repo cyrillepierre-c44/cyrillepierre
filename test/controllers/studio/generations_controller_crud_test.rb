@@ -341,7 +341,9 @@ module Studio
 
       get studio_generation_path(brief)
 
-      assert_select "a[href=?]", pdf_studio_generation_path(brief), text: "Télécharger le PDF"
+      # Sans `data-turbo="false"`, Turbo intercepte le clic et laisse sa barre de progression tourner
+      # alors que le fichier est déjà téléchargé.
+      assert_select "a[href=?][data-turbo=false]", pdf_studio_generation_path(brief), text: "Télécharger le PDF"
       assert_select "a[href=?]", document_studio_generation_path(brief), text: "Aperçu du document"
     end
 
