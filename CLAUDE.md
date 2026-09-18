@@ -455,8 +455,9 @@ qu'Heroku coupe toute requête à **30 s** — le Studio rendait donc une page d
 contenus les plus longs, c'est-à-dire ceux qui comptent. `generating_since` porte l'état : posé par
 le contrôleur **avant** d'enfiler la tâche (la page de destination doit déjà annoncer l'attente),
 remis à nil par la tâche dans un `ensure` — sans quoi un échec laisserait la page en attente
-éternelle. Au-delà de `Generation::GENERATION_TIMEOUT` (5 min) la page affiche un échec au lieu de
-continuer à se rafraîchir. La régénération **ne vide pas** le texte précédent : il reste lisible
+éternelle. Au-delà de `Generation::GENERATION_TIMEOUT` (15 min depuis le 18/09/2026 : une note sur Fable
+avec sa passe de correction a pris 8 min 28 s, et la page annonçait un échec pendant que la tâche
+finissait) la page affiche un échec au lieu de continuer à se rafraîchir. La régénération **ne vide pas** le texte précédent : il reste lisible
 pendant que le nouveau se prépare. Les tests qui attendent l'effet doivent envelopper la requête
 dans `perform_enqueued_jobs`.
 

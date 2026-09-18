@@ -143,8 +143,10 @@ class Generation < ApplicationRecord
   end
 
   # Vrai tant que la tâche de fond n'a pas rendu la main. Au-delà de ce délai on considère
-  # qu'elle a échoué : sans cette borne, une page resterait en attente indéfiniment.
-  GENERATION_TIMEOUT = 5.minutes
+  # qu'elle a échoué : sans cette borne, une page resterait en attente indéfiniment. Quinze
+  # minutes, pas cinq : une note de diagnostic sur Fable 5.1 avec sa passe de correction a pris
+  # 8 min 28 s le 18/09/2026, et la page annonçait un échec alors que la tâche finissait.
+  GENERATION_TIMEOUT = 15.minutes
 
   def generating?
     generating_since.present? && generating_since > GENERATION_TIMEOUT.ago
