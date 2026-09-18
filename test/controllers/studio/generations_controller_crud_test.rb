@@ -284,7 +284,33 @@ module Studio
 
       assert_response :success
       titles = css_select(".studio-card-subtitle").map(&:text).map(&:strip)
-      assert_equal [ "1. Type de contenu", "2. Source", "3. Précisions", "4. Titre (optionnel)", "5. Modèle IA" ], titles
+      assert_equal [ "1. Type de contenu", "2. Source", "3. Précisions", "4. Titre (optionnel)", "5. Modèle IA",
+                     "6. Analyse financière (optionnel)" ], titles
+    end
+
+    # L'analyse financière a son propre champ, dernier bloc avant le bouton : collée à la suite du
+    # brief, elle se confondait avec lui et la note partait en mode signaux publics (18/09/2026).
+    test "the financial analysis has its own optional field, shown for the executive brief only" do
+      get new_studio_generation_path(kind: "executive_brief")
+      assert_select ".studio-card[data-kinds=executive_brief]:not(.d-none) textarea[name=?]",
+                    "generation[financial_analysis]"
+
+      get new_studio_generation_path(kind: "linkedin_post")
+      assert_select ".studio-card.d-none[data-kinds=executive_brief] textarea[name=?]", "generation[financial_analysis]"
+
+      post studio_generations_path, params: { generation: { kind: "executive_brief", input_text: "Brief",
+                                                            financial_analysis: "CA 30,7 M€" } }
+      assert_equal "CA 30,7 M€", Generation.last.financial_analysis
+    end
+
+    test "updating the analysis of a note reminds that the text must be regenerated" do
+      brief = executive_brief
+
+      patch studio_generation_path(brief), params: { generation: { financial_analysis: "CA 30,7 M€" } }
+      assert_equal "Source mise à jour — lance « Régénérer » pour un texte qui en tienne compte.", flash[:notice]
+
+      patch studio_generation_path(brief), params: { generation: { title: "Autre titre" } }
+      assert_equal "Mis à jour.", flash[:notice]
     end
 
     # L'orientation ne concerne que les contenus publics, la réalisation que le post, et l'aide de la
@@ -294,7 +320,7 @@ module Studio
 
       assert_select "[data-studio-generation-target=orientationField][data-kinds=?]", "linkedin_post site_actu article"
       assert_select "[data-studio-generation-target=realisationField]", 1
-      assert_select "[data-studio-generation-target=sourceHint][data-kinds=executive_brief]", text: /analyse financière validée/
+      assert_select "[data-studio-generation-target=sourceHint][data-kinds=executive_brief]", text: /bloc 6/
       assert_select "[data-studio-generation-target=sourceHint][data-kinds=?]", "site_actu article"
       assert_select "input[type=checkbox][name=?]", "generation[generate_visual]", 1
     end

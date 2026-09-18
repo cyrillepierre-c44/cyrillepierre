@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["tabButton", "sourcePanel", "submitButton", "overlay", "realisationField", "progressText",
-                    "orientationField", "sourceHint"]
+                    "orientationField", "sourceHint", "kindField"]
 
   // Generating an article with a visual is two sequential backend calls (text, then image) in a
   // single synchronous request — there is no real-time progress to poll, so we approximate it by
@@ -30,6 +30,7 @@ export default class extends Controller {
     }
     this.orientationFieldTargets.forEach((field) => this.showForKind(field, kind))
     this.sourceHintTargets.forEach((hint) => this.showForKind(hint, kind))
+    this.kindFieldTargets.forEach((field) => this.showForKind(field, kind))
   }
 
   showForKind(element, kind) {

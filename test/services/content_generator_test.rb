@@ -552,19 +552,15 @@ class ContentGeneratorTest < ActiveSupport::TestCase
              "Rebuts 4,5 % du CA. Ligne inaugurée en novembre 2023."
 
   def executive_brief(with_analysis: false, **attrs)
-    record = Generation.create!(user: @user, kind: :executive_brief, input_text: "Signal : annonce de recrutement.",
-                                **attrs)
-    if with_analysis
-      record.source_file.attach(io: StringIO.new(ANALYSIS), filename: "analyse.md", content_type: "text/markdown")
-    end
-    record
+    Generation.create!(user: @user, kind: :executive_brief, input_text: "Signal : annonce de recrutement.",
+                       financial_analysis: (ANALYSIS if with_analysis), **attrs)
   end
 
   def brief_draft(note, letter: "Lettre.")
     "###VERSION_FINALE###\n#{note}\n\n###A_PERSONNALISER###\n- Le destinataire.\n\n###VERSION_COURTE###\n#{letter}"
   end
 
-  test "without an attached analysis the brief is built from public signals" do
+  test "without a financial analysis the brief is built from public signals" do
     context = FakeContext.new(replies: ["a", "b"])
     run_generator(executive_brief, context)
     instructions = context.draft_chat.instructions
@@ -576,7 +572,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_not_includes instructions, "MODE COMPTES"
   end
 
-  test "with an attached analysis the brief reads the accounts and stops on a contradiction" do
+  test "with a financial analysis the brief reads the accounts and stops on a contradiction" do
     context = FakeContext.new(replies: ["a", "b"])
     run_generator(executive_brief(with_analysis: true), context)
     instructions = context.draft_chat.instructions
@@ -585,7 +581,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "## Ce que vos comptes disent"
     assert_includes instructions, ContentGenerator::CONTRADICTION_MARKER
     assert_includes instructions, "le calcul montré"
-    assert_includes context.draft_chat.question, "Contenu extrait du fichier joint :\n#{ANALYSIS}"
+    assert_includes context.draft_chat.question, "ANALYSE FINANCIÈRE VALIDÉE (seule source des chiffres) :\n#{ANALYSIS}"
     # La relecture des chiffres est automatique : le modèle n'a plus de liste à vérifier à produire.
     assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]
     assert_includes instructions, "Aucune liste de chiffres à vérifier"

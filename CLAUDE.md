@@ -128,11 +128,16 @@ Outil de génération de contenu par IA, réservé aux utilisateurs Devise authe
 
 **Note de diagnostic dirigeant (`executive_brief`)**, ajoutée le 17/09/2026 : le seul contenu du
 Studio qui parte du chiffre. Source = le brief prospect (bouton « Rédiger une note de diagnostic »
-sur la fiche, contexte seulement) et l'**analyse financière validée jointe en fichier `.md`**
-(onglet Fichier) ; le prompt injecte le catalogue avec les vrais noms (document privé), le CV et
-les articles publiés comme lectures complémentaires. **Deux modes**, choisis par
-`ContentGenerator#executive_brief_mode` sur `source_file.attached?` : avec l'analyse (« MODE
-COMPTES »), elle est la seule source de chiffres, le brief ne sert qu'au contexte, et si le brief
+sur la fiche, contexte seulement) et l'**analyse financière validée collée dans son propre champ**
+(`Generation#financial_analysis`, bloc 6 du formulaire, dernier avant le bouton, visible pour ce
+seul type) ; le prompt injecte le catalogue avec les vrais noms (document privé), le CV et
+les articles publiés comme lectures complémentaires. ⚠️ Ce champ existe parce que la première
+version demandait de coller l'analyse **à la suite du brief** : le 18/09/2026 la note 202 est
+partie en mode signaux publics, avec 7 500 caractères d'analyse noyés dans le contexte. Un champ
+vide dit « pas d'analyse », un champ rempli dit « seule source de chiffres » — rien à deviner.
+Modifier ce champ sur une note existante affiche un rappel : le texte ne change qu'à la
+régénération. **Deux modes**, choisis par `ContentGenerator#executive_brief_mode` sur
+`financial_analysis.present?` : avec l'analyse (« MODE COMPTES »), elle est la seule source de chiffres, le brief ne sert qu'au contexte, et si le brief
 contredit l'analyse sur une même donnée le modèle répond par `CONTRADICTION_MARKER` seul — la
 génération s'arrête en `draft` avec la contradiction en clair, à corriger dans la source ; sans
 analyse (« MODE SIGNAUX PUBLICS »), la note se construit sur ce que le brief montre (annonce,
@@ -375,10 +380,10 @@ pas l'histoire du code — 1. type, 2. source, 3. précisions, 4. titre, 5. mod�
 pour le post LinkedIn et posait l'orientation et le modèle avant la source. Chaque champ ou aide
 optionnel porte `data-kinds="a b"` et le contrôleur Stimulus `studio_generation_controller.js`
 (`applyKind`) ne l'affiche que pour ces types : l'orientation pour post/actu/article, la réalisation et
-le visuel pour le post, une aide de source par type (pour la note de diagnostic : « joins l'analyse
-financière validée dans l'onglet Fichier »). Un test verrouille l'ordre des cinq blocs. Les trois
-onglets de source ne font que masquer les champs : texte collé et fichier joint partent ensemble,
-c'est ce qui permet le brief en contexte plus l'analyse en fichier.
+le visuel pour le post, une aide de source par type, et le bloc 6 « Analyse financière » pour la
+seule note de diagnostic (cible générique `kindField`, masquée côté serveur pour les autres types
+afin d'éviter un clignotement). Un test verrouille l'ordre des six blocs. Les trois onglets de
+source ne font que masquer les champs : texte collé et fichier joint partent ensemble.
 
 ## Veille de signaux d'affaires (routine cloud, hors du code du site)
 

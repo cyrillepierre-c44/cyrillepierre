@@ -196,7 +196,8 @@ class ContentGenerator
   end
 
   def audit_sources
-    @audit_sources ||= [generation.input_text, (extracted_file_text if generation.source_file.attached?),
+    @audit_sources ||= [generation.input_text, generation.financial_analysis,
+                        (extracted_file_text if generation.source_file.attached?),
                         (scraped_url_text if generation.input_url.present?), realisations_str, cv_context,
                         Date.current.year.to_s].compact_blank
   end
@@ -262,6 +263,9 @@ class ContentGenerator
     parts << "Texte collé par l'utilisateur :\n#{generation.input_text}" if generation.input_text.present?
     parts << "Contenu extrait de l'URL fournie :\n#{scraped_url_text}" if generation.input_url.present?
     parts << "Contenu extrait du fichier joint :\n#{extracted_file_text}" if generation.source_file.attached?
+    if generation.financial_analysis.present?
+      parts << "ANALYSE FINANCIÈRE VALIDÉE (seule source des chiffres) :\n#{generation.financial_analysis}"
+    end
     if generation.extra_instructions.present?
       parts << "Instructions complémentaires :\n#{generation.extra_instructions}"
     end
@@ -706,18 +710,18 @@ class ContentGenerator
     PROMPT
   end
 
-  # Deux notes, selon ce que Cyrille possède. Avec l'analyse financière jointe en fichier, la note lit
-  # les comptes et chaque chiffre en vient — le brief collé n'est que du contexte, et une contradiction
+  # Deux notes, selon ce que Cyrille possède. Avec l'analyse financière collée dans son champ, la note
+  # lit les comptes et chaque chiffre en vient — le brief n'est que du contexte, et une contradiction
   # chiffrée entre les deux arrête tout. Sans analyse, la note se tricote avec ce que l'entreprise
   # montre d'elle-même (annonce, article, comptes résumés) : moins de constats, pas de section coût
   # sans chiffre pour la porter, davantage de questions — c'est là qu'elle prend sa valeur.
   def executive_brief_mode
-    if generation.source_file.attached?
+    if generation.financial_analysis.present?
       {
-        matter: "ses comptes, lus dans l'analyse financière jointe",
+        matter: "ses comptes, lus dans l'analyse financière validée",
         sources: <<~TXT.strip,
-          SOURCES — MODE COMPTES : l'ANALYSE FINANCIÈRE JOINTE (« Contenu extrait du fichier joint ») est la
-          SEULE source des chiffres sur l'entreprise. Le texte collé (brief prospect) sert au contexte : le
+          SOURCES — MODE COMPTES : l'ANALYSE FINANCIÈRE VALIDÉE (bloc « ANALYSE FINANCIÈRE VALIDÉE » du
+          message) est la SEULE source des chiffres sur l'entreprise. Le texte collé (brief prospect) sert au contexte : le
           signal public, l'interlocuteur, les chantiers pressentis — jamais aux chiffres. Un chiffre présent dans
           le brief et absent de l'analyse ne sert pas. Si le brief donne pour la même donnée une valeur qui
           contredit l'analyse (un autre chiffre d'affaires, une autre année, un autre effectif), n'écris pas la
@@ -737,7 +741,7 @@ class ContentGenerator
       {
         matter: "une annonce, un article, des comptes résumés, un signal public repris dans le brief",
         sources: <<~TXT.strip,
-          SOURCES — MODE SIGNAUX PUBLICS : aucune analyse financière n'est jointe. La seule matière chiffrée est
+          SOURCES — MODE SIGNAUX PUBLICS : aucune analyse financière n'est fournie. La seule matière chiffrée est
           le texte collé (brief prospect : annonce, article, comptes résumés, effectif, signal public). La note
           ne prétend pas avoir lu les comptes : elle part de ce que l'entreprise montre d'elle-même et pose les
           questions que ces signaux appellent. N'ajoute aucun chiffre qui ne figure pas dans le brief ; un

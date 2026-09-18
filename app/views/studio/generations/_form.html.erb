@@ -118,9 +118,8 @@
         Colle le brief client — il est pré-rempli quand tu viens d'une fiche prospect.
       </p>
       <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="executive_brief">
-        Le brief prospect est pré-rempli depuis la fiche (contexte). Joins l'<strong>analyse financière validée</strong>
-        dans l'onglet Fichier (.md) : elle devient la seule source de chiffres, relus automatiquement.
-        Sans fichier, la note se construit sur les signaux publics du brief.
+        Le brief prospect est pré-rempli depuis la fiche : c'est le contexte, à laisser tel quel.
+        L'<strong>analyse financière validée</strong> se colle dans le bloc 6, en bas, pas ici.
       </p>
       <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="site_actu article">
         Colle la matière (notes, source, question à traiter), ou laisse vide pour partir du catalogue de réalisations.
@@ -203,6 +202,22 @@
                     { selected: generation.llm_model.presence || Generation::DEFAULT_LLM_MODEL },
                     class: "cf-input" %>
       <p class="studio-field-hint">Gemini par défaut : rapide et suffisant pour un premier jet. À changer si le résultat déçoit.</p>
+    </div>
+  </div>
+
+  <%# Le dernier geste avant de générer une note de diagnostic : coller l'analyse qui vient d'être
+      validée dans l'autre outil, puis le bouton juste dessous. Facultatif — vide, la note se
+      construit sur les signaux publics du brief ; remplie, elle est la seule source de chiffres. %>
+  <div class="studio-card <%= "d-none" unless generation.executive_brief? %>"
+       data-studio-generation-target="kindField" data-kinds="executive_brief">
+    <h2 class="studio-card-subtitle">6. Analyse financière (optionnel)</h2>
+    <div class="cf-field">
+      <%= f.text_area :financial_analysis, class: "cf-input cf-textarea", rows: 10,
+                      placeholder: "Colle ici l'analyse financière validée (texte ou markdown)" %>
+      <p class="studio-field-hint">
+        Vide : la note se construit sur les signaux publics du brief. Remplie : elle devient la
+        <strong>seule source de chiffres</strong>, chacun relu automatiquement contre elle.
+      </p>
     </div>
   </div>
 

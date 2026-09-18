@@ -41,7 +41,7 @@ module Studio
 
     def update
       if @generation.update(generation_params)
-        redirect_to studio_generation_path(@generation), notice: "Mis à jour."
+        redirect_to studio_generation_path(@generation), notice: update_notice
       else
         render :edit, status: :unprocessable_entity
       end
@@ -125,6 +125,15 @@ module Studio
       ContentGenerationJob.perform_later(@generation, with_visual: with_visual)
     end
 
+    # Une source modifiée ne change rien tant que le texte n'est pas régénéré : le dire au moment
+    # où l'on vient de coller une analyse, plutôt que de laisser croire que la note en tient compte.
+    def update_notice
+      return "Mis à jour." unless @generation.saved_change_to_financial_analysis? ||
+                                  @generation.saved_change_to_input_text?
+
+      "Source mise à jour — lance « Régénérer » pour un texte qui en tienne compte."
+    end
+
     def set_generation
       @generation = policy_scope(Generation).find(params[:id])
       authorize @generation
@@ -133,7 +142,7 @@ module Studio
     def generation_params
       params.require(:generation).permit(
         :kind, :title, :input_text, :input_url, :extra_instructions, :source_file, :llm_model, :orientation,
-        :realisation_id, :output, :generate_visual, :image_model, :source_article_id
+        :realisation_id, :output, :generate_visual, :image_model, :source_article_id, :financial_analysis
       )
     end
 
