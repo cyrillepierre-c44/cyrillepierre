@@ -308,6 +308,10 @@ module Studio
 
       patch studio_generation_path(brief), params: { generation: { financial_analysis: "CA 30,7 M€" } }
       assert_equal "Source mise à jour — lance « Régénérer » pour un texte qui en tienne compte.", flash[:notice]
+      # La preuve que l'analyse est enregistrée se lit sur la page de la note, dans ses sources.
+      follow_redirect!
+      assert_select "dt", text: "Analyse financière (seule source de chiffres)"
+      assert_select "dd", text: "CA 30,7 M€"
 
       patch studio_generation_path(brief), params: { generation: { title: "Autre titre" } }
       assert_equal "Mis à jour.", flash[:notice]

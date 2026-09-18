@@ -262,6 +262,10 @@
         <dt>Texte collé</dt>
         <dd class="studio-sources-pre"><%= @generation.input_text %></dd>
       <% end %>
+      <% if @generation.financial_analysis.present? %>
+        <dt>Analyse financière (seule source de chiffres)</dt>
+        <dd class="studio-sources-pre"><%= @generation.financial_analysis %></dd>
+      <% end %>
       <% if @generation.input_url.present? %>
         <dt>URL</dt>
         <dd><%= @generation.input_url %></dd>
