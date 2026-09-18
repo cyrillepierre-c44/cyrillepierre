@@ -90,10 +90,23 @@ class ContentGenerator
     - s'il résulte d'un calcul à partir de chiffres des sources, garde-le et donne sa formule ;
     - sinon, retire-le ; si la phrase ne dit plus rien sans lui, retire la phrase entière plutôt que de
       laisser une formule creuse (« une petite réduction représente des économies significatives »).
+    Un chiffre gardé sans formule vérifiable sera retiré de sa phrase par la relecture suivante : garder n'est
+    pas une option par défaut. Quand des chiffres proches existent dans les sources, ils sont indiqués entre
+    parenthèses : c'est presque toujours l'un d'eux qui était visé.
     Ne change RIEN d'autre : ni le reste du texte, ni la structure, ni les lignes de marqueurs ###…###.
     Réponds avec le texte complet corrigé, puis, sur une ligne seule, #{JOURNAL_MARKER}, puis une ligne par
     chiffre gardé comme calcul, au format « chiffre = formule » où la formule n'emploie que des chiffres des
     sources et les opérateurs + − × / (ex. « 307 K€ = 30,7 M€ × 1 % »). Rien d'autre après le journal.
+  PROMPT
+
+  # Dernier filet, phrase par phrase, sur le modèle rapide : ce que la passe de correction a gardé
+  # sans formule est réécrit sans le chiffre ou avec le chiffre source voisin. Ruby vérifie la
+  # phrase rendue avant de la substituer ; sinon la ligne « non résolu » reste dans le journal.
+  SENTENCE_REWRITE_INSTRUCTIONS = <<~PROMPT
+    Tu réécris UNE phrase d'une note, rien d'autre. Le chiffre indiqué n'apparaît dans aucune source : s'il
+    correspond à l'un des chiffres proches listés, remplace-le par celui-ci ; sinon réécris la phrase sans ce
+    chiffre, en gardant son sens, sa langue, son ton et sa mise en forme (gras, liens). N'ajoute aucun autre
+    chiffre. Réponds par la phrase seule, sans guillemets ni commentaire.
   PROMPT
 
   PROOFREADING_INSTRUCTIONS = <<~PROMPT
@@ -173,10 +186,54 @@ class ContentGenerator
       return rebuild(sections, discrepancies_journal(discrepancies) + clean)
     end
 
-    corrected, formulas = correct_figures(draft, flagged)
+    corrected, formulas = correct_figures(draft, flagged, audit)
     sections = sections_of(corrected) || sections
     remaining = audit.unsourced(audited_text(sections))
-    rebuild(sections, discrepancies_journal(discrepancies) + journal(audit, flagged, remaining, formulas))
+    rewritten = rewrite_unresolved(sections, audit, remaining, formulas)
+    remaining = audit.unsourced(audited_text(sections))
+    rebuild(sections,
+            discrepancies_journal(discrepancies) + journal(audit, flagged, remaining, formulas, rewritten))
+  end
+
+  def supported?(audit, figure, formulas)
+    formulas.any? { |left, right| audit.same_figure?(figure, left) && audit.supports?(figure, right) }
+  end
+
+  def rewrite_unresolved(sections, audit, remaining, formulas)
+    remaining.reject { |figure| supported?(audit, figure, formulas) }.select do |figure|
+      key, sentence = sentence_with(sections, figure.raw)
+      next false unless sentence
+
+      rewritten = rewrite_sentence(sentence, figure, audit.nearby(figure))
+      next false unless acceptable_rewrite?(audit, sentence, figure, rewritten)
+
+      sections[key] = sections[key].sub(sentence, rewritten)
+    end
+  end
+
+  # La phrase réécrite ne porte plus aucun chiffre non sourcé, et garde tous les autres chiffres
+  # de la phrase d'origine : retirer un chiffre faux ne doit pas emporter un chiffre juste.
+  def acceptable_rewrite?(audit, sentence, figure, rewritten)
+    return false if rewritten.blank? || audit.unsourced(rewritten).any?
+
+    audit.figures(sentence).reject { |other| other.raw == figure.raw }
+                           .all? { |other| audit.same_figure?(other, rewritten) }
+  end
+
+  # Une phrase s'arrête à une ponctuation suivie d'un blanc, ou à la fin de ligne : le point de
+  # « €30.7m » n'en termine pas une.
+  def sentence_with(sections, raw)
+    %i[final short].each do |key|
+      sentence = sections[key].to_s.split(/(?<=[.!?])\s+|\n+/).find { |candidate| candidate.include?(raw) }
+      return [key, sentence] if sentence
+    end
+    nil
+  end
+
+  def rewrite_sentence(sentence, figure, nearby)
+    question = "PHRASE :\n#{sentence}\n\nCHIFFRE ABSENT DES SOURCES : #{figure.raw}\n" \
+               "CHIFFRES PROCHES DANS LES SOURCES : #{nearby.presence&.join(', ') || 'aucun'}"
+    ask(Mammouth.chat(model: PROOFREADING_MODEL).with_instructions(SENTENCE_REWRITE_INSTRUCTIONS), question).strip
   end
 
   def discrepancies_journal(text)
@@ -187,9 +244,14 @@ class ContentGenerator
       "contexte → brief) :\n#{lines.map { |line| line.start_with?('-') ? line : "- #{line}" }.join("\n")}\n\n"
   end
 
-  def journal(audit, flagged, remaining, formulas)
-    lines = flagged.reject { |figure| remaining.any? { |r| r.raw == figure.raw } }
-                   .map { |figure| "- Corrigé ou retiré : #{figure.raw}" }
+  def journal(audit, flagged, remaining, formulas, rewritten)
+    lines = flagged.reject { |figure| remaining.any? { |r| r.raw == figure.raw } }.map do |figure|
+      if rewritten.any? { |r| r.raw == figure.raw }
+        "- Corrigé par réécriture de la phrase : #{figure.raw}"
+      else
+        "- Corrigé ou retiré : #{figure.raw}"
+      end
+    end
     remaining.each do |figure|
       formula = formulas.find { |left, right| audit.same_figure?(figure, left) && audit.supports?(figure, right) }
       lines << if formula
@@ -202,8 +264,11 @@ class ContentGenerator
       "#{lines.join("\n")}"
   end
 
-  def correct_figures(draft, flagged)
-    listed = flagged.map { |figure| "- #{figure.raw}" }.join("\n")
+  def correct_figures(draft, flagged, audit)
+    listed = flagged.map do |figure|
+      nearby = audit.nearby(figure)
+      nearby.empty? ? "- #{figure.raw}" : "- #{figure.raw} (chiffres proches dans les sources : #{nearby.join(', ')})"
+    end.join("\n")
     instructions = "#{FIGURE_CORRECTION_INSTRUCTIONS}\nCHIFFRES ABSENTS DES SOURCES :\n#{listed}\n\n" \
                    "SOURCES :\n#{audit_sources.join("\n\n")}"
     reply = ask(new_chat.with_instructions(instructions), draft)

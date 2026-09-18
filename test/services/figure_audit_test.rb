@@ -63,6 +63,14 @@ class FigureAuditTest < ActiveSupport::TestCase
     assert_not audit.supports?(point, "30,7 M€ × (1 %")
   end
 
+  test "nearby lists the source figures a miscopied one probably meant, closest first" do
+    audit = FigureAudit.new(SOURCE)
+
+    assert_equal ["42,7 %", "39,6 %"], audit.nearby(audit.unsourced("Labour at 45%.").first)
+    assert_empty audit.nearby(audit.unsourced("Scrap at 83.3%.").first)
+    assert_equal ["2,7 M€"], audit.nearby(audit.unsourced("A loss of €2.4m.").first)
+  end
+
   test "same_figure? recognises the figure a journal line talks about, whatever its spelling" do
     audit = FigureAudit.new(SOURCE)
     point = audit.unsourced("One point of revenue is €307k.").first

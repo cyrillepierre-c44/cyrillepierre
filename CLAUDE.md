@@ -158,9 +158,15 @@ fichier joint, catalogue, CV, année courante) avec 3 % de tolérance relative, 
 pourcentages, l'identité stricte pour les années et les dates. Seuls les chiffres absents repartent
 au modèle (`FIGURE_CORRECTION_INSTRUCTIONS`) : corriger, retirer, ou garder avec une formule que
 Ruby recalcule (`FigureAudit#supports?`, quatre opérations, opérandes obligatoirement sourcés — un
-« 1 % » ou un « /12 » sont admis comme constantes). Ruby écrit ensuite le journal dans la section
-`###A_VERIFIER###`, relabellisée **« Corrections automatiques »** (« Corrigé ou retiré », « Conservé,
-calcul vérifié », « Non résolu, à contrôler ») ; le modèle ne produit plus de liste à vérifier. Limite
+« 1 % » ou un « /12 » sont admis comme constantes). La passe reçoit pour chaque chiffre ses voisins
+dans les sources (`FigureAudit#nearby`), candidats d'une recopie fausse. Ce qu'elle garde **sans
+formule** passe par un dernier filet, phrase par phrase sur le modèle rapide
+(`SENTENCE_REWRITE_INSTRUCTIONS`) : la phrase est réécrite sans le chiffre ou avec le voisin, et
+Ruby ne la substitue que si elle ressort propre — ajouté parce qu'un « 71 % » gardé par la passe de
+correction est resté dans la note 203 du 18/09/2026 alors que l'analyse disait 68,8 %. Ruby écrit
+ensuite le journal dans la section `###A_VERIFIER###`, relabellisée **« Corrections automatiques »**
+(« Corrigé ou retiré », « Corrigé par réécriture de la phrase », « Conservé, calcul vérifié »,
+« Non résolu, à contrôler ») ; le modèle ne produit plus de liste à vérifier. Limite
 connue : le catalogue et le CV comptent ~200 nombres, un chiffre inventé proche de l'un d'eux (« 250
 K€ ») passe — l'audit attrape la recopie fausse et l'invention franche, pas la coïncidence. Un
 brouillon sans marqueurs est stocké tel quel. Piège corrigé au passage : `FileTextExtractor` rend

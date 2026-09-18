@@ -627,23 +627,59 @@ class ContentGeneratorTest < ActiveSupport::TestCase
 
   test "flagged figures go back to the model, and Ruby writes the journal of what happened" do
     record = executive_brief(with_analysis: true)
-    draft = brief_draft("Revenue reached €30.7m, scrap costs €1.38m a year, savings of €777k, absenteeism at 83.3%.")
-    corrected = brief_draft("Revenue reached €30.7m, scrap costs €1.38m a year, absenteeism at 83.3%.") +
+    draft = brief_draft("Revenue reached €30.7m, scrap costs €1.38m a year, savings of €777k. Absenteeism at 83.3%.")
+    corrected = brief_draft("Revenue reached €30.7m, scrap costs €1.38m a year. Absenteeism at 83.3%.") +
                 "\n###JOURNAL###\n- 1,38 M€ = 30,7 M€ × 4,5 %\n- 83,3 % = 30,7 M€ × 4 %"
-    context = FakeContext.new(replies: [draft, corrected, :echo])
+    context = FakeContext.new(replies: [draft, corrected, "Absenteeism is high.", :echo])
 
     run_generator(record, context)
 
     correction = context.chats[1]
-    assert_includes correction.instructions, "CHIFFRES ABSENTS DES SOURCES :\n- €1.38m\n- €777k\n- 83.3%"
+    assert_includes correction.instructions, "CHIFFRES ABSENTS DES SOURCES :\n- €1.38m\n- €777k (chiffres proches dans les sources : "
+    assert_includes correction.instructions, "\n- 83.3%"
     assert_includes correction.instructions, ANALYSIS
     assert_equal draft, correction.question
+    # Le chiffre gardé sans formule est réécrit phrase par phrase sur le modèle rapide, avec les
+    # chiffres voisins des sources en candidats — le 18/09/2026, un « 71 % » gardé par la passe de
+    # correction est resté dans la note 203 alors que l'analyse disait 68,8 %.
+    rewrite = context.chats[2]
+    assert_equal ContentGenerator::PROOFREADING_MODEL, rewrite.model
+    assert_includes rewrite.question, "PHRASE :\nAbsenteeism at 83.3%.\n"
+    assert_includes rewrite.question, "CHIFFRE ABSENT DES SOURCES : 83.3%"
     journal = record.reload.sections[:verify]
     assert_includes journal, "- Corrigé ou retiré : €777k"
     assert_includes journal, "- Conservé, calcul vérifié : €1.38m = 30,7 M€ × 4,5 %"
-    assert_includes journal, "- Non résolu, à contrôler : 83.3%"
+    assert_includes journal, "- Corrigé par réécriture de la phrase : 83.3%"
     assert_not_includes record.output, "###JOURNAL###"
-    assert_includes record.sections[:final], "absenteeism at 83.3%"
+    assert_includes record.sections[:final], "Absenteeism is high."
+    assert_not_includes record.sections[:final], "83.3%"
+  end
+
+  test "a rewrite that drops a verified figure of the same sentence is refused" do
+    record = executive_brief(with_analysis: true)
+    draft = brief_draft("Scrap costs €1.38m a year and absenteeism runs at 83.3%.")
+    corrected = "#{draft}\n###JOURNAL###\n- 1,38 M€ = 30,7 M€ × 4,5 %"
+    context = FakeContext.new(replies: [draft, corrected, "Absenteeism is high.", :echo])
+
+    run_generator(record, context)
+
+    journal = record.reload.sections[:verify]
+    assert_includes journal, "- Conservé, calcul vérifié : €1.38m = 30,7 M€ × 4,5 %"
+    assert_includes journal, "- Non résolu, à contrôler : 83.3%"
+    assert_includes record.sections[:final], "absenteeism runs at 83.3%"
+  end
+
+  test "a rewritten sentence that still carries an unsourced figure is not substituted" do
+    record = executive_brief(with_analysis: true)
+    draft = brief_draft("Revenue reached €30.7m, labour at 45% of revenue.")
+    corrected = "#{draft}\n###JOURNAL###\n"
+    context = FakeContext.new(replies: [draft, corrected, "Labour at 84% of revenue.", :echo])
+
+    run_generator(record, context)
+
+    assert_includes context.chats[2].question, "CHIFFRES PROCHES DANS LES SOURCES : 42,7 %"
+    assert_includes record.reload.sections[:verify], "- Non résolu, à contrôler : 45%"
+    assert_includes record.sections[:final], "labour at 45% of revenue"
   end
 
   # Une première version arrêtait la génération sur une contradiction : la note 203 du 18/09/2026

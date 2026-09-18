@@ -70,12 +70,16 @@ class ExecutiveBriefPdf
       pdf.fill_color MUTED
       pdf.text "Manager de transition · Excellence opérationnelle · #{SiteIdentity::HOST.delete_prefix('https://')}",
                size: 8
+      # Les deux mentions s'alignent sur la marge droite à leur largeur réelle : à décalage fixe,
+      # « CONFIDENTIEL » flottait à gauche de la date (vu le 18/09/2026).
       pdf.fill_color GOLD
-      pdf.draw_text "CONFIDENTIEL", at: [pdf.bounds.right - 78, top - 9], size: 7.5, style: :bold,
+      label_width = pdf.width_of("CONFIDENTIEL", size: 7.5, style: :bold, character_spacing: 1)
+      pdf.draw_text "CONFIDENTIEL", at: [pdf.bounds.right - label_width, top - 9], size: 7.5, style: :bold,
                                     character_spacing: 1
       pdf.fill_color MUTED
-      pdf.draw_text I18n.l(generation.updated_at.to_date, format: "%d/%m/%Y"), at: [pdf.bounds.right - 52, top - 22],
-                                                                               size: 8
+      date = I18n.l(generation.updated_at.to_date, format: "%d/%m/%Y")
+      pdf.draw_text date, at: [pdf.bounds.right - pdf.width_of(date, size: 8), top - 22],
+                          size: 8
     end
     pdf.fill_color INK
     pdf.move_down 8

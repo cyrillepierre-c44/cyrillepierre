@@ -63,6 +63,19 @@ class FigureAudit
     @source_figures.any? { |candidate| matches?(figure, candidate) }
   end
 
+  # Tous les chiffres d'un texte, sourcés ou non.
+  def figures(text)
+    figures_in(text.to_s)
+  end
+
+  # Les chiffres des sources voisins d'un chiffre non sourcé, du plus proche au plus lointain : ce
+  # sont les candidats d'une erreur de recopie (« 71 % » pour un « 68,8 % »).
+  def nearby(figure, limit: 4)
+    @source_figures.select { |candidate| neighbour?(figure, candidate) }
+                   .sort_by { |candidate| (candidate.value - figure.value).abs }
+                   .map(&:raw).uniq.first(limit)
+  end
+
   # Le texte désigne-t-il ce chiffre ? Sert à retrouver la ligne de journal du modèle qui le concerne.
   def same_figure?(figure, text)
     figures_in(text.to_s).any? { |candidate| matches?(figure, candidate) }
@@ -206,6 +219,14 @@ class FigureAudit
     return (figure.value - candidate.value).abs <= PERCENT_POINT_TOLERANCE if figure.kind == :percent
 
     close?(figure.value, candidate.value)
+  end
+
+  def neighbour?(figure, candidate)
+    return false if figure.exact? || candidate.exact?
+    return false if (figure.kind == :percent) != (candidate.kind == :percent)
+    return (figure.value - candidate.value).abs <= 8 if figure.kind == :percent
+
+    candidate.value.positive? && (figure.value - candidate.value).abs <= candidate.value * 0.25
   end
 
   def close?(value, candidate)
