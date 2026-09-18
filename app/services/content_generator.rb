@@ -76,8 +76,11 @@ class ContentGenerator
 
   # La note de diagnostic ne se relit plus à la main : ses chiffres sont comparés aux sources par
   # FigureAudit, et le modèle ne reprend la plume que sur ce que l'audit a signalé. Quand l'analyse
-  # jointe et le brief se contredisent, le modèle ne tranche pas — il répond par ce seul marqueur.
-  CONTRADICTION_MARKER = "###SOURCE_CONTRADICTOIRE###"
+  # et le brief se contredisent, une règle de préséance tranche (chiffres → analyse, faits de
+  # contexte → brief) et le modèle liste ce qu'il a tranché sous ce marqueur, que Ruby verse au
+  # journal. Une première version bloquait la génération : le 18/09/2026 elle a arrêté la note 203
+  # sur une date d'inauguration que le brief tenait de la presse — la note n'a rien à attendre.
+  DISCREPANCY_MARKER = "###ECARTS###"
   JOURNAL_MARKER = "###JOURNAL###"
 
   FIGURE_CORRECTION_INSTRUCTIONS = <<~PROMPT
@@ -113,8 +116,6 @@ class ContentGenerator
 
   def call
     draft = ask(new_chat.with_instructions(system_prompt), user_prompt)
-    return halt_on_contradiction(draft) if generation.executive_brief? && draft.include?(CONTRADICTION_MARKER)
-
     draft = audit_figures(draft) if generation.executive_brief?
     generation.update!(output: proofread(draft), status: :generated)
     generation
@@ -156,31 +157,34 @@ class ContentGenerator
     text
   end
 
-  # Une note bâtie sur deux chiffres contradictoires serait fausse quelle que soit la valeur retenue :
-  # on rend la main avec la contradiction en clair, à corriger dans la source avant de régénérer.
-  def halt_on_contradiction(draft)
-    explanation = draft.split(CONTRADICTION_MARKER).last.to_s.strip
-    generation.update!(status: :draft, output: "Génération interrompue : l'analyse financière jointe et le " \
-                                               "brief se contredisent.\n\n#{explanation}\n\nCorrige la source " \
-                                               "en cause, puis régénère.")
-    generation
-  end
-
   # Le brouillon passe au crible de FigureAudit ; seuls les chiffres absents des sources repartent
   # au modèle, avec obligation de corriger, de retirer ou de justifier par une formule que Ruby
-  # recalcule. Le journal de ce qui s'est passé prend la place de l'ancienne section à vérifier.
+  # recalcule. Le journal de ce qui s'est passé prend la place de l'ancienne section à vérifier,
+  # précédé des écarts brief / analyse que le modèle dit avoir tranchés.
   def audit_figures(draft)
-    sections = sections_of(draft)
-    return draft if sections.nil?
+    draft, discrepancies = draft.split(DISCREPANCY_MARKER, 2)
+    sections = sections_of(draft.to_s)
+    return draft.to_s if sections.nil?
 
     audit = FigureAudit.new(audit_sources)
     flagged = audit.unsourced(audited_text(sections))
-    return rebuild(sections, "Aucune correction : chaque chiffre de la note figure dans les sources.") if flagged.empty?
+    if flagged.empty?
+      return rebuild(sections,
+                     "#{discrepancies_journal(discrepancies)}Aucune correction : chaque chiffre de la note figure dans les sources.")
+    end
 
     corrected, formulas = correct_figures(draft, flagged)
     sections = sections_of(corrected) || sections
     remaining = audit.unsourced(audited_text(sections))
-    rebuild(sections, journal(audit, flagged, remaining, formulas))
+    rebuild(sections, discrepancies_journal(discrepancies) + journal(audit, flagged, remaining, formulas))
+  end
+
+  def discrepancies_journal(text)
+    lines = text.to_s.lines.map(&:strip).reject(&:empty?).grep_v(/\Aaucun\.?\z/i)
+    return "" if lines.empty?
+
+    "Écarts entre le brief et l'analyse, tranchés par la règle (chiffres des comptes → analyse ; faits de " \
+      "contexte → brief) :\n#{lines.map { |line| line.start_with?('-') ? line : "- #{line}" }.join("\n")}\n\n"
   end
 
   def journal(audit, flagged, remaining, formulas)
@@ -724,6 +728,10 @@ class ContentGenerator
       publique d'où vient le signal (une annonce, un article, des comptes déposés) et qui donne envie d'ouvrir
       la note sans en répéter le contenu.
 
+      #{DISCREPANCY_MARKER}
+      Une ligne par écart entre le brief et l'analyse que tu as tranché, avec la valeur retenue et sa source
+      (« Date de la ligne : novembre 2024, brief, contre novembre 2023 dans l'analyse »), ou « Aucun. ».
+
       N'écris rien avant le premier marqueur ni après la dernière section.
     PROMPT
   end
@@ -739,12 +747,16 @@ class ContentGenerator
         matter: "ses comptes, lus dans l'analyse financière validée",
         sources: <<~TXT.strip,
           SOURCES — MODE COMPTES : l'ANALYSE FINANCIÈRE VALIDÉE (bloc « ANALYSE FINANCIÈRE VALIDÉE » du
-          message) est la SEULE source des chiffres sur l'entreprise. Le texte collé (brief prospect) sert au contexte : le
-          signal public, l'interlocuteur, les chantiers pressentis — jamais aux chiffres. Un chiffre présent dans
-          le brief et absent de l'analyse ne sert pas. Si le brief donne pour la même donnée une valeur qui
-          contredit l'analyse (un autre chiffre d'affaires, une autre année, un autre effectif), n'écris pas la
-          note : réponds uniquement par la ligne #{CONTRADICTION_MARKER} suivie de deux phrases qui nomment les
-          deux valeurs et leur origine. N'ajoute aucun chiffre qui ne figure pas dans l'analyse.
+          message) est la SEULE source des chiffres sur l'entreprise : elle a été vérifiée deux fois par l'outil
+          d'analyse de Cyrille. Le texte collé (brief prospect) sert au contexte : le signal public,
+          l'interlocuteur, les chantiers pressentis — jamais aux chiffres. Un chiffre présent dans le brief et
+          absent de l'analyse ne sert pas. PRÉSÉANCE quand les deux se contredisent, à appliquer sans poser de
+          question : pour tout ce qui vient des comptes (chiffre d'affaires, marges, dette, trésorerie, BFR,
+          ratios, exercices), l'analyse l'emporte et la valeur du brief est ignorée ; pour les faits de contexte
+          que les comptes ne contiennent pas (date d'un événement, nature des produits, actionnaire, effectif,
+          interlocuteurs), le brief l'emporte, parce qu'il les tient de sources publiques nommées, et la note ne
+          reprend pas la formulation contraire de l'analyse. N'ajoute aucun chiffre qui ne figure pas dans
+          l'analyse.
         TXT
         length: "900 à 1300 mots",
         evidence: "ses comptes",

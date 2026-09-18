@@ -594,14 +594,16 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_not_includes instructions, "MODE COMPTES"
   end
 
-  test "with a financial analysis the brief reads the accounts and stops on a contradiction" do
+  test "with a financial analysis the brief reads the accounts and settles discrepancies by precedence" do
     context = FakeContext.new(replies: ["a", "b"])
     run_generator(executive_brief(with_analysis: true), context)
     instructions = context.draft_chat.instructions
 
     assert_includes instructions, "MODE COMPTES"
     assert_includes instructions, "## Ce que vos comptes disent"
-    assert_includes instructions, ContentGenerator::CONTRADICTION_MARKER
+    assert_includes instructions, ContentGenerator::DISCREPANCY_MARKER
+    assert_includes instructions, "l'analyse l'emporte et la valeur du brief est ignorée"
+    assert_includes instructions, "le brief l'emporte"
     assert_includes instructions, "le calcul montré"
     assert_includes context.draft_chat.question, "ANALYSE FINANCIÈRE VALIDÉE (seule source des chiffres) :\n#{ANALYSIS}"
     # La relecture des chiffres est automatique : le modèle n'a plus de liste à vérifier à produire.
@@ -644,17 +646,36 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes record.sections[:final], "absenteeism at 83.3%"
   end
 
-  test "a contradiction between the analysis and the brief halts the generation" do
+  # Une première version arrêtait la génération sur une contradiction : la note 203 du 18/09/2026
+  # est morte sur une date que le brief tenait de la presse. La règle tranche, le journal le dit.
+  test "discrepancies settled by the model go to the journal instead of halting the generation" do
     record = executive_brief(with_analysis: true)
-    context = FakeContext.new(replies: ["#{ContentGenerator::CONTRADICTION_MARKER}\nLe brief dit 25 M€ de CA, " \
-                                        "l'analyse 30,7 M€.", "jamais"])
+    draft = brief_draft("Revenue reached €30.7m in 2025.") +
+            "\n\n#{ContentGenerator::DISCREPANCY_MARKER}\nDate de la ligne : novembre 2024, brief, contre novembre " \
+            "2023 dans l'analyse.\n- Produits : suppositoires, brief, contre « formes sèches » dans l'analyse."
+    context = FakeContext.new(replies: [draft, :echo])
 
     run_generator(record, context)
 
-    assert record.reload.draft?
-    assert_includes record.output, "Génération interrompue"
-    assert_includes record.output, "Le brief dit 25 M€ de CA, l'analyse 30,7 M€."
-    assert_equal 1, context.chats.size
+    assert record.reload.generated?
+    journal = record.sections[:verify]
+    assert_includes journal, "Écarts entre le brief et l'analyse, tranchés par la règle"
+    assert_includes journal, "- Date de la ligne : novembre 2024, brief, contre novembre 2023 dans l'analyse."
+    assert_includes journal, "- Produits : suppositoires, brief"
+    assert_includes journal, "Aucune correction"
+    assert_not_includes record.output, ContentGenerator::DISCREPANCY_MARKER
+    assert_equal "Lettre.", record.sections[:short]
+  end
+
+  test "an empty discrepancy list leaves the journal to the figures alone" do
+    record = executive_brief(with_analysis: true)
+    draft = brief_draft("Revenue reached €30.7m in 2025.") + "\n\n#{ContentGenerator::DISCREPANCY_MARKER}\nAucun."
+    context = FakeContext.new(replies: [draft, :echo])
+
+    run_generator(record, context)
+
+    assert_equal "Aucune correction : chaque chiffre de la note figure dans les sources.",
+                 record.reload.sections[:verify]
   end
 
   test "a brief without markers is stored as is" do

@@ -137,10 +137,16 @@ partie en mode signaux publics, avec 7 500 caractères d'analyse noyés dans le 
 vide dit « pas d'analyse », un champ rempli dit « seule source de chiffres » — rien à deviner.
 Modifier ce champ sur une note existante affiche un rappel : le texte ne change qu'à la
 régénération. **Deux modes**, choisis par `ContentGenerator#executive_brief_mode` sur
-`financial_analysis.present?` : avec l'analyse (« MODE COMPTES »), elle est la seule source de chiffres, le brief ne sert qu'au contexte, et si le brief
-contredit l'analyse sur une même donnée le modèle répond par `CONTRADICTION_MARKER` seul — la
-génération s'arrête en `draft` avec la contradiction en clair, à corriger dans la source ; sans
-analyse (« MODE SIGNAUX PUBLICS »), la note se construit sur ce que le brief montre (annonce,
+`financial_analysis.present?` : avec l'analyse (« MODE COMPTES »), elle est la seule source de chiffres, le brief ne sert qu'au contexte, et quand
+les deux se contredisent une **règle de préséance** tranche sans rien demander : ce qui vient des
+comptes (chiffre d'affaires, marges, dette, ratios, exercices) → l'analyse, vérifiée deux fois par
+l'outil de Cyrille ; les faits de contexte que les comptes ne contiennent pas (date d'un
+événement, produits, actionnaire, effectif) → le brief, qui les tient de sources publiques nommées.
+Le modèle liste ce qu'il a tranché sous `DISCREPANCY_MARKER` et Ruby le verse en tête du journal.
+⚠️ La première version **bloquait** la génération sur une contradiction : le 18/09/2026 elle a
+arrêté la note 203 sur une date d'inauguration (analyse : novembre 2023, brief : novembre 2024,
+d'après la presse) — une note n'a rien à attendre de Cyrille, c'est le principe même du chantier ;
+sans analyse (« MODE SIGNAUX PUBLICS »), la note se construit sur ce que le brief montre (annonce,
 article, comptes résumés) : deux constats au plus, section coût omise faute de chiffre, jusqu'à
 sept questions.
 
