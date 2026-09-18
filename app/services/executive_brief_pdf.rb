@@ -15,6 +15,15 @@ class ExecutiveBriefPdf
 
   BOLD = /\*\*(.+?)\*\*/
   LINK = /\[([^\[\]]+)\]\(([^()\s]+)\)/
+
+  # Hauteur des capitales de DejaVu Sans, en fraction du corps : le repère doré va du haut des
+  # capitales à la ligne de base, ni plus haut ni plus bas. Dessiné sur tout le corps, il
+  # dépassait sous la ligne de base (vu à l'impression le 18/09/2026).
+  CAP_HEIGHT = 0.729
+  # Place minimale sous un titre pour qu'il soit suivi d'au moins trois lignes de texte : en
+  # dessous, le titre part en haut de la page suivante avec son repère — sinon le repère, dessiné
+  # à la main, restait seul en bas de page pendant que Prawn poussait le titre plus loin.
+  KEEP_WITH_NEXT = 90
   BULLET = /\A[-*]\s+/
   NUMBERED = /\A\d+\.\s+/
 
@@ -120,18 +129,23 @@ class ExecutiveBriefPdf
   # Un repère doré identique devant chaque titre de section : le lecteur retrouve la structure
   # d'une page à l'autre sans lire.
   def heading(text, size:, rule:)
-    pdf.move_down 6
-    if rule
-      pdf.stroke_color RULE
-      pdf.line_width 0.5
-      pdf.stroke_horizontal_rule
-      pdf.move_down 9
+    pdf.start_new_page if pdf.cursor < KEEP_WITH_NEXT
+    at_page_top = pdf.cursor == pdf.bounds.top
+    unless at_page_top
+      pdf.move_down 6
+      if rule
+        pdf.stroke_color RULE
+        pdf.line_width 0.5
+        pdf.stroke_horizontal_rule
+        pdf.move_down 9
+      end
     end
-    pdf.fill_color GOLD
-    pdf.fill_rectangle [pdf.bounds.left, pdf.cursor - 2], 4, size
-    pdf.fill_color INK
-    pdf.indent(10) do
-      pdf.font("Sans") { pdf.text inline(text), size: size, style: :bold, inline_format: true }
+    pdf.font("Sans", style: :bold, size: size) do
+      cap_top = pdf.cursor - (pdf.font.ascender - (CAP_HEIGHT * size))
+      pdf.fill_color GOLD
+      pdf.fill_rectangle [pdf.bounds.left, cap_top], 4, CAP_HEIGHT * size
+      pdf.fill_color INK
+      pdf.indent(10) { pdf.text inline(text), inline_format: true }
     end
     pdf.move_down 5
   end

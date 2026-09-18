@@ -56,6 +56,22 @@ class ExecutiveBriefPdfTest < ActiveSupport::TestCase
     assert_includes text, "→ 3×8 ≈ 450 K€"
   end
 
+  # Un titre ne reste jamais seul en bas de page, ni son repère doré orphelin : quelle que soit la
+  # longueur de ce qui précède, la page qui porte un titre porte aussi le début de sa section.
+  test "a heading never ends a page" do
+    (0..14).each do |extra|
+      final = "#{'Préambule. ' * (extra * 5)}\n\n" +
+              (1..8).map { |i| "## Section #{i}\n\n#{'Phrase répétée pour remplir la page. ' * 40}" }.join("\n\n")
+      reader, = text_of(ExecutiveBriefPdf.call(brief(final)))
+
+      reader.pages.each_with_index do |page, index|
+        lines = page.text.lines.map(&:strip).reject(&:empty?)
+        body = lines.reject { |line| line.start_with?("Cyrille PIERRE") || line.match?(%r{\A\d+ / \d+\z}) }
+        assert_no_match(/\ASection \d+\z/, body.last.to_s, "titre orphelin en bas de la page #{index + 1} (préambule #{extra})")
+      end
+    end
+  end
+
   test "a long note spans several numbered pages" do
     final = (1..40).map { |i| "## Section #{i}\n\n#{'Phrase répétée pour remplir la page. ' * 12}" }.join("\n\n")
     reader, text = text_of(ExecutiveBriefPdf.call(brief(final)))
