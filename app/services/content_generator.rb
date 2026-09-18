@@ -169,8 +169,8 @@ class ContentGenerator
     audit = FigureAudit.new(audit_sources)
     flagged = audit.unsourced(audited_text(sections))
     if flagged.empty?
-      return rebuild(sections,
-                     "#{discrepancies_journal(discrepancies)}Aucune correction : chaque chiffre de la note figure dans les sources.")
+      clean = "Aucune correction : chaque chiffre de la note figure dans les sources."
+      return rebuild(sections, discrepancies_journal(discrepancies) + clean)
     end
 
     corrected, formulas = correct_figures(draft, flagged)
