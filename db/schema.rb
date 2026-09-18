@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_18_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_18_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,7 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_090000) do
     t.integer "kind", default: 0, null: false
     t.string "linkedin_post_urn"
     t.datetime "linkedin_published_at"
-    t.string "llm_model", default: "gemini-3.5-flash", null: false
+    t.string "llm_model", default: "claude-fable-5.1", null: false
     t.integer "orientation", default: 0, null: false
     t.text "output"
     t.datetime "published_at"

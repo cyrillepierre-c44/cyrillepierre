@@ -85,7 +85,8 @@ class ContentGenerator
     chiffres aux sources ; ceux listés ci-dessous n'y figurent pas. Pour chacun :
     - s'il vient d'une erreur de recopie, d'unité ou d'arrondi, remplace-le par le chiffre exact de la source ;
     - s'il résulte d'un calcul à partir de chiffres des sources, garde-le et donne sa formule ;
-    - sinon, retire-le et reformule la phrase sans chiffre, sans en inventer un autre.
+    - sinon, retire-le ; si la phrase ne dit plus rien sans lui, retire la phrase entière plutôt que de
+      laisser une formule creuse (« une petite réduction représente des économies significatives »).
     Ne change RIEN d'autre : ni le reste du texte, ni la structure, ni les lignes de marqueurs ###…###.
     Réponds avec le texte complet corrigé, puis, sur une ligne seule, #{JOURNAL_MARKER}, puis une ligne par
     chiffre gardé comme calcul, au format « chiffre = formule » où la formule n'emploie que des chiffres des
@@ -648,7 +649,9 @@ class ContentGenerator
       de marge à reconstituer, de trésorerie à libérer — jamais d'alerte, de danger, de dette insoutenable ni de
       faillite. L'optimisme porte sur le potentiel du site, jamais sur la personne du lecteur : aucune flatterie.
 
-      STRUCTURE DE LA NOTE (texte final), en markdown avec des titres « ## », #{mode[:length]} :
+      STRUCTURE DE LA NOTE (texte final), en markdown avec des titres « ## », #{mode[:length]}, sans titre
+      de document en tête (le PDF porte le sien) — les montants s'écrivent arrondis comme dans l'analyse
+      (30,7 M€ ou €30.7m, jamais 30 729 278 €) :
       1. Un paragraphe d'ouverture, trois ou quatre phrases : ce que l'entreprise a accompli d'après
          #{mode[:evidence]}, la tension en une phrase, et la raison de cette note — le résultat que
          #{mode[:evidence]} laisse entrevoir.

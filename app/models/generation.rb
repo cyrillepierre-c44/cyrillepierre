@@ -67,14 +67,18 @@ class Generation < ApplicationRecord
   # value => label. All models are served by the Mammouth.ai OpenAI-compatible gateway
   # (MAMMOUTH_API_KEY) — the former GitHub Models free tier expired and was removed.
   LLM_MODELS = {
-    "gemini-3.5-flash" => "Gemini 3.5 Flash",
-    "claude-sonnet-4-6" => "Claude Sonnet 4.6",
+    "claude-fable-5.1" => "Claude Fable 5.1",
     "claude-opus-4-8" => "Claude Opus 4.8",
+    "claude-sonnet-4-6" => "Claude Sonnet 4.6",
+    "gemini-3.5-flash" => "Gemini 3.5 Flash",
     "mistral-large-3" => "Mistral Large 3",
     "gpt-5.4" => "GPT-5.4"
   }.freeze
 
-  DEFAULT_LLM_MODEL = Mammouth::DEFAULT_MODEL
+  # Le brouillon part sur le modèle le plus capable (choix de Cyrille, 18/09/2026) : une note de
+  # diagnostic ou un article se relisent moins quand ils sortent bons. La relecture orthographique
+  # et l'assistant de contact restent sur le modèle rapide de `Mammouth::DEFAULT_MODEL`.
+  DEFAULT_LLM_MODEL = "claude-fable-5.1".freeze
 
   # All routed through Mammouth (image generation isn't available via the app's default
   # provider — see VisualGenerator). gpt-5.4-image-2 is deliberately excluded: it timed out

@@ -6,7 +6,8 @@ module Mammouth
   CHAT_COMPLETIONS_URL = "#{API_BASE}/chat/completions".freeze
 
   # Gemini 3.5 Flash : rapide et peu cher, c'est le modèle de tout ce qui n'a pas de raison
-  # d'en choisir un autre (relecture, assistant de contact, brouillon par défaut du Studio).
+  # d'en choisir un autre (relecture, assistant de contact). Le brouillon du Studio, lui, part
+  # sur `Generation::DEFAULT_LLM_MODEL`.
   DEFAULT_MODEL = "gemini-3.5-flash".freeze
 
   # Les appels RubyLLM passent tous par ce contexte plutôt que par la configuration globale :
