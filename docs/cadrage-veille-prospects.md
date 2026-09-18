@@ -46,8 +46,13 @@ pas de conseil ; une entreprise qui vient d'annoncer une extension, si.
 | Presse : extension, nouvelle ligne, investissement, relocalisation | Montée en cadence à organiser | Excellence opérationnelle, organisation | moyen |
 | Presse : rappel produit, incident qualité, non-conformité | Chantier qualité et rebuts | Excellence opérationnelle | moyen |
 | Presse : plan social, restructuration | Réorganisation à conduire — mais l'entreprise passera par un cabinet | Transition, via cabinet | faible |
-| BODACC : changement de dirigeant, transfert de siège | Transition de gouvernance | Transition | faible |
+| BODACC : arrivée ou départ d'un président, DG ou gérant d'une société industrielle | Un nouveau dirigeant audite dans ses cent premiers jours ; un départ sans successeur, c'est un siège vide sans annonce | Transition | fort (revu le 18/09/2026, était « faible ») |
+| BODACC : fusion, cession, reprise | Une intégration à conduire | Transition, organisation | fort |
 | BODACC : sauvegarde, redressement | Trop tard pour du conseil | Exclu | nul |
+| Comptes déposés : site industriel PME/ETI en perte ou à marge nulle (annuaire officiel, dernier exercice) | Une montée en cadence qui ne convertit pas, une marge à reconstituer — le cas Adragos | Excellence opérationnelle, transition | fort |
+| Rappel de produit alimentaire, cosmétique ou pharmaceutique (RappelConso) | Crise qualité : rebuts, traçabilité, contrôle | Excellence opérationnelle | moyen à fort |
+| Inspection récente, arrêté ou mise en demeure sur une installation classée (Géorisques) | Une mise aux normes à piloter | Excellence opérationnelle, HSE | moyen |
+| Lauréat d'une aide à l'investissement (France 2030, Bpifrance, Région) | Un investissement qui bouscule l'atelier sous dix-huit mois | Excellence opérationnelle, organisation | moyen |
 
 Le score s'appuie sur le catalogue de réalisations : un signal proche d'une réalisation
 chiffrée de Cyrille pèse plus qu'un signal générique, parce que l'approche pourra citer un cas

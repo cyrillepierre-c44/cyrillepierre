@@ -5,7 +5,10 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 4 le 18/09 : périmètre ramené à 50 km / 1 h autour de Lyon (Livron, 127 km, a montré
+connecteurs, ce qu'a montré le premier passage). Version 5 le 18/09 : six signaux hors annonces (dirigeants et cessions au BODACC, sites en
+perte dans l'annuaire, rappels RappelConso, installations classées Géorisques, aides à
+l'investissement par recherche web), avec les requêtes exactes ; quatre domaines à autoriser.
+Version 4 le 18/09 : périmètre ramené à 50 km / 1 h autour de Lyon (Livron, 127 km, a montré
 que le rayon régional était trop large pour un indépendant). Version 3 le 17/09 après le second passage :
 la presse se juge sur le flux, sans lire l'article ; seul Robert Half publie ses missions ; la
 date du condensé est le lundi de la semaine en cours ; v3.1 : elle lit aussi les articles publiés
@@ -88,6 +91,57 @@ plus pour chacun, sans insister ni le compter comme un échec. Ne retiens que le
 le périmètre géographique ci-dessus. Une mission ne compte que si tu
 as lu la page qui la décrit ; un extrait de moteur de recherche n'est pas une source.
 
+**D. Registres et données publiques (Bash + curl, sans clé).** Ce sont les signaux des sites qui ne
+publient rien. Pour chaque société repérée, vérifie le périmètre et le secteur par l'annuaire
+officiel : `https://recherche-entreprises.api.gouv.fr/search?q=<SIREN>` donne `siege.libelle_commune`,
+`siege.departement`, `activite_principale` (section C = industrie manufacturière, codes 10 à 33),
+`categorie_entreprise` (PME / ETI / GE) et `dirigeants`. Une société hors périmètre ou hors industrie
+est écartée sans être listée.
+
+- **D1. Changements de dirigeants (BODACC).** Pour chaque département 69, 01 et 38 :
+  `https://bodacc-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/annonces-commerciales/records?where=numerodepartement%3D%22<dep>%22%20and%20familleavis_lib%3D%22Modifications%20diverses%22%20and%20dateparution%3E%3D%22<lundi moins 7 jours>%22&limit=100&offset=<0,100,…>`.
+  Ne garde que les avis dont `modificationsgenerales.descriptif` contient « administration » et dont
+  `listepersonnes.personne.administration` parle d'un **président, directeur général ou gérant** qui
+  arrive ou qui part (ignore les commissaires aux comptes). Le champ `registre` donne le SIREN pour
+  la vérification annuaire. Lecture : un dirigeant qui arrive audite dans ses cent premiers jours ;
+  un dirigeant qui part sans successeur nommé, c'est un siège vide sans annonce. Poids fort.
+- **D2. Fusions, cessions, reprises (BODACC).** Même requête avec `familleavis_lib%3D%22Ventes%20et%20cessions%22`
+  sur les trois départements, 7 jours. Une reprise ou une fusion, c'est une intégration à conduire.
+  Poids fort. Les « Procédures collectives » restent exclues (trop tard pour du conseil).
+- **D3. Sites industriels en perte (annuaire officiel).** Parcours
+  `https://recherche-entreprises.api.gouv.fr/search?section_activite_principale=C&departement=69,01,38&tranche_effectif_salarie=21,22,31,32,41,42,51,52,53&per_page=25&page=<1…N>`
+  (environ 1 600 sociétés, 66 pages). Garde celles dont le **siège** est dans le périmètre, de
+  catégorie PME ou ETI (pas GE : le résultat d'un groupe ne dit rien d'un site), dont le champ
+  `finances` du dernier exercice montre un chiffre d'affaires ≥ 5 M€ et un résultat net négatif ou
+  inférieur à 1 % du chiffre d'affaires. L'annuaire ne donne qu'un exercice : c'est un signal de
+  situation, pas de tendance — dis-le. Lecture : une marge à reconstituer, le cas typique d'une
+  montée en cadence qui ne convertit pas. Poids fort. Ne remonte que les nouvelles par rapport aux
+  condensés précédents (le dépôt des comptes est annuel, la liste bouge peu).
+- **D4. Rappels de produits (RappelConso).**
+  `https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/records?where=date_publication%3E%3D%22<lundi moins 14 jours>%22&limit=100`
+  (champs `marque_produit`, `categorie_produit`, `motif_rappel`, `distributeurs`). Pour les rappels
+  alimentaires, cosmétiques ou pharmaceutiques, cherche la marque ou le fabricant dans l'annuaire :
+  ne garde que ceux dont l'industriel est dans le périmètre. Lecture : une crise qualité, donc
+  rebuts, traçabilité, contrôle. Poids moyen à fort.
+- **D5. Installations classées (Géorisques).**
+  `https://georisques.gouv.fr/api/v1/installations_classees?latlon=4.8357%2C45.7640&rayon=50000&page=<n>&page_size=100`.
+  Garde les installations dont `industrie` est vrai et le `regime` Autorisation ou Enregistrement,
+  puis celles qui ont une `inspections[].dateInspection` ou un `documentsHorsInspection[]` daté des
+  60 derniers jours ; signale en priorité tout document dont le nom contient « mise en demeure » ou
+  « arrêté ». Lecture : une mise aux normes à piloter. Poids moyen. Si la pagination dépasse
+  50 appels, arrête-toi et dis combien tu as couvert.
+
+**E. Aides à l'investissement (WebSearch, extraits seulement).** Cherche « lauréats France 2030
+Rhône usine », « Bpifrance Auvergne-Rhône-Alpes usine investissement 2026 », « Région
+Auvergne-Rhône-Alpes aide industrie du futur lauréats » et retiens les entreprises du périmètre
+citées comme bénéficiaires dans les 60 derniers jours. Lecture : un investissement qui va bousculer
+l'atelier dans les dix-huit mois. Poids moyen. Un extrait de résultat suffit ici pour signaler,
+avec son lien ; n'en tire aucun chiffre.
+
+Ces domaines doivent être autorisés dans l'environnement : `bodacc-datadila.opendatasoft.com`,
+`recherche-entreprises.api.gouv.fr`, `data.economie.gouv.fr`, `georisques.gouv.fr`. Si l'un
+d'eux répond « bloqué », dis-le dans le mail et passe au suivant.
+
 Ne consulte jamais LinkedIn, ni aucun site dont tu ne peux lire le contenu sans te connecter.
 
 ## 3. Tri et score
@@ -98,7 +152,8 @@ Applique la grille du cadrage. Deux règles priment :
   plus de six semaines est un signal fort (une usine qui tourne sans son pilote). Calcule
   l'âge en jours à partir de la date de publication.
 - **Un signal qui se recoupe vaut plus** : la même entreprise dans une annonce ET dans la
-  presse, ou une mission de cabinet ET une annonce, passe en tête.
+  presse, un changement de dirigeant ET un poste ouvert, un site en perte ET une annonce, passe
+  en tête. Nomme les signaux croisés dans la fiche.
 
 Écarte sans les mentionner : les entreprises en procédure collective, les signaux hors
 région, les doublons. Écarte aussi tout ce qui figurait déjà dans un condensé des quatre
@@ -120,7 +175,8 @@ Destinataire : cyrille.pierre@gmail.com. Objet : « Veille signaux d'affaires �
 lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, sobre, dans cet ordre :
 
 1. **Les 5 signaux à regarder** (au plus cinq, classés par score décroissant). Pour chacun :
-   - entreprise, lieu, secteur (si connu) ;
+   - entreprise, lieu, secteur (si connu), et le TYPE de signal (annonce, dirigeant, cession,
+     comptes, rappel, installation classée, aide, presse, cabinet) ;
    - le signal, sa source avec le lien, sa date et son âge en jours ;
    - « Pourquoi maintenant » en une phrase ;
    - la réalisation comparable du catalogue (numéro et titre) et en quoi elle est comparable ;
@@ -130,8 +186,9 @@ lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, so
      hypothèse posée comme une question.
 2. **Les autres signaux vus**, en une ligne chacun avec le lien, pour que Cyrille juge
    lui-même ce que tu as écarté du top 5.
-3. **Ce que tu as consulté** : nombre d'annonces lues par source, flux presse lus, pages de
-   cabinets lues, et ce qui n'a pas répondu. Une erreur Indeed « 429 » ou « rate limit » est
+3. **Ce que tu as consulté** : nombre d'annonces lues par source, avis BODACC lus, sociétés
+   parcourues dans l'annuaire, rappels lus, installations classées couvertes, flux presse lus,
+   pages de cabinets lues, et ce qui n'a pas répondu. Une erreur Indeed « 429 » ou « rate limit » est
    un quota épuisé, pas une panne : attends, puis reprends ; ne conclus jamais que la source
    est hors service sans avoir réessayé après le délai indiqué.
 4. Une ligne finale : le temps que la collecte t'a pris, et une chose que tu changerais
