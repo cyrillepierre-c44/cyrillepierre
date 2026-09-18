@@ -83,7 +83,11 @@ class Generation < ApplicationRecord
   # All routed through Mammouth (image generation isn't available via the app's default
   # provider — see VisualGenerator). gpt-5.4-image-2 is deliberately excluded: it timed out
   # (Cloudflare 524) on every attempt during evaluation.
+  # Le premier est le défaut (VisualGenerator et défaut de colonne). Gemini 3 Pro Image est le
+  # meilleur des modèles d'image de la passerelle (essai du 18/09/2026 : 15 s, composition propre) ;
+  # gpt-image-2 renvoie une page d'erreur Cloudflare, comme gpt-5.4-image-2 avant lui.
   IMAGE_MODELS = {
+    "gemini-3-pro-image-preview" => "Gemini 3 Pro Image",
     "gemini-2.5-flash-image" => "Gemini 2.5 Flash",
     "gemini-3.1-flash-image-preview" => "Gemini 3.1 Flash (preview)"
   }.freeze
