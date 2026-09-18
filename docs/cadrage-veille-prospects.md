@@ -28,7 +28,7 @@ En dessous, on arrête ou on change de sources. Le but n'est pas d'avoir un bel 
 
 | Axe | Retenu |
 |---|---|
-| Géographie | Auvergne-Rhône-Alpes d'abord, Île-de-France et vallée du Rhône en second |
+| Géographie | **50 km et une heure de route autour de Lyon centre** (décision du 18/09/2026) : tout le Rhône, le sud de l'Ain jusqu'à Ambérieu-en-Bugey, le Nord-Isère jusqu'à Vienne et Bourgoin-Jallieu. Exclus : Saint-Étienne, Roanne, Valence, Grenoble, Annecy, Clermont-Ferrand, Mâcon. Raison : une mission en solo ne se négocie pas avec des frais de déplacement ; Livron (127 km, 1 h 40) l'a montré. |
 | Secteurs | agroalimentaire, pharmaceutique, mécanique et métallurgie, microélectronique, plasturgie, reconditionnement |
 | Taille | PME et ETI de 50 à 500 personnes, sites industriels de groupes |
 | Exclus | BTP, logistique pure, services, entreprises en procédure collective (voir plus bas) |

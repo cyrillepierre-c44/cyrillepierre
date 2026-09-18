@@ -5,7 +5,8 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 3 le 17/09 après le second passage :
+connecteurs, ce qu'a montré le premier passage). Version 4 le 18/09 : périmètre ramené à 50 km / 1 h autour de Lyon (Livron, 127 km, a montré
+que le rayon régional était trop large pour un indépendant). Version 3 le 17/09 après le second passage :
 la presse se juge sur le flux, sans lire l'article ; seul Robert Half publie ses missions ; la
 date du condensé est le lundi de la semaine en cours ; v3.1 : elle lit aussi les articles publiés
 sur le site (`www.cyrillepierre.com` ajouté aux domaines autorisés de l'environnement) pour les
@@ -42,10 +43,21 @@ limite le débit ; en cas de réponse « rate limit », attends le délai indiqu
 puis reprends là où tu en étais. Si un canal est inaccessible (réseau bloqué, site en panne),
 dis-le dans le mail plutôt que de le remplacer par des extraits non vérifiés.
 
+**PÉRIMÈTRE GÉOGRAPHIQUE (règle absolue, décidée le 18/09/2026)** : 50 km et une heure de
+route autour de Lyon centre. Retenu : tout le Rhône (69), le sud de l'Ain (01 : Ambérieu-en-Bugey,
+Meximieux, Miribel, Trévoux, Villars-les-Dombes et en deçà), le Nord-Isère (38 : Vienne,
+Bourgoin-Jallieu, L'Isle-d'Abeau, Saint-Quentin-Fallavier, Pont-de-Chéruy, Crémieu et en deçà).
+Exclu, quelle que soit la qualité du signal : Saint-Étienne, Roanne, Valence, Livron, Romans,
+Grenoble, Annecy, Chambéry, Clermont-Ferrand, Mâcon, Roussillon/Salaise et tout ce qui est plus
+loin. Une mission en solo ne se négocie pas avec des frais de déplacement. Un signal hors
+périmètre n'est ni classé ni listé.
+
 **A. Indeed (connecteur Indeed, pays FR).** Lance ces recherches une par une, chacune sur
-« Lyon », « Grenoble », « Saint-Étienne », « Annecy », « Clermont-Ferrand » et « Valence » :
-« directeur de production », « directeur de site industriel », « directeur des opérations »,
-« responsable de production », « responsable amélioration continue » (30 recherches). Ne
+« Lyon », « Vienne », « Villefranche-sur-Saône », « Bourgoin-Jallieu », « Ambérieu-en-Bugey » et
+« L'Arbresle » : « directeur de production », « directeur de site industriel », « directeur des
+opérations », « responsable de production », « responsable amélioration continue »
+(30 recherches). Vérifie la commune de chaque annonce contre le périmètre ci-dessus : Indeed
+renvoie aussi des annonces plus lointaines. Ne
 demande le détail d'une annonce (`get_job_details`) que pour les candidates au top 5, huit
 appels au plus. Ne retiens que les postes d'encadrement en industrie manufacturière
 (agroalimentaire, pharma, chimie, mécanique, métallurgie, plasturgie, électronique,
@@ -58,10 +70,10 @@ publication, lien.
 chacune de ces requêtes, lis le flux
 `https://news.google.com/rss/search?q=<requête encodée>&hl=fr&gl=FR&ceid=FR:fr` et retiens
 les articles de moins de 30 jours dont le titre concerne une entreprise industrielle de la
-région : « usine Auvergne-Rhône-Alpes investissement », « usine Rhône extension », « usine
-Isère nouvelle ligne », « usine Loire modernisation », « site industriel Ain recrutement »,
-« usine Lyon rappel produit », « usine Auvergne-Rhône-Alpes nouveau directeur »,
-« industriel Auvergne-Rhône-Alpes montée en cadence ». Le flux donne le titre, la date et le
+région : « usine Lyon investissement », « usine Rhône extension », « usine Nord-Isère nouvelle ligne »,
+« usine Vienne Isère modernisation », « site industriel Ain recrutement », « usine Lyon rappel
+produit », « usine Villefranche-sur-Saône », « industriel Lyon nouveau directeur de site ».
+Même périmètre géographique que pour Indeed. Le flux donne le titre, la date et le
 lien : c'est suffisant pour signaler. N'essaie pas de lire l'article lui-même — les sites de
 presse refusent les lectures automatiques, et ce n'est pas un échec : Cyrille le lira. Un
 signal de presse se décrit donc par son titre, sa date, sa source et le lien, sans rien
@@ -72,7 +84,8 @@ Half Management de transition et relève les missions industrielles en Auvergne-
 vallée du Rhône : direction de site, direction de production, direction industrielle,
 amélioration continue. Constaté le 17/09/2026 : Valtus, Delville Management et Wayden ne
 publient pas de liste de missions, X-PM refuse les lectures automatiques — une tentative au
-plus pour chacun, sans insister ni le compter comme un échec. Une mission ne compte que si tu
+plus pour chacun, sans insister ni le compter comme un échec. Ne retiens que les missions dans
+le périmètre géographique ci-dessus. Une mission ne compte que si tu
 as lu la page qui la décrit ; un extrait de moteur de recherche n'est pas une source.
 
 Ne consulte jamais LinkedIn, ni aucun site dont tu ne peux lire le contenu sans te connecter.
