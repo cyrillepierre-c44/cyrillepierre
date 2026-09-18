@@ -128,9 +128,34 @@ Outil de génération de contenu par IA, réservé aux utilisateurs Devise authe
 
 **Note de diagnostic dirigeant (`executive_brief`)**, ajoutée le 17/09/2026 : le seul contenu du
 Studio qui parte du chiffre. Source = le brief prospect (bouton « Rédiger une note de diagnostic »
-sur la fiche) suivi de l'**analyse financière validée** collée par Cyrille ; le prompt injecte le
-catalogue avec les vrais noms (document privé), le CV et les articles publiés comme lectures
-complémentaires. ⚠️ **`ContentGenerator::NO_PRESCRIPTION_RULE`, le diagnostic sans l'ordonnance** :
+sur la fiche, contexte seulement) et l'**analyse financière validée jointe en fichier `.md`**
+(onglet Fichier) ; le prompt injecte le catalogue avec les vrais noms (document privé), le CV et
+les articles publiés comme lectures complémentaires. **Deux modes**, choisis par
+`ContentGenerator#executive_brief_mode` sur `source_file.attached?` : avec l'analyse (« MODE
+COMPTES »), elle est la seule source de chiffres, le brief ne sert qu'au contexte, et si le brief
+contredit l'analyse sur une même donnée le modèle répond par `CONTRADICTION_MARKER` seul — la
+génération s'arrête en `draft` avec la contradiction en clair, à corriger dans la source ; sans
+analyse (« MODE SIGNAUX PUBLICS »), la note se construit sur ce que le brief montre (annonce,
+article, comptes résumés) : deux constats au plus, section coût omise faute de chiffre, jusqu'à
+sept questions.
+
+⚠️ **Les chiffres se relisent en Ruby, pas à la main** (18/09/2026, demande de Cyrille : « la
+rédaction doit sortir bonne du premier coup »). `FigureAudit` extrait chaque nombre de la note
+(montants, pourcentages, années, mois datés, effectifs — toutes graphies : « €30.7m », « 30,7 M€ »,
+« 30 729 278 € », « November 2023 » / « novembre 2023 ») et le cherche dans les sources (brief,
+fichier joint, catalogue, CV, année courante) avec 3 % de tolérance relative, 0,45 point pour les
+pourcentages, l'identité stricte pour les années et les dates. Seuls les chiffres absents repartent
+au modèle (`FIGURE_CORRECTION_INSTRUCTIONS`) : corriger, retirer, ou garder avec une formule que
+Ruby recalcule (`FigureAudit#supports?`, quatre opérations, opérandes obligatoirement sourcés — un
+« 1 % » ou un « /12 » sont admis comme constantes). Ruby écrit ensuite le journal dans la section
+`###A_VERIFIER###`, relabellisée **« Corrections automatiques »** (« Corrigé ou retiré », « Conservé,
+calcul vérifié », « Non résolu, à contrôler ») ; le modèle ne produit plus de liste à vérifier. Limite
+connue : le catalogue et le CV comptent ~200 nombres, un chiffre inventé proche de l'un d'eux (« 250
+K€ ») passe — l'audit attrape la recopie fausse et l'invention franche, pas la coïncidence. Un
+brouillon sans marqueurs est stocké tel quel. Piège corrigé au passage : `FileTextExtractor` rend
+désormais de l'UTF-8 (`download` renvoie des octets, et le premier accent d'une analyse cassait la
+concaténation au prompt) et tronque à 40 000 caractères, pas 8 000 — une analyse complète en fait
+9 000, sa conclusion partait sans un mot. ⚠️ **`ContentGenerator::NO_PRESCRIPTION_RULE`, le diagnostic sans l'ordonnance** :
 la note nomme les symptômes, ce qu'ils coûtent, les questions à poser au site et les résultats
 comparables de Cyrille, et **jamais le comment** — aucun plan d'action, aucune méthode avec son mode
 d'emploi, aucun outil, aucun calendrier. Un dirigeant qui reçoit le plan essaie seul avec son équipe
@@ -157,8 +182,8 @@ constat (le chiffre clé, imposé par le prompt), repères et puces dorés, lien
 sombre. Chaque réalisation citée renvoie à sa carte sur `/realisations` par une ancre
 `#nXX` (`RealisationCatalog.anchor` / `.public_url`, `id` posé par le partiel `_card`, avec un
 `scroll-margin-top` pour passer sous la barre fixe) ; les articles à leur adresse. Le prompt reçoit
-la liste des adresses (`realisation_links`). Le document ne part qu'après relecture de la section « à vérifier » — jamais avec un
-chiffre que l'analyse n'a pas validé.
+la liste des adresses (`realisation_links`). Le document ne part qu'après lecture de la section
+« Corrections automatiques » : une ligne « Non résolu » désigne un chiffre à contrôler avant envoi.
 
 **Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées, certaines avec un `semantic_scope` précisant pour quels sujets les utiliser/ne pas utiliser).
 
@@ -350,8 +375,10 @@ pas l'histoire du code — 1. type, 2. source, 3. précisions, 4. titre, 5. mod�
 pour le post LinkedIn et posait l'orientation et le modèle avant la source. Chaque champ ou aide
 optionnel porte `data-kinds="a b"` et le contrôleur Stimulus `studio_generation_controller.js`
 (`applyKind`) ne l'affiche que pour ces types : l'orientation pour post/actu/article, la réalisation et
-le visuel pour le post, une aide de source par type (pour la note de diagnostic : « colle l'analyse
-financière validée à la suite du brief »). Un test verrouille l'ordre des cinq blocs.
+le visuel pour le post, une aide de source par type (pour la note de diagnostic : « joins l'analyse
+financière validée dans l'onglet Fichier »). Un test verrouille l'ordre des cinq blocs. Les trois
+onglets de source ne font que masquer les champs : texte collé et fichier joint partent ensemble,
+c'est ce qui permet le brief en contexte plus l'analyse en fichier.
 
 ## Veille de signaux d'affaires (routine cloud, hors du code du site)
 

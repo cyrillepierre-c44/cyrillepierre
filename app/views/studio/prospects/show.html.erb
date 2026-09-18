@@ -13,7 +13,8 @@
         <%= link_to "Rédiger une proposition",
                     new_studio_generation_path(kind: "commercial_proposal", prospect_id: @prospect.id),
                     class: "btn-cp-primary btn-cp-sm" %>
-        <%# La note de diagnostic part du même brief ; l'analyse financière validée se colle à la suite. %>
+        <%# La note de diagnostic part du même brief (contexte) ; l'analyse financière validée se joint
+            en fichier .md dans le formulaire, et devient la seule source de chiffres. %>
         <%= link_to "Rédiger une note de diagnostic",
                     new_studio_generation_path(kind: "executive_brief", prospect_id: @prospect.id),
                     class: "btn-cp-outline btn-cp-sm" %>

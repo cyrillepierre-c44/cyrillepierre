@@ -19,11 +19,13 @@ class ContentGeneratorTest < ActiveSupport::TestCase
       self
     end
 
+    # `:echo` renvoie la question telle quelle : c'est ce que fait une relecture sans faute.
     def ask(question)
       @question = question
       raise @error if @error
 
-      Reply.new(@replies.shift || "")
+      reply = @replies.shift
+      Reply.new(reply == :echo ? question : reply || "")
     end
   end
 
@@ -188,14 +190,18 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     end
   end
 
-  test "the structured kinds ask for the four marked sections" do
+  # La note de diagnostic ne demande pas la section « à vérifier » au modèle : Ruby l'écrit
+  # lui-même à partir de la relecture automatique des chiffres.
+  test "the structured kinds ask for the marked sections" do
     Generation::STRUCTURED_KINDS.each do |kind|
       record = Generation.create!(user: @user, kind: kind)
       context = FakeContext.new(replies: [ "a", "b" ])
 
       run_generator(record, context)
 
-      Generation::SECTION_MARKERS.each_value do |marker|
+      Generation::SECTION_MARKERS.each do |key, marker|
+        next if key == :verify && kind == "executive_brief"
+
         assert_includes context.draft_chat.instructions, marker, "marqueur #{marker} absent pour #{kind}"
       end
     end
@@ -507,11 +513,11 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "Yoplait"
     assert_includes instructions, "## Les questions à poser à votre site"
     assert_includes instructions, "LETTRE D'ACCOMPAGNEMENT"
-    assert_includes instructions, "N'ajoute aucun chiffre qui n'y figure pas"
+    assert_includes instructions, "N'ajoute aucun chiffre qui ne figure pas dans le brief"
     # Montrer la sortie, pas la catastrophe : l'ouverture part de ce qui a été accompli, et chaque
     # constat se referme sur ce qu'il rend possible — sinon le lecteur se braque avant la deuxième page.
     assert_includes instructions, "MONTRER LA SORTIE, PAS LA CATASTROPHE"
-    assert_includes instructions, "ce que l'entreprise a accompli d'après ses comptes"
+    assert_includes instructions, "ce que l'entreprise a accompli d'après"
     assert_includes instructions, "aucune flatterie"
     # Première note réelle (17/09/2026) : le modèle avait recopié des notes internes du brief
     # (« a fund that doesn't need me for a redundancy plan ») et brodé sur les réalisations
@@ -539,5 +545,106 @@ class ContentGeneratorTest < ActiveSupport::TestCase
 
     assert_includes context.draft_chat.instructions, "ARTICLES PUBLIÉS PAR CYRILLE"
     assert_includes context.draft_chat.instructions, article.public_url
+  end
+  # --- note de diagnostic : deux modes, et la relecture automatique des chiffres -----------------
+
+  ANALYSIS = "Le CA passe de 26,8 M€ (2021) à 30 729 278 € en 2025. Frais de personnel 42,7 % du CA. " \
+             "Rebuts 4,5 % du CA. Ligne inaugurée en novembre 2023."
+
+  def executive_brief(with_analysis: false, **attrs)
+    record = Generation.create!(user: @user, kind: :executive_brief, input_text: "Signal : annonce de recrutement.",
+                                **attrs)
+    if with_analysis
+      record.source_file.attach(io: StringIO.new(ANALYSIS), filename: "analyse.md", content_type: "text/markdown")
+    end
+    record
+  end
+
+  def brief_draft(note, letter: "Lettre.")
+    "###VERSION_FINALE###\n#{note}\n\n###A_PERSONNALISER###\n- Le destinataire.\n\n###VERSION_COURTE###\n#{letter}"
+  end
+
+  test "without an attached analysis the brief is built from public signals" do
+    context = FakeContext.new(replies: ["a", "b"])
+    run_generator(executive_brief, context)
+    instructions = context.draft_chat.instructions
+
+    assert_includes instructions, "MODE SIGNAUX PUBLICS"
+    assert_includes instructions, "## Ce que l'on voit de l'extérieur"
+    assert_includes instructions, "jusqu'à sept questions"
+    assert_includes instructions, "omets la section entière"
+    assert_not_includes instructions, "MODE COMPTES"
+  end
+
+  test "with an attached analysis the brief reads the accounts and stops on a contradiction" do
+    context = FakeContext.new(replies: ["a", "b"])
+    run_generator(executive_brief(with_analysis: true), context)
+    instructions = context.draft_chat.instructions
+
+    assert_includes instructions, "MODE COMPTES"
+    assert_includes instructions, "## Ce que vos comptes disent"
+    assert_includes instructions, ContentGenerator::CONTRADICTION_MARKER
+    assert_includes instructions, "le calcul montré"
+    assert_includes context.draft_chat.question, "Contenu extrait du fichier joint :\n#{ANALYSIS}"
+    # La relecture des chiffres est automatique : le modèle n'a plus de liste à vérifier à produire.
+    assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]
+    assert_includes instructions, "Aucune liste de chiffres à vérifier"
+  end
+
+  test "a brief whose figures all come from the sources gets a clean journal and no correction pass" do
+    record = executive_brief(with_analysis: true)
+    draft = brief_draft("Revenue reached **€30.7m** in 2025, labour at 42.7%, the line opened in November 2023.")
+    context = FakeContext.new(replies: [draft, :echo])
+
+    run_generator(record, context)
+
+    assert_equal 2, context.chats.size, "aucune passe de correction quand rien n'est signalé"
+    sections = record.reload.sections
+    assert_includes sections[:verify], "Aucune correction"
+    assert_equal "Corrections automatiques", record.section_labels[:verify]
+    assert_equal "Lettre.", sections[:short]
+  end
+
+  test "flagged figures go back to the model, and Ruby writes the journal of what happened" do
+    record = executive_brief(with_analysis: true)
+    draft = brief_draft("Revenue reached €30.7m, scrap costs €1.38m a year, savings of €777k, absenteeism at 83.3%.")
+    corrected = brief_draft("Revenue reached €30.7m, scrap costs €1.38m a year, absenteeism at 83.3%.") +
+                "\n###JOURNAL###\n- 1,38 M€ = 30,7 M€ × 4,5 %\n- 83,3 % = 30,7 M€ × 4 %"
+    context = FakeContext.new(replies: [draft, corrected, :echo])
+
+    run_generator(record, context)
+
+    correction = context.chats[1]
+    assert_includes correction.instructions, "CHIFFRES ABSENTS DES SOURCES :\n- €1.38m\n- €777k\n- 83.3%"
+    assert_includes correction.instructions, ANALYSIS
+    assert_equal draft, correction.question
+    journal = record.reload.sections[:verify]
+    assert_includes journal, "- Corrigé ou retiré : €777k"
+    assert_includes journal, "- Conservé, calcul vérifié : €1.38m = 30,7 M€ × 4,5 %"
+    assert_includes journal, "- Non résolu, à contrôler : 83.3%"
+    assert_not_includes record.output, "###JOURNAL###"
+    assert_includes record.sections[:final], "absenteeism at 83.3%"
+  end
+
+  test "a contradiction between the analysis and the brief halts the generation" do
+    record = executive_brief(with_analysis: true)
+    context = FakeContext.new(replies: ["#{ContentGenerator::CONTRADICTION_MARKER}\nLe brief dit 25 M€ de CA, " \
+                                        "l'analyse 30,7 M€.", "jamais"])
+
+    run_generator(record, context)
+
+    assert record.reload.draft?
+    assert_includes record.output, "Génération interrompue"
+    assert_includes record.output, "Le brief dit 25 M€ de CA, l'analyse 30,7 M€."
+    assert_equal 1, context.chats.size
+  end
+
+  test "a brief without markers is stored as is" do
+    context = FakeContext.new(replies: ["Texte sans marqueurs, €777k.", "Texte sans marqueurs, €777k."])
+    record = executive_brief
+
+    run_generator(record, context)
+
+    assert_equal "Texte sans marqueurs, €777k.", record.reload.output
   end
 end

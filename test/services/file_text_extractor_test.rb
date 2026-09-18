@@ -22,6 +22,18 @@ class FileTextExtractorTest < ActiveSupport::TestCase
     assert_equal "Contexte de la mission.", FileTextExtractor.call(attachment)
   end
 
+  # Active Storage rend des octets sans encodage : le premier accent d'une analyse en français
+  # faisait échouer la concaténation au prompt (« incompatible character encodings »).
+  test "a downloaded text file comes back as UTF-8" do
+    attachment = attach(io: StringIO.new("Chiffre d'affaires 30,7 M€ — année 2025".b), filename: "analyse.md",
+                        content_type: "text/markdown")
+
+    text = FileTextExtractor.call(attachment)
+
+    assert_equal Encoding::UTF_8, text.encoding
+    assert_equal "Prompt : Chiffre d'affaires 30,7 M€ — année 2025", "Prompt : #{text}"
+  end
+
   test "extracts the text of a PDF instead of its binary content" do
     attachment = attach(io: File.open(file_fixture("sample.pdf")), filename: "sample.pdf",
                         content_type: "application/pdf")

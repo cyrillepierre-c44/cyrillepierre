@@ -74,6 +74,24 @@ class ContentGenerator
     chiffres, jamais sur l'identité de l'entreprise.
   TXT
 
+  # La note de diagnostic ne se relit plus à la main : ses chiffres sont comparés aux sources par
+  # FigureAudit, et le modèle ne reprend la plume que sur ce que l'audit a signalé. Quand l'analyse
+  # jointe et le brief se contredisent, le modèle ne tranche pas — il répond par ce seul marqueur.
+  CONTRADICTION_MARKER = "###SOURCE_CONTRADICTOIRE###"
+  JOURNAL_MARKER = "###JOURNAL###"
+
+  FIGURE_CORRECTION_INSTRUCTIONS = <<~PROMPT
+    Tu corriges une note déjà rédigée, sans la réécrire. Une relecture automatique a comparé chacun de ses
+    chiffres aux sources ; ceux listés ci-dessous n'y figurent pas. Pour chacun :
+    - s'il vient d'une erreur de recopie, d'unité ou d'arrondi, remplace-le par le chiffre exact de la source ;
+    - s'il résulte d'un calcul à partir de chiffres des sources, garde-le et donne sa formule ;
+    - sinon, retire-le et reformule la phrase sans chiffre, sans en inventer un autre.
+    Ne change RIEN d'autre : ni le reste du texte, ni la structure, ni les lignes de marqueurs ###…###.
+    Réponds avec le texte complet corrigé, puis, sur une ligne seule, #{JOURNAL_MARKER}, puis une ligne par
+    chiffre gardé comme calcul, au format « chiffre = formule » où la formule n'emploie que des chiffres des
+    sources et les opérateurs + − × / (ex. « 307 K€ = 30,7 M€ × 1 % »). Rien d'autre après le journal.
+  PROMPT
+
   PROOFREADING_INSTRUCTIONS = <<~PROMPT
     Tu es un correcteur orthographique et grammatical, rien de plus.
     Corrige UNIQUEMENT les fautes d'orthographe, de grammaire, de conjugaison et les mots mal formés
@@ -94,7 +112,9 @@ class ContentGenerator
 
   def call
     draft = new_chat.with_instructions(system_prompt).ask(user_prompt).content.to_s
+    return halt_on_contradiction(draft) if generation.executive_brief? && draft.include?(CONTRADICTION_MARKER)
 
+    draft = audit_figures(draft) if generation.executive_brief?
     generation.update!(output: proofread(draft), status: :generated)
     generation
   rescue StandardError => e
@@ -118,6 +138,84 @@ class ContentGenerator
   rescue StandardError => e
     Rails.logger.error "ContentGenerator proofread error: #{e.class} — #{e.message}"
     text
+  end
+
+  # Une note bâtie sur deux chiffres contradictoires serait fausse quelle que soit la valeur retenue :
+  # on rend la main avec la contradiction en clair, à corriger dans la source avant de régénérer.
+  def halt_on_contradiction(draft)
+    explanation = draft.split(CONTRADICTION_MARKER).last.to_s.strip
+    generation.update!(status: :draft, output: "Génération interrompue : l'analyse financière jointe et le " \
+                                               "brief se contredisent.\n\n#{explanation}\n\nCorrige la source " \
+                                               "en cause, puis régénère.")
+    generation
+  end
+
+  # Le brouillon passe au crible de FigureAudit ; seuls les chiffres absents des sources repartent
+  # au modèle, avec obligation de corriger, de retirer ou de justifier par une formule que Ruby
+  # recalcule. Le journal de ce qui s'est passé prend la place de l'ancienne section à vérifier.
+  def audit_figures(draft)
+    sections = sections_of(draft)
+    return draft if sections.nil?
+
+    audit = FigureAudit.new(audit_sources)
+    flagged = audit.unsourced(audited_text(sections))
+    return rebuild(sections, "Aucune correction : chaque chiffre de la note figure dans les sources.") if flagged.empty?
+
+    corrected, formulas = correct_figures(draft, flagged)
+    sections = sections_of(corrected) || sections
+    remaining = audit.unsourced(audited_text(sections))
+    rebuild(sections, journal(audit, flagged, remaining, formulas))
+  end
+
+  def journal(audit, flagged, remaining, formulas)
+    lines = flagged.reject { |figure| remaining.any? { |r| r.raw == figure.raw } }
+                   .map { |figure| "- Corrigé ou retiré : #{figure.raw}" }
+    remaining.each do |figure|
+      formula = formulas.find { |left, right| audit.same_figure?(figure, left) && audit.supports?(figure, right) }
+      lines << if formula
+                 "- Conservé, calcul vérifié : #{figure.raw} = #{formula.last}"
+               else
+                 "- Non résolu, à contrôler : #{figure.raw}"
+               end
+    end
+    "Relecture automatique des chiffres contre l'analyse jointe, le brief, le catalogue et le CV.\n" \
+      "#{lines.join("\n")}"
+  end
+
+  def correct_figures(draft, flagged)
+    listed = flagged.map { |figure| "- #{figure.raw}" }.join("\n")
+    instructions = "#{FIGURE_CORRECTION_INSTRUCTIONS}\nCHIFFRES ABSENTS DES SOURCES :\n#{listed}\n\n" \
+                   "SOURCES :\n#{audit_sources.join("\n\n")}"
+    reply = new_chat.with_instructions(instructions).ask(draft).content.to_s
+    corrected, journal = reply.split(JOURNAL_MARKER, 2)
+    formulas = journal.to_s.lines.filter_map do |line|
+      left, right = line.sub(/\A\s*[-•*]\s*/, "").split("=", 2)
+      [left.strip, right.strip] if right.present?
+    end
+    [corrected.to_s, formulas]
+  end
+
+  def audit_sources
+    @audit_sources ||= [generation.input_text, (extracted_file_text if generation.source_file.attached?),
+                        (scraped_url_text if generation.input_url.present?), realisations_str, cv_context,
+                        Date.current.year.to_s].compact_blank
+  end
+
+  def sections_of(text)
+    return nil unless text.include?(Generation::SECTION_MARKERS[:final])
+
+    Generation.new(kind: :executive_brief, output: text).sections
+  end
+
+  def audited_text(sections)
+    sections.values_at(:final, :short).compact.join("\n")
+  end
+
+  def rebuild(sections, journal)
+    Generation::SECTION_MARKERS.filter_map do |key, marker|
+      content = key == :verify ? journal : sections[key]
+      "#{marker}\n#{content}" if content.present?
+    end.join("\n\n")
   end
 
   def system_prompt
@@ -172,13 +270,13 @@ class ContentGenerator
   end
 
   def scraped_url_text
-    UrlScraper.call(generation.input_url)
+    @scraped_url_text ||= UrlScraper.call(generation.input_url)
   rescue UrlScraper::UnsafeUrlError => e
     "(impossible de récupérer cette URL : #{e.message})"
   end
 
   def extracted_file_text
-    FileTextExtractor.call(generation.source_file)
+    @extracted_file_text ||= FileTextExtractor.call(generation.source_file)
   end
 
   # Le catalogue se rend lui-même (voir RealisationCatalog.to_prompt), périmètre sémantique
@@ -497,12 +595,13 @@ class ContentGenerator
   # l'analyse financière collée en source (validée par Cyrille avant génération), la fiche prospect,
   # le catalogue avec les vrais noms (document privé), le CV et les articles publiés comme preuves.
   def executive_brief_prompt
+    mode = executive_brief_mode
     <<~PROMPT
       Tu rédiges une NOTE DE DIAGNOSTIC pour Cyrille PIERRE, manager de transition et consultant en excellence
       opérationnelle (20 ans d'industrie, ingénieur Arts & Métiers, formation ICCF HEC en analyse financière),
       à l'attention du dirigeant, du directeur de pôle ou du board d'une entreprise industrielle. Ce document
-      part des COMPTES de l'entreprise (analyse financière fournie en source) et les relie à ce qui se passe
-      dans ses ateliers. Son seul but : obtenir un entretien.
+      part de ce que l'entreprise montre d'elle-même — #{mode[:matter]} — et le relie à ce qui se passe dans
+      ses ateliers. Son seul but : obtenir un entretien.
 
       #{NO_PRESCRIPTION_RULE}
 
@@ -523,9 +622,10 @@ class ContentGenerator
 
       #{published_articles_block}
 
-      SOURCES : l'analyse financière et le brief prospect collés par Cyrille sont la seule matière chiffrée.
-      N'ajoute aucun chiffre qui n'y figure pas. Si l'analyse comporte une réserve ou une incohérence, signale-la
-      dans la section « à vérifier » plutôt que de trancher.
+      #{mode[:sources]}
+      Une relecture automatique comparera ensuite chaque chiffre de la note aux sources : un chiffre inventé,
+      arrondi à sa façon ou mal recopié sera retiré ; un chiffre calculé n'est gardé que si la note montre son
+      calcul à partir de chiffres des sources (« un point de chiffre d'affaires, soit 307 K€ »).
       ⚠ Le brief contient aussi des NOTES INTERNES de Cyrille — consignes à lui-même, jugements sur le lecteur ou
       sur l'entreprise, historique social, allusions à l'actionnaire, tactique d'approche. Elles servent à
       comprendre la situation, JAMAIS à être reprises : rien de ce qui est écrit pour Cyrille ne passe dans le
@@ -544,16 +644,14 @@ class ContentGenerator
       de marge à reconstituer, de trésorerie à libérer — jamais d'alerte, de danger, de dette insoutenable ni de
       faillite. L'optimisme porte sur le potentiel du site, jamais sur la personne du lecteur : aucune flatterie.
 
-      STRUCTURE DE LA NOTE (texte final), en markdown avec des titres « ## », 900 à 1300 mots :
-      1. Un paragraphe d'ouverture, trois ou quatre phrases : ce que l'entreprise a accompli d'après ses comptes,
-         la tension en une phrase, et la raison de cette note — le résultat que ces mêmes comptes laissent
-         entrevoir.
-      2. « ## Ce que vos comptes disent » — trois constats chiffrés au plus, chacun en un paragraphe court,
-         dans le langage du lecteur, et chacun refermé par ce qu'il rend possible.
-      3. « ## Ce que chaque mois d'attente coûte » — un ordre de grandeur par constat, calculé uniquement à
-         partir des chiffres fournis (ex. la valeur d'un point de chiffre d'affaires), avec la prudence qui
-         convient : ce sont des ordres de grandeur, pas des promesses.
-      4. « ## Les questions à poser à votre site » — cinq questions au plus, dont les réponses révèlent les
+      STRUCTURE DE LA NOTE (texte final), en markdown avec des titres « ## », #{mode[:length]} :
+      1. Un paragraphe d'ouverture, trois ou quatre phrases : ce que l'entreprise a accompli d'après
+         #{mode[:evidence]}, la tension en une phrase, et la raison de cette note — le résultat que
+         #{mode[:evidence]} laisse entrevoir.
+      2. « ## #{mode[:findings_title]} » — #{mode[:findings]}, chacun en un paragraphe court, dans le langage
+         du lecteur, et chacun refermé par ce qu'il rend possible.
+      3. « ## Ce que chaque mois d'attente coûte » — #{mode[:cost]}
+      4. « ## Les questions à poser à votre site » — #{mode[:questions]}, dont les réponses révèlent les
          causes sans les nommer ni indiquer quoi faire.
       5. « ## Ce que j'ai obtenu dans des situations comparables » — deux ou trois réalisations, chacune avec
          son contexte, son chiffre et sa durée ; quand un résultat est un résultat de site obtenu par plusieurs
@@ -588,7 +686,7 @@ class ContentGenerator
       → continuous improvement · main-d'œuvre → labour · BFR → working capital · EBE → EBITDA · DAP →
       depreciation · directeur de site → site head · manager de transition → interim manager.
 
-      FORMAT DE RÉPONSE OBLIGATOIRE — quatre sections, chacune précédée de son marqueur exact, seul sur sa
+      FORMAT DE RÉPONSE OBLIGATOIRE — trois sections, chacune précédée de son marqueur exact, seul sur sa
       ligne, dans cet ordre :
 
       #{Generation::SECTION_MARKERS[:final]}
@@ -596,11 +694,8 @@ class ContentGenerator
 
       #{Generation::SECTION_MARKERS[:personalize]}
       Liste à puces de ce que Cyrille doit relire ou adapter avant envoi (nom du destinataire, formulations
-      à ajuster à ce qu'il sait du contexte).
-
-      #{Generation::SECTION_MARKERS[:verify]}
-      Liste à puces de chaque chiffre, date ou fait repris de l'analyse qui mérite une vérification avant
-      envoi, y compris les réserves ou incohérences relevées dans la source.
+      à ajuster à ce qu'il sait du contexte). Aucune liste de chiffres à vérifier : la relecture des chiffres
+      est automatique.
 
       #{Generation::SECTION_MARKERS[:short]}
       La LETTRE D'ACCOMPAGNEMENT de la note, 120 à 180 mots, adressée au destinataire, qui nomme la source
@@ -609,6 +704,55 @@ class ContentGenerator
 
       N'écris rien avant le premier marqueur ni après la dernière section.
     PROMPT
+  end
+
+  # Deux notes, selon ce que Cyrille possède. Avec l'analyse financière jointe en fichier, la note lit
+  # les comptes et chaque chiffre en vient — le brief collé n'est que du contexte, et une contradiction
+  # chiffrée entre les deux arrête tout. Sans analyse, la note se tricote avec ce que l'entreprise
+  # montre d'elle-même (annonce, article, comptes résumés) : moins de constats, pas de section coût
+  # sans chiffre pour la porter, davantage de questions — c'est là qu'elle prend sa valeur.
+  def executive_brief_mode
+    if generation.source_file.attached?
+      {
+        matter: "ses comptes, lus dans l'analyse financière jointe",
+        sources: <<~TXT.strip,
+          SOURCES — MODE COMPTES : l'ANALYSE FINANCIÈRE JOINTE (« Contenu extrait du fichier joint ») est la
+          SEULE source des chiffres sur l'entreprise. Le texte collé (brief prospect) sert au contexte : le
+          signal public, l'interlocuteur, les chantiers pressentis — jamais aux chiffres. Un chiffre présent dans
+          le brief et absent de l'analyse ne sert pas. Si le brief donne pour la même donnée une valeur qui
+          contredit l'analyse (un autre chiffre d'affaires, une autre année, un autre effectif), n'écris pas la
+          note : réponds uniquement par la ligne #{CONTRADICTION_MARKER} suivie de deux phrases qui nomment les
+          deux valeurs et leur origine. N'ajoute aucun chiffre qui ne figure pas dans l'analyse.
+        TXT
+        length: "900 à 1300 mots",
+        evidence: "ses comptes",
+        findings_title: "Ce que vos comptes disent",
+        findings: "trois constats chiffrés au plus",
+        cost: "un ordre de grandeur par constat, calculé uniquement à partir des chiffres de l'analyse " \
+              "(ex. la valeur d'un point de chiffre d'affaires), le calcul montré, avec la prudence qui " \
+              "convient : ce sont des ordres de grandeur, pas des promesses.",
+        questions: "cinq questions au plus"
+      }
+    else
+      {
+        matter: "une annonce, un article, des comptes résumés, un signal public repris dans le brief",
+        sources: <<~TXT.strip,
+          SOURCES — MODE SIGNAUX PUBLICS : aucune analyse financière n'est jointe. La seule matière chiffrée est
+          le texte collé (brief prospect : annonce, article, comptes résumés, effectif, signal public). La note
+          ne prétend pas avoir lu les comptes : elle part de ce que l'entreprise montre d'elle-même et pose les
+          questions que ces signaux appellent. N'ajoute aucun chiffre qui ne figure pas dans le brief ; un
+          constat sans chiffre se formule comme une observation, jamais comme une mesure.
+        TXT
+        length: "700 à 1000 mots",
+        evidence: "ce qu'elle montre d'elle-même",
+        findings_title: "Ce que l'on voit de l'extérieur",
+        findings: "deux constats au plus, chacun rattaché au signal public qui le fonde",
+        cost: "seulement si un chiffre du brief permet un ordre de grandeur (un effectif, un chiffre " \
+              "d'affaires, un investissement annoncé), le calcul montré ; sinon, omets la section entière " \
+              "plutôt que d'y mettre un chiffre venu d'ailleurs.",
+        questions: "jusqu'à sept questions — c'est ici que la note prend sa valeur quand les comptes manquent"
+      }
+    end
   end
 
   def realisation_links

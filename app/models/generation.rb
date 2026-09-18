@@ -55,9 +55,12 @@ class Generation < ApplicationRecord
   }.freeze
 
   # Pour la note de diagnostic, la quatrième section n'est pas un résumé mais la lettre qui
-  # accompagne le document : le libellé doit le dire, sinon on l'enverrait comme un condensé.
+  # accompagne le document : le libellé doit le dire, sinon on l'enverrait comme un condensé. Et la
+  # troisième n'est plus une liste à vérifier à la main : c'est le journal de la relecture
+  # automatique des chiffres (FigureAudit, dans ContentGenerator).
   EXECUTIVE_BRIEF_SECTION_LABELS = SECTION_LABELS.merge(
     final: "La note (document imprimable)",
+    verify: "Corrections automatiques",
     short: "Lettre d'accompagnement"
   ).freeze
 
