@@ -112,7 +112,7 @@ class ContentGenerator
   end
 
   def call
-    draft = new_chat.with_instructions(system_prompt).ask(user_prompt).content.to_s
+    draft = ask(new_chat.with_instructions(system_prompt), user_prompt)
     return halt_on_contradiction(draft) if generation.executive_brief? && draft.include?(CONTRADICTION_MARKER)
 
     draft = audit_figures(draft) if generation.executive_brief?
@@ -120,7 +120,7 @@ class ContentGenerator
     generation
   rescue StandardError => e
     Rails.logger.error "ContentGenerator error: #{e.class} — #{e.message}"
-    generation.update!(output: "Erreur lors de la génération : #{e.message}", status: :draft)
+    generation.update!(output: "Erreur lors de la génération : #{error_summary(e)}", status: :draft)
     generation
   end
 
@@ -132,10 +132,25 @@ class ContentGenerator
     Mammouth.chat(model: generation.llm_model)
   end
 
+  # Toujours en flux : la passerelle Mammouth est derrière Cloudflare, qui coupe toute requête
+  # restée muette 100 secondes (erreur 524). Une note de diagnostic sur Fable 5.1 réfléchit
+  # plus longtemps que ça avant d'écrire le premier mot — le 18/09/2026, la régénération de la
+  # note 203 est morte ainsi à 125 s. En flux, les premiers octets partent dès le début et la
+  # connexion vit jusqu'au dernier ; RubyLLM rend le message complet une fois le flux terminé.
+  def ask(chat, prompt)
+    chat.ask(prompt) { |_chunk| nil }.content.to_s
+  end
+
+  # Une erreur de passerelle arrive en page HTML entière ; n'en garder que le titre.
+  def error_summary(error)
+    title = error.message[%r{<title>(.*?)</title>}m, 1]
+    title ? "passerelle Mammouth — #{title.strip}" : error.message.truncate(300)
+  end
+
   def proofread(text)
     return text if text.blank?
 
-    Mammouth.chat(model: PROOFREADING_MODEL).with_instructions(PROOFREADING_INSTRUCTIONS).ask(text).content.to_s
+    ask(Mammouth.chat(model: PROOFREADING_MODEL).with_instructions(PROOFREADING_INSTRUCTIONS), text)
   rescue StandardError => e
     Rails.logger.error "ContentGenerator proofread error: #{e.class} — #{e.message}"
     text
@@ -187,7 +202,7 @@ class ContentGenerator
     listed = flagged.map { |figure| "- #{figure.raw}" }.join("\n")
     instructions = "#{FIGURE_CORRECTION_INSTRUCTIONS}\nCHIFFRES ABSENTS DES SOURCES :\n#{listed}\n\n" \
                    "SOURCES :\n#{audit_sources.join("\n\n")}"
-    reply = new_chat.with_instructions(instructions).ask(draft).content.to_s
+    reply = ask(new_chat.with_instructions(instructions), draft)
     corrected, journal = reply.split(JOURNAL_MARKER, 2)
     formulas = journal.to_s.lines.filter_map do |line|
       left, right = line.sub(/\A\s*[-•*]\s*/, "").split("=", 2)

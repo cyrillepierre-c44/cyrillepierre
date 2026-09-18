@@ -6,7 +6,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
   # Capture les instructions et la question envoyées au modèle, pour pouvoir inspecter le
   # prompt construit sans jamais sortir sur le réseau.
   class FakeChat
-    attr_reader :model, :instructions, :question
+    attr_reader :model, :instructions, :question, :streamed
 
     def initialize(model, replies, error)
       @model = model
@@ -20,8 +20,9 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     end
 
     # `:echo` renvoie la question telle quelle : c'est ce que fait une relecture sans faute.
-    def ask(question)
+    def ask(question, &block)
       @question = question
+      @streamed = block_given?
       raise @error if @error
 
       reply = @replies.shift
@@ -66,6 +67,27 @@ class ContentGeneratorTest < ActiveSupport::TestCase
   end
 
   # --- le cycle nominal ------------------------------------------------------
+
+  # Cloudflare coupe une requête muette au bout de 100 s devant la passerelle Mammouth : chaque
+  # appel passe en flux, sinon un modèle qui réfléchit longtemps meurt avant son premier mot.
+  test "every call to the model streams, draft and proofreading alike" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(generation, context)
+
+    assert context.chats.all?(&:streamed), "un appel sans flux"
+  end
+
+  test "a gateway error page is summarised to its title" do
+    html = "<html><head><title>mammouth.ai | 524: A timeout occurred</title></head><body>long</body></html>"
+    record = generation
+
+    run_generator(record, FakeContext.new(error: RuntimeError.new(html)))
+
+    assert_equal "Erreur lors de la génération : passerelle Mammouth — mammouth.ai | 524: A timeout occurred",
+                 record.reload.output
+    assert record.draft?
+  end
 
   test "stores the proofread text and marks the generation as generated" do
     record = generation

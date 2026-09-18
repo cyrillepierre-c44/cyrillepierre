@@ -335,6 +335,19 @@ obligation de nommer explicitement `cyrillepierre.com` quand l'assistant se cite
 preuve. Verrouillées par `contacts_controller_test.rb`. **Toute réécriture du prompt doit les
 conserver** : ce sont des garde-fous de véracité, pas du style.
 
+⚠️ **La passerelle Mammouth coupe à 100 secondes — tout appel du Studio passe en flux** : `api.mammouth.ai`
+est derrière Cloudflare, qui renvoie une page HTML « 524: A timeout occurred » dès qu'une requête reste muette
+100 s. Fable 5.1 réfléchit plus longtemps que ça avant son premier mot sur une note de diagnostic : le
+18/09/2026 la régénération de la note 203 est morte à 125 s, **facturée** (36 000 tokens, ~1 €) sans rien
+rendre. `ContentGenerator#ask` passe donc un bloc à `chat.ask` (flux SSE) : les premiers octets arrivent en
+~6 s, la connexion vit jusqu'au dernier, mesuré 131 s sans coupure. Le test « every call streams » verrouille
+brouillon, passe de correction et relecture. Une page d'erreur de la passerelle est réduite à son `<title>`
+dans `output` (`error_summary`). Le modèle d'image (`Mammouth.paint`) ne se diffuse pas : Gemini 3 Pro Image
+répond en 15 s, les modèles GPT image dépassaient la limite — c'est la vraie raison de leur exclusion.
+Ordre de grandeur du coût : ~1 € par note de diagnostic sur Fable (21 000 tokens d'entrée : brief, analyse,
+catalogue, CV, consignes ; 15 000 en sortie, réflexion comprise), plus autant si la passe de correction se
+déclenche, la relecture sur Gemini étant négligeable.
+
 ⚠️ **Piège des tokens de réflexion (`ContactsController::LLM_MAX_TOKENS`)** : Gemini 3.5 Flash
 raisonne avant de répondre, et ses tokens de réflexion sont décomptés du **même budget** que la
 réponse visible. Avec `max_tokens: 600`, il dépensait ~575 tokens à réfléchir et la réponse
