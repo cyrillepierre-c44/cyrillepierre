@@ -425,6 +425,16 @@ Rien ne tourne sur Heroku pour ça : la phase 2 (signaux → fiches `Prospect` c
 au bilan du test, vers le 1er octobre 2026. Renommer ou déplacer le cadrage, le catalogue ou les
 articles casse la routine en silence : elle le signalera dans son mail du lundi, pas avant.
 
+Premier passage réel le 21/09/2026 (v5) : cinq signaux en 55 minutes, quatre retenus par Cyrille et
+saisis à la main en fiches `Prospect` (#38 à #41, source `autre`, accroche dans les notes). Trois
+limites d'API découvertes ce jour-là et inscrites dans la consigne v6 : le greffe de Bourg-en-Bresse
+publie ses « Modifications diverses » au BODACC **par lots** (rien du 25/08 au 21/09), donc l'Ain se lit
+sur 30 jours, pas 7 ; Géorisques **refuse tout rayon au-delà de 20 km**, d'où trois centres (Lyon,
+Villefranche, Bourgoin) ; l'annuaire `recherche-entreprises` répond par des erreurs dès qu'on dépasse
+une requête par seconde. Sur Indeed, « Vienne » seul renvoie la Vienne du Poitou : écrire « Vienne,
+Isère ». Un condensé de test lancé un jeudi avait daté son objet du lundi **suivant** : la consigne
+impose désormais le lundi précédent.
+
 ## Pipeline commercial (`/studio/prospects`, `app/models/prospect.rb`)
 
 Colonne vertébrale du suivi commercial. Avant, l'assistant du formulaire de contact collectait
