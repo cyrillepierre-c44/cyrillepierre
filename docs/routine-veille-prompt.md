@@ -5,7 +5,10 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 5 le 18/09 : six signaux hors annonces (dirigeants et cessions au BODACC, sites en
+connecteurs, ce qu'a montré le premier passage). Version 6 le 21/09 après le premier passage réel (5 signaux, 55 min) : BODACC de l'Ain sur 30 jours
+(le greffe de Bourg-en-Bresse publie ses modifications par lots, aucune entre le 25/08 et le 21/09) ;
+Géorisques limité à 20 km par l'API, donc trois centres ; annuaire à une requête par seconde
+(instable à débit libre) ; « Vienne, Isère » sur Indeed. Version 5 le 18/09 : six signaux hors annonces (dirigeants et cessions au BODACC, sites en
 perte dans l'annuaire, rappels RappelConso, installations classées Géorisques, aides à
 l'investissement par recherche web), avec les requêtes exactes ; quatre domaines à autoriser.
 Version 4 le 18/09 : périmètre ramené à 50 km / 1 h autour de Lyon (Livron, 127 km, a montré
@@ -55,8 +58,7 @@ Grenoble, Annecy, Chambéry, Clermont-Ferrand, Mâcon, Roussillon/Salaise et tou
 loin. Une mission en solo ne se négocie pas avec des frais de déplacement. Un signal hors
 périmètre n'est ni classé ni listé.
 
-**A. Indeed (connecteur Indeed, pays FR).** Lance ces recherches une par une, chacune sur
-« Lyon », « Vienne », « Villefranche-sur-Saône », « Bourgoin-Jallieu », « Ambérieu-en-Bugey » et
+**A. Indeed (connecteur Indeed, pays FR).** Lance ces recherches une par une, chacune sur « Lyon », « Vienne, Isère » (« Vienne » seul renvoie la Vienne du 86), « Villefranche-sur-Saône », « Bourgoin-Jallieu », « Ambérieu-en-Bugey » et
 « L'Arbresle » : « directeur de production », « directeur de site industriel », « directeur des
 opérations », « responsable de production », « responsable amélioration continue »
 (30 recherches). Vérifie la commune de chaque annonce contre le périmètre ci-dessus : Indeed
@@ -100,7 +102,9 @@ est écartée sans être listée.
 
 - **D1. Changements de dirigeants (BODACC).** Pour chaque département 69, 01 et 38 :
   `https://bodacc-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/annonces-commerciales/records?where=numerodepartement%3D%22<dep>%22%20and%20familleavis_lib%3D%22Modifications%20diverses%22%20and%20dateparution%3E%3D%22<lundi moins 7 jours>%22&limit=100&offset=<0,100,…>`.
-  Ne garde que les avis dont `modificationsgenerales.descriptif` contient « administration » et dont
+  Pour l'Ain, prends 30 jours au lieu de 7 : le greffe de Bourg-en-Bresse publie ses modifications par
+  lots espacés (aucune entre le 25/08 et le 21/09/2026), un résultat vide sur 7 jours n'y est pas un
+  signal ; les condensés précédents servent à ne pas ressortir un avis déjà remonté. Ne garde que les avis dont `modificationsgenerales.descriptif` contient « administration » et dont
   `listepersonnes.personne.administration` parle d'un **président, directeur général ou gérant** qui
   arrive ou qui part (ignore les commissaires aux comptes). Le champ `registre` donne le SIREN pour
   la vérification annuaire. Lecture : un dirigeant qui arrive audite dans ses cent premiers jours ;
@@ -110,7 +114,10 @@ est écartée sans être listée.
   Poids fort. Les « Procédures collectives » restent exclues (trop tard pour du conseil).
 - **D3. Sites industriels en perte (annuaire officiel).** Parcours
   `https://recherche-entreprises.api.gouv.fr/search?section_activite_principale=C&departement=69,01,38&tranche_effectif_salarie=21,22,31,32,41,42,51,52,53&per_page=25&page=<1…N>`
-  (environ 1 600 sociétés, 66 pages). Garde celles dont le **siège** est dans le périmètre, de
+  (environ 1 600 sociétés, 66 pages). Une requête par seconde au plus, jamais en parallèle : l'API
+  plafonne le débit et répond alors par des erreurs (deux sur trois le 21/09/2026) ; en cas d'erreur,
+  attends trois secondes et rejoue la même page une fois. Commence par le Rhône seul
+  (`departement=69`), puis 38, puis 01, et dis jusqu'à quelle page tu es allé. Garde celles dont le **siège** est dans le périmètre, de
   catégorie PME ou ETI (pas GE : le résultat d'un groupe ne dit rien d'un site), dont le champ
   `finances` du dernier exercice montre un chiffre d'affaires ≥ 5 M€ et un résultat net négatif ou
   inférieur à 1 % du chiffre d'affaires. L'annuaire ne donne qu'un exercice : c'est un signal de
@@ -124,8 +131,10 @@ est écartée sans être listée.
   ne garde que ceux dont l'industriel est dans le périmètre. Lecture : une crise qualité, donc
   rebuts, traçabilité, contrôle. Poids moyen à fort.
 - **D5. Installations classées (Géorisques).**
-  `https://georisques.gouv.fr/api/v1/installations_classees?latlon=4.8357%2C45.7640&rayon=50000&page=<n>&page_size=100`.
-  Garde les installations dont `industrie` est vrai et le `regime` Autorisation ou Enregistrement,
+  `https://georisques.gouv.fr/api/v1/installations_classees?latlon=<lon>%2C<lat>&rayon=20000&page=<n>&page_size=100`,
+  l'API refusant tout rayon au-delà de 20 km, sur trois centres : Lyon (4.8357,45.7640),
+  Villefranche-sur-Saône (4.7196,45.9897) et Bourgoin-Jallieu (5.2731,45.5861) ; le champ
+  `total_pages` de la réponse donne le nombre de pages (environ 16 pour Lyon). Garde les installations dont `industrie` est vrai et le `regime` Autorisation ou Enregistrement,
   puis celles qui ont une `inspections[].dateInspection` ou un `documentsHorsInspection[]` daté des
   60 derniers jours ; signale en priorité tout document dont le nom contient « mise en demeure » ou
   « arrêté ». Lecture : une mise aux normes à piloter. Poids moyen. Si la pagination dépasse
