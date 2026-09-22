@@ -25,7 +25,7 @@ class ProspectEnricherTest < ActiveSupport::TestCase
   teardown { travel_back }
 
   def stub_sources(annuaire: ANNUAIRE, bodacc: nil, rss: nil)
-    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=3&q=MAPEI(%20|\+)France})
+    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=10&q=MAPEI(%20|\+)France})
       .to_return(status: 200, body: annuaire.to_json, headers: { "Content-Type" => "application/json" })
     bodacc ||= { total_count: 2, results: [{ dateparution: "2026-01-15", familleavis_lib: "Dépôts des comptes" },
                                            { dateparution: "2025-11-03", familleavis_lib: "Modifications diverses" }] }
@@ -39,7 +39,7 @@ class ProspectEnricherTest < ActiveSupport::TestCase
           <pubDate>Mon, 03 Feb 2014 08:00:00 GMT</pubDate></item>
       </channel></rss>
     XML
-    stub_request(:get, %r{news\.google\.com/rss/search\?.*q=%22MAPEI(%20|\+)France%22}).to_return(status: 200, body: rss)
+    stub_request(:get, %r{news\.google\.com/rss/search\?.*q=%22MAPEI(%20|\+)France%22(%20|\+)Saint-Vulbas}).to_return(status: 200, body: rss)
   end
 
   test "composes identity, last accounts, legal representatives, BODACC notices and recent press from the APIs" do
@@ -85,14 +85,14 @@ class ProspectEnricherTest < ActiveSupport::TestCase
 
   test "a known SIREN is searched instead of the name, and an empty company yields no identity" do
     @prospect.update!(siren: "323469106")
-    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=3&q=323469106}).to_return(status: 200, body: ANNUAIRE.to_json)
+    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=10&q=323469106}).to_return(status: 200, body: ANNUAIRE.to_json)
     stub_request(:get, %r{bodacc-datadila}).to_return(status: 200, body: { total_count: 0, results: [] }.to_json)
     stub_request(:get, %r{news\.google\.com}).to_return(status: 200, body: "<rss><channel></channel></rss>")
 
     text = ProspectEnricher.call(@prospect).text
 
     assert_includes text, "BODACC (12 derniers mois) : aucun avis."
-    assert_includes text, "rien trouvé sur « MAPEI France »"
+    assert_includes text, "rien trouvé sur « \"MAPEI France\" Saint-Vulbas »"
 
     @prospect.update!(siren: nil, company: nil)
     assert_includes ProspectEnricher.call(@prospect).text, "aucune société trouvée"
@@ -108,7 +108,35 @@ class ProspectEnricherTest < ActiveSupport::TestCase
 
     assert_includes text, "créée le date inconnue"
     assert_includes text, "chiffre d'affaires 450 K€, résultat net 800 €"
-    assert_includes text, "rien trouvé sur « MAPEI France »"
+    assert_includes text, "rien trouvé sur « \"MAPEI France\" Saint-Vulbas »"
+  end
+
+  # « Bayer » donne d'abord un hôtel de Chamonix dans l'annuaire, « Hermès » la maison de la rue du
+  # Faubourg : le bon résultat est industriel et a un établissement dans la commune du site.
+  test "picks the industrial company with a plant in the named town over the first hit" do
+    @prospect.update!(company: "Bayer — site de Villefranche-sur-Saône / Limas (69)")
+    hotel = { nom_complet: "BAYER", siren: "1", categorie_entreprise: "PME", activite_principale: "55.10Z",
+              siege: { libelle_commune: "CHAMONIX-MONT-BLANC" }, matching_etablissements: [] }
+    plant = { nom_complet: "BAYER SAS", siren: "2", categorie_entreprise: "GE", activite_principale: "20.20Z",
+              siege: { libelle_commune: "LA GARENNE-COLOMBES" },
+              matching_etablissements: [{ libelle_commune: "VILLEFRANCHE-SUR-SAONE" }],
+              dirigeants: [{ denomination: "BAYER HOLDING", qualite: "Président" }],
+              finances: { "2025" => { ca: 2_460_000_000, resultat_net: 12_000_000 } } }
+    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=10&q=Bayer})
+      .to_return(status: 200, body: { results: [hotel, plant] }.to_json)
+    stub_request(:get, %r{bodacc-datadila}).to_return(status: 200, body: { total_count: 0, results: [] }.to_json)
+    stub_request(:get, %r{news\.google\.com/rss/search\?.*q=%22Bayer%22(%20|\+)Villefranche-sur-Sa})
+      .to_return(status: 200, body: "<rss><channel><item><title>Bayer &amp; Villefranche - Le Progrès</title>" \
+                                     "<link>https://example.com/v</link><pubDate>Tue, 15 Sep 2026 07:00:00 GMT</pubDate>" \
+                                     "</item></channel></rss>")
+
+    result = ProspectEnricher.call(@prospect)
+
+    assert_equal "2", result.siren
+    assert_includes result.text, "- BAYER SAS · SIREN 2 · GE"
+    assert_includes result.text, "chiffre d'affaires 2,5 Md€"
+    assert_includes result.text, "Représentants légaux (pas le directeur du site) : BAYER HOLDING (Président)"
+    assert_includes result.text, "15/09/2026 : Bayer & Villefranche - Le Progrès"
   end
 
   test "money and figures without accounts" do

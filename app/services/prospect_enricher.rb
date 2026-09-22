@@ -39,17 +39,39 @@ class ProspectEnricher
   attr_reader :prospect
 
   # « MAPEI France — usine de Saint-Vulbas (01) » : on cherche « MAPEI France ». Le SIREN, s'il est
-  # déjà connu, prime sur le nom.
+  # déjà connu (saisi sur la fiche), prime sur le nom.
   def query_name
     prospect.company.to_s.split(/\s+[—–-]\s+|\(/).first.to_s.strip
   end
 
+  # La commune du site, si la fiche la nomme (« usine de Saint-Vulbas », « site d'Irigny ») : elle
+  # départage les homonymes de l'annuaire et cible la presse locale.
+  def location_hint
+    prospect.company.to_s[%r{(?:site|usine|\u00e9tablissement)\s+d[e']\s*([^,(\u2014/]+)}i, 1].to_s.strip.presence
+  end
+
+  # Le premier résultat de l'annuaire n'est pas toujours le bon : « Bayer » y donne d'abord un hôtel
+  # de Chamonix. On préfère une société industrielle (section C), avec un établissement dans la
+  # commune du site, de taille ETI ou GE — dans cet ordre de poids.
   def fetch_company
     q = prospect.siren.presence || query_name
     return nil if q.blank?
 
-    json = get_json(URI("#{ANNUAIRE}?q=#{CGI.escape(q)}&per_page=3"))
-    json["results"].to_a.first
+    json = get_json(URI("#{ANNUAIRE}?q=#{CGI.escape(q)}&per_page=10"))
+    json["results"].to_a.max_by { |company| score(company) }
+  end
+
+  def score(company)
+    naf = company["activite_principale"].to_s
+    industrial = naf[0, 2].to_i.between?(10, 33)
+    communes = Array(company["matching_etablissements"]).map { |e| normalize(e["libelle_commune"]) }
+    communes << normalize(company.dig("siege", "libelle_commune"))
+    local = location_hint && communes.any? { |c| c.present? && c.start_with?(normalize(location_hint)) }
+    (industrial ? 4 : 0) + (local ? 3 : 0) + (%w[ETI GE].include?(company["categorie_entreprise"]) ? 1 : 0)
+  end
+
+  def normalize(text)
+    I18n.transliterate(text.to_s).downcase.gsub(/[^a-z0-9]+/, " ").strip
   end
 
   def identity(company)
@@ -93,7 +115,10 @@ class ProspectEnricher
   def leaders(list)
     people = Array(list).reject { |d| d["qualite"].to_s.match?(/commissaire/i) }
                         .select { |d| d["nom"] || d["denomination"] }
-                        .map { |d| [[d["prenoms"], d["nom"]].compact.join(" ").strip, d["qualite"]] }
+                        .map do |d|
+      [[d["prenoms"], d["nom"]].compact.join(" ").strip.presence || d["denomination"],
+       d["qualite"]]
+    end
     return [] if people.empty?
 
     listed = people.first(5).map { |name, role| "#{name} (#{role})" }.join(" · ")
@@ -120,9 +145,12 @@ class ProspectEnricher
     q = query_name
     return nil if q.blank?
 
-    xml = get_body(URI("#{NEWS}?q=#{CGI.escape(%("#{q}"))}&hl=fr&gl=FR&ceid=FR:fr"))
+    # Le nom seul noie une marque connue dans le bruit (« Bayer » : le club de football) ; la
+    # commune du site, quand la fiche la donne, ramène à l'usine.
+    terms = [%("#{q}"), location_hint].compact.join(" ")
+    xml = get_body(URI("#{NEWS}?q=#{CGI.escape(terms)}&hl=fr&gl=FR&ceid=FR:fr"))
     items = xml.scan(%r{<item>(.*?)</item>}m).map(&:first).filter_map do |item|
-      title = item[%r{<title>(.*?)</title>}m, 1].to_s.gsub(/<!\[CDATA\[|\]\]>/, "").strip
+      title = CGI.unescapeHTML(item[%r{<title>(.*?)</title>}m, 1].to_s.gsub(/<!\[CDATA\[|\]\]>/, "")).strip
       date = item[%r{<pubDate>(.*?)</pubDate>}m, 1]
       link = item[%r{<link>(.*?)</link>}m, 1].to_s.strip
       parsed = date && begin
@@ -134,7 +162,7 @@ class ProspectEnricher
 
       "- #{parsed.strftime('%d/%m/%Y')} : #{title} — #{link}"
     end
-    return "PRESSE (12 derniers mois, titres seulement) : rien trouvé sur « #{q} »." if items.empty?
+    return "PRESSE (12 derniers mois, titres seulement) : rien trouvé sur « #{terms} »." if items.empty?
 
     "PRESSE (12 derniers mois, titres seulement — lire l'article avant de citer) :\n#{items.first(5).join("\n")}"
   rescue StandardError => e
@@ -163,7 +191,8 @@ class ProspectEnricher
 
   def money(value)
     n = value.to_f
-    if n.abs >= 1_000_000 then "#{format('%.1f', n / 1_000_000).tr('.', ',')} M€"
+    if n.abs >= 1_000_000_000 then "#{format('%.1f', n / 1_000_000_000).tr('.', ',')} Md€"
+    elsif n.abs >= 1_000_000 then "#{format('%.1f', n / 1_000_000).tr('.', ',')} M€"
     elsif n.abs >= 1_000 then "#{(n / 1_000).round} K€"
     else "#{n.round} €"
     end

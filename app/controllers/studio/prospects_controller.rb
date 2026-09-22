@@ -64,7 +64,7 @@ module Studio
 
     def prospect_params
       params.require(:prospect).permit(
-        :name, :email, :company, :phone, :sector, :company_size, :source, :status, :themes_text,
+        :name, :email, :company, :siren, :phone, :sector, :company_size, :source, :status, :themes_text,
         :summary, :conversation, :visitor_precision, :notes, :last_contact_at, :next_action, :next_action_on
       )
     end
