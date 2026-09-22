@@ -14,9 +14,11 @@ class DecisionMakerFinder
     [{"name": "Prénom Nom", "title": "fonction telle qu'écrite", "source": "<url de la source, copiée telle
     quelle>", "quote": "<la phrase exacte de la source qui contient le nom, copiée sans la modifier>"}]
     Règles : un nom n'est retenu que s'il figure tel quel dans le texte de la source ; la « quote » est un
-    copier-coller, pas une reformulation ; ignore journalistes, élus, analystes, dirigeants d'autres sociétés,
-    et les mandataires du siège s'ils ne sont pas rattachés au site ; cinq noms au plus, les plus
-    probables d'abord ; tableau vide [] si rien de sûr.
+    copier-coller, pas une reformulation ; ignore journalistes, élus, analystes et dirigeants d'autres
+    sociétés. Quand le poste de direction du site est lui-même vacant (annonce d'emploi), relève le supérieur
+    auquel l'annonce rattache le poste s'il est nommé, et à défaut le directeur général ou le directeur
+    industriel de la société, en le disant dans « title » (« directeur général de la société — pas le site »).
+    Cinq noms au plus, les plus probables d'abord ; tableau vide [] si rien de sûr.
   PROMPT
 
   Candidate = Struct.new(:name, :title, :source, :quote)
