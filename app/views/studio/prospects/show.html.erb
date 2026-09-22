@@ -71,6 +71,28 @@
       </div>
     <% end %>
 
+    <%# Ce que l'entreprise montre d'elle-même dans les registres et la presse, composé en Ruby :
+        aucun chiffre qui ne vienne d'une réponse d'API. Le directeur du site, lui, se cherche à la main. %>
+    <div class="studio-section" id="renseignements">
+      <div class="studio-show-toolbar">
+        <h2 class="studio-section-title">Renseignements publics</h2>
+        <%= button_to (@prospect.enriched? ? "Actualiser" : "Chercher les renseignements"),
+                      enrich_studio_prospect_path(@prospect), method: :patch, class: "btn-cp-outline btn-cp-sm",
+                      disabled: @prospect.enriching? %>
+      </div>
+      <% if @prospect.enriching? %>
+        <p class="studio-empty">Recherche en cours (annuaire officiel, BODACC, presse) — recharge la page dans quelques secondes.</p>
+      <% elsif @prospect.enriched? %>
+        <p class="studio-field-hint">Au <%= fr_datetime(@prospect.enriched_at) %>. Sources gratuites, chiffres tels que publiés ; le directeur du site ne s'y trouve pas.</p>
+        <div class="studio-output-box" data-controller="studio-clipboard">
+          <pre class="studio-output" data-studio-clipboard-target="source"><%= @prospect.enrichment %></pre>
+          <%= render "studio/shared/copy_button" %>
+        </div>
+      <% else %>
+        <p class="studio-empty">Identité, siège, effectif, dirigeants légaux, dernier exercice, avis BODACC et presse, en un clic.</p>
+      <% end %>
+    </div>
+
     <% if @prospect.notes.present? %>
       <div class="studio-section">
         <h2 class="studio-section-title">Mes notes</h2>

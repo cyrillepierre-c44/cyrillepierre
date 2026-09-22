@@ -1,7 +1,7 @@
 module Studio
   class ProspectsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_prospect, only: %i[show edit update destroy]
+    before_action :set_prospect, only: %i[show edit update destroy enrich]
 
     def index
       scope = policy_scope(Prospect)
@@ -40,6 +40,14 @@ module Studio
       else
         render :edit, status: :unprocessable_entity
       end
+    end
+
+    # Les renseignements publics se rassemblent en tâche de fond ; la page annonce l'attente.
+    def enrich
+      @prospect.update!(enrichment_requested_at: Time.current)
+      ProspectEnrichmentJob.perform_later(@prospect)
+      redirect_to studio_prospect_path(@prospect),
+                  notice: "Renseignements en cours — recharge la page dans quelques secondes."
     end
 
     def destroy

@@ -19,6 +19,10 @@ class ProspectPolicy < ApplicationPolicy
     owner_or_admin?
   end
 
+  def enrich?
+    update?
+  end
+
   # Les prospects venus du formulaire du site n'appartiennent à personne : seuls les admins
   # les voient, un éditeur ne voit que ses propres saisies.
   Scope = ApplicationPolicy::OwnedScope

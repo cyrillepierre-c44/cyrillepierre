@@ -102,7 +102,19 @@ class Prospect < ApplicationRecord
     lines << "\nBesoin exprimé :\n#{summary}" if summary.present?
     lines << "\nPrécisions :\n#{visitor_precision}" if visitor_precision.present?
     lines << "\nNotes internes :\n#{notes}" if notes.present?
+    if enriched?
+      stamp = enriched_at.to_date.strftime("%d/%m/%Y")
+      lines << "\nRenseignements publics (annuaire, BODACC, presse — au #{stamp}) :\n#{enrichment}"
+    end
     lines.join("\n")
+  end
+
+  def enriched?
+    enrichment.present? && enriched_at.present?
+  end
+
+  def enriching?
+    enrichment_requested_at.present? && (enriched_at.nil? || enrichment_requested_at > enriched_at)
   end
 
   def display_company

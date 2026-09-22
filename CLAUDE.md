@@ -500,6 +500,20 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
 - **RGPD** : la mention du formulaire de contact précise désormais la conservation des données le
   temps du suivi. Des mentions légales et une politique de confidentialité restent à ajouter.
 
+- **Renseignements publics** (bouton « Chercher les renseignements » sur la fiche, 22/09/2026) :
+  `ProspectEnricher` compose **en Ruby, sans modèle** un bloc daté à partir de l'annuaire officiel
+  (`recherche-entreprises.api.gouv.fr` : identité, siège, tranche d'effectif, établissements,
+  dernier exercice — un seul, donc pas de tendance —, représentants légaux **hors commissaires aux
+  comptes**), du BODACC des douze derniers mois (`registre="SIREN"`) et des titres Google
+  Actualités sur douze mois (titres seulement, à lire avant de citer). Le nom cherché est ce qui
+  précède le premier tiret ou la première parenthèse du champ `company` (« MAPEI France — usine de
+  Saint-Vulbas (01) » → « MAPEI France ») ; un `siren` déjà connu prime. Tâche de fond
+  (`ProspectEnrichmentJob`, `enrichment_requested_at` puis `enriched_at`, échec écrit dans la
+  fiche), résultat dans `Prospect#enrichment`, repris par `brief_for_proposal` donc par tout ce
+  que le Studio rédige depuis la fiche. Ce que ces sources ne donnent **jamais** : le directeur du
+  site — l'annuaire liste la holding ou le siège, LinkedIn n'a pas d'API de recherche de
+  personnes. Géorisques a été écarté : son paramètre de nom d'établissement est ignoré par l'API.
+
 ⚠️ **La génération tourne en tâche de fond** (`ContentGenerationJob`), pas dans la requête web.
 Mesuré en production le 15/09/2026 : **27 s** pour un post LinkedIn tiré d'un article, alors
 qu'Heroku coupe toute requête à **30 s** — le Studio rendait donc une page d'erreur `H12` sur les

@@ -32,7 +32,9 @@ Rails.application.routes.draw do
   end
 
   namespace :studio do
-    resources :prospects
+    resources :prospects do
+      member { patch :enrich }
+    end
     resources :veille_signals, only: :index, path: "veille" do
       member do
         patch :keep

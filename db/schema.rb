@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_22_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_22_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -77,6 +77,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_120000) do
     t.text "conversation"
     t.datetime "created_at", null: false
     t.string "email"
+    t.datetime "enriched_at"
+    t.text "enrichment"
+    t.datetime "enrichment_requested_at"
     t.datetime "last_contact_at"
     t.string "name"
     t.string "next_action"
@@ -84,6 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_120000) do
     t.text "notes"
     t.string "phone"
     t.string "sector"
+    t.string "siren"
     t.integer "source", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.text "summary"

@@ -187,5 +187,39 @@ module Studio
                    links.first(4)
       assert_select "a[href=?]", new_studio_generation_path(kind: "outreach_message", prospect_id: @prospect.id)
     end
+  
+    test "asking for the public information enqueues the enrichment and the sheet says it is running" do
+      sign_in @admin
+
+      assert_enqueued_with(job: ProspectEnrichmentJob, args: [@prospect]) do
+        patch enrich_studio_prospect_path(@prospect)
+      end
+
+      assert_redirected_to studio_prospect_path(@prospect)
+      assert @prospect.reload.enriching?
+      follow_redirect!
+      assert_select "#renseignements .studio-empty", text: /Recherche en cours/
+      assert_select "#renseignements form button[disabled]"
+    end
+
+    test "the sheet shows the public information and hands it to the brief" do
+      @prospect.update!(enrichment: "IDENTITÉ : Fonderie Sud · SIREN 111", enriched_at: Time.zone.local(2026, 9, 22, 12, 0))
+      sign_in @admin
+
+      get studio_prospect_path(@prospect)
+
+      assert_select "#renseignements pre.studio-output", text: /SIREN 111/
+      assert_select "#renseignements form button", text: "Actualiser"
+      assert_includes @prospect.brief_for_proposal, "Renseignements publics (annuaire, BODACC, presse — au 22/09/2026) :\nIDENTITÉ : Fonderie Sud"
+    end
+
+    test "an editor cannot enrich someone else's sheet" do
+      sign_in @editor
+
+      patch enrich_studio_prospect_path(@prospect)
+
+      assert_response :not_found
+      assert_nil @prospect.reload.enrichment_requested_at
+    end
   end
 end
