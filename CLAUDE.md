@@ -425,6 +425,21 @@ Rien ne tourne sur Heroku pour ça : la phase 2 (signaux → fiches `Prospect` c
 au bilan du test, vers le 1er octobre 2026. Renommer ou déplacer le cadrage, le catalogue ou les
 articles casse la routine en silence : elle le signalera dans son mail du lundi, pas avant.
 
+**Phase 2, livrée le 22/09/2026 : les signaux entrent dans le Studio.** La routine dépose son lot
+sur `POST /api/veille_signals` (`Api::VeilleSignalsController`, hérite d'`ActionController::API`
+donc ni session ni CSRF ; jeton partagé `VEILLE_API_TOKEN` en en-tête `Authorization: Bearer`,
+comparé en temps constant ; hors `studio/`, donc hors Pundit). Idempotent par
+`(run_week, source_url)` — index unique — et un signal déjà tranché n'est jamais rouvert par un
+renvoi. La page `/studio/veille` (`Studio::VeilleSignalsController`, admins seulement via
+`VeilleSignalPolicy`, les éditeurs n'y voient rien) liste les signaux en attente, top 5 d'abord ;
+**Retenir** appelle `VeilleSignal#keep!`, qui crée la fiche `Prospect` (source `veille`, statut
+« à contacter », relance au jour ouvré suivant, notes = signal, source datée, lecture, comparable,
+accroche, consigne d'interlocuteur) exactement comme Cyrille les saisissait à la main le 21/09 ;
+**Écarter** garde le signal pour mémoire. Supprimer la fiche ne supprime pas le signal
+(`on_delete: :nullify`). Le bouton « Veille (n) » du pipeline compte les signaux en attente. Le
+jeton vit sur Heroku **et** dans les variables de l'environnement cloud « Veille » : l'un sans
+l'autre, la routine reçoit 401 et le dit dans son mail, le condensé continue d'arriver.
+
 Premier passage réel le 21/09/2026 (v5) : cinq signaux en 55 minutes, quatre retenus par Cyrille et
 saisis à la main en fiches `Prospect` (#38 à #41, source `autre`, accroche dans les notes). Trois
 limites d'API découvertes ce jour-là et inscrites dans la consigne v6 : le greffe de Bourg-en-Bresse

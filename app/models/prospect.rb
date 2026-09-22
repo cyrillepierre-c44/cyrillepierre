@@ -14,7 +14,8 @@ class Prospect < ApplicationRecord
     wagon: "Le Wagon",
     rebonds: "60 000 rebonds",
     recommandation: "Recommandation",
-    autre: "Autre"
+    autre: "Autre",
+    veille: "Veille automatique"
   }.freeze
 
   # L'ordre est celui du pipeline : de la prise de contact à l'issue de l'affaire.

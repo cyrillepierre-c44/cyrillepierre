@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_18_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_22_080000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -250,6 +250,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_110000) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "veille_signals", force: :cascade do |t|
+    t.string "company", null: false
+    t.string "comparable"
+    t.datetime "created_at", null: false
+    t.string "location"
+    t.text "pitch"
+    t.bigint "prospect_id"
+    t.date "published_on"
+    t.integer "rank"
+    t.date "run_week", null: false
+    t.string "sector"
+    t.boolean "shortlisted", default: true, null: false
+    t.text "signal", null: false
+    t.string "signal_type", null: false
+    t.string "source_name"
+    t.string "source_url", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.text "why_now"
+    t.index ["prospect_id"], name: "index_veille_signals_on_prospect_id"
+    t.index ["run_week", "source_url"], name: "index_veille_signals_on_run_week_and_source_url", unique: true
+    t.index ["status"], name: "index_veille_signals_on_status"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "generations", "generations", column: "source_article_id"
@@ -261,4 +285,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_110000) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "veille_signals", "prospects", on_delete: :nullify
 end

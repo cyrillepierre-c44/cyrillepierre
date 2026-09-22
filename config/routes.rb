@@ -26,8 +26,19 @@ Rails.application.routes.draw do
   get    "auth/linkedin/callback", to: "linkedin_auth#callback",   as: :linkedin_auth_callback
   delete "auth/linkedin",          to: "linkedin_auth#disconnect", as: :linkedin_auth_disconnect
 
+  # Dépôt des signaux par la routine de veille (jeton dans l'en-tête, pas de session).
+  namespace :api do
+    resources :veille_signals, only: :create
+  end
+
   namespace :studio do
     resources :prospects
+    resources :veille_signals, only: :index, path: "veille" do
+      member do
+        patch :keep
+        patch :dismiss
+      end
+    end
     resources :generations do
       member do
         patch :regenerate

@@ -12,6 +12,10 @@
   <div class="studio-actions studio-actions--top">
     <%= link_to "+ Nouveau prospect", new_studio_prospect_path, class: "btn-cp-primary" %>
     <%= link_to "Mes générations", studio_generations_path, class: "btn-cp-outline" %>
+    <% if policy(VeilleSignal).index? %>
+      <%= link_to "Veille#{" (#{@pending_signals})" if @pending_signals.positive?}", studio_veille_signals_path,
+                  class: "btn-cp-outline #{'studio-btn-success' if @pending_signals.positive?}" %>
+    <% end %>
   </div>
 
   <% if @relances.any? %>

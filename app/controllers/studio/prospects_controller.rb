@@ -9,6 +9,7 @@ module Studio
       @relances = scope.ouverts.en_retard.pipeline_order
       @prospects = (@status_filter ? scope.where(status: @status_filter) : scope).pipeline_order
       @counts = scope.group(:status).count
+      @pending_signals = policy_scope(VeilleSignal).pending.count
     end
 
     def show

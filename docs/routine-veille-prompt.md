@@ -5,7 +5,9 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 6 le 21/09 après le premier passage réel (5 signaux, 55 min) : BODACC de l'Ain sur 30 jours
+connecteurs, ce qu'a montré le premier passage). Version 7 le 22/09 : les signaux sont déposés dans le site (`POST /api/veille_signals`, jeton
+`VEILLE_API_TOKEN` dans l'environnement cloud) et se valident dans `/studio/veille`, où un clic crée la
+fiche prospect ; le mail reste, avec le lien en tête. Version 6 le 21/09 après le premier passage réel (5 signaux, 55 min) : BODACC de l'Ain sur 30 jours
 (le greffe de Bourg-en-Bresse publie ses modifications par lots, aucune entre le 25/08 et le 21/09) ;
 Géorisques limité à 20 km par l'API, donc trois centres ; annuaire à une requête par seconde
 (instable à débit libre) ; « Vienne, Isère » sur Indeed. Version 5 le 18/09 : six signaux hors annonces (dirigeants et cessions au BODACC, sites en
@@ -177,12 +179,41 @@ chiffre, aucun effectif, aucune situation financière qui ne soit pas écrit dan
 Si une information manque, dis « non précisé ». Si aucun signal ne mérite d'être remonté,
 dis-le : un condensé vide et honnête vaut mieux qu'un condensé rempli.
 
-## 5. Envoie le condensé par mail (connecteur Gmail)
+## 5. Dépose les signaux dans le Studio (Bash + curl)
+
+Avant le mail, envoie TOUS les signaux retenus (les cinq du top et les « autres signaux vus ») à
+`https://www.cyrillepierre.com/api/veille_signals` en une seule requête POST, corps JSON, en-têtes
+`Content-Type: application/json` et `Authorization: Bearer $VEILLE_API_TOKEN` (variable
+d'environnement fournie par l'environnement cloud ; si elle est absente, dis-le dans le mail et
+passe à l'étape 6). Forme exacte :
+
+```
+{"week": "<lundi de la semaine en cours, AAAA-MM-JJ>",
+ "signals": [
+   {"rank": 1, "shortlisted": true, "company": "<entreprise — site>", "location": "<commune (dép.)>",
+    "sector": "<secteur>", "signal_type": "<annonce | dirigeant | cession | comptes | rappel |
+    installation_classee | aide | presse | cabinet>", "signal": "<le signal en une phrase, avec le poste
+    ou le titre>", "source_name": "<Indeed | Le Progrès | BODACC | …>", "source_url": "<lien direct,
+    jamais un lien Google>", "published_on": "<AAAA-MM-JJ ou null>", "why_now": "<pourquoi maintenant>",
+    "comparable": "<N°XX — titre de la réalisation>", "pitch": "<l'accroche>"},
+   {"rank": null, "shortlisted": false, … un « autre signal vu », mêmes champs, pitch et why_now peuvent
+    être null}
+ ]}
+```
+
+La réponse (201) donne `created`, `updated` et `validate_at` : reprends ces trois valeurs dans le mail.
+Une réponse 401 signifie un jeton manquant ou faux, 422 un champ refusé (le message le nomme) :
+corrige et renvoie une fois ; sinon dis-le dans le mail. Le dépôt est idempotent par lien source :
+renvoyer le même lot ne crée pas de doublon.
+
+## 6. Envoie le condensé par mail (connecteur Gmail)
 
 Destinataire : cyrille.pierre@gmail.com. Objet : « Veille signaux d'affaires — semaine du
 <date du lundi de la semaine EN COURS, format JJ/MM/AAAA — si tu tournes un autre jour que
 lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, sobre, dans cet ordre :
 
+0. Une ligne : « N signaux déposés dans le Studio, à valider ici : <validate_at> » (ou la raison
+   pour laquelle le dépôt a échoué).
 1. **Les 5 signaux à regarder** (au plus cinq, classés par score décroissant). Pour chacun :
    - entreprise, lieu, secteur (si connu), et le TYPE de signal (annonce, dirigeant, cession,
      comptes, rappel, installation classée, aide, presse, cabinet) ;

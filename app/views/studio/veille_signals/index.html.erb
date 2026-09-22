@@ -1,0 +1,76 @@
+<% content_for :title, "Veille — Studio" %>
+
+<section class="service-hero">
+  <div class="container">
+    <span class="section-eyebrow">Studio</span>
+    <h1>Signaux de <span class="gradient-text">veille</span></h1>
+    <p class="service-hero-sub">Ce que la routine du lundi a trouvé. Retenir crée la fiche prospect, remplie ; écarter la laisse pour mémoire.</p>
+  </div>
+</section>
+
+<div class="container pb-5">
+  <div class="studio-actions studio-actions--top">
+    <%= link_to "← Pipeline", studio_prospects_path, class: "btn-cp-outline" %>
+  </div>
+
+  <% if @pending.empty? %>
+    <p class="studio-empty">Aucun signal à valider. Le prochain passage de la routine a lieu lundi à 6 h.</p>
+  <% else %>
+    <% @pending.group_by(&:run_week).each do |week, signals| %>
+      <h2 class="studio-card-subtitle">Semaine du <%= fr_date(week) %> — <%= pluralize(signals.size, "signal", "signaux") %> à valider</h2>
+      <% signals.each do |signal| %>
+        <div class="studio-card veille-signal <%= 'veille-signal--other' unless signal.shortlisted? %>">
+          <div class="studio-show-toolbar">
+            <h3 class="studio-card-title">
+              <% if signal.rank %><span class="veille-rank"><%= signal.rank %></span><% end %>
+              <%= signal.company %>
+            </h3>
+            <div class="studio-actions">
+              <%= button_to "Retenir", keep_studio_veille_signal_path(signal), method: :patch, class: "btn-cp-primary btn-cp-sm" %>
+              <%= button_to "Écarter", dismiss_studio_veille_signal_path(signal), method: :patch, class: "btn-cp-outline btn-cp-sm" %>
+            </div>
+          </div>
+          <div class="studio-show-badges">
+            <span class="studio-badge studio-badge--model"><%= signal.type_label %></span>
+            <% if signal.location.present? %><span class="studio-badge"><%= signal.location %></span><% end %>
+            <% if signal.sector.present? %><span class="studio-badge"><%= signal.sector %></span><% end %>
+            <% if signal.age_days %><span class="studio-badge studio-badge--warning"><%= pluralize(signal.age_days, "jour") %></span><% end %>
+          </div>
+          <p class="veille-signal-text"><%= signal.signal %>
+            <%= link_to "source", signal.source_url, target: "_blank", rel: "noopener", class: "veille-source-link" %>
+            <% if signal.source_name.present? %><small>(<%= signal.source_name %><%= ", #{fr_date(signal.published_on)}" if signal.published_on %>)</small><% end %>
+          </p>
+          <% if signal.why_now.present? %><p><strong>Pourquoi maintenant :</strong> <%= signal.why_now %></p><% end %>
+          <% if signal.comparable.present? %><p><strong>Comparable :</strong> <%= signal.comparable %></p><% end %>
+          <% if signal.pitch.present? %>
+            <div class="studio-output-box" data-controller="studio-clipboard">
+              <pre class="studio-output" data-studio-clipboard-target="source"><%= signal.pitch %></pre>
+              <%= render "studio/shared/copy_button" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @recent.any? %>
+    <h2 class="studio-card-subtitle">Tranchés ces quatre dernières semaines</h2>
+    <div class="studio-list">
+      <% @recent.each do |signal| %>
+        <div class="studio-list-item">
+          <div class="studio-list-item-main">
+            <span class="studio-badge <%= signal.kept? ? 'prospect-badge--a_contacter' : '' %>"><%= signal.kept? ? "Retenu" : "Écarté" %></span>
+            <span class="studio-list-item-title">
+              <%= signal.company %>
+              <% if signal.prospect %><small class="prospect-company">· <%= link_to "fiche ##{signal.prospect.id}", studio_prospect_path(signal.prospect) %></small><% end %>
+            </span>
+          </div>
+          <div class="studio-list-item-meta">
+            <span class="studio-badge studio-badge--model"><%= signal.type_label %></span>
+            <span class="studio-list-item-date"><%= fr_date(signal.run_week) %></span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -608,3 +608,21 @@
     .studio-regenerate-select { flex: 1; min-width: 0; }
   }
 }
+
+// Signaux de veille (/studio/veille) : un rang doré devant les cinq retenus par la routine,
+// les autres en retrait.
+.veille-rank {
+  display: inline-block;
+  min-width: 1.6em;
+  margin-right: 0.4em;
+  padding: 0 0.4em;
+  border-radius: 6px;
+  background: rgba(201, 169, 97, 0.18);
+  color: #c9a961;
+  font-size: 0.85em;
+  text-align: center;
+}
+
+.veille-signal--other { opacity: 0.8; }
+.veille-signal-text { margin: 0.75rem 0 0.5rem; }
+.veille-source-link { color: #c9a961; margin-left: 0.3em; }
