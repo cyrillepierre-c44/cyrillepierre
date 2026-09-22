@@ -76,6 +76,26 @@
                       class: "btn-cp-outline" %>
         <% end %>
 
+        <% if @generation.outreach_message? && @generation.prospect && @generation.output.present? %>
+          <% if @generation.sent? %>
+            <span class="studio-badge studio-badge--article">
+              Envoyé le <%= fr_date(@generation.sent_at) %> par <%= Generation::SENT_VIA.fetch(@generation.sent_via, @generation.sent_via) %>
+            </span>
+          <% else %>
+            <%# LinkedIn se copie et s'envoie à la main (aucune API de messagerie) : le bouton note l'envoi sur la
+                fiche. L'email part du site, depuis contact@, avec la mention de prospection en pied. %>
+            <%= button_to "Marquer envoyé sur LinkedIn", mark_sent_studio_generation_path(@generation), method: :patch,
+                          class: "btn-cp-outline",
+                          form: { data: { turbo_confirm: "Le message LinkedIn a bien été envoyé à la main ?" } } %>
+            <% if @generation.email_sendable? %>
+              <%= button_to "Envoyer par email à #{@generation.prospect.email}", send_email_studio_generation_path(@generation),
+                            method: :patch, class: "btn-cp-primary",
+                            form: { data: { turbo_confirm: "Envoyer la variante email à #{@generation.prospect.email} depuis contact@ ?" } } %>
+            <% end %>
+          <% end %>
+          <%= link_to "Fiche prospect", studio_prospect_path(@generation.prospect), class: "btn-cp-outline" %>
+        <% end %>
+
         <% if @generation.executive_brief? && @generation.output.present? %>
           <%# `turbo: false` : Turbo intercepterait le clic, attendrait une page HTML qui n'arrive jamais
               (la réponse est un fichier) et laisserait sa barre de progression traîner en haut de l'écran. %>

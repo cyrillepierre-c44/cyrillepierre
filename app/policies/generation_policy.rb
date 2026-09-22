@@ -39,6 +39,14 @@ class GenerationPolicy < ApplicationPolicy
     update?
   end
 
+  def send_email?
+    update?
+  end
+
+  def mark_sent?
+    update?
+  end
+
   def publish?
     admin? && record.publishable?
   end

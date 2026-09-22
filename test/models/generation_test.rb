@@ -268,4 +268,71 @@ class GenerationTest < ActiveSupport::TestCase
     assert_equal "Note de diagnostic dirigeant", brief.kind_name
     assert_equal "Note de diagnostic", brief.display_title
   end
+
+  # --- message de premier contact ------------------------------------------------------------
+
+  def outreach(prospect: nil, output: nil)
+    output ||= "###VERSION_FINALE###\nBonjour, j'ai vu votre annonce…\n\n###A_PERSONNALISER###\n- x\n\n" \
+               "###VERSION_COURTE###\nObjet : Votre annonce sur Indeed\nBonjour,\n\nCorps.\n\nCyrille PIERRE"
+    Generation.create!(user: users_owner, prospect: prospect, kind: :outreach_message, status: :generated, output: output)
+  end
+
+  def users_owner
+    @users_owner ||= User.create!(email: "outreach-#{SecureRandom.hex(4)}@example.com", password: "password123")
+  end
+
+  test "the outreach message is structured, audited, and reads its email subject and body from the short section" do
+    message = outreach
+
+    assert message.structured_output?
+    assert message.audited?
+    assert_equal "Message LinkedIn", message.section_labels[:final]
+    assert_equal "Corrections automatiques", message.section_labels[:verify]
+    assert_equal "Votre annonce sur Indeed", message.email_subject
+    assert_equal "Bonjour,\n\nCorps.\n\nCyrille PIERRE", message.email_body
+    assert_equal "Premier contact", message.default_title
+  end
+
+  test "an email variant without an explicit subject falls back on the prospect company" do
+    prospect = Prospect.create!(user: users_owner, name: "X", company: "Aldes — Vénissieux", email: "x@example.com")
+    message = outreach(prospect: prospect, output: "###VERSION_FINALE###\nMsg\n\n###VERSION_COURTE###\nBonjour,\n\nCorps.")
+
+    assert_equal "Prise de contact — Aldes — Vénissieux", message.email_subject
+    assert_equal "Bonjour,\n\nCorps.", message.email_body
+  end
+
+  test "an outreach is sendable by email only with a generated text and a prospect that has an email" do
+    assert_not outreach.email_sendable?
+    prospect = Prospect.create!(user: users_owner, name: "X", company: "Y")
+    assert_not outreach(prospect: prospect).email_sendable?
+    prospect.update!(email: "y@example.com")
+    assert outreach(prospect: prospect).email_sendable?
+  end
+
+  test "marking as sent stamps the generation and turns the prospect sheet into the contact journal" do
+    prospect = Prospect.create!(user: users_owner, name: "X", company: "Y", email: "y@example.com",
+                                status: :a_contacter, notes: "SIGNAL : annonce.", next_action_on: Date.current)
+    message = outreach(prospect: prospect)
+
+    travel_to Time.zone.local(2026, 9, 23, 10, 0) do
+      message.mark_sent!("email")
+
+      assert message.reload.sent?
+      assert_equal "email", message.sent_via
+      prospect.reload
+      assert_includes prospect.notes, "SIGNAL : annonce.\n23/09/2026 : premier message envoyé par email (génération ##{message.id})."
+      assert_equal Date.new(2026, 9, 30), prospect.next_action_on
+      assert_equal "Relancer si pas de réponse au premier message (email)", prospect.next_action
+      assert_equal Time.zone.local(2026, 9, 23, 10, 0), prospect.last_contact_at
+      assert prospect.a_contacter?
+    end
+  end
+
+  test "deleting the prospect keeps the message" do
+    prospect = Prospect.create!(user: users_owner, name: "X", company: "Y")
+    message = outreach(prospect: prospect)
+    prospect.destroy!
+
+    assert_nil message.reload.prospect
+  end
 end

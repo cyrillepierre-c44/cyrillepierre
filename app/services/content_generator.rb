@@ -20,7 +20,8 @@ class ContentGenerator
     commercial_proposal: :commercial_proposal_prompt,
     site_actu: :site_actu_prompt,
     article: :article_prompt,
-    executive_brief: :executive_brief_prompt
+    executive_brief: :executive_brief_prompt,
+    outreach_message: :outreach_message_prompt
   }.freeze
 
   # Le diagnostic sans l'ordonnance. Un dirigeant qui reçoit le plan d'action essaiera de le faire
@@ -129,7 +130,7 @@ class ContentGenerator
 
   def call
     draft = ask(new_chat.with_instructions(system_prompt), user_prompt)
-    draft = audit_figures(draft) if generation.executive_brief?
+    draft = audit_figures(draft) if generation.audited?
     generation.update!(output: proofread(draft), status: :generated)
     generation
   rescue StandardError => e
@@ -290,7 +291,7 @@ class ContentGenerator
   def sections_of(text)
     return nil unless text.include?(Generation::SECTION_MARKERS[:final])
 
-    Generation.new(kind: :executive_brief, output: text).sections
+    Generation.new(kind: generation.kind, output: text).sections
   end
 
   def audited_text(sections)
@@ -852,6 +853,66 @@ class ContentGenerator
         questions: "jusqu'à sept questions — c'est ici que la note prend sa valeur quand les comptes manquent"
       }
     end
+  end
+
+  # Trois lignes pour obtenir une réponse, jamais pour vendre : la source publique nommée (c'est
+  # l'obligation d'information du RGPD, et ce qui rend l'approche crédible), une seule réalisation
+  # avec son chiffre exact, une question. Ruby relit ensuite les chiffres comme pour la note.
+  def outreach_message_prompt
+    <<~PROMPT
+      Tu rédiges le PREMIER MESSAGE DE PRISE DE CONTACT de Cyrille PIERRE, manager de transition et consultant
+      en excellence opérationnelle à Lyon, à un décideur (dirigeant, directeur de site, directeur industriel,
+      DRH) d'une entreprise industrielle repérée par un signal public : une annonce, un article, un avis au
+      BODACC, des comptes déposés. Son seul but : obtenir une réponse. Il précède toute note ou proposition.
+
+      LE BRIEF collé vient de la fiche prospect : le signal et sa source, la lecture, la réalisation comparable,
+      une accroche proposée, et des NOTES INTERNES de Cyrille (jugements, tactique) qui ne se reprennent jamais,
+      ni en substance ni en formulation.
+
+      RÈGLES :
+      - Nomme la source publique du signal avec sa date, dès la première phrase (« j'ai vu votre annonce sur
+        Indeed du 9 septembre », « j'ai lu dans Le Progrès du 15 septembre ») : c'est l'obligation d'information
+        du RGPD, et ce qui rend l'approche crédible. Jamais « je suis tombé sur », jamais de source inventée.
+      - UNE seule réalisation comparable, celle du brief ou la plus proche du catalogue ci-dessous, avec son
+        contexte et son chiffre EXACTS, jamais la manière dont le résultat a été obtenu. Aucun chiffre sur
+        l'entreprise contactée qui ne soit dans le brief.
+      - Une hypothèse posée comme une QUESTION sur ce que l'entreprise vit, jamais une affirmation sur une usine
+        que Cyrille n'a pas visitée. Aucun plan d'action, aucune méthode, aucun outil.
+      - Aucune flatterie, aucun « j'espère que vous allez bien », aucun « n'hésitez pas », aucun « je me permets »,
+        aucune pièce jointe annoncée, aucun lien sauf, si un article publié ci-dessous traite du sujet exact, son
+        adresse en fin de message. Vouvoiement. Ton d'un pair, direct, sobre.
+      - Le destinataire : si le brief le nomme, adresse-toi à lui ; sinon commence par « Bonjour [Prénom], » et
+        signale-le dans les points à personnaliser.
+      - Langue : français, sauf instruction contraire.
+
+      RÉALISATIONS DE CYRILLE (document privé, noms réels autorisés) :
+      #{realisations_str}
+
+      #{cv_context}
+
+      #{published_articles_block}
+
+      FORMAT DE RÉPONSE OBLIGATOIRE — trois sections, chacune précédée de son marqueur exact, seul sur sa
+      ligne, dans cet ordre :
+
+      #{Generation::SECTION_MARKERS[:final]}
+      Le MESSAGE LINKEDIN : trois à cinq phrases, 90 mots au plus, 550 caractères au plus, sans objet ni
+      signature (LinkedIn les porte). Ses deux premières phrases doivent tenir seules en 300 caractères, pour
+      servir de note d'invitation si le destinataire n'est pas encore en relation.
+
+      #{Generation::SECTION_MARKERS[:personalize]}
+      Liste à puces de ce que Cyrille doit relire ou adapter avant envoi (prénom, poste exact du destinataire,
+      formulation à ajuster à ce qu'il sait). Aucune liste de chiffres à vérifier : la relecture des chiffres
+      est automatique.
+
+      #{Generation::SECTION_MARKERS[:short]}
+      La VARIANTE EMAIL : première ligne « Objet : … » (60 caractères au plus, qui nomme la source), puis le
+      corps, 120 à 160 mots, même fond que le message LinkedIn, et la signature sur quatre lignes :
+      #{SiteIdentity::NAME} / Manager de transition · Excellence opérationnelle /
+      #{SiteIdentity::HOST.delete_prefix('https://')} / #{SiteIdentity::PHONE_DISPLAY}.
+
+      N'écris rien avant le premier marqueur ni après la dernière section.
+    PROMPT
   end
 
   def realisation_links

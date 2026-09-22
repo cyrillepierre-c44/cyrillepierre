@@ -176,5 +176,16 @@ module Studio
       assert_select "a[href=?]", new_studio_generation_path(kind: "commercial_proposal", prospect_id: @prospect.id),
                     text: /proposition/
     end
+  
+    test "the sheet offers the first message before the note and the proposal" do
+      sign_in @admin
+
+      get studio_prospect_path(@prospect)
+
+      links = css_select(".studio-show-toolbar a.btn-cp-primary, .studio-show-toolbar a.btn-cp-outline").map(&:text)
+      assert_equal ["Modifier", "Rédiger un premier message", "Rédiger une proposition", "Rédiger une note de diagnostic"],
+                   links.first(4)
+      assert_select "a[href=?]", new_studio_generation_path(kind: "outreach_message", prospect_id: @prospect.id)
+    end
   end
 end

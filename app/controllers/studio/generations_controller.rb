@@ -3,7 +3,7 @@ module Studio
     before_action :authenticate_user!
     before_action :set_generation,
                   only: %i[show edit update destroy regenerate publish unpublish generate_visual publish_to_linkedin
-                           document pdf]
+                           document pdf send_email mark_sent]
 
     def index
       @generations = policy_scope(Generation).order(updated_at: :desc)
@@ -24,6 +24,7 @@ module Studio
     def create
       @generation = current_user.generations.new(generation_params)
       authorize @generation
+      ensure_prospect_in_scope!
 
       if @generation.save
         enqueue_generation(with_visual: generate_visual_requested?)
@@ -56,6 +57,30 @@ module Studio
       @generation.update!(llm_model: generation_params[:llm_model]) if generation_params[:llm_model].present?
       enqueue_generation
       redirect_to studio_generation_path(@generation), notice: "Régénération lancée."
+    end
+
+    # L'email part depuis contact@ (MailDeliveryJob, avec ses reprises réseau) et la fiche prospect
+    # devient le journal du contact. Le message LinkedIn se copie et s'envoie à la main : aucune API
+    # de messagerie à ce niveau d'accès, d'où « Marquer envoyé ».
+    def send_email
+      unless @generation.email_sendable?
+        return redirect_to studio_generation_path(@generation),
+                           alert: "Pas d'envoi possible : il faut un message généré et une adresse email sur la fiche."
+      end
+
+      OutreachMailer.first_contact(@generation).deliver_later
+      @generation.mark_sent!("email")
+      redirect_to studio_generation_path(@generation), notice: "Message envoyé à #{@generation.prospect.email}."
+    end
+
+    def mark_sent
+      unless @generation.outreach_message? && @generation.prospect
+        return redirect_to studio_generation_path(@generation),
+                           alert: "Ce contenu n'est pas un message lié à une fiche."
+      end
+
+      @generation.mark_sent!("linkedin")
+      redirect_to studio_generation_path(@generation), notice: "Envoi LinkedIn noté sur la fiche prospect."
     end
 
     def publish
@@ -109,13 +134,26 @@ module Studio
 
     def prefill_from_prospect
       prospect = policy_scope(Prospect).find(params[:prospect_id])
+      @generation.prospect = prospect
       @generation.input_text = prospect.brief_for_proposal
       @generation.title ||= default_title_for(prospect)
     end
 
     def default_title_for(prospect)
-      prefix = @generation.executive_brief? ? "Note de diagnostic" : "Proposition"
+      prefix = if @generation.executive_brief? then "Note de diagnostic"
+               elsif @generation.outreach_message? then "Premier contact"
+               else "Proposition"
+               end
       "#{prefix} — #{prospect.display_company}"
+    end
+
+    # Le prospect arrive par un champ caché : il doit être dans le périmètre de l'utilisateur,
+    # sinon un identifiant deviné rattacherait un message à la fiche d'un autre.
+    def ensure_prospect_in_scope!
+      id = generation_params[:prospect_id]
+      return if id.blank? || policy_scope(Prospect).exists?(id)
+
+      raise ActiveRecord::RecordNotFound
     end
 
     # `generating_since` est posé ici, pas dans la tâche : la page de destination doit déjà
@@ -142,7 +180,8 @@ module Studio
     def generation_params
       params.require(:generation).permit(
         :kind, :title, :input_text, :input_url, :extra_instructions, :source_file, :llm_model, :orientation,
-        :realisation_id, :output, :generate_visual, :image_model, :source_article_id, :financial_analysis
+        :realisation_id, :output, :generate_visual, :image_model, :source_article_id, :financial_analysis,
+        :prospect_id
       )
     end
 

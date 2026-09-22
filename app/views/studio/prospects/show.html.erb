@@ -8,11 +8,15 @@
       <h1 class="studio-card-title"><%= @prospect.name %></h1>
       <div class="studio-actions">
         <%= link_to "Modifier", edit_studio_prospect_path(@prospect), class: "btn-cp-outline btn-cp-sm" %>
-        <%# Le brief est reconstruit côté serveur depuis l'identifiant : passé dans l'adresse, une
-            fiche fournie dépassait la taille d'URL acceptée par Heroku (erreur 400). %>
+        <%# Dans l'ordre du contact : le premier message, puis la note, puis la proposition. Le brief est
+            reconstruit côté serveur depuis l'identifiant : passé dans l'adresse, une fiche fournie
+            dépassait la taille d'URL acceptée par Heroku (erreur 400). %>
+        <%= link_to "Rédiger un premier message",
+                    new_studio_generation_path(kind: "outreach_message", prospect_id: @prospect.id),
+                    class: "btn-cp-primary btn-cp-sm" %>
         <%= link_to "Rédiger une proposition",
                     new_studio_generation_path(kind: "commercial_proposal", prospect_id: @prospect.id),
-                    class: "btn-cp-primary btn-cp-sm" %>
+                    class: "btn-cp-outline btn-cp-sm" %>
         <%# La note de diagnostic part du même brief (contexte) ; l'analyse financière validée se joint
             en fichier .md dans le formulaire, et devient la seule source de chiffres. %>
         <%= link_to "Rédiger une note de diagnostic",

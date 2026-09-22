@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_22_080000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_22_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -56,13 +56,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_080000) do
     t.string "llm_model", default: "claude-fable-5.1", null: false
     t.integer "orientation", default: 0, null: false
     t.text "output"
+    t.bigint "prospect_id"
     t.datetime "published_at"
     t.string "realisation_id"
+    t.datetime "sent_at"
+    t.string "sent_via"
     t.bigint "source_article_id"
     t.integer "status", default: 0, null: false
     t.string "title"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["prospect_id"], name: "index_generations_on_prospect_id"
     t.index ["source_article_id"], name: "index_generations_on_source_article_id"
     t.index ["user_id"], name: "index_generations_on_user_id"
   end
@@ -277,6 +281,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_080000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "generations", "generations", column: "source_article_id"
+  add_foreign_key "generations", "prospects", on_delete: :nullify
   add_foreign_key "generations", "users"
   add_foreign_key "prospects", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

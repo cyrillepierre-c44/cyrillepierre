@@ -109,6 +109,18 @@ class Prospect < ApplicationRecord
     company.presence || "—"
   end
 
+  # Un premier message est parti : la fiche le note, date le dernier contact et pose la relance
+  # à une semaine — l'index la remontera ce jour-là sans qu'on y pense.
+  def log_first_contact!(via:, generation:)
+    line = "#{Date.current.strftime('%d/%m/%Y')} : premier message envoyé par #{via} (génération ##{generation.id})."
+    update!(
+      notes: [notes.presence, line].compact.join("\n"),
+      last_contact_at: Time.current,
+      next_action: "Relancer si pas de réponse au premier message (#{via})",
+      next_action_on: Date.current + 7
+    )
+  end
+
   def themes_text
     themes.join(", ")
   end

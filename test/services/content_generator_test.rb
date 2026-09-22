@@ -212,8 +212,8 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     end
   end
 
-  # La note de diagnostic ne demande pas la section « à vérifier » au modèle : Ruby l'écrit
-  # lui-même à partir de la relecture automatique des chiffres.
+  # Les contenus audités (note, message de contact) ne demandent pas la section « à vérifier »
+  # au modèle : Ruby l'écrit lui-même à partir de la relecture automatique des chiffres.
   test "the structured kinds ask for the marked sections" do
     Generation::STRUCTURED_KINDS.each do |kind|
       record = Generation.create!(user: @user, kind: kind)
@@ -222,7 +222,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
       run_generator(record, context)
 
       Generation::SECTION_MARKERS.each do |key, marker|
-        next if key == :verify && kind == "executive_brief"
+        next if key == :verify && Generation::AUDITED_KINDS.include?(kind)
 
         assert_includes context.draft_chat.instructions, marker, "marqueur #{marker} absent pour #{kind}"
       end
@@ -721,5 +721,38 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     run_generator(record, context)
 
     assert_equal "Texte sans marqueurs, €777k.", record.reload.output
+  end
+
+  # --- message de premier contact ------------------------------------------------------------
+
+  test "the outreach message names the public source, cites one exact result and asks a question" do
+    context = FakeContext.new(replies: ["a", "b"])
+    record = Generation.create!(user: @user, kind: :outreach_message, input_text: "SIGNAL : annonce Indeed du 09/09.")
+    run_generator(record, context)
+    instructions = context.draft_chat.instructions
+
+    assert_includes instructions, "PREMIER MESSAGE DE PRISE DE CONTACT"
+    assert_includes instructions, "Nomme la source publique du signal avec sa date"
+    assert_includes instructions, "UNE seule réalisation comparable"
+    assert_includes instructions, "posée comme une QUESTION"
+    assert_includes instructions, "NOTES INTERNES de Cyrille"
+    assert_includes instructions, "Yoplait"
+    assert_includes instructions, "300 caractères"
+    assert_includes instructions, "Objet : …"
+    assert_includes instructions, SiteIdentity::PHONE_DISPLAY
+    assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]
+    assert_not_includes instructions, "CONFIDENTIALITÉ — RÈGLE ABSOLUE"
+  end
+
+  test "the outreach message goes through the figure audit like the brief" do
+    record = Generation.create!(user: @user, kind: :outreach_message, input_text: "SIGNAL : poste ouvert depuis 12 jours.")
+    draft = "###VERSION_FINALE###\nBonjour, j'ai vu votre annonce, ouverte depuis 12 jours. Chez CENEXI, 450 K€/an.\n\n" \
+            "###A_PERSONNALISER###\n- x\n\n###VERSION_COURTE###\nObjet : Votre annonce\nCorps."
+    context = FakeContext.new(replies: [draft, :echo])
+
+    run_generator(record, context)
+
+    assert_equal "Aucune correction : chaque chiffre de la note figure dans les sources.", record.reload.sections[:verify]
+    assert_equal "Message LinkedIn", record.section_labels[:final]
   end
 end

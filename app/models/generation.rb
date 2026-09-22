@@ -3,6 +3,7 @@ class Generation < ApplicationRecord
   MAX_FILE_SIZE = 10.megabytes
 
   belongs_to :user
+  belongs_to :prospect, optional: true
   # Un post LinkedIn peut promouvoir un article publié : c'est ce lien qui permet au prompt
   # d'y renvoyer, et donc au lecteur d'arriver sur une page de fond plutôt que sur un profil.
   belongs_to :source_article, class_name: "Generation", optional: true
@@ -18,8 +19,10 @@ class Generation < ApplicationRecord
   # `executive_brief` : la note de diagnostic dirigeant — un diagnostic chiffré tiré des comptes et du
   # terrain, SANS l'ordonnance (voir ContentGenerator::NO_PRESCRIPTION_RULE), pour donner à un PDG ou à
   # un board l'envie d'un entretien. Document privé, jamais publié, rendu imprimable par `document`.
+  # `outreach_message` : le premier message à un décideur repéré par la veille — trois lignes qui
+  # nomment la source publique du signal et posent une question. Il précède la note de diagnostic.
   enum :kind, { linkedin_post: 0, cover_letter: 1, site_actu: 2, commercial_proposal: 3, article: 4,
-                executive_brief: 5 }
+                executive_brief: 5, outreach_message: 6 }
 
   KIND_LABELS = {
     "linkedin_post" => "Post LinkedIn",
@@ -27,7 +30,8 @@ class Generation < ApplicationRecord
     "commercial_proposal" => "Proposition commerciale",
     "site_actu" => "Actu du site",
     "article" => "Article de fond",
-    "executive_brief" => "Note de diagnostic dirigeant"
+    "executive_brief" => "Note de diagnostic dirigeant",
+    "outreach_message" => "Message de premier contact"
   }.freeze
   enum :status, { draft: 0, generated: 1, published: 2 }
   enum :orientation, { consultant: 0, transition_management: 1, cdi_search: 2 }, prefix: true
@@ -38,7 +42,11 @@ class Generation < ApplicationRecord
     "cdi_search" => "Recherche de poste en CDI"
   }.freeze
 
-  STRUCTURED_KINDS = %w[cover_letter commercial_proposal executive_brief].freeze
+  STRUCTURED_KINDS = %w[cover_letter commercial_proposal executive_brief outreach_message].freeze
+  # Les contenus dont Ruby relit les chiffres contre les sources (FigureAudit) : ceux qui partent
+  # chez un dirigeant sans relecture.
+  AUDITED_KINDS = %w[executive_brief outreach_message].freeze
+  SENT_VIA = { "linkedin" => "LinkedIn", "email" => "email" }.freeze
 
   SECTION_MARKERS = {
     final: "###VERSION_FINALE###",
@@ -62,6 +70,12 @@ class Generation < ApplicationRecord
     final: "La note (document imprimable)",
     verify: "Corrections automatiques",
     short: "Lettre d'accompagnement"
+  ).freeze
+
+  OUTREACH_SECTION_LABELS = SECTION_LABELS.merge(
+    final: "Message LinkedIn",
+    verify: "Corrections automatiques",
+    short: "Variante email (objet en première ligne)"
   ).freeze
 
   # value => label. All models are served by the Mammouth.ai OpenAI-compatible gateway
@@ -118,6 +132,7 @@ class Generation < ApplicationRecord
   def default_title
     return "Article sans titre" if article?
     return "Note de diagnostic" if executive_brief?
+    return "Premier contact" if outreach_message?
 
     "Actualité"
   end
@@ -135,7 +150,45 @@ class Generation < ApplicationRecord
   end
 
   def section_labels
-    executive_brief? ? EXECUTIVE_BRIEF_SECTION_LABELS : SECTION_LABELS
+    return EXECUTIVE_BRIEF_SECTION_LABELS if executive_brief?
+    return OUTREACH_SECTION_LABELS if outreach_message?
+
+    SECTION_LABELS
+  end
+
+  def audited?
+    kind.in?(AUDITED_KINDS)
+  end
+
+  # La variante email tient dans la quatrième section : « Objet : … » sur la première ligne, le
+  # corps ensuite. Sans objet lisible, le message part avec un objet de repli plutôt que vide.
+  def email_subject
+    line = sections[:short].to_s.lines.first.to_s.strip
+    subject = line[/\A\s*objet\s*:\s*(.+)\z/i, 1]
+    subject.presence || "Prise de contact — #{prospect&.display_company}"
+  end
+
+  def email_body
+    lines = sections[:short].to_s.lines
+    lines.shift if lines.first.to_s.match?(/\A\s*objet\s*:/i)
+    lines.join.strip
+  end
+
+  def email_sendable?
+    outreach_message? && generated? && output.present? && prospect&.email.present?
+  end
+
+  def sent?
+    sent_at.present?
+  end
+
+  # Le message est parti : la génération le retient, et la fiche prospect devient le journal du
+  # contact (date, canal, relance dans une semaine).
+  def mark_sent!(via)
+    transaction do
+      update!(sent_at: Time.current, sent_via: via)
+      prospect&.log_first_contact!(via: SENT_VIA.fetch(via, via), generation: self)
+    end
   end
 
   def excerpt(length: 220)

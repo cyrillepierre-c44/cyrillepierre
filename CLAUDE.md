@@ -202,6 +202,26 @@ sombre. Chaque réalisation citée renvoie à sa carte sur `/realisations` par u
 la liste des adresses (`realisation_links`). Le document ne part qu'après lecture de la section
 « Corrections automatiques » : une ligne « Non résolu » désigne un chiffre à contrôler avant envoi.
 
+**Message de premier contact (`outreach_message`)**, ajouté le 22/09/2026 : trois à cinq phrases à un
+décideur repéré par la veille, qui **nomment la source publique du signal avec sa date** (obligation
+d'information du RGPD et crédibilité), citent UNE réalisation avec son chiffre exact, posent une
+question, et ne vendent rien — il précède la note de diagnostic, comme pour Adragos. Sections :
+message LinkedIn (90 mots, dont les deux premières phrases tiennent en 300 caractères pour servir
+de note d'invitation), points à personnaliser, « Corrections automatiques » (FigureAudit, via
+`Generation::AUDITED_KINDS`), variante email dont la première ligne est « Objet : … »
+(`Generation#email_subject` / `#email_body`). Une génération connaît désormais sa fiche
+(`Generation#prospect`, champ caché posé par le pont depuis la fiche, vérifié dans le
+`policy_scope` à la création — un identifiant deviné ne rattache pas un message à la fiche d'un
+autre). Deux envois : **« Envoyer par email »** (`#send_email`, `OutreachMailer#first_contact`,
+texte brut depuis contact@, `reply_to` contact@, pied de prospection B2B avec « répondez stop »,
+visible seulement si la fiche a une adresse) et **« Marquer envoyé sur LinkedIn »** (`#mark_sent`,
+aucune API de messagerie LinkedIn à ce niveau d'accès, le message se copie et part à la main). Les
+deux appellent `Generation#mark_sent!`, qui date la génération et fait de la fiche le journal du
+contact (`Prospect#log_first_contact!` : ligne datée dans les notes, `last_contact_at`, relance à
+J+7). ⚠️ Un refus métier (pas d'adresse, pas de fiche) **redirige avec une alerte, ne lève pas**
+`RecordNotFound` : une exception rendue par la page 404 court-circuite le middleware de session, et
+la requête suivante du même test arrivait déconnectée (vu le 22/09/2026).
+
 **Sources optionnelles** (texte collé, fichier `.txt`/`.md`/`.pdf` 10 Mo max via `FileTextExtractor`, ou URL via `UrlScraper`) — toutes facultatives : si aucune n'est fournie, l'IA génère un contenu générique à partir du profil de Cyrille (CV complet via `CvText`, qui rend `pages/cv` et en extrait le texte brut, + catalogue de réalisations `RealisationCatalog::ITEMS`, ~26 réalisations taggées, certaines avec un `semantic_scope` précisant pour quels sujets les utiliser/ne pas utiliser).
 
 **Génération** : `ContentGenerator` (service) construit le prompt système (règles d'écriture anti-IA-générique + prompt spécifique au `kind`) et appelle le LLM via `RubyLLM`. Provider unique : **Mammouth.ai**, porté par le module **`Mammouth`** (`app/services/mammouth.rb` : adresse, clé `MAMMOUTH_API_KEY`, modèle par défaut, `Mammouth.chat`/`Mammouth.paint`) — l'adresse et le modèle ne s'écrivent nulle part ailleurs, l'assistant de contact inclus. ⚠️ L'initialiseur RubyLLM le lit dans un `to_prepare` : un initialiseur s'exécute avant le chargement automatique de `app/`, sans ça `Mammouth` est une constante inconnue au démarrage — l'ancien provider GitHub Models (gratuit, `GITHUB_KEY`) a expiré et a été retiré en août 2026 (choix de modèle, relecture, chatbot contact : tout passe par Mammouth désormais). Modèles au choix par génération (`Generation::LLM_MODELS`) : **Claude Fable 5.1 (défaut depuis le 18/09/2026, `Generation::DEFAULT_LLM_MODEL`, défaut de colonne aligné par migration)**, Claude Opus 4.8, Sonnet 4.6, Gemini 3.5 Flash, Mistral Large 3, GPT-5.4 — la passerelle en expose 98 (`GET /v1/models`), dont Opus 5 et Sonnet 5, à ajouter à la liste si besoin. La relecture orthographique finale tourne toujours sur Gemini 3.5 Flash (`ContentGenerator::PROOFREADING_MODEL` = `Mammouth::DEFAULT_MODEL`, rapide/peu cher) quel que soit le modèle choisi pour le brouillon. Le chatbot du formulaire de contact (`ContactsController#call_llm`, appel HTTP direct hors RubyLLM) utilise aussi Mammouth avec Gemini 3.5 Flash.

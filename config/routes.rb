@@ -48,6 +48,8 @@ Rails.application.routes.draw do
         patch :publish_to_linkedin
         get :document
         get :pdf
+        patch :send_email
+        patch :mark_sent
       end
     end
   end

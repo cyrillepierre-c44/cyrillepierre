@@ -408,5 +408,89 @@ module Studio
       assert_select "a[href=?]", document_studio_generation_path(brief), text: /Aperçu du document/
       assert_select ".studio-section-title", text: "Lettre d'accompagnement"
     end
+  
+    # --- message de premier contact ----------------------------------------------------------
+
+    def prospect_for(user, **attrs)
+      Prospect.create!({ user: user, name: "Marie Durand", company: "MAPEI — Saint-Vulbas",
+                         email: "marie@example.com", source: :veille, status: :a_contacter }.merge(attrs))
+    end
+
+    def outreach_for(prospect, user: @editor)
+      Generation.create!(user: user, prospect: prospect, kind: :outreach_message, status: :generated,
+                         output: "###VERSION_FINALE###\nBonjour Marie…\n\n###VERSION_COURTE###\nObjet : Votre annonce\nCorps.")
+    end
+
+    test "new from a prospect sheet carries the prospect along, and create refuses someone else's prospect" do
+      mine = prospect_for(@editor)
+      get new_studio_generation_path(kind: "outreach_message", prospect_id: mine.id)
+
+      assert_response :success
+      assert_select "input[type=hidden][name=?][value=?]", "generation[prospect_id]", mine.id.to_s
+      assert_select "input[name=?][value=?]", "generation[title]", "Premier contact — MAPEI — Saint-Vulbas"
+
+      theirs = prospect_for(@admin, email: "other@example.com")
+      stubbing_generator do
+        post studio_generations_path, params: { generation: { kind: "outreach_message", prospect_id: theirs.id } }
+        assert_response :not_found
+
+        assert_difference("Generation.count", 1) do
+          post studio_generations_path, params: { generation: { kind: "outreach_message", prospect_id: mine.id } }
+        end
+        assert_equal mine, Generation.last.prospect
+      end
+    end
+
+    test "sending the email delivers from contact@ and journals the contact on the prospect sheet" do
+      prospect = prospect_for(@editor)
+      message = outreach_for(prospect)
+
+      assert_enqueued_emails 1 do
+        patch send_email_studio_generation_path(message)
+      end
+
+      assert_redirected_to studio_generation_path(message)
+      assert message.reload.sent?
+      assert_equal "email", message.sent_via
+      assert_includes prospect.reload.notes, "premier message envoyé par email"
+      assert_equal Date.current + 7, prospect.next_action_on
+
+      follow_redirect!
+      assert_select ".studio-badge", text: /Envoyé le .* par email/
+      assert_select "form[action=?]", send_email_studio_generation_path(message), 0
+    end
+
+    test "marking the LinkedIn message as sent journals it without any email" do
+      prospect = prospect_for(@editor, email: nil)
+      message = outreach_for(prospect)
+
+      get studio_generation_path(message)
+      assert_select "form[action=?]", mark_sent_studio_generation_path(message)
+      assert_select "form[action=?]", send_email_studio_generation_path(message), 0
+
+      assert_no_enqueued_emails do
+        patch mark_sent_studio_generation_path(message)
+      end
+
+      assert_equal "linkedin", message.reload.sent_via
+      assert_includes prospect.reload.notes, "premier message envoyé par LinkedIn"
+    end
+
+    test "sending is refused without an email address, and to a stranger" do
+      message = outreach_for(prospect_for(@editor, email: nil))
+      patch send_email_studio_generation_path(message)
+      assert_redirected_to studio_generation_path(message)
+      assert_match(/adresse email/, flash[:alert])
+      assert_not message.reload.sent?
+
+      patch mark_sent_studio_generation_path(@generation)
+      assert_redirected_to studio_generation_path(@generation)
+      assert_match(/pas un message/, flash[:alert])
+
+      other = outreach_for(prospect_for(@admin, email: "a@example.com"), user: @admin)
+      patch send_email_studio_generation_path(other)
+      assert_response :not_found, "un éditeur ne voit pas la génération d'un autre"
+      assert_not other.reload.sent?
+    end
   end
 end

@@ -1,6 +1,8 @@
 <%= form_for generation, url: url,
               html: { multipart: true,
                       data: { controller: "studio-generation", turbo: false, action: "submit->studio-generation#submitting" } } do |f| %>
+  <%# La fiche prospect d'origine suit la génération : c'est elle qui recevra le message et le journal d'envoi. %>
+  <%= f.hidden_field :prospect_id if generation.prospect_id.present? %>
   <%= render "devise/shared/error_messages", resource: generation %>
 
   <%# Le rattachement vient de l'adresse et doit survivre à l'envoi du formulaire, sinon le
@@ -64,6 +66,17 @@
       </label>
 
       <label class="cf-theme-card">
+        <%= f.radio_button :kind, "outreach_message", checked: generation.outreach_message?,
+                            data: { action: "change->studio-generation#selectKind" } %>
+        <div class="cf-theme-inner">
+          <span class="cf-theme-icon">✉️</span>
+          <h3 class="cf-theme-title">Message de premier contact</h3>
+          <p class="cf-theme-desc">Trois lignes à un décideur repéré par la veille, LinkedIn ou email</p>
+          <span class="cf-theme-check"><i class="fa-solid fa-check"></i></span>
+        </div>
+      </label>
+
+      <label class="cf-theme-card">
         <%= f.radio_button :kind, "executive_brief", checked: generation.executive_brief?,
                             data: { action: "change->studio-generation#selectKind" } %>
         <div class="cf-theme-inner">
@@ -116,6 +129,10 @@
       </p>
       <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="commercial_proposal">
         Colle le brief client — il est pré-rempli quand tu viens d'une fiche prospect.
+      </p>
+      <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="outreach_message">
+        Le brief prospect est pré-rempli depuis la fiche (signal, source, accroche proposée). Le message nommera la
+        source publique et posera une question — rien à coller de plus.
       </p>
       <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="executive_brief">
         Le brief prospect est pré-rempli depuis la fiche : c'est le contexte, à laisser tel quel.
