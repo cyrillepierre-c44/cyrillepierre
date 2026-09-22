@@ -33,7 +33,10 @@ Rails.application.routes.draw do
 
   namespace :studio do
     resources :prospects do
-      member { patch :enrich }
+      member do
+        patch :enrich
+        patch :find_contacts
+      end
     end
     resources :veille_signals, only: :index, path: "veille" do
       member do

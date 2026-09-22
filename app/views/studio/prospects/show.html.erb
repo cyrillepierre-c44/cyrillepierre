@@ -93,6 +93,28 @@
       <% end %>
     </div>
 
+    <%# Le décideur du site n'est dans aucun registre : recherche web (Tavily), noms vérifiés mot pour
+        mot dans leurs sources, à confirmer sur LinkedIn avant d'écrire. %>
+    <div class="studio-section" id="decideur">
+      <div class="studio-show-toolbar">
+        <h2 class="studio-section-title">Décideur du site</h2>
+        <%= button_to (@prospect.contacts_researched? ? "Chercher à nouveau" : "Chercher le décideur"),
+                      find_contacts_studio_prospect_path(@prospect), method: :patch, class: "btn-cp-outline btn-cp-sm",
+                      disabled: @prospect.contacts_searching? %>
+      </div>
+      <% if @prospect.contacts_searching? %>
+        <p class="studio-empty">Recherche en cours (trois requêtes web, lecture des pages) — recharge la page dans une minute.</p>
+      <% elsif @prospect.contacts_researched? %>
+        <p class="studio-field-hint">Au <%= fr_datetime(@prospect.contacts_researched_at) %>. Retiens un nom, vérifie-le sur LinkedIn, puis mets-le dans le champ Nom de la fiche (Modifier).</p>
+        <div class="studio-output-box" data-controller="studio-clipboard">
+          <pre class="studio-output" data-studio-clipboard-target="source"><%= @prospect.contacts_research %></pre>
+          <%= render "studio/shared/copy_button" %>
+        </div>
+      <% else %>
+        <p class="studio-empty">Presse, pages d'entreprise, extraits de profils : les noms trouvés sont cités avec leur phrase source.</p>
+      <% end %>
+    </div>
+
     <% if @prospect.notes.present? %>
       <div class="studio-section">
         <h2 class="studio-section-title">Mes notes</h2>

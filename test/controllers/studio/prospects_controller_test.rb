@@ -221,5 +221,31 @@ module Studio
       assert_response :not_found
       assert_nil @prospect.reload.enrichment_requested_at
     end
+  
+    test "asking for the decision maker enqueues the web search and the sheet shows the names with their sources" do
+      sign_in @admin
+
+      assert_enqueued_with(job: DecisionMakerSearchJob, args: [@prospect]) do
+        patch find_contacts_studio_prospect_path(@prospect)
+      end
+      assert_redirected_to studio_prospect_path(@prospect)
+      follow_redirect!
+      assert_select "#decideur .studio-empty", text: /Recherche en cours/
+      assert_select "#decideur form button[disabled]"
+
+      @prospect.update!(contacts_research: "- Jean Martin — directeur de l'usine — https://example.com/a",
+                        contacts_researched_at: Time.current, name: "Jean Martin")
+      get studio_prospect_path(@prospect)
+      assert_select "#decideur pre.studio-output", text: /Jean Martin/
+      assert_select "#decideur form button", text: "Chercher à nouveau"
+      assert_includes @prospect.brief_for_proposal, "Interlocuteur : Jean Martin"
+      assert_includes @prospect.brief_for_proposal, "Recherche du décideur (web, à confirmer) :\n- Jean Martin"
+    end
+
+    test "the placeholder name is not handed to the brief as a contact" do
+      @prospect.update!(name: Prospect::PLACEHOLDER_NAME)
+
+      assert_not_includes @prospect.brief_for_proposal, "Interlocuteur"
+    end
   end
 end

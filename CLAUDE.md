@@ -514,6 +514,19 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
   site — l'annuaire liste la holding ou le siège, LinkedIn n'a pas d'API de recherche de
   personnes. Géorisques a été écarté : son paramètre de nom d'établissement est ignoré par l'API.
 
+- **Décideur du site** (bouton « Chercher le décideur », 22/09/2026) : aucun registre ne le donne,
+  il se cherche sur le web. `DecisionMakerFinder` lance trois recherches **Tavily** (`Tavily.search`,
+  clé `TAVILY_API_KEY`, la même que dans l'outil d'analyse financière, deux crédits par recherche
+  « advanced » sur mille gratuits par mois, texte entier des pages via `include_raw_content`),
+  fait relever les noms par le modèle rapide (JSON : nom, fonction, url, phrase exacte), puis
+  **Ruby ne garde que les noms dont la phrase citée est mot pour mot dans la page citée** et qui
+  la contiennent — même chaîne anti-invention que `FigureAudit` et que l'agent de notation de
+  l'autre projet. Résultat daté dans `Prospect#contacts_research`, repris dans le brief « à
+  confirmer », jamais dans le champ `name` : c'est Cyrille qui vérifie sur LinkedIn et remplit le
+  nom (`Prospect::PLACEHOLDER_NAME` = « Décideur à identifier » n'est jamais transmis comme
+  interlocuteur). Aucun email n'est deviné. Tâche `DecisionMakerSearchJob`, échec écrit dans la
+  fiche.
+
 ⚠️ **La génération tourne en tâche de fond** (`ContentGenerationJob`), pas dans la requête web.
 Mesuré en production le 15/09/2026 : **27 s** pour un post LinkedIn tiré d'un article, alors
 qu'Heroku coupe toute requête à **30 s** — le Studio rendait donc une page d'erreur `H12` sur les

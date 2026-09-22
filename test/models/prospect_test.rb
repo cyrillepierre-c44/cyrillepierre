@@ -75,8 +75,10 @@ class ProspectTest < ActiveSupport::TestCase
     assert_includes brief, "Vu au salon."
   end
 
+  # Un vrai nom est une donnée (l'interlocuteur du message) ; le nom de remplacement n'en est pas une.
   test "brief_for_proposal stays empty without any qualified data" do
-    assert_equal "", Prospect.new(name: "Inconnu").brief_for_proposal
+    assert_equal "", Prospect.new(name: Prospect::PLACEHOLDER_NAME).brief_for_proposal
+    assert_equal "Interlocuteur : Marie Durand", Prospect.new(name: "Marie Durand").brief_for_proposal
   end
 
   test "display_company falls back to a dash" do

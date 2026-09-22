@@ -23,6 +23,10 @@ class ProspectPolicy < ApplicationPolicy
     update?
   end
 
+  def find_contacts?
+    update?
+  end
+
   # Les prospects venus du formulaire du site n'appartiennent à personne : seuls les admins
   # les voient, un éditeur ne voit que ses propres saisies.
   Scope = ApplicationPolicy::OwnedScope

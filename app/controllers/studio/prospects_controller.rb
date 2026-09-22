@@ -1,7 +1,7 @@
 module Studio
   class ProspectsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_prospect, only: %i[show edit update destroy enrich]
+    before_action :set_prospect, only: %i[show edit update destroy enrich find_contacts]
 
     def index
       scope = policy_scope(Prospect)
@@ -48,6 +48,13 @@ module Studio
       ProspectEnrichmentJob.perform_later(@prospect)
       redirect_to studio_prospect_path(@prospect),
                   notice: "Renseignements en cours — recharge la page dans quelques secondes."
+    end
+
+    def find_contacts
+      @prospect.update!(contacts_requested_at: Time.current)
+      DecisionMakerSearchJob.perform_later(@prospect)
+      redirect_to studio_prospect_path(@prospect),
+                  notice: "Recherche du décideur en cours — recharge la page dans une minute."
     end
 
     def destroy

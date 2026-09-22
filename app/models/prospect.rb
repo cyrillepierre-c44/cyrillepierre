@@ -96,6 +96,7 @@ class Prospect < ApplicationRecord
   def brief_for_proposal
     lines = []
     lines << "Client : #{company}" if company.present?
+    lines << "Interlocuteur : #{name}" if named_contact?
     lines << "Secteur : #{sector}" if sector.present?
     lines << "Taille : #{company_size}" if company_size.present?
     lines << "Thèmes : #{themes_text}" if themes.any?
@@ -106,11 +107,26 @@ class Prospect < ApplicationRecord
       stamp = enriched_at.to_date.strftime("%d/%m/%Y")
       lines << "\nRenseignements publics (annuaire, BODACC, presse — au #{stamp}) :\n#{enrichment}"
     end
+    lines << "\nRecherche du décideur (web, à confirmer) :\n#{contacts_research}" if contacts_researched?
     lines.join("\n")
   end
 
   def enriched?
     enrichment.present? && enriched_at.present?
+  end
+
+  PLACEHOLDER_NAME = "Décideur à identifier".freeze
+
+  def named_contact?
+    name.present? && name != PLACEHOLDER_NAME
+  end
+
+  def contacts_researched?
+    contacts_research.present? && contacts_researched_at.present?
+  end
+
+  def contacts_searching?
+    contacts_requested_at.present? && (contacts_researched_at.nil? || contacts_requested_at > contacts_researched_at)
   end
 
   def enriching?
