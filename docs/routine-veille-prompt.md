@@ -5,7 +5,10 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 7 le 22/09 : les signaux sont déposés dans le site (`POST /api/veille_signals`, jeton
+connecteurs, ce qu'a montré le premier passage). Version 8 le 22/09 (après deux offres LinkedIn manquées, Panzani et Tercio, et deux offres Indeed aux
+intitulés hors liste, Medtronic Rillieux et Nicoll Frontonas) : huit intitulés au lieu de cinq, jugement sur
+chaque résultat Indeed plutôt qu'intitulé exact, et une source « offres LinkedIn par Tavily » (pages publiques
+`fr.linkedin.com/jobs`, filtre de domaine, sans jamais ouvrir LinkedIn). Version 7 le 22/09 : les signaux sont déposés dans le site (`POST /api/veille_signals`, jeton
 `VEILLE_API_TOKEN` dans l'environnement cloud) et se valident dans `/studio/veille`, où un clic crée la
 fiche prospect ; le mail reste, avec le lien en tête. Version 6 le 21/09 après le premier passage réel (5 signaux, 55 min) : BODACC de l'Ain sur 30 jours
 (le greffe de Bourg-en-Bresse publie ses modifications par lots, aucune entre le 25/08 et le 21/09) ;
@@ -60,18 +63,44 @@ Grenoble, Annecy, Chambéry, Clermont-Ferrand, Mâcon, Roussillon/Salaise et tou
 loin. Une mission en solo ne se négocie pas avec des frais de déplacement. Un signal hors
 périmètre n'est ni classé ni listé.
 
-**A. Indeed (connecteur Indeed, pays FR).** Lance ces recherches une par une, chacune sur « Lyon », « Vienne, Isère » (« Vienne » seul renvoie la Vienne du 86), « Villefranche-sur-Saône », « Bourgoin-Jallieu », « Ambérieu-en-Bugey » et
-« L'Arbresle » : « directeur de production », « directeur de site industriel », « directeur des
-opérations », « responsable de production », « responsable amélioration continue »
-(30 recherches). Vérifie la commune de chaque annonce contre le périmètre ci-dessus : Indeed
-renvoie aussi des annonces plus lointaines. Ne
-demande le détail d'une annonce (`get_job_details`) que pour les candidates au top 5, huit
-appels au plus. Ne retiens que les postes d'encadrement en industrie manufacturière
-(agroalimentaire, pharma, chimie, mécanique, métallurgie, plasturgie, électronique,
-textile technique). Écarte les postes d'opérateur, technicien, commercial, BTP, logistique
-pure, intérim d'exécution, et les annonces de cabinets de recrutement sans entreprise
-identifiable. Pour chaque annonce retenue note : entreprise, poste, lieu, date de
-publication, lien.
+**A. Indeed (connecteur Indeed, pays FR).** Huit intitulés : « directeur de production », « directeur
+d'usine », « directeur de site industriel », « directeur des opérations », « directeur industriel »,
+« responsable de production », « responsable excellence opérationnelle », « responsable amélioration
+continue ». Lance chacun sur « Lyon », « Bourgoin-Jallieu » et « Villefranche-sur-Saône » (24 recherches),
+puis les trois premiers intitulés sur « Vienne, Isère » (« Vienne » seul renvoie la Vienne du 86) et
+« Ambérieu-en-Bugey » (6 recherches) — 30 au total, une par une. Indeed répond de façon floue : chaque
+recherche ramène aussi des postes voisins (« Plant Manager », « Manufacturing Manager », « Directeur Site
+de Production », « Responsable d'usine »…). Juge CHAQUE résultat sur son intitulé et son entreprise, pas
+sur la correspondance exacte avec la recherche : le 21/09/2026, « Directeur Site de Production » chez
+Medtronic (Rillieux-la-Pape, ouvert depuis le 20 juillet) et « Manufacturing Manager » chez Nicoll
+(Frontonas, depuis le 3 juillet) étaient dans les résultats et n'ont pas été relevés. Vérifie la
+commune de chaque annonce contre le périmètre ci-dessus : Indeed renvoie aussi des annonces plus
+lointaines. Ne demande le détail d'une annonce (`get_job_details`) que pour les candidates au top 5,
+huit appels au plus. Ne retiens que les postes d'encadrement en industrie manufacturière
+(agroalimentaire, pharma, chimie, mécanique, métallurgie, plasturgie, électronique, textile
+technique, dispositifs médicaux). Écarte les postes d'opérateur, technicien, commercial, BTP,
+logistique pure, intérim d'exécution, et les annonces de cabinets de recrutement sans entreprise
+identifiable. Pour chaque annonce retenue note : entreprise, poste, lieu, date de publication, lien.
+
+**A2. Offres LinkedIn, par Tavily (Bash + curl, clé `TAVILY_API_KEY` de l'environnement).** LinkedIn
+publie des offres qui ne sont pas sur Indeed (Panzani, 09/2026). On ne consulte JAMAIS LinkedIn
+lui-même : on interroge le moteur Tavily, restreint au domaine, qui renvoie le contenu des pages
+d'offres publiques. Si `TAVILY_API_KEY` est absente, dis-le dans le mail et passe à B. Pour chacun
+des intitulés « directeur d'usine », « directeur de production », « directeur des opérations »,
+« directeur industriel », « responsable excellence opérationnelle », « responsable de production »
+(6 requêtes) :
+```
+curl -s https://api.tavily.com/search -H 'Content-Type: application/json' -d '{"api_key":"'"$TAVILY_API_KEY"'","query":"<intitulé> Lyon offre d'"'"'emploi","search_depth":"advanced","max_results":10,"include_raw_content":true,"include_domains":["fr.linkedin.com"]}'
+```
+Deux sortes de pages reviennent : des pages d'offre (`fr.linkedin.com/jobs/view/…`), dont le
+`raw_content` donne l'entreprise, le lieu, l'ancienneté (« il y a 2 semaines ») et le descriptif ;
+et des pages de liste (« Plus de N offres… »), dont le contenu énumère « entreprise · intitulé ·
+ville · il y a N ». Relève de ces listes les postes d'encadrement industriel dans le périmètre, puis,
+pour ceux qui n'ont pas leur page d'offre dans les résultats, une requête Tavily supplémentaire
+« <entreprise> <intitulé> LinkedIn » (dix au plus) pour obtenir la page et sa date. L'ancienneté
+relative se convertit en date approximative, signalée comme telle (« ~ 2 semaines, page LinkedIn »).
+Mêmes critères de tri qu'Indeed ; même règle pour les cabinets. Note : entreprise, poste, lieu, date
+approximative, lien de la page d'offre.
 
 **B. Presse et actualité (Bash + curl sur les flux Google Actualités, sans clé).** Pour
 chacune de ces requêtes, lis le flux
@@ -149,7 +178,7 @@ citées comme bénéficiaires dans les 60 derniers jours. Lecture : un investiss
 l'atelier dans les dix-huit mois. Poids moyen. Un extrait de résultat suffit ici pour signaler,
 avec son lien ; n'en tire aucun chiffre.
 
-Ces domaines doivent être autorisés dans l'environnement : `bodacc-datadila.opendatasoft.com`,
+Ces domaines doivent être autorisés dans l'environnement : `api.tavily.com`, `bodacc-datadila.opendatasoft.com`,
 `recherche-entreprises.api.gouv.fr`, `data.economie.gouv.fr`, `georisques.gouv.fr`. Si l'un
 d'eux répond « bloqué », dis-le dans le mail et passe au suivant.
 
@@ -226,7 +255,7 @@ lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, so
      hypothèse posée comme une question.
 2. **Les autres signaux vus**, en une ligne chacun avec le lien, pour que Cyrille juge
    lui-même ce que tu as écarté du top 5.
-3. **Ce que tu as consulté** : nombre d'annonces lues par source, avis BODACC lus, sociétés
+3. **Ce que tu as consulté** : nombre d'annonces lues par source (Indeed et LinkedIn via Tavily séparément), avis BODACC lus, sociétés
    parcourues dans l'annuaire, rappels lus, installations classées couvertes, flux presse lus,
    pages de cabinets lues, et ce qui n'a pas répondu. Une erreur Indeed « 429 » ou « rate limit » est
    un quota épuisé, pas une panne : attends, puis reprends ; ne conclus jamais que la source
