@@ -472,6 +472,14 @@ impose désormais le lundi précédent.
 
 ## Pipeline commercial (`/studio/prospects`, `app/models/prospect.rb`)
 
+**Le parcours d'un prospect depuis le 22/09/2026**, dans l'ordre où Cyrille le vit : la routine du
+lundi dépose ses signaux → `/studio/veille` (Retenir = fiche remplie) → sur la fiche, « Chercher les
+renseignements » (registres et presse, Ruby seul) et « Chercher le décideur » (web via Tavily, noms
+vérifiés mot pour mot) → Cyrille confirme le nom sur LinkedIn et le saisit → « Rédiger un premier
+message » (LinkedIn ou email, envoi journalisé, relance à J+7) → note de diagnostic en second contact
+→ proposition. Chaque brique est documentée plus bas ; aucune n'écrit le nom du décideur ni un
+email à la place de Cyrille, et aucune n'invente un chiffre ou un nom hors d'une source citée.
+
 Colonne vertébrale du suivi commercial. Avant, l'assistant du formulaire de contact collectait
 défi, secteur, effectif et résumé, puis tout partait dans un mail et n'existait plus nulle part :
 aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qualification.
