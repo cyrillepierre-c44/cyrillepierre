@@ -883,6 +883,13 @@ class ContentGenerator
         adresse en fin de message. Vouvoiement. Ton d'un pair, direct, sobre.
       - Le destinataire : si le brief le nomme, adresse-toi à lui ; sinon commence par « Bonjour [Prénom], » et
         signale-le dans les points à personnaliser.
+      - Si le brief dit POURQUOI ce destinataire (une nomination au BODACC, un article qui le cite), dis-le en
+        une proposition avec la source et sa date : c'est ce qui justifie qu'on lui écrive à lui.
+      - DESTINATAIRE AU-DESSUS DU SITE (direction groupe, vice-président des opérations, président de l'entité,
+        responsable multi-sites) : à ce niveau le message vise autant un transfert vers la bonne personne
+        qu'une réponse. La question porte alors sur qui pilote le site pendant la recherche et sur l'utilité
+        d'un relais de direction jusqu'à l'arrivée du titulaire — jamais sur le détail de l'atelier, qu'il ne
+        suit pas. Le message reste aussi court, la réalisation comparable s'énonce en une demi-phrase.
       - Langue : français, sauf instruction contraire.
 
       RÉALISATIONS DE CYRILLE (document privé, noms réels autorisés) :
