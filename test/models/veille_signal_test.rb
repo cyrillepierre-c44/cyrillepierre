@@ -61,4 +61,19 @@ class VeilleSignalTest < ActiveSupport::TestCase
       assert_equal "Veille automatique", @signal.keep!(@admin).source_label
     end
   end
+
+  test "an announcement younger than six weeks is not a vacancy yet, and says when it becomes one" do
+    travel_to Date.new(2026, 9, 21) do
+      assert @signal.too_young?
+      assert_equal Date.new(2026, 10, 21), @signal.signal_from
+    end
+    travel_to Date.new(2026, 10, 21) do
+      assert_not @signal.too_young?
+    end
+    @signal.assign_attributes(signal_type: "presse")
+    assert_not @signal.too_young?, "the floor is about announcements only"
+    assert_nil @signal.signal_from
+    @signal.assign_attributes(signal_type: "annonce", published_on: nil)
+    assert_not @signal.too_young?, "an undated announcement is left to Cyrille"
+  end
 end

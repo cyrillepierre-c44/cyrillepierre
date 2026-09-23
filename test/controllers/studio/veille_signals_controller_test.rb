@@ -12,6 +12,22 @@ module Studio
                                     signal_type: "annonce", signal: "Ingénieur", source_url: "https://to.indeed.com/b")
     end
 
+    test "an announcement younger than six weeks is greyed, dated, and listed after the real signals" do
+      @signal.update!(published_on: Date.new(2026, 9, 9))
+      sign_in @admin
+
+      travel_to Date.new(2026, 9, 21) do
+        get studio_veille_signals_path
+      end
+
+      assert_response :success
+      assert_select ".veille-signal--young", 1
+      assert_select ".veille-signal--young .studio-card-title", text: /MAPEI/
+      assert_select ".veille-signal--young .veille-signal-young-note", text: /ne compte comme signal qu'au 21\/10\/2026/
+      assert_select ".veille-signal:first-of-type .studio-card-title", text: /Medtronic/, count: 1
+      assert_select ".veille-signal--young form[action=?]", keep_studio_veille_signal_path(@signal)
+    end
+
     test "the page requires an admin" do
       get studio_veille_signals_path
       assert_redirected_to new_user_session_path

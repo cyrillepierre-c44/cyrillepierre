@@ -5,7 +5,10 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 8 le 22/09 (après deux offres LinkedIn manquées, Panzani et Tercio, et deux offres Indeed aux
+connecteurs, ce qu'a montré le premier passage). Version 9 le 23/09 : les six semaines deviennent un
+PLANCHER pour les annonces — une annonce plus jeune n'est pas un signal, elle va dans « à suivre » et ne
+remonte qu'à six semaines, republiée, ou recoupée (le passage du 21/09 avait classé « Priorité 1 » une
+annonce de douze jours, MAPEI Saint-Vulbas : le DG contacté aurait renvoyé vers les RH et l'annonce). Version 8 le 22/09 (après deux offres LinkedIn manquées, Panzani et Tercio, et deux offres Indeed aux
 intitulés hors liste, Medtronic Rillieux et Nicoll Frontonas) : huit intitulés au lieu de cinq, jugement sur
 chaque résultat Indeed plutôt qu'intitulé exact, et une source « offres LinkedIn par Tavily » (pages publiques
 `fr.linkedin.com/jobs`, filtre de domaine, sans jamais ouvrir LinkedIn). Version 7 le 22/09 : les signaux sont déposés dans le site (`POST /api/veille_signals`, jeton
@@ -190,9 +193,18 @@ Ne consulte jamais LinkedIn, ni aucun site dont tu ne peux lire le contenu sans 
 
 Applique la grille du cadrage. Deux règles priment :
 
-- **L'ancienneté d'une annonce est le premier critère** : un poste de direction ouvert depuis
-  plus de six semaines est un signal fort (une usine qui tourne sans son pilote). Calcule
-  l'âge en jours à partir de la date de publication.
+- **L'ancienneté d'une annonce est le premier critère, et six semaines est un PLANCHER** : un
+  poste de direction ouvert depuis plus de six semaines est une usine qui tourne sans son pilote,
+  c'est le signal. Une annonce de moins de six semaines est un recrutement qui commence : ce n'est
+  PAS un signal, quelle que soit la proximité de l'intitulé avec le profil de Cyrille — le dirigeant
+  contacté à ce stade renvoie vers les RH et l'annonce. Calcule l'âge en jours à partir de la date de
+  publication ; sans date lisible, dis « non datée » et ne la classe pas dans le top 5. Une annonce
+  trop jeune va dans la liste **« à suivre »** (section 6, point 2 bis) et se dépose dans le Studio
+  avec `shortlisted: false` et un `why_now` qui commence par « À SUIVRE : annonce de N jours, signal
+  au <date de publication + 42 jours> ». Elle ne remonte dans le top 5 que dans trois cas : elle a
+  atteint six semaines et elle est toujours en ligne ; elle a été republiée ; un autre signal la
+  recoupe (presse, dirigeant, comptes). Pour cela, relis la liste « à suivre » des condensés
+  précédents (Gmail) et vérifie chaque annonce arrivée à échéance.
 - **Un signal qui se recoupe vaut plus** : la même entreprise dans une annonce ET dans la
   presse, un changement de dirigeant ET un poste ouvert, un site en perte ET une annonce, passe
   en tête. Nomme les signaux croisés dans la fiche.
@@ -257,6 +269,9 @@ lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, so
      hypothèse posée comme une question.
 2. **Les autres signaux vus**, en une ligne chacun avec le lien, pour que Cyrille juge
    lui-même ce que tu as écarté du top 5.
+   2 bis. **À suivre** : les annonces de direction de moins de six semaines, une ligne chacune —
+   entreprise, poste, date de publication, âge en jours, et la date à laquelle elles atteindront
+   six semaines. Reprends celles des condensés précédents qui n'ont pas encore atteint l'échéance.
 3. **Ce que tu as consulté** : nombre d'annonces lues par source (Indeed et LinkedIn via Tavily séparément), avis BODACC lus, sociétés
    parcourues dans l'annuaire, rappels lus, installations classées couvertes, flux presse lus,
    pages de cabinets lues, et ce qui n'a pas répondu. Une erreur Indeed « 429 » ou « rate limit » est

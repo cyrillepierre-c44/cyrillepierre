@@ -8,7 +8,9 @@ module Studio
     def index
       authorize VeilleSignal
       scope = policy_scope(VeilleSignal)
-      @pending = scope.pending.order(run_week: :desc).shortlist_first
+      # Les annonces trop jeunes passent en fin de semaine : elles ne sont pas encore un signal.
+      @pending = scope.pending.order(run_week: :desc).shortlist_first.to_a
+                      .sort_by.with_index { |s, i| [-s.run_week.jd, s.too_young? ? 1 : 0, i] }
       @recent = scope.where.not(status: :pending).where(updated_at: 4.weeks.ago..).order(updated_at: :desc)
     end
 

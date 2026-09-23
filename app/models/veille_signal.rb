@@ -18,6 +18,12 @@ class VeilleSignal < ApplicationRecord
     "cabinet" => "Cabinet"
   }.freeze
 
+  # Une annonce de moins de six semaines est un recrutement qui commence, pas une usine sans pilote
+  # (cadrage, premier critère de score). Le 21/09/2026 la routine avait classé « Priorité 1 » une
+  # annonce de douze jours (MAPEI, Saint-Vulbas) : le DG contacté aurait renvoyé vers les RH et
+  # l'annonce. La page grise ces annonces et dit à quelle date elles deviennent un signal.
+  VACANCY_FLOOR = 6.weeks
+
   enum :status, { pending: 0, kept: 1, dismissed: 2 }
 
   validates :run_week, :company, :signal, :source_url, presence: true
@@ -32,6 +38,15 @@ class VeilleSignal < ApplicationRecord
 
   def age_days
     published_on && (Date.current - published_on).to_i
+  end
+
+  def too_young?
+    signal_type == "annonce" && published_on.present? && published_on > VACANCY_FLOOR.ago.to_date
+  end
+
+  # Le jour où une annonce atteint six semaines, donc où elle compte comme un poste vacant.
+  def signal_from
+    published_on + VACANCY_FLOOR if signal_type == "annonce" && published_on.present?
   end
 
   # La fiche telle que Cyrille la saisissait à la main après chaque condensé (21/09/2026) :

@@ -19,7 +19,7 @@
     <% @pending.group_by(&:run_week).each do |week, signals| %>
       <h2 class="studio-card-subtitle">Semaine du <%= fr_date(week) %> — <%= pluralize(signals.size, "signal", "signaux") %> à valider</h2>
       <% signals.each do |signal| %>
-        <div class="studio-card veille-signal <%= 'veille-signal--other' unless signal.shortlisted? %>">
+        <div class="studio-card veille-signal <%= 'veille-signal--other' unless signal.shortlisted? %> <%= 'veille-signal--young' if signal.too_young? %>">
           <div class="studio-show-toolbar">
             <h3 class="studio-card-title">
               <% if signal.rank %><span class="veille-rank"><%= signal.rank %></span><% end %>
@@ -36,6 +36,9 @@
             <% if signal.sector.present? %><span class="studio-badge"><%= signal.sector %></span><% end %>
             <% if signal.age_days %><span class="studio-badge studio-badge--warning"><%= pluralize(signal.age_days, "jour") %></span><% end %>
           </div>
+          <% if signal.too_young? %>
+            <p class="veille-signal-young-note">Annonce trop récente pour être un poste vacant : elle ne compte comme signal qu'au <%= fr_date(signal.signal_from) %>, six semaines après sa publication. À revoir si elle est toujours ouverte ce jour-là.</p>
+          <% end %>
           <p class="veille-signal-text"><%= signal.signal %>
             <%= link_to "source", signal.source_url, target: "_blank", rel: "noopener", class: "veille-source-link" %>
             <% if signal.source_name.present? %><small>(<%= signal.source_name %><%= ", #{fr_date(signal.published_on)}" if signal.published_on %>)</small><% end %>
