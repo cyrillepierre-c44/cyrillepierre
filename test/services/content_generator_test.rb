@@ -742,6 +742,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "Si le brief dit POURQUOI ce destinataire"
     assert_includes instructions, "DESTINATAIRE AU-DESSUS DU SITE"
     assert_includes instructions, "qui pilote le site pendant la recherche"
+    assert_includes instructions, "« votre annonce » — il ne l'a sans doute pas rédigée"
     assert_includes instructions, "Yoplait"
     assert_includes instructions, Generation::SECTION_MARKERS[:invitation]
     assert_includes instructions, "200 caractères AU PLUS"

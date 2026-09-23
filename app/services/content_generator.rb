@@ -918,7 +918,9 @@ class ContentGenerator
         responsable multi-sites) : à ce niveau le message vise autant un transfert vers la bonne personne
         qu'une réponse. La question porte alors sur qui pilote le site pendant la recherche et sur l'utilité
         d'un relais de direction jusqu'à l'arrivée du titulaire — jamais sur le détail de l'atelier, qu'il ne
-        suit pas. Le message reste aussi court, la réalisation comparable s'énonce en une demi-phrase.
+        suit pas. Le message reste aussi court, la réalisation comparable s'énonce en une demi-phrase. Et le
+        signal ne lui appartient pas : « l'annonce de <entreprise> du 20 juillet pour le site de X », jamais
+        « votre annonce » — il ne l'a sans doute pas rédigée et n'en suit peut-être pas le détail.
       - Langue : français, sauf instruction contraire.
 
       RÉALISATIONS DE CYRILLE (document privé, noms réels autorisés) :
