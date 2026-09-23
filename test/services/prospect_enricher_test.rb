@@ -28,7 +28,8 @@ class ProspectEnricherTest < ActiveSupport::TestCase
     stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=10&q=MAPEI(%20|\+)France})
       .to_return(status: 200, body: annuaire.to_json, headers: { "Content-Type" => "application/json" })
     bodacc ||= { total_count: 2, results: [{ dateparution: "2026-01-15", familleavis_lib: "Dépôts des comptes" },
-                                           { dateparution: "2025-11-03", familleavis_lib: "Modifications diverses" }] }
+                                           { dateparution: "2025-11-03", familleavis_lib: "Modifications diverses",
+                                             listepersonnes: { personne: { administration: "HAAG Sean n'est plus président. PERRIN Didier devient président" } }.to_json }] }
     stub_request(:get, %r{bodacc-datadila\.opendatasoft\.com/.*323469106.*2025-09-22})
       .to_return(status: 200, body: bodacc.to_json)
     rss ||= <<~XML
@@ -59,7 +60,8 @@ class ProspectEnricherTest < ActiveSupport::TestCase
     assert_includes text, "- Dernier exercice publié (2025) : chiffre d'affaires 125,1 M€, résultat net -3,7 M€, (-3.0 % du CA) — un seul exercice"
     assert_includes text, "Représentants légaux (pas le directeur du site) : CHRISTOPHE JEAUNEAU (Directeur Général) · MARCO SQUINZI"
     assert_not_includes text, "Commissaire"
-    assert_includes text, "BODACC (12 derniers mois, 2 avis) :\n- 15/01/2026 : Dépôts des comptes\n- 03/11/2025 : Modifications diverses"
+    assert_includes text, "BODACC (12 derniers mois, 2 avis) :\n- 15/01/2026 : Dépôts des comptes\n- 03/11/2025 : Modifications diverses" \
+                          " — HAAG Sean n'est plus président. PERRIN Didier devient président"
     assert_includes text, "PRESSE (12 derniers mois, titres seulement — lire l'article avant de citer) :\n- 01/08/2026 : Mapei se développe"
     assert_not_includes text, "Vieille nouvelle"
   end

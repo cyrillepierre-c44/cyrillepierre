@@ -165,7 +165,7 @@ class ProspectEnricher
     people = Array(list).reject { |d| d["qualite"].to_s.match?(/commissaire/i) }
                         .select { |d| d["nom"] || d["denomination"] }
                         .map do |d|
-      [[d["prenoms"], d["nom"]].compact.join(" ").strip.presence || d["denomination"],
+      [[d["prenoms"], d["nom"]].compact.join(" ").split.uniq.join(" ").presence || d["denomination"],
        d["qualite"]]
     end
     return [] if people.empty?
@@ -179,15 +179,31 @@ class ProspectEnricher
 
     since = (Date.current - 365).iso8601
     where = CGI.escape(%(registre="#{company['siren']}" AND dateparution>="#{since}"))
-    query = "where=#{where}&order_by=dateparution%20desc&limit=10&select=dateparution,familleavis_lib"
+    query = "where=#{where}&order_by=dateparution%20desc&limit=10" \
+            "&select=dateparution,familleavis_lib,listepersonnes"
     json = get_json(URI("#{BODACC}?#{query}"))
     rows = json["results"].to_a
     return "BODACC (12 derniers mois) : aucun avis." if rows.empty?
 
-    lines = rows.map { |r| "- #{french_date(r['dateparution'])} : #{r['familleavis_lib']}" }
+    lines = rows.map { |r| "- #{french_date(r['dateparution'])} : #{r['familleavis_lib']}#{administration(r)}" }
     "BODACC (12 derniers mois, #{json['total_count']} avis) :\n#{lines.join("\n")}"
   rescue StandardError => e
     "BODACC : lecture impossible (#{e.class})."
+  end
+
+  # Une « modification diverse » ne dit rien ; qui part et qui arrive, si. Le 23/09/2026 le bloc
+  # de Medicrea affichait « Modifications diverses » là où l'avis disait qu'un nouveau président
+  # était nommé dix mois plus tôt — le décideur, en somme. L'avis porte ce texte dans
+  # `listepersonnes.personne.administration`, parfois en JSON sérialisé.
+  def administration(row)
+    people = row["listepersonnes"]
+    people = JSON.parse(people) if people.is_a?(String)
+    persons = people.is_a?(Hash) ? people["personne"] : people
+    persons = [persons] unless persons.is_a?(Array) # Array(hash) éclaterait le hash en paires
+    text = persons.filter_map { |p| p["administration"] if p.is_a?(Hash) }
+    text.empty? ? "" : " — #{text.join(' ; ').squish}"
+  rescue JSON::ParserError, TypeError
+    ""
   end
 
   def press
