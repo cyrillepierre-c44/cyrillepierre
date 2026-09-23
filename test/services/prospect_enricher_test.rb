@@ -142,6 +142,25 @@ class ProspectEnricherTest < ActiveSupport::TestCase
     assert_includes result.text, "15/09/2026 : Bayer & Villefranche - Le Progrès"
   end
 
+  # Cherchée par SIREN, la société revient sans ses établissements : la seconde recherche
+  # « société + commune » les fait apparaître ; et « Villefranche / Limas » accepte l'une ou l'autre.
+  test "the site line finds the establishment through a second search by company and town" do
+    @prospect.update!(siren: "323469106", company: "MAPEI France — usine de Villefranche-sur-Saône / Saint-Vulbas (01)")
+    company = ANNUAIRE[:results].first.merge(matching_etablissements: [])
+    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=10&q=323469106})
+      .to_return(status: 200, body: { results: [company] }.to_json)
+    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=3&q=MAPEI(%20|\+)FRANCE(%20|\+)Villefranche})
+      .to_return(status: 200, body: { results: [] }.to_json)
+    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=3&q=MAPEI(%20|\+)FRANCE(%20|\+)Saint-Vulbas})
+      .to_return(status: 200, body: { results: [{ siren: "323469106", matching_etablissements: [{ libelle_commune: "SAINT-VULBAS" }] }] }.to_json)
+    stub_request(:get, %r{bodacc-datadila}).to_return(status: 200, body: { total_count: 0, results: [] }.to_json)
+    stub_request(:get, %r{news\.google\.com}).to_return(status: 200, body: "<rss><channel></channel></rss>")
+
+    text = ProspectEnricher.call(@prospect).text
+
+    assert_includes text, "- ⚠ Site concerné : Villefranche-sur-Saône — établissement de la société, dont le siège est à SAINT-ALBAN"
+  end
+
   test "the site line says when the town is the headquarters, or unknown to the directory" do
     @prospect.update!(company: "MAPEI France — usine de Saint-Alban (31)")
     stub_sources
@@ -151,6 +170,8 @@ class ProspectEnricherTest < ActiveSupport::TestCase
 
     @prospect.update!(company: "MAPEI France — usine de Nulle-Part (99)")
     stub_request(:get, %r{news\.google\.com}).to_return(status: 200, body: "<rss><channel></channel></rss>")
+    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=3&q=MAPEI(%20|\+)FRANCE(%20|\+)Nulle-Part})
+      .to_return(status: 500, body: "")
     assert_includes ProspectEnricher.call(@prospect).text,
                     "- ⚠ Site concerné : Nulle-Part — AUCUN établissement de cette société n'y est connu"
 
@@ -162,6 +183,8 @@ class ProspectEnricherTest < ActiveSupport::TestCase
     company = ANNUAIRE[:results].first.merge(finances: {}, dirigeants: [], matching_etablissements: [], tranche_effectif_salarie: "99")
     stub_sources(annuaire: { results: [company] })
 
+    stub_request(:get, %r{recherche-entreprises\.api\.gouv\.fr/search\?per_page=3&q=MAPEI(%20|\+)FRANCE(%20|\+)Saint-Vulbas})
+      .to_return(status: 200, body: { results: [] }.to_json)
     text = ProspectEnricher.call(@prospect).text
 
     assert_includes text, "AUCUN établissement de cette société n'y est connu"

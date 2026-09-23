@@ -47,7 +47,13 @@ class ProspectEnricher
   # La commune du site, si la fiche la nomme (« usine de Saint-Vulbas », « site d'Irigny ») : elle
   # départage les homonymes de l'annuaire et cible la presse locale.
   def location_hint
-    prospect.company.to_s[%r{(?:site|usine|\u00e9tablissement)\s+d[e']\s*([^,(\u2014/]+)}i, 1].to_s.strip.presence
+    location_hints.first
+  end
+
+  # « Villefranche-sur-Saône / Limas » : deux communes pour un même site, l'une ou l'autre suffit.
+  def location_hints
+    raw = prospect.company.to_s[/(?:site|usine|\u00e9tablissement)\s+d[e']\s*([^,(\u2014]+)/i, 1].to_s
+    raw.split("/").map(&:strip).compact_blank
   end
 
   # Le premier résultat de l'annuaire n'est pas toujours le bon : « Bayer » y donne d'abord un hôtel
@@ -103,13 +109,11 @@ class ProspectEnricher
   def site_line(company, siege)
     return [] if location_hint.blank?
 
-    communes = Array(company["matching_etablissements"]).map { |e| e["libelle_commune"] }.compact
     siege_commune = siege["libelle_commune"].to_s
-    wanted = normalize(location_hint)
-    if siege_commune.present? && normalize(siege_commune).start_with?(wanted)
+    if location_hints.any? { |hint| town_matches?(siege_commune, hint) }
       ["- ⚠ Site concerné : #{location_hint} — c'est le siège de la société ; les chiffres ci-dessous sont " \
        "ceux de la société entière."]
-    elsif communes.any? { |c| normalize(c).start_with?(wanted) }
+    elsif establishment_in_town?(company)
       ["- ⚠ Site concerné : #{location_hint} — établissement de la société, dont le siège est à " \
        "#{siege_commune.presence || 'commune non précisée'} ; les chiffres ci-dessous (effectif, comptes, " \
        "dirigeants) sont ceux de la société entière, pas du site."]
@@ -118,6 +122,26 @@ class ProspectEnricher
        "l'annuaire (siège à #{siege_commune.presence || 'commune non précisée'}) : vérifier que c'est la " \
        "bonne société, corriger le SIREN sinon."]
     end
+  end
+
+  def town_matches?(commune, hint)
+    commune.present? && normalize(commune).start_with?(normalize(hint))
+  end
+
+  # `matching_etablissements` ne contient que les établissements qui correspondent au texte
+  # cherché : une recherche par SIREN n'en ramène aucun. On refait donc une recherche « société +
+  # commune », qui les fait apparaître (vérifié le 23/09/2026 : « MAPEI Saint-Vulbas »).
+  def establishment_in_town?(company)
+    communes = Array(company["matching_etablissements"]).map { |e| e["libelle_commune"] }.compact
+    return true if location_hints.any? { |hint| communes.any? { |c| town_matches?(c, hint) } }
+
+    location_hints.any? do |hint|
+      json = get_json(URI("#{ANNUAIRE}?q=#{CGI.escape("#{company['nom_complet']} #{hint}")}&per_page=3"))
+      match = json["results"].to_a.find { |r| r["siren"] == company["siren"] }
+      Array(match&.dig("matching_etablissements")).any? { |e| town_matches?(e["libelle_commune"], hint) }
+    end
+  rescue StandardError
+    false
   end
 
   # L'annuaire ne donne qu'un exercice : un signal de situation, pas une tendance.
