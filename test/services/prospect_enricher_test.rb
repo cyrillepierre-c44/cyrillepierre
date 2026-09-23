@@ -7,7 +7,7 @@ class ProspectEnricherTest < ActiveSupport::TestCase
     results: [{
       nom_complet: "MAPEI FRANCE", siren: "323469106", categorie_entreprise: "ETI", date_creation: "1981-10-26",
       activite_principale: "20.52Z", tranche_effectif_salarie: "32", nombre_etablissements_ouverts: 8,
-      siege: { adresse: "ZI DU TERROIR AVENUE LEON JOUHAUX 31140 SAINT-ALBAN" },
+      siege: { adresse: "ZI DU TERROIR AVENUE LEON JOUHAUX 31140 SAINT-ALBAN", libelle_commune: "SAINT-ALBAN" },
       matching_etablissements: [{ libelle_commune: "SAINT-ALBAN" }, { libelle_commune: "SAINT-VULBAS" }],
       finances: { "2024" => { ca: 120_000_000, resultat_net: 1_000_000 }, "2025" => { ca: 125_053_534, resultat_net: -3_737_043 } },
       dirigeants: [{ nom: "JEAUNEAU", prenoms: "CHRISTOPHE", qualite: "Directeur Général" },
@@ -49,6 +49,9 @@ class ProspectEnricherTest < ActiveSupport::TestCase
 
     assert_equal "323469106", result.siren
     text = result.text
+    # Détrompeur : le siège est à Saint-Alban (31), l'usine visée à Saint-Vulbas (01).
+    assert_includes text, "IDENTITÉ (annuaire officiel, recherche-entreprises.api.gouv.fr) :\n- ⚠ Site concerné : Saint-Vulbas — " \
+                          "établissement de la société, dont le siège est à SAINT-ALBAN ; les chiffres ci-dessous"
     assert_includes text, "- MAPEI FRANCE · SIREN 323469106 · ETI · créée le 26/10/1981"
     assert_includes text, "- Siège : ZI DU TERROIR AVENUE LEON JOUHAUX 31140 SAINT-ALBAN"
     assert_includes text, "- Effectif (tranche) : 250 à 499 salariés"
@@ -139,12 +142,29 @@ class ProspectEnricherTest < ActiveSupport::TestCase
     assert_includes result.text, "15/09/2026 : Bayer & Villefranche - Le Progrès"
   end
 
+  test "the site line says when the town is the headquarters, or unknown to the directory" do
+    @prospect.update!(company: "MAPEI France — usine de Saint-Alban (31)")
+    stub_sources
+    stub_request(:get, %r{news\.google\.com}).to_return(status: 200, body: "<rss><channel></channel></rss>")
+    assert_includes ProspectEnricher.call(@prospect).text,
+                    "- ⚠ Site concerné : Saint-Alban — c'est le siège de la société"
+
+    @prospect.update!(company: "MAPEI France — usine de Nulle-Part (99)")
+    stub_request(:get, %r{news\.google\.com}).to_return(status: 200, body: "<rss><channel></channel></rss>")
+    assert_includes ProspectEnricher.call(@prospect).text,
+                    "- ⚠ Site concerné : Nulle-Part — AUCUN établissement de cette société n'y est connu"
+
+    @prospect.update!(company: "MAPEI France")
+    assert_not_includes ProspectEnricher.call(@prospect).text, "Site concerné"
+  end
+
   test "money and figures without accounts" do
     company = ANNUAIRE[:results].first.merge(finances: {}, dirigeants: [], matching_etablissements: [], tranche_effectif_salarie: "99")
     stub_sources(annuaire: { results: [company] })
 
     text = ProspectEnricher.call(@prospect).text
 
+    assert_includes text, "AUCUN établissement de cette société n'y est connu"
     assert_not_includes text, "Dernier exercice"
     assert_not_includes text, "Représentants"
     assert_not_includes text, "Effectif"

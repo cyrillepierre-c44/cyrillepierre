@@ -79,6 +79,7 @@ class ProspectEnricher
 
     siege = company["siege"] || {}
     lines = ["IDENTITÉ (annuaire officiel, recherche-entreprises.api.gouv.fr) :"]
+    lines.concat(site_line(company, siege))
     category = company["categorie_entreprise"] || "catégorie non précisée"
     lines << "- #{company['nom_complet']} · SIREN #{company['siren']} · #{category} · " \
              "créée le #{french_date(company['date_creation'])}"
@@ -93,6 +94,30 @@ class ProspectEnricher
     lines.concat(finances(company["finances"]))
     lines.concat(leaders(company["dirigeants"]))
     lines.join("\n")
+  end
+
+  # Détrompeur en tête de bloc : l'annuaire décrit la SOCIÉTÉ, dont le siège est souvent ailleurs
+  # que l'usine visée (MAPEI : siège à Saint-Alban près de Toulouse, usine à Saint-Vulbas dans
+  # l'Ain). Quand la fiche nomme une commune, on dit d'emblée si c'est un établissement de la
+  # société, et où est le siège, pour que ces chiffres ne soient pas lus comme ceux du site.
+  def site_line(company, siege)
+    return [] if location_hint.blank?
+
+    communes = Array(company["matching_etablissements"]).map { |e| e["libelle_commune"] }.compact
+    siege_commune = siege["libelle_commune"].to_s
+    wanted = normalize(location_hint)
+    if siege_commune.present? && normalize(siege_commune).start_with?(wanted)
+      ["- ⚠ Site concerné : #{location_hint} — c'est le siège de la société ; les chiffres ci-dessous sont " \
+       "ceux de la société entière."]
+    elsif communes.any? { |c| normalize(c).start_with?(wanted) }
+      ["- ⚠ Site concerné : #{location_hint} — établissement de la société, dont le siège est à " \
+       "#{siege_commune.presence || 'commune non précisée'} ; les chiffres ci-dessous (effectif, comptes, " \
+       "dirigeants) sont ceux de la société entière, pas du site."]
+    else
+      ["- ⚠ Site concerné : #{location_hint} — AUCUN établissement de cette société n'y est connu de " \
+       "l'annuaire (siège à #{siege_commune.presence || 'commune non précisée'}) : vérifier que c'est la " \
+       "bonne société, corriger le SIREN sinon."]
+    end
   end
 
   # L'annuaire ne donne qu'un exercice : un signal de situation, pas une tendance.
