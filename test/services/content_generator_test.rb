@@ -223,9 +223,12 @@ class ContentGeneratorTest < ActiveSupport::TestCase
 
       Generation::SECTION_MARKERS.each do |key, marker|
         next if key == :verify && Generation::AUDITED_KINDS.include?(kind)
+        # La note d'invitation n'a de sens que pour le message de premier contact.
+        next if key == :invitation && kind != "outreach_message"
 
         assert_includes context.draft_chat.instructions, marker, "marqueur #{marker} absent pour #{kind}"
       end
+      assert_not_includes context.draft_chat.instructions, Generation::SECTION_MARKERS[:invitation] if kind != "outreach_message"
     end
   end
 
@@ -740,11 +743,43 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "DESTINATAIRE AU-DESSUS DU SITE"
     assert_includes instructions, "qui pilote le site pendant la recherche"
     assert_includes instructions, "Yoplait"
-    assert_includes instructions, "300 caractères"
+    assert_includes instructions, Generation::SECTION_MARKERS[:invitation]
+    assert_includes instructions, "200 caractères AU PLUS"
+    assert_not_includes instructions, "300 caractères"
     assert_includes instructions, "Objet : …"
     assert_includes instructions, SiteIdentity::PHONE_DISPLAY
     assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]
     assert_not_includes instructions, "CONFIDENTIALITÉ — RÈGLE ABSOLUE"
+  end
+
+  # Le modèle compte mal : une note de 250 caractères repart au modèle rapide jusqu'à tenir en 200,
+  # et ce qui dépasse encore après deux essais reste en l'état, à couper à la main.
+  test "an invitation note over 200 characters is shortened by the fast model, twice at most" do
+    long_note = "Bonjour, " + ("votre annonce est ouverte, " * 9) + "qui pilote ?"
+    draft = "###VERSION_FINALE###\nBonjour, j'ai vu votre annonce.\n\n###NOTE_INVITATION###\n#{long_note}\n\n" \
+            "###A_PERSONNALISER###\n- x\n\n###VERSION_COURTE###\nObjet : Votre annonce\nCorps."
+    assert_operator long_note.length, :>, 200
+    still_long = "Bonjour, " + ("votre annonce est ouverte, " * 8) + "qui pilote ?"
+    short = "Bonjour, votre annonce est ouverte : qui pilote ?"
+    record = Generation.create!(user: @user, kind: :outreach_message, input_text: "SIGNAL : annonce.")
+    context = FakeContext.new(replies: [draft, :echo, "« #{still_long} »", short])
+
+    run_generator(record, context)
+
+    shorteners = context.chats.select { |c| c.instructions.to_s.include?("raccourcis une note d'invitation") }
+    assert_equal 2, shorteners.size
+    assert_equal long_note, shorteners.first.question
+    assert_equal still_long, shorteners.last.question, "the second try starts from the shortest note so far"
+    assert shorteners.all?(&:streamed)
+    assert_equal short, record.reload.invitation_note
+    assert_equal "Objet : Votre annonce\nCorps.", record.sections[:short], "the other sections are kept"
+    assert_equal "generated", record.status
+
+    record = Generation.create!(user: @user, kind: :outreach_message, input_text: "SIGNAL : annonce.")
+    context = FakeContext.new(replies: [draft, :echo, still_long, still_long])
+    run_generator(record, context)
+    assert_equal still_long, record.reload.invitation_note, "what still exceeds is kept for a manual cut"
+    assert record.invitation_too_long?
   end
 
   test "the outreach message goes through the figure audit like the brief" do

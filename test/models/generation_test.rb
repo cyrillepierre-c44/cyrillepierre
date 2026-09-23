@@ -287,10 +287,25 @@ class GenerationTest < ActiveSupport::TestCase
     assert message.structured_output?
     assert message.audited?
     assert_equal "Message LinkedIn", message.section_labels[:final]
+    assert_equal "Note d'invitation LinkedIn (200 caractères au plus)", message.section_labels[:invitation]
     assert_equal "Corrections automatiques", message.section_labels[:verify]
     assert_equal "Votre annonce sur Indeed", message.email_subject
     assert_equal "Bonjour,\n\nCorps.\n\nCyrille PIERRE", message.email_body
     assert_equal "Premier contact", message.default_title
+  end
+
+  test "the invitation note is its own section, measured against LinkedIn's 200 characters" do
+    message = outreach(output: "###VERSION_FINALE###\nMsg\n\n###NOTE_INVITATION###\nBonjour, votre annonce du 20 juillet…\n\n" \
+                               "###A_PERSONNALISER###\n- x\n\n###VERSION_COURTE###\nObjet : O\nCorps.")
+
+    assert_equal %i[final invitation personalize short], message.sections.keys
+    assert_equal "Bonjour, votre annonce du 20 juillet…", message.invitation_note
+    assert_not message.invitation_too_long?
+    assert_equal "Objet : O\nCorps.", message.sections[:short]
+
+    message.output = "###VERSION_FINALE###\nMsg\n\n###NOTE_INVITATION###\n#{'x' * 201}"
+    assert message.invitation_too_long?
+    assert_nil outreach.invitation_note, "an older message has no note"
   end
 
   test "an email variant without an explicit subject falls back on the prospect company" do

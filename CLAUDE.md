@@ -206,10 +206,15 @@ la liste des adresses (`realisation_links`). Le document ne part qu'après lectu
 décideur repéré par la veille, qui **nomment la source publique du signal avec sa date** (obligation
 d'information du RGPD et crédibilité), citent UNE réalisation avec son chiffre exact, posent une
 question, et ne vendent rien — il précède la note de diagnostic, comme pour Adragos. Sections :
-message LinkedIn (90 mots, dont les deux premières phrases tiennent en 300 caractères pour servir
-de note d'invitation), points à personnaliser, « Corrections automatiques » (FigureAudit, via
-`Generation::AUDITED_KINDS`), variante email dont la première ligne est « Objet : … »
-(`Generation#email_subject` / `#email_body`). Une génération connaît désormais sa fiche
+message LinkedIn (90 mots), **note d'invitation** (`###NOTE_INVITATION###`, ajoutée le 23/09/2026 :
+sans abonnement LinkedIn n'accepte que 200 caractères avec une demande de mise en relation, et c'est
+souvent le seul canal — 356 caractères refusés ce jour-là ; `Generation::INVITATION_LIMIT`, le modèle
+compte mal donc `ContentGenerator#fit_invitation` mesure en Ruby et fait raccourcir par le modèle
+rapide deux fois au plus, la page affiche le compteur, en rouge au-delà), points à personnaliser,
+« Corrections automatiques » (FigureAudit, via `Generation::AUDITED_KINDS`), variante email dont la
+première ligne est « Objet : … » (`Generation#email_subject` / `#email_body`). Le marqueur
+d'invitation est dans `SECTION_MARKERS` pour tous les types (ordre d'affichage et de `rebuild`), mais
+seul le prompt du premier contact le demande. Une génération connaît désormais sa fiche
 (`Generation#prospect`, champ caché posé par le pont depuis la fiche, vérifié dans le
 `policy_scope` à la création — un identifiant deviné ne rattache pas un message à la fiche d'un
 autre). Deux envois : **« Envoyer par email »** (`#send_email`, `OutreachMailer#first_contact`,

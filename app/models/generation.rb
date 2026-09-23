@@ -48,15 +48,24 @@ class Generation < ApplicationRecord
   AUDITED_KINDS = %w[executive_brief outreach_message].freeze
   SENT_VIA = { "linkedin" => "LinkedIn", "email" => "email" }.freeze
 
+  # L'ordre est celui de l'affichage et de la réécriture par ContentGenerator#rebuild.
   SECTION_MARKERS = {
     final: "###VERSION_FINALE###",
+    invitation: "###NOTE_INVITATION###",
     personalize: "###A_PERSONNALISER###",
     verify: "###A_VERIFIER###",
     short: "###VERSION_COURTE###"
   }.freeze
 
+  # LinkedIn n'accepte, sans abonnement, qu'une note de 200 caractères avec une demande de mise en
+  # relation — et c'est souvent le seul canal quand on ne peut pas écrire directement au décideur
+  # (constaté le 23/09/2026 : 356 caractères refusés). Le modèle compte mal : Ruby mesure, et
+  # ContentGenerator fait raccourcir ce qui dépasse.
+  INVITATION_LIMIT = 200
+
   SECTION_LABELS = {
     final: "Version finale",
+    invitation: "Note d'invitation",
     personalize: "Points à personnaliser",
     verify: "Éléments à vérifier",
     short: "Version courte"
@@ -74,6 +83,7 @@ class Generation < ApplicationRecord
 
   OUTREACH_SECTION_LABELS = SECTION_LABELS.merge(
     final: "Message LinkedIn",
+    invitation: "Note d'invitation LinkedIn (#{INVITATION_LIMIT} caractères au plus)",
     verify: "Corrections automatiques",
     short: "Variante email (objet en première ligne)"
   ).freeze
@@ -172,6 +182,14 @@ class Generation < ApplicationRecord
     lines = sections[:short].to_s.lines
     lines.shift if lines.first.to_s.match?(/\A\s*objet\s*:/i)
     lines.join.strip
+  end
+
+  def invitation_note
+    sections[:invitation]
+  end
+
+  def invitation_too_long?
+    invitation_note.to_s.length > INVITATION_LIMIT
   end
 
   def email_sendable?

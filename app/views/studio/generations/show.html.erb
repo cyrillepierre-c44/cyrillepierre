@@ -146,7 +146,12 @@
           <% if @generation.structured_output? %>
             <% @generation.sections.each do |key, content| %>
               <div class="studio-section" data-controller="studio-clipboard">
-                <h3 class="studio-section-title"><%= @generation.section_labels.fetch(key, key.to_s.humanize) %></h3>
+                <h3 class="studio-section-title">
+                  <%= @generation.section_labels.fetch(key, key.to_s.humanize) %>
+                  <% if key == :invitation %>
+                    <span class="studio-char-count <%= 'studio-char-count--over' if content.length > Generation::INVITATION_LIMIT %>"><%= content.length %>/<%= Generation::INVITATION_LIMIT %></span>
+                  <% end %>
+                </h3>
                 <div class="studio-output-box">
                   <pre class="studio-output" data-studio-clipboard-target="source"><%= content %></pre>
                   <%= render "studio/shared/copy_button" %>

@@ -511,6 +511,14 @@
   &--end { justify-content: flex-end; }
 }
 
+.studio-char-count {
+  margin-left: 0.5em;
+  font-family: $font-family-base;
+  font-size: 0.85em;
+  color: rgba(255, 255, 255, 0.6);
+}
+.studio-char-count--over { color: #e05a5a; font-weight: 600; }
+
 .studio-section-title {
   font-family: $headers-font;
   font-size: 1rem;

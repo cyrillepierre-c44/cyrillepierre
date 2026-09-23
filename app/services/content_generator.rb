@@ -4,6 +4,12 @@ class ContentGenerator
   # for the draft, to keep the extra LLM call quick.
   PROOFREADING_MODEL = Mammouth::DEFAULT_MODEL
 
+  INVITATION_SHORTEN_INSTRUCTIONS = <<~PROMPT
+    Tu raccourcis une note d'invitation LinkedIn pour qu'elle tienne en #{Generation::INVITATION_LIMIT} caractères
+    AU PLUS, espaces comprises. Garde la source datée du signal et la question ; retire tout le reste. Ne change
+    aucun chiffre ni aucune date, n'ajoute rien. Réponds par la note seule, sans guillemets ni commentaire.
+  PROMPT
+
   # Les pages de fond du site, qui sont les cibles de lien les plus stables : leurs adresses ne
   # bougent pas, contrairement à celle d'un article qu'on pourrait dépublier.
   SITE_PAGES = {
@@ -131,7 +137,9 @@ class ContentGenerator
   def call
     draft = ask(new_chat.with_instructions(system_prompt), user_prompt)
     draft = audit_figures(draft) if generation.audited?
-    generation.update!(output: proofread(draft), status: :generated)
+    output = proofread(draft)
+    output = fit_invitation(output) if generation.outreach_message?
+    generation.update!(output: output, status: :generated)
     generation
   rescue StandardError => e
     Rails.logger.error "ContentGenerator error: #{e.class} — #{e.message}"
@@ -160,6 +168,27 @@ class ContentGenerator
   def error_summary(error)
     title = error.message[%r{<title>(.*?)</title>}m, 1]
     title ? "passerelle Mammouth — #{title.strip}" : error.message.truncate(300)
+  end
+
+  # Le modèle compte mal les caractères ; Ruby mesure la note d'invitation et, si elle dépasse,
+  # la fait raccourcir par le modèle rapide, deux fois au plus. Ce qui dépasse encore reste tel
+  # quel et la page l'affiche en rouge : mieux vaut une note à couper à la main qu'une note tronquée.
+  def fit_invitation(text)
+    sections = sections_of(text)
+    note = sections&.dig(:invitation)
+    return text if note.nil? || note.length <= Generation::INVITATION_LIMIT
+
+    2.times do
+      shorter = ask(Mammouth.chat(model: PROOFREADING_MODEL).with_instructions(INVITATION_SHORTEN_INSTRUCTIONS), note)
+                .strip.delete_prefix("«").delete_suffix("»").strip
+      note = shorter if shorter.present? && shorter.length < note.length
+      break if note.length <= Generation::INVITATION_LIMIT
+    end
+    sections[:invitation] = note
+    rebuild(sections, sections[:verify])
+  rescue StandardError => e
+    Rails.logger.error "ContentGenerator invitation error: #{e.class} — #{e.message}"
+    text
   end
 
   def proofread(text)
@@ -295,7 +324,7 @@ class ContentGenerator
   end
 
   def audited_text(sections)
-    sections.values_at(:final, :short).compact.join("\n")
+    sections.values_at(:final, :invitation, :short).compact.join("\n")
   end
 
   def rebuild(sections, journal)
@@ -904,8 +933,13 @@ class ContentGenerator
 
       #{Generation::SECTION_MARKERS[:final]}
       Le MESSAGE LINKEDIN : trois à cinq phrases, 90 mots au plus, 550 caractères au plus, sans objet ni
-      signature (LinkedIn les porte). Ses deux premières phrases doivent tenir seules en 300 caractères, pour
-      servir de note d'invitation si le destinataire n'est pas encore en relation.
+      signature (LinkedIn les porte).
+
+      #{Generation::SECTION_MARKERS[:invitation]}
+      La NOTE D'INVITATION : quand on ne peut pas écrire directement au destinataire, LinkedIn n'accepte qu'une
+      note de #{Generation::INVITATION_LIMIT} caractères AU PLUS, espaces comprises, jointe à la demande de mise en
+      relation. Une ou deux phrases : la source datée du signal et la question, rien d'autre — ni réalisation,
+      ni chiffre, ni signature. Elle doit donner envie d'accepter, pas tout dire. Compte les caractères.
 
       #{Generation::SECTION_MARKERS[:personalize]}
       Liste à puces de ce que Cyrille doit relire ou adapter avant envoi (prénom, poste exact du destinataire,
