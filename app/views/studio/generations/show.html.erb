@@ -59,7 +59,7 @@
 
           <%= f.select :llm_model, Generation::LLM_MODELS.map { |value, label| [label, value] },
                         { selected: @generation.llm_model }, class: "cf-input studio-regenerate-select" %>
-          <%= f.submit "Régénérer", class: "btn-cp-outline", data: { studio_generation_target: "submitButton" } %>
+          <%= f.submit (@generation.output.present? ? "Régénérer" : "Générer"), class: "btn-cp-outline", data: { studio_generation_target: "submitButton" } %>
         <% end %>
 
         <% if policy(@generation).publish? && !@generation.published? %>

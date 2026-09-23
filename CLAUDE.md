@@ -481,6 +481,17 @@ une requête par seconde. Sur Indeed, « Vienne » seul renvoie la Vienne du Poi
 Isère ». Un condensé de test lancé un jeudi avait daté son objet du lundi **suivant** : la consigne
 impose désormais le lundi précédent.
 
+**Brief d'article du lundi (routine cloud « Brief article hebdo », `docs/routine-brief-article-prompt.md`)** :
+chaque lundi 8 h, une seconde routine choisit LA réalisation non encore traitée dans un article et propose
+un sujet. Depuis le 23/09/2026 elle dépose le brief sur `POST /api/article_briefs`
+(`Api::ArticleBriefsController`, même jeton `VEILLE_API_TOKEN`, authentification partagée dans
+`Api::TokenAuthentication`) : un `Generation` de type `article`, statut `draft`, `input_text` = le brief,
+rattaché au **premier administrateur**, et le mail commence par l'adresse du brouillon — avant, le brief
+ne vivait que dans le mail et Cyrille cherchait l'article sur le site. Idempotent par titre tant que le
+brouillon est vide. Sur la page d'un brouillon sans texte, le bouton dit « Générer », pas « Régénérer ».
+Elle tourne dans l'environnement « Veille » : l'environnement par défaut bloque tout réseau sortant, son
+premier passage du 21/09 n'a rien pu lire.
+
 ## Pipeline commercial (`/studio/prospects`, `app/models/prospect.rb`)
 
 **Le parcours d'un prospect depuis le 22/09/2026**, dans l'ordre où Cyrille le vit : la routine du
