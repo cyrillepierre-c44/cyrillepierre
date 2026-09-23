@@ -534,7 +534,11 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
   Piège : `matching_etablissements` ne contient que les établissements qui correspondent au
   **texte cherché** — une recherche par SIREN n'en ramène aucun. Le détrompeur refait donc une
   recherche « nom de société + commune ». Une commune double s'écrit « Villefranche-sur-Saône /
-  Limas », l'une ou l'autre suffit.
+  Limas », l'une ou l'autre suffit. Un site racheté garde souvent sa raison sociale d'origine
+  (l'usine « Medtronic » de Rillieux est MEDICREA INTERNATIONAL) : quand le détrompeur dit
+  « inconnue de l'annuaire », chercher l'ancien nom et poser le SIREN. Les avis BODACC
+  « Modifications diverses » affichent le texte de l'administration (« X n'est plus président, Y
+  devient président ») : c'est souvent le décideur qui vient d'arriver.
 
 - **Décideur du site** (bouton « Chercher le décideur », 22/09/2026) : aucun registre ne le donne,
   il se cherche sur le web. `DecisionMakerFinder` lance trois recherches **Tavily** (`Tavily.search`,
