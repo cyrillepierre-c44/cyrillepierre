@@ -541,7 +541,17 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
   confirmer », jamais dans le champ `name` : c'est Cyrille qui vérifie sur LinkedIn et remplit le
   nom (`Prospect::PLACEHOLDER_NAME` = « Décideur à identifier » n'est jamais transmis comme
   interlocuteur). Aucun email n'est deviné. Tâche `DecisionMakerSearchJob`, échec écrit dans la
-  fiche.
+  fiche. ⚠️ **Chaque nom sort avec la date de sa page** (23/09/2026) : la première version avait
+  présenté comme directeur industriel de MAPEI France un homme parti en janvier 2017, sur un article
+  Batiactu de 2015 cité sans date — Cyrille a perdu la vérification LinkedIn à le découvrir. Tavily
+  ne date pas ses résultats en recherche générale (`published_date` absent) : le modèle relève la
+  date de publication et **`PageDate`** (`app/services/page_date.rb`) ne la garde que si la page
+  l'écrit sous une graphie courante (`24/11/2015`, « 24 novembre 2015 », ISO, anglais), avec
+  l'adresse en repli (`/2022/01/05/`, `-21022024`) ; sinon la page est « non datée », ce qui
+  s'affiche comme tel. La date appartient à la page, pas au nom. Une source de plus de deux ans
+  (`STALE_AFTER`) sort du bloc « probables » vers « TROP ANCIENS » avec son âge ; les pages datées
+  passent en tête, de la plus récente à la plus ancienne. Limite connue : un article dont la date
+  n'est ni dans le texte ramené ni dans l'adresse (Le Moniteur sous paywall) reste non daté.
 
 ⚠️ **La génération tourne en tâche de fond** (`ContentGenerationJob`), pas dans la requête web.
 Mesuré en production le 15/09/2026 : **27 s** pour un post LinkedIn tiré d'un article, alors
