@@ -9,8 +9,8 @@ module Api
     def create
       title = params.require(:title).to_s.strip
       brief = params.require(:brief).to_s.strip
-      generation = existing_draft(title) || owner.generations.create!(kind: :article, status: :draft,
-                                                                        title: title, input_text: brief)
+      generation = existing_draft(title) ||
+                   owner.generations.create!(kind: :article, status: :draft, title: title, input_text: brief)
       render json: { id: generation.id, created: generation.previously_new_record?,
                      studio_url: studio_generation_url(generation) }, status: :created
     rescue ActiveRecord::RecordInvalid => e
