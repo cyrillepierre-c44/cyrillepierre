@@ -456,7 +456,13 @@ renvoi. La page `/studio/veille` (`Studio::VeilleSignalsController`, admins seul
 « à contacter », relance au jour ouvré suivant, notes = signal, source datée, lecture, comparable,
 accroche, consigne d'interlocuteur) exactement comme Cyrille les saisissait à la main le 21/09 ;
 **Écarter** garde le signal pour mémoire. Supprimer la fiche ne supprime pas le signal
-(`on_delete: :nullify`). Le bouton « Veille (n) » du pipeline compte les signaux en attente. Le
+(`on_delete: :nullify`). ⚠️ **Six semaines est un plancher pour les annonces**
+(`VeilleSignal::VACANCY_FLOOR`, 23/09/2026) : une annonce plus jeune est un recrutement qui commence,
+pas une usine sans pilote — le passage du 21/09 avait classé « Priorité 1 » une annonce de douze jours
+(MAPEI), dont le DG aurait renvoyé vers les RH. La page grise ces annonces (`too_young?`), dit la date
+à laquelle elles deviennent un signal (`signal_from`) et les range après les autres ; la consigne v9
+de la routine tient une liste « à suivre » relue chaque lundi. Les signaux de presse, dirigeant,
+comptes ne sont pas concernés. Le bouton « Veille (n) » du pipeline compte les signaux en attente. Le
 jeton vit sur Heroku **et** dans les variables de l'environnement cloud « Veille » : l'un sans
 l'autre, la routine reçoit 401 et le dit dans son mail, le condensé continue d'arriver.
 
