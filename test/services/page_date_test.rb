@@ -7,6 +7,8 @@ class PageDateTest < ActiveSupport::TestCase
     assert_equal Date.new(2022, 1, 5), PageDate.from_url("https://www.mapei.com/fr/actualite/2022/01/05/mapei-france-acquiert")
     assert_equal Date.new(2024, 2, 21), PageDate.from_url("https://www.la-gazette-eco.fr/article/MAPEI-SAINT-VULBAS-21022024")
     assert_equal Date.new(2024, 2, 12), PageDate.from_url("https://example.com/news/2024-02-12-mapei")
+    assert_equal Date.new(2006, 10, 17), PageDate.from_url("https://dreal.gouv.fr/IMG/pdf/20061017compterenduclic_bayer.pdf")
+    assert_equal Date.new(2025, 11, 20), PageDate.from_url("https://example.com/article-20112025.html"), "not a valid year-first date, read day-first"
     assert_nil PageDate.from_url("https://www.batiactu.com/edito/mapei-ouvre-sa-troisieme-usine-en-france-37634.php")
     assert_nil PageDate.from_url("https://bebee.com/fr/jobs/directeur-dunite-fj-2354169264")
     assert_nil PageDate.from_url("https://example.com/a/99999999")

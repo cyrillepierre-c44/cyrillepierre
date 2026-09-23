@@ -1,5 +1,5 @@
 # Date d'une page web, sans rien deviner. Deux sources, et rien d'autre : l'adresse quand elle
-# porte la date (`/2022/01/05/`, `-21022024`, `2024-02-12`), ou une date lue dans la page, à
+# porte la date (`/2022/01/05/`, `-21022024`, `20061017…pdf`, `2024-02-12`), ou une date lue dans la page, à
 # condition qu'elle y figure sous l'une des graphies courantes — le modèle qui l'a relevée peut
 # s'être trompé de champ, pas Ruby. Une page qui ne montre aucune date reste « non datée » :
 # c'est une information en soi, pas une valeur par défaut.
@@ -11,9 +11,12 @@ module PageDate
   MONTHS_FR = %w[janvier février mars avril mai juin juillet août septembre octobre novembre décembre].freeze
   MONTHS_EN = %w[January February March April May June July August September October November December].freeze
 
+  # Les huit chiffres collés se lisent d'abord année-mois-jour (`20061017compterendu.pdf`), puis
+  # jour-mois-année (`-21022024`) : une lecture qui ne donne pas une date valide passe à la suivante.
   URL_PATTERNS = [
     %r{/(?<y>20\d{2})/(?<m>\d{2})/(?<d>\d{2})(?:/|$)},
     /(?<![0-9])(?<y>20\d{2})-(?<m>\d{2})-(?<d>\d{2})(?![0-9])/,
+    /(?<![0-9])(?<y>20\d{2})(?<m>\d{2})(?<d>\d{2})(?![0-9])/,
     /(?<![0-9])(?<d>\d{2})(?<m>\d{2})(?<y>20\d{2})(?![0-9])/
   ].freeze
 
