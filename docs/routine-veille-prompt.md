@@ -92,7 +92,9 @@ des intitulés « directeur d'usine », « directeur de production », « direct
 ```
 curl -s https://api.tavily.com/search -H 'Content-Type: application/json' -d '{"api_key":"'"$TAVILY_API_KEY"'","query":"<intitulé> Lyon offre d'"'"'emploi","search_depth":"advanced","max_results":10,"include_raw_content":true,"include_domains":["fr.linkedin.com"]}'
 ```
-Deux sortes de pages reviennent : des pages d'offre (`fr.linkedin.com/jobs/view/…`), dont le
+Toujours `search_depth: advanced` : en `basic`, le filtre de domaine est ignoré et Tavily renvoie n'importe
+quoi (vérifié le 23/09/2026) — si les adresses renvoyées ne sont pas sur `fr.linkedin.com`, c'est ce
+symptôme, relance en `advanced`. Deux sortes de pages reviennent : des pages d'offre (`fr.linkedin.com/jobs/view/…`), dont le
 `raw_content` donne l'entreprise, le lieu, l'ancienneté (« il y a 2 semaines ») et le descriptif ;
 et des pages de liste (« Plus de N offres… »), dont le contenu énumère « entreprise · intitulé ·
 ville · il y a N ». Relève de ces listes les postes d'encadrement industriel dans le périmètre, puis,
