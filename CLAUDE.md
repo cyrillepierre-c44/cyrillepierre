@@ -521,6 +521,14 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
   que le Studio rédige depuis la fiche. Ce que ces sources ne donnent **jamais** : le directeur du
   site — l'annuaire liste la holding ou le siège, LinkedIn n'a pas d'API de recherche de
   personnes. Géorisques a été écarté : son paramètre de nom d'établissement est ignoré par l'API.
+  ⚠️ **Détrompeur en tête du bloc** (23/09/2026, demande de Cyrille : « il faut des détrompeurs de
+  partout ») : l'annuaire décrit la SOCIÉTÉ, dont le siège est souvent ailleurs que l'usine visée
+  (MAPEI : siège à Saint-Alban près de Toulouse, usine à Saint-Vulbas). La première ligne dit si la
+  commune de la fiche est le siège, un établissement, ou inconnue de l'annuaire (SIREN à corriger).
+  Piège : `matching_etablissements` ne contient que les établissements qui correspondent au
+  **texte cherché** — une recherche par SIREN n'en ramène aucun. Le détrompeur refait donc une
+  recherche « nom de société + commune ». Une commune double s'écrit « Villefranche-sur-Saône /
+  Limas », l'une ou l'autre suffit.
 
 - **Décideur du site** (bouton « Chercher le décideur », 22/09/2026) : aucun registre ne le donne,
   il se cherche sur le web. `DecisionMakerFinder` lance trois recherches **Tavily** (`Tavily.search`,
