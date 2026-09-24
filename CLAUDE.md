@@ -532,9 +532,11 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
   L'historique du chat (JSON) est converti en transcription lisible (`contact_history_text`).
 - **Saisie manuelle** : pour les contacts du réseau (LinkedIn, Soce, Le Wagon, 60 000 rebonds),
   d'où l'enum `source`. Valeur `cabinet` (« Cabinet de transition », 24/09/2026) : les cabinets sont
-  des **clients** à se faire référencer, pas seulement une source de signaux — huit fiches créées
-  ce jour-là, une par cabinet, d'après `docs/cabinets-management-de-transition.md` (adresses de
-  candidature, bureaux lyonnais, processus de sélection, ordre de traitement).
+  des **clients** à se faire référencer, pas seulement une source de signaux — la tâche
+  `rails prospects:cabinets` (`CabinetReferencing`, idempotente, à lancer une fois en
+  production par `heroku run`) pose huit fiches, une par cabinet et par jour ouvré, d'après
+  `docs/cabinets-management-de-transition.md` (adresses de candidature, bureaux lyonnais,
+  processus de sélection, ordre de traitement).
 - **`user` est optionnel** : les demandes venues du site n'ont pas d'utilisateur connecté au moment
   de leur création. `ProspectPolicy::Scope` les réserve donc aux admins ; un éditeur ne voit que ses
   propres saisies. `has_many :prospects, dependent: :nullify` sur `User` — une piste commerciale
