@@ -37,7 +37,20 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "trois ans"
     assert_includes @response.body, "modèle de langage"
     assert_select ".legal-warning", 1
-    assert_select ".legal-table tbody tr", minimum: 5
+    assert_select ".legal-table tbody tr", minimum: 8
+  end
+
+  # RGPD art. 14 : les prospects issus de la veille n'ont rien saisi sur le site, la politique doit
+  # dire d'où viennent leurs données, pourquoi, et comment s'y opposer.
+  test "the privacy policy covers the prospects found by the weekly watch" do
+    get privacy_path
+
+    assert_includes @response.body, "collectées indirectement"
+    assert_includes @response.body, "article 14"
+    assert_includes @response.body, "sources publiques"
+    assert_includes @response.body, "« stop »"
+    assert_includes @response.body, "Tavily"
+    assert_includes @response.body, "Anthropic"
   end
 
   test "both legal pages link to each other" do

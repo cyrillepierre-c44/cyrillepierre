@@ -99,7 +99,17 @@ class ContactsController < ApplicationController
     render json: { summary: call_llm(messages) }
   end
 
+  # Deux gardes contre le spam, posées après l'envoi du 19/09/2026 (« Sophia Harris », mail.ru,
+  # adresse d'hébergeur, pas un mot d'échange). Un visiteur réel ne peut pas soumettre sans
+  # conversation : le bouton d'envoi reste désactivé tant que l'assistant n'a pas rendu son
+  # résumé, et sans JavaScript la page donne l'adresse email à la place. Un envoi sans historique
+  # vient donc d'un robot qui poste directement sur /contact. Le champ leurre (`contact_website`)
+  # est hors écran et hors tabulation : un humain ne le voit pas, un robot qui remplit tout ce
+  # qu'il trouve s'y prend. Ni mail ni fiche dans les deux cas.
   def create
+    return drop_bot_submission if params[:contact_website].present?
+    return ask_for_conversation if params[:contact_history].blank?
+
     name    = params[:contact_name]
     email   = params[:contact_email]
     themes  = Array(params[:contact_themes])
@@ -148,6 +158,21 @@ class ContactsController < ApplicationController
   LLM_FALLBACK = "Je rencontre une difficulté technique. Écrivez directement à contact@cyrillepierre.com".freeze
 
   private
+
+  # Un robot n'a rien à apprendre : même redirection et même message qu'un envoi réel.
+  def drop_bot_submission
+    Rails.logger.info "Contact rejected (honeypot filled) from #{request.remote_ip}"
+    redirect_to root_path, notice: "Votre demande a bien été envoyée ! Je vous réponds sous 24h."
+  end
+
+  # Un humain qui arriverait là (formulaire contourné, page périmée) doit savoir que rien n'est
+  # parti et où écrire : pas de faux message de succès.
+  def ask_for_conversation
+    Rails.logger.info "Contact rejected (no conversation) from #{request.remote_ip}"
+    redirect_to contact_path,
+                alert: "Votre demande n'a pas été envoyée : merci de répondre aux questions de " \
+                       "l'assistant avant de l'envoyer, ou d'écrire directement à #{SiteIdentity::EMAIL}."
+  end
 
   # Le mail reste le canal d'alerte ; le prospect est la trace suivable. Une erreur
   # d'écriture ne doit jamais faire échouer l'envoi côté visiteur : sa demande est déjà

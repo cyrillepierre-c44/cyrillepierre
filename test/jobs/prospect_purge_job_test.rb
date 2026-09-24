@@ -30,6 +30,21 @@ class ProspectPurgeJobTest < ActiveSupport::TestCase
     end
   end
 
+  test "removes the watch signals past the retention period, keeping the prospect they produced" do
+    fiche = Prospect.create!(name: "Fiche issue d'un signal")
+    old = VeilleSignal.create!(run_week: Date.new(2023, 1, 2), company: "Vieille SA", signal: "Poste ouvert",
+                               source_url: "https://example.com/old", signal_type: "annonce", prospect: fiche)
+    old.update_column(:created_at, Prospect::RETENTION.ago - 1.day)
+    recent = VeilleSignal.create!(run_week: Date.current, company: "Récente SA", signal: "Poste ouvert",
+                                  source_url: "https://example.com/new", signal_type: "annonce")
+
+    ProspectPurgeJob.perform_now
+
+    assert_not VeilleSignal.exists?(old.id)
+    assert VeilleSignal.exists?(recent.id)
+    assert Prospect.exists?(fiche.id)
+  end
+
   test "does nothing and reports zero when there is nothing to purge" do
     assert_equal 0, ProspectPurgeJob.perform_now
   end

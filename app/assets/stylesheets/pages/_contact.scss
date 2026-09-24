@@ -170,6 +170,16 @@
   }
 }
 
+// Champ leurre anti-spam (voir contacts/new.html.erb) : hors écran, pas `display: none`, que
+// certains robots savent reconnaître.
+.cf-trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .cf-input {
   font-family: $body-font;
   font-size: 1rem;

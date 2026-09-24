@@ -15,7 +15,8 @@ class Prospect < ApplicationRecord
     rebonds: "60 000 rebonds",
     recommandation: "Recommandation",
     autre: "Autre",
-    veille: "Veille automatique"
+    veille: "Veille automatique",
+    cabinet: "Cabinet de transition"
   }.freeze
 
   # L'ordre est celui du pipeline : de la prise de contact à l'issue de l'affaire.

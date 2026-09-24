@@ -200,7 +200,8 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_enqueued_emails 2 do
       post contact_path, params: { contact_name: "Jean Dupont", contact_email: "jean@example.com",
                                    contact_themes: [ "Excellence opérationnelle" ],
-                                   contact_summary: "Résumé de la demande." }
+                                   contact_summary: "Résumé de la demande.",
+                                   contact_history: "Visiteur : Le TRS baisse." }
     end
 
     assert_redirected_to root_path
@@ -241,12 +242,48 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   test "create still answers the visitor when the prospect cannot be saved" do
     Prospect.stub(:record_contact_request, ->(**) { raise ActiveRecord::RecordInvalid.new(Prospect.new) }) do
       assert_no_difference("Prospect.count") do
-        post contact_path, params: { contact_name: "Jean Dupont", contact_email: "jean@example.com" }
+        post contact_path, params: { contact_name: "Jean Dupont", contact_email: "jean@example.com",
+                                     contact_history: "Visiteur : Le TRS baisse." }
       end
     end
 
     assert_redirected_to root_path
     assert_equal "Votre demande a bien été envoyée ! Je vous réponds sous 24h.", flash[:notice]
+  end
+
+  # --- garde anti-spam --------------------------------------------------------
+
+  test "the contact form carries an off-screen honeypot field" do
+    get contact_path
+
+    assert_select ".cf-trap input[name=contact_website][tabindex='-1'][autocomplete=off]", 1
+    assert_select ".cf-trap[aria-hidden=true]", 1
+  end
+
+  test "create silently drops a submission that filled the honeypot" do
+    assert_no_enqueued_emails do
+      assert_no_difference("Prospect.count") do
+        post contact_path, params: { contact_name: "Sophia Harris", contact_email: "spam@mail.ru",
+                                     contact_website: "https://spam.example",
+                                     contact_history: "Visiteur : bonjour" }
+      end
+    end
+
+    assert_redirected_to root_path
+    assert_equal "Votre demande a bien été envoyée ! Je vous réponds sous 24h.", flash[:notice]
+  end
+
+  test "create refuses a submission that never went through the assistant, and says so" do
+    assert_no_enqueued_emails do
+      assert_no_difference("Prospect.count") do
+        post contact_path, params: { contact_name: "Sophia Harris", contact_email: "spam@mail.ru",
+                                     contact_summary: "Buy now" }
+      end
+    end
+
+    assert_redirected_to contact_path
+    assert_includes flash[:alert], "n'a pas été envoyée"
+    assert_includes flash[:alert], SiteIdentity::EMAIL
   end
 
   # --- garde-fous anti-invention du prompt -----------------------------------

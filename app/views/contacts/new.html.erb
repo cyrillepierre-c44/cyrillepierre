@@ -264,6 +264,14 @@
         Complétez la conversation pour activer l'envoi.
       </p>
 
+      <%# Champ leurre anti-spam : hors écran et hors tabulation, un humain ne le voit ni ne le
+          remplit ; un robot qui remplit tout ce qu'il trouve s'y prend et le contrôleur jette
+          l'envoi (ContactsController#create). Pas de type="hidden" : les robots les respectent. %>
+      <div class="cf-trap" aria-hidden="true">
+        <label for="contact_website">Site web</label>
+        <input type="text" id="contact_website" name="contact_website" tabindex="-1" autocomplete="off">
+      </div>
+
       <%# Champs cachés %>
       <input type="hidden" id="contact_summary" name="contact_summary" data-contact-chat-target="summaryField">
       <input type="hidden" id="contact_history" name="contact_history" data-contact-chat-target="historyField">

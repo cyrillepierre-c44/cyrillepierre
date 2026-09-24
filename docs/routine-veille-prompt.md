@@ -5,7 +5,10 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 9 le 23/09 : les six semaines deviennent un
+connecteurs, ce qu'a montré le premier passage). Version 10 le 24/09 (idée de Cyrille du 22/09) : une
+source F, les portefeuilles des fonds régionaux (Siparex et ses FRI, iXO, Bpifrance) — une entrée récente
+au capital d'une usine du périmètre est un signal (`fonds`), et une participation qui porte un autre
+signal passe en tête ; trois domaines de plus à autoriser. Version 9 le 23/09 : les six semaines deviennent un
 PLANCHER pour les annonces — une annonce plus jeune n'est pas un signal, elle va dans « à suivre » et ne
 remonte qu'à six semaines, republiée, ou recoupée (le passage du 21/09 avait classé « Priorité 1 » une
 annonce de douze jours, MAPEI Saint-Vulbas : le DG contacté aurait renvoyé vers les RH et l'annonce). Version 8 le 22/09 (après deux offres LinkedIn manquées, Panzani et Tercio, et deux offres Indeed aux
@@ -183,9 +186,26 @@ citées comme bénéficiaires dans les 60 derniers jours. Lecture : un investiss
 l'atelier dans les dix-huit mois. Poids moyen. Un extrait de résultat suffit ici pour signaler,
 avec son lien ; n'en tire aucun chiffre.
 
+**F. Portefeuilles des fonds d'investissement régionaux (WebFetch, une fois par passage).** Un
+fonds qui vient d'entrer au capital d'une PME industrielle attend une marge mesurable sous
+dix-huit mois, et son directeur de participations est un prescripteur de managers de transition :
+l'entrée récente est un signal en soi, la participation un multiplicateur pour tout autre signal.
+Lis les pages de participations de Siparex (`https://www.siparex.com/participations/`, stratégies
+« Territoires » et « Entrepreneurs », qui portent aussi le Fonds Souverain Auvergne-Rhône-Alpes et
+les FRI gérés par France Rebond Industrie Gestion, filiale de Siparex), d'iXO Private Equity
+(`https://www.ixope.fr/portefeuille`) et de Bpifrance pour la région
+(`https://www.bpifrance.fr/auvergne-rhone-alpes`, ses communiqués d'investissement). Retiens deux
+choses. (1) Les entrées au capital des 90 derniers jours dans des entreprises industrielles du
+périmètre : signal de type `fonds`, poids moyen, avec le nom du fonds et la date d'entrée telle
+que la page l'écrit — sans date sur la page, écris « date non précisée », n'en déduis aucune.
+(2) La liste des participations industrielles du périmètre, que tu gardes sous la main pour
+l'étape 3 : une entreprise de cette liste qui porte un autre signal passe en tête, et sa fiche
+nomme le fonds. Le directeur de participations n'est jamais l'interlocuteur proposé : l'accroche
+s'adresse au dirigeant du site, le fonds n'apparaît que comme contexte.
+
 Ces domaines doivent être autorisés dans l'environnement : `api.tavily.com`, `bodacc-datadila.opendatasoft.com`,
-`recherche-entreprises.api.gouv.fr`, `data.economie.gouv.fr`, `georisques.gouv.fr`. Si l'un
-d'eux répond « bloqué », dis-le dans le mail et passe au suivant.
+`recherche-entreprises.api.gouv.fr`, `data.economie.gouv.fr`, `georisques.gouv.fr`, `www.siparex.com`,
+`www.ixope.fr`, `www.bpifrance.fr`. Si l'un d'eux répond « bloqué », dis-le dans le mail et passe au suivant.
 
 Ne consulte jamais LinkedIn, ni aucun site dont tu ne peux lire le contenu sans te connecter.
 
@@ -206,8 +226,9 @@ Applique la grille du cadrage. Deux règles priment :
   recoupe (presse, dirigeant, comptes). Pour cela, relis la liste « à suivre » des condensés
   précédents (Gmail) et vérifie chaque annonce arrivée à échéance.
 - **Un signal qui se recoupe vaut plus** : la même entreprise dans une annonce ET dans la
-  presse, un changement de dirigeant ET un poste ouvert, un site en perte ET une annonce, passe
-  en tête. Nomme les signaux croisés dans la fiche.
+  presse, un changement de dirigeant ET un poste ouvert, un site en perte ET une annonce, une
+  participation d'un fonds régional (source F) ET n'importe quel autre signal, passe en tête.
+  Nomme les signaux croisés dans la fiche.
 
 Écarte sans les mentionner : les entreprises en procédure collective, les signaux hors
 région, les doublons. Écarte aussi tout ce qui figurait déjà dans un condensé des quatre
@@ -235,7 +256,7 @@ passe à l'étape 6). Forme exacte :
  "signals": [
    {"rank": 1, "shortlisted": true, "company": "<entreprise — site>", "location": "<commune (dép.)>",
     "sector": "<secteur>", "signal_type": "<annonce | dirigeant | cession | comptes | rappel |
-    installation_classee | aide | presse | cabinet>", "signal": "<le signal en une phrase, avec le poste
+    installation_classee | aide | presse | cabinet | fonds>", "signal": "<le signal en une phrase, avec le poste
     ou le titre>", "source_name": "<Indeed | Le Progrès | BODACC | …>", "source_url": "<lien direct,
     jamais un lien Google>", "published_on": "<AAAA-MM-JJ ou null>", "why_now": "<pourquoi maintenant>",
     "comparable": "<N°XX — titre de la réalisation>", "pitch": "<l'accroche>"},
@@ -259,7 +280,7 @@ lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, so
    pour laquelle le dépôt a échoué).
 1. **Les 5 signaux à regarder** (au plus cinq, classés par score décroissant). Pour chacun :
    - entreprise, lieu, secteur (si connu), et le TYPE de signal (annonce, dirigeant, cession,
-     comptes, rappel, installation classée, aide, presse, cabinet) ;
+     comptes, rappel, installation classée, aide, presse, cabinet, fonds) ;
    - le signal, sa source avec le lien, sa date et son âge en jours ;
    - « Pourquoi maintenant » en une phrase ;
    - la réalisation comparable du catalogue (numéro et titre) et en quoi elle est comparable ;
@@ -274,7 +295,7 @@ lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, so
    six semaines. Reprends celles des condensés précédents qui n'ont pas encore atteint l'échéance.
 3. **Ce que tu as consulté** : nombre d'annonces lues par source (Indeed et LinkedIn via Tavily séparément), avis BODACC lus, sociétés
    parcourues dans l'annuaire, rappels lus, installations classées couvertes, flux presse lus,
-   pages de cabinets lues, et ce qui n'a pas répondu. Une erreur Indeed « 429 » ou « rate limit » est
+   pages de cabinets lues, pages de fonds lues, et ce qui n'a pas répondu. Une erreur Indeed « 429 » ou « rate limit » est
    un quota épuisé, pas une panne : attends, puis reprends ; ne conclus jamais que la source
    est hors service sans avoir réessayé après le délai indiqué.
 4. Une ligne finale : le temps que la collecte t'a pris, et une chose que tu changerais

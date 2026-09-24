@@ -70,6 +70,16 @@ quand elle annonce des échecs. Enchaîner avec `&&` et exiger la mention exacte
 
 ⚠️ **Piège Brakeman** : le binstub `bin/brakeman` généré par Rails ajoute `--ensure-latest`, qui fait sortir Brakeman en **code 5 dès qu'une version plus récente du gem est publiée**, sans aucun avertissement de sécurité. La CI utilise donc `bundle exec brakeman` — sinon elle passe au rouge un matin sans qu'une ligne de code ait bougé.
 
+**Anti-spam du formulaire de contact** (24/09/2026, après un envoi « Sophia Harris » depuis mail.ru
+le 19/09 sans un mot d'échange) : `ContactsController#create` refuse deux choses avant tout envoi.
+Un champ leurre `contact_website` (`.cf-trap`, hors écran et hors tabulation, pas `type="hidden"`
+que les robots respectent) rempli → redirection et message identiques à un envoi réel, sans mail
+ni fiche : un robot n'a rien à apprendre. Un `contact_history` vide → retour sur le formulaire avec
+une alerte qui donne l'adresse : un visiteur réel ne peut pas arriver là (le bouton reste désactivé
+tant que l'assistant n'a pas résumé, et sans JavaScript la page donne l'adresse), mais s'il y
+arrivait, pas de faux message de succès. Tout test qui poste sur `/contact` doit donc fournir un
+historique.
+
 **Rate limiting** : `rack-attack` (`config/initializers/rack_attack.rb`) protège les endpoints `/contact/chat`, `/contact/summarize`, `/contact/infer_company`, qui déclenchent chacun un appel Mammouth **payant** — c'est un garde-fou de facturation autant que de sécurité. En production le compteur s'appuie sur `Rails.cache` (solid_cache, qui gère bien `increment`).
 
 **Livraison des emails** : Gmail laisse parfois la poignée de main SMTP en suspens. Le 10/09/2026,
@@ -423,7 +433,13 @@ part ailleurs, un renommage le désactiverait en silence. Solid Queue tourne dan
 Et elle avertit
 que le contenu du chat part chez un prestataire LLM : à mettre à jour si le provider change
 (aujourd'hui Mammouth.ai), au même titre que la liste des sous-traitants (Heroku, Cloudflare,
-Cloudinary, Sentry, Gmail).
+Cloudinary, Sentry, Gmail, et depuis le 24/09/2026 Anthropic pour la routine de veille et Tavily
+pour la recherche du décideur). Depuis le 24/09/2026 elle couvre aussi la **collecte indirecte**
+(RGPD art. 14) : les entreprises et dirigeants repérés par la veille, leurs sources publiques,
+l'information donnée au premier message avec son « répondez stop », et le même délai de trois ans
+à compter du repérage — `ProspectPurgeJob` purge donc aussi les `VeilleSignal` de plus de
+`Prospect::RETENTION`, la fiche issue d'un signal survivant (clé étrangère mise à nul).
+`pages_controller_test.rb` verrouille les mots-clés de la section.
 
 **Formulaire de création du Studio** (`_form.html.erb`) : l'ordre suit la pensée de celui qui remplit,
 pas l'histoire du code — 1. type, 2. source, 3. précisions, 4. titre, 5. modèle IA. Il avait été bâti
@@ -469,7 +485,11 @@ pas une usine sans pilote — le passage du 21/09 avait classé « Priorité 1 �
 de la routine tient une liste « à suivre » relue chaque lundi. Les signaux de presse, dirigeant,
 comptes ne sont pas concernés. Le bouton « Veille (n) » du pipeline compte les signaux en attente. Le
 jeton vit sur Heroku **et** dans les variables de l'environnement cloud « Veille » : l'un sans
-l'autre, la routine reçoit 401 et le dit dans son mail, le condensé continue d'arriver.
+l'autre, la routine reçoit 401 et le dit dans son mail, le condensé continue d'arriver. Consigne
+**v10** (24/09/2026) : source F, les portefeuilles des fonds régionaux (Siparex et ses FRI, iXO,
+Bpifrance) — une entrée récente au capital d'une usine du périmètre est un signal de type `fonds`
+(`VeilleSignal::TYPES`), une participation qui porte un autre signal passe en tête ; les domaines
+`www.siparex.com`, `www.ixope.fr`, `www.bpifrance.fr` sont à autoriser dans l'environnement.
 
 Premier passage réel le 21/09/2026 (v5) : cinq signaux en 55 minutes, quatre retenus par Cyrille et
 saisis à la main en fiches `Prospect` (#38 à #41, source `autre`, accroche dans les notes). Trois
@@ -511,7 +531,10 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
   partie par mail, un échec d'écriture ne doit jamais lui afficher une erreur ni lui faire tout ressaisir.
   L'historique du chat (JSON) est converti en transcription lisible (`contact_history_text`).
 - **Saisie manuelle** : pour les contacts du réseau (LinkedIn, Soce, Le Wagon, 60 000 rebonds),
-  d'où l'enum `source`.
+  d'où l'enum `source`. Valeur `cabinet` (« Cabinet de transition », 24/09/2026) : les cabinets sont
+  des **clients** à se faire référencer, pas seulement une source de signaux — huit fiches créées
+  ce jour-là, une par cabinet, d'après `docs/cabinets-management-de-transition.md` (adresses de
+  candidature, bureaux lyonnais, processus de sélection, ordre de traitement).
 - **`user` est optionnel** : les demandes venues du site n'ont pas d'utilisateur connecté au moment
   de leur création. `ProspectPolicy::Scope` les réserve donc aux admins ; un éditeur ne voit que ses
   propres saisies. `has_many :prospects, dependent: :nullify` sur `User` — une piste commerciale
@@ -528,7 +551,7 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
   de prospect n'ont rien à faire dans des journaux d'accès. `title`/`input_text` restent acceptés
   pour les liens simples.
 - **RGPD** : la mention du formulaire de contact précise désormais la conservation des données le
-  temps du suivi. Des mentions légales et une politique de confidentialité restent à ajouter.
+  temps du suivi. Les mentions légales et la politique de confidentialité existent depuis le 10/09/2026 (voir « Pages légales »).
 
 - **Renseignements publics** (bouton « Chercher les renseignements » sur la fiche, 22/09/2026) :
   `ProspectEnricher` compose **en Ruby, sans modèle** un bloc daté à partir de l'annuaire officiel

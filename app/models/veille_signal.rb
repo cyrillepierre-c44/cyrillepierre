@@ -15,7 +15,8 @@ class VeilleSignal < ApplicationRecord
     "installation_classee" => "Installation classée",
     "aide" => "Aide",
     "presse" => "Presse",
-    "cabinet" => "Cabinet"
+    "cabinet" => "Cabinet",
+    "fonds" => "Fonds au capital"
   }.freeze
 
   # Une annonce de moins de six semaines est un recrutement qui commence, pas une usine sans pilote

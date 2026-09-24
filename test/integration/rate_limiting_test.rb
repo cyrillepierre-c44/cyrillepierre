@@ -56,7 +56,7 @@ class RateLimitingTest < ActionDispatch::IntegrationTest
 
   test "the contact form stops accepting submissions after 5 in an hour" do
     params = { contact_name: "Jean", contact_email: "jean@example.com",
-               contact_summary: "Résumé." }
+               contact_summary: "Résumé.", contact_history: "Visiteur : bonjour" }
 
     5.times do
       post contact_path, params: params

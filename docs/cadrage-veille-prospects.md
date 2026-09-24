@@ -53,6 +53,7 @@ pas de conseil ; une entreprise qui vient d'annoncer une extension, si.
 | Rappel de produit alimentaire, cosmétique ou pharmaceutique (RappelConso) | Crise qualité : rebuts, traçabilité, contrôle | Excellence opérationnelle | moyen à fort |
 | Inspection récente, arrêté ou mise en demeure sur une installation classée (Géorisques) | Une mise aux normes à piloter | Excellence opérationnelle, HSE | moyen |
 | Lauréat d'une aide à l'investissement (France 2030, Bpifrance, Région) | Un investissement qui bouscule l'atelier sous dix-huit mois | Excellence opérationnelle, organisation | moyen |
+| Entrée récente d'un fonds régional au capital (Siparex et ses FRI, iXO, Bpifrance) — ajouté le 24/09/2026 | Le fonds attend une marge mesurable sous dix-huit mois et son directeur de participations prescrit des managers de transition ; une participation qui porte un autre signal passe en tête | Excellence opérationnelle, transition | moyen seul, fort recoupé |
 
 Le score s'appuie sur le catalogue de réalisations : un signal proche d'une réalisation
 chiffrée de Cyrille pèse plus qu'un signal générique, parce que l'approche pourra citer un cas
@@ -77,6 +78,7 @@ son pilote. Aucune interprétation nécessaire.
 | **Cabinets de management de transition** | Missions industrielles publiées : Valtus, Delville, X-PM, Wayden, Robert Half | Une dizaine de pages lues une fois par semaine | Retenu |
 | **Alertes Google en RSS** + Bref Eco, L'Usine Nouvelle, Les Echos région | Presse : extension, investissement, incident qualité, restructuration | Flux gratuits | Retenu |
 | **BODACC** | Changement de dirigeant ; exclure les procédures collectives | API Opendatasoft, sans clé | Retenu, poids faible |
+| **Portefeuilles des fonds régionaux** : Siparex (dont FRI et Fonds Souverain AURA), iXO Private Equity, Bpifrance | Entrées récentes au capital d'usines du périmètre ; liste des participations pour recouper les autres signaux | Pages publiques de participations, lues une fois par semaine | Retenu le 24/09/2026 (source F de la consigne) |
 
 **Écartés** : APEC en direct (pas d'API, mais repris par les agrégateurs et France Travail) ;
 Cadremploi (ni API ni flux, collecte interdite par ses conditions) ; **LinkedIn** (conditions
