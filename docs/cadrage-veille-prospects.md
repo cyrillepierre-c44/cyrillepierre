@@ -28,10 +28,11 @@ En dessous, on arrête ou on change de sources. Le but n'est pas d'avoir un bel 
 
 | Axe | Retenu |
 |---|---|
-| Géographie | **50 km et une heure de route autour de Lyon centre** (décision du 18/09/2026) : tout le Rhône, le sud de l'Ain jusqu'à Ambérieu-en-Bugey, le Nord-Isère jusqu'à Vienne et Bourgoin-Jallieu. Exclus : Saint-Étienne, Roanne, Valence, Grenoble, Annecy, Clermont-Ferrand, Mâcon. Raison : une mission en solo ne se négocie pas avec des frais de déplacement ; Livron (127 km, 1 h 40) l'a montré. |
-| Secteurs | agroalimentaire, pharmaceutique, mécanique et métallurgie, microélectronique, plasturgie, reconditionnement |
-| Taille | PME et ETI de 50 à 500 personnes, sites industriels de groupes |
-| Exclus | BTP, logistique pure, services, entreprises en procédure collective (voir plus bas) |
+| Géographie | **40 km et 45 minutes hors bouchons autour de Lyon centre** (resserré le 28/09/2026, 20 % de moins que la règle du 18/09 : les trajets se font aux heures de pointe) : Métropole et Rhône jusqu'à Villefranche et Tarare, Ain jusqu'à Miribel, Meximieux, Trévoux et la Plaine de l'Ain, Nord-Isère jusqu'à Vienne, L'Isle-d'Abeau, Pont-de-Chéruy et Crémieu. Exclus : Bourgoin-Jallieu, Saint-Chef, Ambérieu, Roussillon, Saint-Étienne, Roanne, Valence, Grenoble, Annecy, Clermont-Ferrand, Mâcon. Raison : une mission en solo ne se négocie pas avec des frais de déplacement ; Livron (127 km, 1 h 40) l'a montré, Saint-Chef aussi. La commune se **vérifie** avant de classer (CECLA, 28/09 : annoncée dans le Rhône, en réalité à Pont-de-Claix). |
+| Fonctions (28/09/2026) | Direction ou responsabilité de **production, d'usine, de site, des opérations, industrielle, d'amélioration continue, d'excellence opérationnelle**. Jamais qualité, HSE, maintenance, supply chain, méthodes, RH, finance : « pas mon métier ». Niveau : direction, ou responsable rattaché au directeur de site dans une entreprise d'au moins cent personnes ; une annonce bac+2 ou CAP n'est pas un signal. |
+| Secteurs (revus le 28/09/2026) | Industrie **manufacturière** où Cyrille a un cas ou un procédé voisin : agroalimentaire, boissons, FMCG, pharmacie, cosmétique, dispositifs médicaux, microélectronique et salles blanches, artisanat semi-industriel. Secondaires (recoupés seulement) : automobile et équipementiers, mécanique, fonderie et forge. |
+| Taille | PME et ETI de 100 à 500 personnes, sites industriels de groupes |
+| Exclus | plasturgie et tuyauterie, chimie et sites SEVESO, BTP, logistique pure, services, énergie, entreprises en procédure collective (voir plus bas) |
 
 ## Les signaux, et ce qu'ils veulent dire
 

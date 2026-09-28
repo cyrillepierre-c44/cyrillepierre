@@ -496,7 +496,12 @@ liste « Ta mémoire de tri » en bas de page permet de corriger une raison
 texte brut, `VeilleDecision.to_prompt`, 200 lignes au plus) est lu par la routine **avant toute
 recherche** (consigne v11 : entreprise déjà tranchée → jamais en top 5 sans nouveauté ; raison qui
 ressemble à une règle → appliquée à toute la semaine et citée dans le mail). `ProspectPurgeJob` purge
-les décisions au même délai, et la politique de confidentialité le dit. ⚠️ Dans une feuille Sass,
+les décisions au même délai, et la politique de confidentialité le dit. Premier usage le soir même :
+les neuf raisons de Cyrille (« déçu de la qualité ») ont donné la **consigne v12** — listes blanches de
+fonctions (jamais qualité ni HSE) et de secteurs (ceux du catalogue et leurs voisins, automobile
+secondaire, plasturgie et chimie exclues), niveau du poste (bac+2 = pas un signal), périmètre réduit
+de 20 % (40 km / 45 min, Bourgoin et Ambérieu sortent) et vérifié ou non classé, signaux de situation
+devant les annonces. Le cadrage porte les mêmes tableaux. ⚠️ Dans une feuille Sass,
 `min(32rem, calc(…))` est capté par la fonction `min` de Sass et casse la compilation : écrire
 `width` + `max-width`. ⚠️ **Six semaines est un plancher pour les annonces**
 (`VeilleSignal::VACANCY_FLOOR`, 23/09/2026) : une annonce plus jeune est un recrutement qui commence,

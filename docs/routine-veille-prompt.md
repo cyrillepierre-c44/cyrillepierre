@@ -5,7 +5,15 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 11 le 28/09 (demande de Cyrille) : la routine lit
+connecteurs, ce qu'a montré le premier passage). Version 12 le 28/09 au soir, tirée des raisons que
+Cyrille a notées sur les neuf signaux du matin (« déçu de la qualité ») : **listes blanches** de fonctions
+(production, opérations, site, industriel, amélioration continue — jamais qualité ni HSE : bioMérieux et
+Brenntag étaient en tête à tort) et de secteurs (ceux du catalogue et leurs voisins ; plasturgie et chimie
+retirés, l'automobile devient secondaire) ; **niveau** du poste (une annonce bac+2 n'est pas un signal, MTB) ;
+**périmètre réduit de 20 %** pour les bouchons (40 km / 45 min : Bourgoin, Ambérieu et Saint-Chef sortent) et
+**vérifié ou non classé** (CECLA annoncée à Champagne-au-Mont-d'Or, en réalité Pont-de-Claix, l'annuaire
+étant injoignable) ; **les signaux de situation passent devant les annonces**, que Cyrille voit déjà sur
+Indeed. Version 11 le 28/09 (demande de Cyrille) : la routine lit
 d'abord la **mémoire de tri** (`GET /api/veille_memory`, même jeton) — chaque Retenir / Écarter / suppression de
 fiche porte désormais la raison de Cyrille, dans ses mots ; une entreprise déjà tranchée ne revient que s'il y a
 du nouveau (le 28/09 Nicoll était ressorti en rang 3 alors que la fiche #44 existait depuis le 23), et une raison
@@ -78,21 +86,47 @@ limite le débit ; en cas de réponse « rate limit », attends le délai indiqu
 puis reprends là où tu en étais. Si un canal est inaccessible (réseau bloqué, site en panne),
 dis-le dans le mail plutôt que de le remplacer par des extraits non vérifiés.
 
-**PÉRIMÈTRE GÉOGRAPHIQUE (règle absolue, décidée le 18/09/2026)** : 50 km et une heure de
-route autour de Lyon centre. Retenu : tout le Rhône (69), le sud de l'Ain (01 : Ambérieu-en-Bugey,
-Meximieux, Miribel, Trévoux, Villars-les-Dombes et en deçà), le Nord-Isère (38 : Vienne,
-Bourgoin-Jallieu, L'Isle-d'Abeau, Saint-Quentin-Fallavier, Pont-de-Chéruy, Crémieu et en deçà).
-Exclu, quelle que soit la qualité du signal : Saint-Étienne, Roanne, Valence, Livron, Romans,
-Grenoble, Annecy, Chambéry, Clermont-Ferrand, Mâcon, Roussillon/Salaise et tout ce qui est plus
-loin. Une mission en solo ne se négocie pas avec des frais de déplacement. Un signal hors
-périmètre n'est ni classé ni listé.
+**PÉRIMÈTRE GÉOGRAPHIQUE (règle absolue, resserrée le 28/09/2026)** : 40 km et 45 minutes de
+route hors bouchons autour de Lyon centre — les trajets se font aux heures de pointe, d'où 20 % de
+moins que la règle du 18/09. Retenu : la Métropole de Lyon et le Rhône jusqu'à Villefranche-sur-Saône
+et Tarare ; l'Ain jusqu'à Miribel, Meximieux, Trévoux et la Plaine de l'Ain (Saint-Vulbas) ; le
+Nord-Isère jusqu'à Vienne, Saint-Quentin-Fallavier, L'Isle-d'Abeau, Pont-de-Chéruy et Crémieu.
+Exclu, quelle que soit la qualité du signal : Bourgoin-Jallieu et au-delà, Saint-Chef, Ambérieu-en-Bugey,
+Roussillon/Salaise, Saint-Étienne, Roanne, Valence, Livron, Romans, Grenoble et Pont-de-Claix, Annecy,
+Chambéry, Clermont-Ferrand, Mâcon, et tout ce qui est plus loin. Une mission en solo ne se négocie pas
+avec des frais de déplacement. Un signal hors périmètre n'est ni classé ni listé. **La commune se
+vérifie** (annuaire officiel, page de l'annonce, ou article) : le 28/09, CECLA Industrie a été présentée
+à Champagne-au-Mont-d'Or parce que l'annuaire était injoignable et que le département du greffe a tenu
+lieu de commune — le site est à Pont-de-Claix. Sans vérification possible, écris « commune non
+vérifiée » et laisse le signal dans « autres signaux vus », jamais dans le top 5.
+
+**FILTRES DE PERTINENCE (règles absolues, tirées des raisons de Cyrille le 28/09/2026)** :
+- **Fonction** : seuls comptent les postes de direction ou de responsabilité de **production, d'usine,
+  de site, des opérations, industriel, d'amélioration continue ou d'excellence opérationnelle**. Un
+  poste de directeur ou responsable **qualité, HSE, maintenance, supply chain, méthodes, RH ou
+  finance** n'est pas un signal, même dans une belle usine : « la direction qualité n'est pas mon
+  métier » (bioMérieux), « la chimie et les environnements SEVESO ne sont pas du tout dans mes
+  compétences » (Brenntag). Ces deux-là étaient en tête du condensé du 28/09 : c'est l'erreur à ne
+  plus faire.
+- **Secteur** : industrie **manufacturière** où Cyrille a un cas comparable ou un procédé voisin —
+  agroalimentaire, boissons, biens de grande consommation (FMCG), pharmacie, cosmétique, dispositifs
+  médicaux, microélectronique et salles blanches, et l'artisanat semi-industriel (ateliers organisés
+  en production). **Secondaires** (jamais en top 5 seuls, seulement recoupés par un autre signal) :
+  automobile et équipementiers, mécanique, fonderie et forge. **Exclus** : plasturgie et tuyauterie
+  (« pas mon métier », Nicoll), chimie et sites SEVESO, BTP, logistique, services, énergie.
+- **Niveau** : le poste vacant doit être une direction, ou un responsable rattaché au directeur de
+  site dans une entreprise d'au moins cent personnes. Une annonce qui demande un bac+2, un CAP ou
+  moins de dix ans d'expérience décrit un poste que l'entreprise pourvoira seule, sans conseil ni
+  transition (MTB Recycling, France Macaron) : ce n'est pas un signal.
+- **Déjà tranché** : une entreprise présente dans la mémoire de tri (section 1) suit la règle de la
+  mémoire. Une annonce à laquelle Cyrille a déjà postulé (il le note dans sa raison) ne revient jamais.
 
 **A. Indeed (connecteur Indeed, pays FR).** Huit intitulés : « directeur de production », « directeur
 d'usine », « directeur de site industriel », « directeur des opérations », « directeur industriel »,
 « responsable de production », « responsable excellence opérationnelle », « responsable amélioration
-continue ». Lance chacun sur « Lyon », « Bourgoin-Jallieu » et « Villefranche-sur-Saône » (24 recherches),
-puis les trois premiers intitulés sur « Vienne, Isère » (« Vienne » seul renvoie la Vienne du 86) et
-« Ambérieu-en-Bugey » (6 recherches) — 30 au total, une par une. Indeed répond de façon floue : chaque
+continue ». Lance chacun sur « Lyon », « Villefranche-sur-Saône » et « Vienne, Isère » (« Vienne » seul
+renvoie la Vienne du 86) (24 recherches), puis les trois premiers intitulés sur « L'Isle-d'Abeau » et
+« Meximieux » (6 recherches) — 30 au total, une par une. Indeed répond de façon floue : chaque
 recherche ramène aussi des postes voisins (« Plant Manager », « Manufacturing Manager », « Directeur Site
 de Production », « Responsable d'usine »…). Juge CHAQUE résultat sur son intitulé et son entreprise, pas
 sur la correspondance exacte avec la recherche : le 21/09/2026, « Directeur Site de Production » chez
@@ -100,11 +134,10 @@ Medtronic (Rillieux-la-Pape, ouvert depuis le 20 juillet) et « Manufacturing Ma
 (Frontonas, depuis le 3 juillet) étaient dans les résultats et n'ont pas été relevés. Vérifie la
 commune de chaque annonce contre le périmètre ci-dessus : Indeed renvoie aussi des annonces plus
 lointaines. Ne demande le détail d'une annonce (`get_job_details`) que pour les candidates au top 5,
-huit appels au plus. Ne retiens que les postes d'encadrement en industrie manufacturière
-(agroalimentaire, pharma, chimie, mécanique, métallurgie, plasturgie, électronique, textile
-technique, dispositifs médicaux). Écarte les postes d'opérateur, technicien, commercial, BTP,
-logistique pure, intérim d'exécution, et les annonces de cabinets de recrutement sans entreprise
-identifiable. Pour chaque annonce retenue note : entreprise, poste, lieu, date de publication, lien.
+huit appels au plus. Applique les FILTRES DE PERTINENCE ci-dessus (fonction, secteur, niveau) à chaque
+annonce, et écarte en plus les postes d'opérateur, technicien, commercial, intérim d'exécution, et les
+annonces de cabinets de recrutement sans entreprise identifiable. Pour chaque annonce retenue note :
+entreprise, poste, lieu, date de publication, lien.
 
 **A2. Offres LinkedIn, par Tavily (Bash + curl, clé `TAVILY_API_KEY` de l'environnement).** LinkedIn
 publie des offres qui ne sont pas sur Indeed (Panzani, 09/2026). On ne consulte JAMAIS LinkedIn
@@ -155,8 +188,10 @@ as lu la page qui la décrit ; un extrait de moteur de recherche n'est pas une s
 publient rien. Pour chaque société repérée, vérifie le périmètre et le secteur par l'annuaire
 officiel : `https://recherche-entreprises.api.gouv.fr/search?q=<SIREN>` donne `siege.libelle_commune`,
 `siege.departement`, `activite_principale` (section C = industrie manufacturière, codes 10 à 33),
-`categorie_entreprise` (PME / ETI / GE) et `dirigeants`. Une société hors périmètre ou hors industrie
-est écartée sans être listée.
+`categorie_entreprise` (PME / ETI / GE) et `dirigeants`. Une société hors périmètre ou hors secteur
+(filtres ci-dessus) est écartée sans être listée. Si l'annuaire ne répond pas (le 28/09 il a été
+injoignable tout le passage), aucun signal de registre n'entre dans le top 5 : « commune non
+vérifiée » dans « autres signaux vus », et dis-le dans le mail.
 
 - **D1. Changements de dirigeants (BODACC).** Pour chaque département 69, 01 et 38 :
   `https://bodacc-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/annonces-commerciales/records?where=numerodepartement%3D%22<dep>%22%20and%20familleavis_lib%3D%22Modifications%20diverses%22%20and%20dateparution%3E%3D%22<lundi moins 7 jours>%22&limit=100&offset=<0,100,…>`.
@@ -233,7 +268,15 @@ Ne consulte jamais LinkedIn, ni aucun site dont tu ne peux lire le contenu sans 
 
 ## 3. Tri et score
 
-Applique la grille du cadrage. Deux règles priment :
+Applique la grille du cadrage, après les FILTRES DE PERTINENCE et la mémoire de tri. Trois règles priment :
+
+- **Les signaux de situation passent devant les annonces.** Une annonce Indeed, Cyrille la voit
+  lui-même. Ce qu'il ne voit pas, c'est un dirigeant qui arrive ou qui part (BODACC), une cession, un
+  site en perte, une extension annoncée dans la presse, un fonds qui entre au capital : à qualité égale,
+  ces signaux prennent les premières places, et une annonce seule ne monte en tête que si elle est de
+  direction, dans un secteur retenu, ouverte depuis plus de six semaines. La lecture du 28/09 le
+  confirme : le seul élément jugé utile par Cyrille dans un signal d'annonce était l'information de
+  croissance du site (bioMérieux), pas le poste.
 
 - **L'ancienneté d'une annonce est le premier critère, et six semaines est un PLANCHER** : un
   poste de direction ouvert depuis plus de six semaines est une usine qui tourne sans son pilote,
