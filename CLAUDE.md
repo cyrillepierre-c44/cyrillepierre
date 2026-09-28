@@ -477,7 +477,28 @@ renvoi. La page `/studio/veille` (`Studio::VeilleSignalsController`, admins seul
 « à contacter », relance au jour ouvré suivant, notes = signal, source datée, lecture, comparable,
 accroche, consigne d'interlocuteur) exactement comme Cyrille les saisissait à la main le 21/09 ;
 **Écarter** garde le signal pour mémoire. Supprimer la fiche ne supprime pas le signal
-(`on_delete: :nullify`). ⚠️ **Six semaines est un plancher pour les annonces**
+(`on_delete: :nullify`).
+
+**Mémoire de tri (`VeilleDecision`, 28/09/2026, demande de Cyrille)** : « Retenir » et « Écarter » sur
+`/studio/veille`, et « Supprimer » sur une fiche, ouvrent une boîte de confirmation avec un champ
+« Pourquoi ? » (partiel `studio/shared/_decision_dialog`, `<dialog>` natif piloté par
+`decision_dialog_controller.js` : le bouton porte `data-url`/`data-method`/`data-title`, le formulaire
+unique de la page se reconfigure à l'ouverture, la raison part en `params[:reason]`). Chaque décision
+est une ligne de `veille_decisions` — entreprise, `company_key` (ce qui précède le premier tiret ou la
+première parenthèse, en minuscules), type, décision, raison, liens facultatifs vers le signal, la fiche
+et l'utilisateur — **indépendante** des signaux et des fiches : la raison survit à la suppression de ce
+qu'elle jugeait (clés étrangères mises à nul). La migration a versé les signaux déjà tranchés, sans
+raison. Trois usages : `/studio/veille` grise une entreprise déjà tranchée une autre semaine
+(`VeilleSignal#previous_decision`, classe `veille-signal--seen`, note avec date, décision, fiche et
+raison — Nicoll était ressorti en rang 3 le 28/09 alors que la fiche #44 existait depuis le 23), la
+liste « Ta mémoire de tri » en bas de page permet de corriger une raison
+(`Studio::VeilleDecisionsController#update`, admins), et **`GET /api/veille_memory`** (même jeton,
+texte brut, `VeilleDecision.to_prompt`, 200 lignes au plus) est lu par la routine **avant toute
+recherche** (consigne v11 : entreprise déjà tranchée → jamais en top 5 sans nouveauté ; raison qui
+ressemble à une règle → appliquée à toute la semaine et citée dans le mail). `ProspectPurgeJob` purge
+les décisions au même délai, et la politique de confidentialité le dit. ⚠️ Dans une feuille Sass,
+`min(32rem, calc(…))` est capté par la fonction `min` de Sass et casse la compilation : écrire
+`width` + `max-width`. ⚠️ **Six semaines est un plancher pour les annonces**
 (`VeilleSignal::VACANCY_FLOOR`, 23/09/2026) : une annonce plus jeune est un recrutement qui commence,
 pas une usine sans pilote — le passage du 21/09 avait classé « Priorité 1 » une annonce de douze jours
 (MAPEI), dont le DG aurait renvoyé vers les RH. La page grise ces annonces (`too_young?`), dit la date

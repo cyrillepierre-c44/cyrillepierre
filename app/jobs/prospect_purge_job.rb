@@ -25,5 +25,7 @@ class ProspectPurgeJob < ApplicationJob
   def purge_signals
     count = VeilleSignal.where(created_at: ...Prospect::RETENTION.ago).delete_all
     Rails.logger.info("ProspectPurgeJob: #{count} signal(aux) de veille supprimé(s)") if count.positive?
+    count = VeilleDecision.expired.delete_all
+    Rails.logger.info("ProspectPurgeJob: #{count} décision(s) de tri supprimée(s)") if count.positive?
   end
 end

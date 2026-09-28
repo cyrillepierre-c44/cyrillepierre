@@ -64,7 +64,8 @@ module Studio
 
       get studio_prospect_path(@prospect)
 
-      assert_select "form[action=?] .btn-cp-outline.studio-btn-danger", studio_prospect_path(@prospect)
+      assert_select "button.btn-cp-outline.studio-btn-danger[data-url=?][data-method=delete]", studio_prospect_path(@prospect)
+      assert_select "dialog.studio-dialog textarea[name=reason]", 1
     end
 
     test "an editor cannot open a prospect coming from the site" do
@@ -154,14 +155,24 @@ module Studio
       assert_response :unprocessable_entity
     end
 
-    test "destroy removes the prospect and goes back to the pipeline" do
+    test "destroy removes the prospect, keeps the reason in the watch memory, and goes back to the pipeline" do
+      signal = VeilleSignal.create!(run_week: Date.new(2026, 9, 21), company: "Fonderie Sud", signal_type: "annonce",
+                                    signal: "Directeur", source_url: "https://to.indeed.com/x", status: :kept, prospect: @prospect)
       sign_in @admin
 
       assert_difference("Prospect.count", -1) do
-        delete studio_prospect_path(@prospect)
+        assert_difference("VeilleDecision.deleted.count", 1) do
+          delete studio_prospect_path(@prospect), params: { reason: "Poste pourvu entre-temps" }
+        end
       end
 
       assert_redirected_to studio_prospects_path
+      decision = VeilleDecision.deleted.last
+      assert_equal "Fonderie Sud", decision.company
+      assert_equal "Poste pourvu entre-temps", decision.reason
+      assert_equal signal, decision.veille_signal
+      assert_nil decision.prospect
+      assert_nil signal.reload.prospect
     end
 
     # La note de diagnostic part du même brief que la proposition : le pont est sur la fiche.

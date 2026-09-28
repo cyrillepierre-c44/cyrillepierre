@@ -1,6 +1,7 @@
 <% content_for :title, "#{@prospect.name} — Prospects" %>
 
-<div class="container py-5">
+<div class="container py-5" data-controller="decision-dialog">
+  <%= render "studio/shared/decision_dialog" %>
   <%= link_to "← Retour au pipeline", studio_prospects_path, class: "studio-back-link" %>
 
   <div class="studio-card">
@@ -22,9 +23,11 @@
         <%= link_to "Rédiger une note de diagnostic",
                     new_studio_generation_path(kind: "executive_brief", prospect_id: @prospect.id),
                     class: "btn-cp-outline btn-cp-sm" %>
-        <%= button_to "Supprimer", studio_prospect_path(@prospect), method: :delete,
-                      class: "btn-cp-outline studio-btn-danger btn-cp-sm",
-                      form: { data: { turbo_confirm: "Supprimer ce prospect ?" } } %>
+        <%# La suppression demande sa raison : elle entre dans la mémoire de tri de la veille. %>
+        <button type="button" class="btn-cp-outline studio-btn-danger btn-cp-sm" data-action="decision-dialog#open"
+                data-url="<%= studio_prospect_path(@prospect) %>" data-method="delete"
+                data-title="Supprimer la fiche <%= @prospect.company.presence || @prospect.name %>" data-submit="Supprimer"
+                data-placeholder="Ex. : poste pourvu entre-temps · aucun décideur joignable · hors périmètre finalement">Supprimer</button>
       </div>
     </div>
 

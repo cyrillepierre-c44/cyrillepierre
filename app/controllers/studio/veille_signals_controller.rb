@@ -9,18 +9,19 @@ module Studio
       authorize VeilleSignal
       scope = policy_scope(VeilleSignal)
       # Les annonces trop jeunes passent en fin de semaine : elles ne sont pas encore un signal.
+      # Les annonces trop jeunes et les entreprises déjà tranchées passent en fin de semaine.
       @pending = scope.pending.order(run_week: :desc).shortlist_first.to_a
-                      .sort_by.with_index { |s, i| [-s.run_week.jd, s.too_young? ? 1 : 0, i] }
-      @recent = scope.where.not(status: :pending).where(updated_at: 4.weeks.ago..).order(updated_at: :desc)
+                      .sort_by.with_index { |s, i| [-s.run_week.jd, s.too_young? || s.previous_decision ? 1 : 0, i] }
+      @decisions = policy_scope(VeilleDecision).recent_first.includes(:prospect).limit(40)
     end
 
     def keep
-      prospect = @signal.keep!(current_user)
+      prospect = @signal.keep!(current_user, reason: params[:reason])
       redirect_to studio_veille_signals_path, notice: "Fiche prospect créée : #{prospect.company}."
     end
 
     def dismiss
-      @signal.dismiss!
+      @signal.dismiss!(current_user, reason: params[:reason])
       redirect_to studio_veille_signals_path, notice: "Signal écarté."
     end
 

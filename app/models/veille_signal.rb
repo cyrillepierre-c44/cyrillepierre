@@ -52,7 +52,7 @@ class VeilleSignal < ApplicationRecord
 
   # La fiche telle que Cyrille la saisissait à la main après chaque condensé (21/09/2026) :
   # signal, lecture, comparable, accroche, et la même première action pour tous.
-  def keep!(user)
+  def keep!(user, reason: nil)
     transaction do
       prospect = Prospect.create!(
         user: user, source: :veille, status: :a_contacter, name: "Décideur à identifier",
@@ -61,12 +61,28 @@ class VeilleSignal < ApplicationRecord
         next_action_on: Date.current.next_weekday
       )
       update!(status: :kept, prospect: prospect)
+      record_decision!(:kept, user, reason, prospect)
       prospect
     end
   end
 
-  def dismiss!
-    update!(status: :dismissed)
+  def dismiss!(user = nil, reason: nil)
+    transaction do
+      update!(status: :dismissed)
+      record_decision!(:dismissed, user, reason, nil)
+    end
+  end
+
+  # La décision déjà prise sur cette entreprise, une autre semaine : c'est ce qui manquait le
+  # 28/09/2026, quand Nicoll est ressorti en rang 3 alors que la fiche #44 existait depuis le 23.
+  def previous_decision
+    @previous_decision ||= VeilleDecision.for_company(company).where.not(veille_signal_id: id).recent_first.first
+  end
+
+  def record_decision!(decision, user, reason, prospect)
+    VeilleDecision.create!(decision: decision, user: user, reason: reason.presence, veille_signal: self,
+                           prospect: prospect, company: company, signal_type: signal_type,
+                           source_name: source_name, source_url: source_url)
   end
 
   def prospect_notes

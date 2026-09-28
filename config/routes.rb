@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :veille_signals, only: :create
     resources :article_briefs, only: :create
+    resource :veille_memory, only: :show, controller: "veille_memory"
   end
 
   namespace :studio do
@@ -45,6 +46,7 @@ Rails.application.routes.draw do
         patch :dismiss
       end
     end
+    resources :veille_decisions, only: :update
     resources :generations do
       member do
         patch :regenerate

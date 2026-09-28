@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_22_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_28_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -261,6 +261,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_160000) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "veille_decisions", force: :cascade do |t|
+    t.string "company", null: false
+    t.string "company_key", null: false
+    t.datetime "created_at", null: false
+    t.integer "decision", default: 0, null: false
+    t.bigint "prospect_id"
+    t.text "reason"
+    t.string "signal_type"
+    t.string "source_name"
+    t.string "source_url"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.bigint "veille_signal_id"
+    t.index ["company_key"], name: "index_veille_decisions_on_company_key"
+    t.index ["created_at"], name: "index_veille_decisions_on_created_at"
+    t.index ["prospect_id"], name: "index_veille_decisions_on_prospect_id"
+    t.index ["user_id"], name: "index_veille_decisions_on_user_id"
+    t.index ["veille_signal_id"], name: "index_veille_decisions_on_veille_signal_id"
+  end
+
   create_table "veille_signals", force: :cascade do |t|
     t.string "company", null: false
     t.string "comparable"
@@ -297,5 +317,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_160000) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "veille_decisions", "prospects", on_delete: :nullify
+  add_foreign_key "veille_decisions", "users"
+  add_foreign_key "veille_decisions", "veille_signals", on_delete: :nullify
   add_foreign_key "veille_signals", "prospects", on_delete: :nullify
 end

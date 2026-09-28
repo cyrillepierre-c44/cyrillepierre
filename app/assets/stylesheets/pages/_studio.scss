@@ -642,3 +642,43 @@
 }
 .veille-signal-text { margin: 0.75rem 0 0.5rem; }
 .veille-source-link { color: #c9a961; margin-left: 0.3em; }
+
+// Boîte de confirmation avec raison (Retenir / Écarter / Supprimer) : le <dialog> natif, habillé
+// comme une carte du Studio. Le voile vient de ::backdrop, pas d'un div supplémentaire.
+.studio-dialog {
+  background: var(--cp-bg-card);
+  color: inherit;
+  border: 1px solid var(--cp-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 32rem;
+  max-width: calc(100vw - 2rem);
+
+  &::backdrop { background: rgba(10, 16, 28, 0.7); }
+}
+.studio-dialog-title { margin: 0 0 0.5rem; font-size: 1.15rem; }
+.studio-dialog-hint { color: var(--cp-muted); font-size: 0.9rem; margin-bottom: 0.75rem; }
+.studio-dialog-reason { width: 100%; resize: vertical; }
+.studio-dialog-actions { margin-top: 1rem; }
+
+// Entreprise déjà tranchée une autre semaine : même traitement qu'une annonce trop jeune.
+.veille-signal--seen { opacity: 0.55; }
+.veille-signal-seen-note {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--cp-muted);
+  color: var(--cp-muted);
+  font-size: 0.9em;
+}
+
+// Mémoire de tri : la raison se corrige en place.
+.veille-decision { flex-wrap: wrap; }
+.veille-decision-form {
+  flex-basis: 100%;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+
+  textarea { flex: 1; resize: vertical; }
+}

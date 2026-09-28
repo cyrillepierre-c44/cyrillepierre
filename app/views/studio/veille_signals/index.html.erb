@@ -8,7 +8,8 @@
   </div>
 </section>
 
-<div class="container pb-5">
+<div class="container pb-5" data-controller="decision-dialog">
+  <%= render "studio/shared/decision_dialog" %>
   <div class="studio-actions studio-actions--top">
     <%= link_to "← Pipeline", studio_prospects_path, class: "btn-cp-outline" %>
   </div>
@@ -19,15 +20,19 @@
     <% @pending.group_by(&:run_week).each do |week, signals| %>
       <h2 class="studio-card-subtitle">Semaine du <%= fr_date(week) %> — <%= pluralize(signals.size, "signal", "signaux") %> à valider</h2>
       <% signals.each do |signal| %>
-        <div class="studio-card veille-signal <%= 'veille-signal--other' unless signal.shortlisted? %> <%= 'veille-signal--young' if signal.too_young? %>">
+        <div class="studio-card veille-signal <%= 'veille-signal--other' unless signal.shortlisted? %> <%= 'veille-signal--young' if signal.too_young? %> <%= 'veille-signal--seen' if signal.previous_decision %>">
           <div class="studio-show-toolbar">
             <h3 class="studio-card-title">
               <% if signal.rank %><span class="veille-rank"><%= signal.rank %></span><% end %>
               <%= signal.company %>
             </h3>
             <div class="studio-actions">
-              <%= button_to "Retenir", keep_studio_veille_signal_path(signal), method: :patch, class: "btn-cp-primary btn-cp-sm" %>
-              <%= button_to "Écarter", dismiss_studio_veille_signal_path(signal), method: :patch, class: "btn-cp-outline btn-cp-sm" %>
+              <button type="button" class="btn-cp-primary btn-cp-sm" data-action="decision-dialog#open"
+                      data-url="<%= keep_studio_veille_signal_path(signal) %>" data-method="patch"
+                      data-title="Retenir <%= signal.company %>" data-submit="Retenir et créer la fiche">Retenir</button>
+              <button type="button" class="btn-cp-outline btn-cp-sm" data-action="decision-dialog#open"
+                      data-url="<%= dismiss_studio_veille_signal_path(signal) %>" data-method="patch"
+                      data-title="Écarter <%= signal.company %>" data-submit="Écarter">Écarter</button>
             </div>
           </div>
           <div class="studio-show-badges">
@@ -36,6 +41,9 @@
             <% if signal.sector.present? %><span class="studio-badge"><%= signal.sector %></span><% end %>
             <% if signal.age_days %><span class="studio-badge studio-badge--warning"><%= pluralize(signal.age_days, "jour") %></span><% end %>
           </div>
+          <% if (seen = signal.previous_decision) %>
+            <p class="veille-signal-seen-note">Entreprise déjà tranchée le <%= fr_date(seen.created_at) %> : <%= seen.label.downcase %><% if seen.prospect %>, <%= link_to "fiche ##{seen.prospect.id}", studio_prospect_path(seen.prospect) %><% end %><% if seen.reason.present? %> — « <%= seen.reason %> »<% end %>. À ne retenir que s'il y a du nouveau.</p>
+          <% end %>
           <% if signal.too_young? %>
             <p class="veille-signal-young-note">Annonce trop récente pour être un poste vacant : elle ne compte comme signal qu'au <%= fr_date(signal.signal_from) %>, six semaines après sa publication. À revoir si elle est toujours ouverte ce jour-là.</p>
           <% end %>
@@ -56,22 +64,29 @@
     <% end %>
   <% end %>
 
-  <% if @recent.any? %>
-    <h2 class="studio-card-subtitle">Tranchés ces quatre dernières semaines</h2>
+  <h2 class="studio-card-subtitle">Ta mémoire de tri</h2>
+  <p class="studio-empty-hint">Ce que tu as retenu, écarté ou supprimé, avec tes raisons. La routine du lundi la relit avant de chercher : une raison qui ressemble à une règle s'applique à toute la semaine. Corrige ici ce qui doit l'être.</p>
+  <% if @decisions.empty? %>
+    <p class="studio-empty">Aucune décision enregistrée pour l'instant.</p>
+  <% else %>
     <div class="studio-list">
-      <% @recent.each do |signal| %>
-        <div class="studio-list-item">
+      <% @decisions.each do |decision| %>
+        <div class="studio-list-item veille-decision">
           <div class="studio-list-item-main">
-            <span class="studio-badge <%= signal.kept? ? 'prospect-badge--a_contacter' : '' %>"><%= signal.kept? ? "Retenu" : "Écarté" %></span>
+            <span class="studio-badge <%= 'prospect-badge--a_contacter' if decision.kept? %> <%= 'studio-badge--warning' if decision.deleted? %>"><%= decision.label %></span>
             <span class="studio-list-item-title">
-              <%= signal.company %>
-              <% if signal.prospect %><small class="prospect-company">· <%= link_to "fiche ##{signal.prospect.id}", studio_prospect_path(signal.prospect) %></small><% end %>
+              <%= decision.company %>
+              <% if decision.prospect && !decision.deleted? %><small class="prospect-company">· <%= link_to "fiche ##{decision.prospect.id}", studio_prospect_path(decision.prospect) %></small><% end %>
             </span>
           </div>
           <div class="studio-list-item-meta">
-            <span class="studio-badge studio-badge--model"><%= signal.type_label %></span>
-            <span class="studio-list-item-date"><%= fr_date(signal.run_week) %></span>
+            <% if decision.signal_type.present? %><span class="studio-badge studio-badge--model"><%= decision.signal_type %></span><% end %>
+            <span class="studio-list-item-date"><%= fr_date(decision.created_at) %></span>
           </div>
+          <%= form_with model: decision, url: studio_veille_decision_path(decision), method: :patch, class: "veille-decision-form" do |f| %>
+            <%= f.text_area :reason, rows: 2, class: "cf-input", placeholder: "Sans raison notée — écris-la ici" %>
+            <%= f.button "Enregistrer", class: "btn-cp-outline btn-cp-sm" %>
+          <% end %>
         </div>
       <% end %>
     </div>

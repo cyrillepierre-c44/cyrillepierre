@@ -1,0 +1,16 @@
+<%# Boîte de confirmation avec raison. À rendre une fois dans un conteneur
+    data-controller="decision-dialog" ; les boutons déclencheurs portent
+    data-action="decision-dialog#open" et data-url / data-method / data-title / data-submit. %>
+<dialog class="studio-dialog" data-decision-dialog-target="dialog">
+  <%= form_with url: "#", method: :post, class: "studio-dialog-form", data: { decision_dialog_target: "form" } do %>
+    <input type="hidden" name="_method" value="patch" data-decision-dialog-target="method">
+    <h3 class="studio-dialog-title" data-decision-dialog-target="title">Confirmer</h3>
+    <p class="studio-dialog-hint">Pourquoi ? Une ou deux phrases, dans tes mots. Elles entrent dans la mémoire de tri que la routine relit chaque lundi.</p>
+    <textarea name="reason" rows="3" class="cf-input studio-dialog-reason" data-decision-dialog-target="reason"
+              placeholder="Ex. : trop loin pour une mission en solo · poste RH, pas direction · déjà en contact par le réseau"></textarea>
+    <div class="studio-actions studio-dialog-actions">
+      <button type="submit" class="btn-cp-primary btn-cp-sm" data-decision-dialog-target="submit">Confirmer</button>
+      <button type="button" class="btn-cp-outline btn-cp-sm" data-action="decision-dialog#close">Annuler</button>
+    </div>
+  <% end %>
+</dialog>

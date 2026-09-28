@@ -57,7 +57,13 @@ module Studio
                   notice: "Recherche du décideur en cours — recharge la page dans une minute."
     end
 
+    # La raison de la suppression entre dans la mémoire de tri avant que la fiche disparaisse :
+    # c'est souvent la décision la plus instructive pour la routine (« pas de décideur joignable »,
+    # « déjà pourvu »).
     def destroy
+      VeilleDecision.create!(decision: :deleted, user: current_user, reason: params[:reason].presence,
+                             company: @prospect.company.presence || @prospect.name,
+                             veille_signal: VeilleSignal.find_by(prospect_id: @prospect.id))
       @prospect.destroy
       redirect_to studio_prospects_path, notice: "Prospect supprimé."
     end

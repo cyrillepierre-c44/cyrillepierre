@@ -5,7 +5,13 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 10 le 24/09 (idée de Cyrille du 22/09) : une
+connecteurs, ce qu'a montré le premier passage). Version 11 le 28/09 (demande de Cyrille) : la routine lit
+d'abord la **mémoire de tri** (`GET /api/veille_memory`, même jeton) — chaque Retenir / Écarter / suppression de
+fiche porte désormais la raison de Cyrille, dans ses mots ; une entreprise déjà tranchée ne revient que s'il y a
+du nouveau (le 28/09 Nicoll était ressorti en rang 3 alors que la fiche #44 existait depuis le 23), et une raison
+qui ressemble à une règle s'applique à toute la semaine. Corrections du même jour : Bpifrance refuse les robots
+(403) → WebSearch ; Delville se lit sur `www.delville-management.com` (le passage du 28/09 avait appelé un faux
+domaine) ; Siparex et iXO se lisent sur plusieurs pages. Version 10 le 24/09 (idée de Cyrille du 22/09) : une
 source F, les portefeuilles des fonds régionaux (Siparex et ses FRI, iXO, Bpifrance) — une entrée récente
 au capital d'une usine du périmètre est un signal (`fonds`), et une participation qui porte un autre
 signal passe en tête ; trois domaines de plus à autoriser. Version 9 le 23/09 : les six semaines deviennent un
@@ -42,6 +48,18 @@ par mail. Tu n'écris ni ne commites rien dans le dépôt : tu le lis seulement.
 
 ## 1. Commence par lire, dans le dépôt cloné
 
+- **La mémoire de tri de Cyrille, avant tout le reste** (Bash + curl) :
+  `curl -s https://www.cyrillepierre.com/api/veille_memory -H "Authorization: Bearer $VEILLE_API_TOKEN"`.
+  Texte brut : chaque ligne est une décision qu'il a prise — entreprise, type de signal, RETENU (avec le
+  numéro de sa fiche), ÉCARTÉ ou SUPPRIMÉ, et sa raison dans ses mots. Deux usages, obligatoires :
+  (1) une entreprise qui y figure ne remonte dans le top 5 que s'il y a du nouveau depuis la date de la
+  décision (annonce republiée, article paru, autre signal) ; sinon elle va dans « autres signaux vus »
+  avec la mention « déjà tranchée le <date> : <décision>, <raison> » — jamais en top 5 (le 28/09/2026
+  Nicoll est ressorti en rang 3 alors que sa fiche existait depuis le 23 : c'est ce qu'il faut éviter) ;
+  (2) une raison qui ressemble à une règle générale (« trop loin », « poste qualité, pas direction »,
+  « groupe qui passe par un cabinet ») s'applique à tous les signaux de la semaine, et quand tu l'appliques
+  pour écarter un signal, dis-le dans le mail en citant la raison telle qu'il l'a écrite. Une réponse 401
+  signifie un jeton manquant ou faux : dis-le dans le mail et continue sans la mémoire.
 - `docs/cadrage-veille-prospects.md` : le périmètre, la grille de lecture des signaux et
   leurs poids. C'est ta règle de tri, applique-la telle quelle.
 - `app/models/realisation_catalog.rb` : les 26 réalisations de Cyrille (`ITEMS`). Pour chaque
@@ -126,7 +144,8 @@ ajouter que le titre ne dise pas.
 **C. Cabinets de management de transition.** Lis (WebFetch) la page des missions de Robert
 Half Management de transition et relève les missions industrielles en Auvergne-Rhône-Alpes ou
 vallée du Rhône : direction de site, direction de production, direction industrielle,
-amélioration continue. Constaté le 17/09/2026 : Valtus, Delville Management et Wayden ne
+amélioration continue. Constaté le 17/09/2026 : Valtus, Delville Management (site
+`www.delville-management.com`, avec le tiret — le 28/09 un faux domaine avait été appelé) et Wayden ne
 publient pas de liste de missions, X-PM refuse les lectures automatiques — une tentative au
 plus pour chacun, sans insister ni le compter comme un échec. Ne retiens que les missions dans
 le périmètre géographique ci-dessus. Une mission ne compte que si tu
@@ -190,11 +209,14 @@ avec son lien ; n'en tire aucun chiffre.
 fonds qui vient d'entrer au capital d'une PME industrielle attend une marge mesurable sous
 dix-huit mois, et son directeur de participations est un prescripteur de managers de transition :
 l'entrée récente est un signal en soi, la participation un multiplicateur pour tout autre signal.
-Lis les pages de participations de Siparex (`https://www.siparex.com/participations/`, stratégies
-« Territoires » et « Entrepreneurs », qui portent aussi le Fonds Souverain Auvergne-Rhône-Alpes et
-les FRI gérés par France Rebond Industrie Gestion, filiale de Siparex), d'iXO Private Equity
-(`https://www.ixope.fr/portefeuille`) et de Bpifrance pour la région
-(`https://www.bpifrance.fr/auvergne-rhone-alpes`, ses communiqués d'investissement). Retiens deux
+Lis les pages de participations de Siparex (`https://www.siparex.com/participations/` puis
+`/participations/page/2/`, `/page/3/`… jusqu'à cinq pages, stratégies « Territoires » et
+« Entrepreneurs », qui portent aussi le Fonds Souverain Auvergne-Rhône-Alpes et les FRI gérés par
+France Rebond Industrie Gestion, filiale de Siparex) et d'iXO Private Equity
+(`https://www.ixope.fr/portefeuille`, toutes les pages qu'elle propose). Bpifrance refuse les
+lectures automatiques (403 le 28/09/2026) : pour elle, WebSearch « Bpifrance entre au capital usine
+Rhône 2026 » et « Bpifrance investissement PME industrielle Isère Ain 2026 », extraits seulement,
+avec le lien. Retiens deux
 choses. (1) Les entrées au capital des 90 derniers jours dans des entreprises industrielles du
 périmètre : signal de type `fonds`, poids moyen, avec le nom du fonds et la date d'entrée telle
 que la page l'écrit — sans date sur la page, écris « date non précisée », n'en déduis aucune.

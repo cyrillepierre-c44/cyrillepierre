@@ -45,6 +45,17 @@ class ProspectPurgeJobTest < ActiveSupport::TestCase
     assert Prospect.exists?(fiche.id)
   end
 
+  test "removes the watch decisions past the retention period" do
+    old = VeilleDecision.create!(decision: :dismissed, company: "Vieille SA")
+    old.update_column(:created_at, Prospect::RETENTION.ago - 1.day)
+    recent = VeilleDecision.create!(decision: :dismissed, company: "Récente SA")
+
+    ProspectPurgeJob.perform_now
+
+    assert_not VeilleDecision.exists?(old.id)
+    assert VeilleDecision.exists?(recent.id)
+  end
+
   test "does nothing and reports zero when there is nothing to purge" do
     assert_equal 0, ProspectPurgeJob.perform_now
   end
