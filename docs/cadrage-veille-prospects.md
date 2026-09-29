@@ -28,11 +28,12 @@ En dessous, on arrête ou on change de sources. Le but n'est pas d'avoir un bel 
 
 | Axe | Retenu |
 |---|---|
+| Mobilité (29/09/2026) | **Missions locales seulement** : sur site à la journée, retour chaque soir. Pas de déplacement avec hôtel, pas de mission placée par un cabinet national — impossible avant 2033 (enfant en sixième). La transition reste une offre, à condition d'être dans le périmètre ci-dessous. |
 | Géographie | **40 km et 45 minutes hors bouchons autour de Lyon centre** (resserré le 28/09/2026, 20 % de moins que la règle du 18/09 : les trajets se font aux heures de pointe) : Métropole et Rhône jusqu'à Villefranche et Tarare, Ain jusqu'à Miribel, Meximieux, Trévoux et la Plaine de l'Ain, Nord-Isère jusqu'à Vienne, L'Isle-d'Abeau, Pont-de-Chéruy et Crémieu. Exclus : Bourgoin-Jallieu, Saint-Chef, Ambérieu, Roussillon, Saint-Étienne, Roanne, Valence, Grenoble, Annecy, Clermont-Ferrand, Mâcon. Raison : une mission en solo ne se négocie pas avec des frais de déplacement ; Livron (127 km, 1 h 40) l'a montré, Saint-Chef aussi. La commune se **vérifie** avant de classer (CECLA, 28/09 : annoncée dans le Rhône, en réalité à Pont-de-Claix). |
 | Fonctions (28/09/2026) | Direction ou responsabilité de **production, d'usine, de site, des opérations, industrielle, d'amélioration continue, d'excellence opérationnelle**. Jamais qualité, HSE, maintenance, supply chain, méthodes, RH, finance : « pas mon métier ». Niveau : direction, ou responsable rattaché au directeur de site dans une entreprise d'au moins cent personnes ; une annonce bac+2 ou CAP n'est pas un signal. |
 | Secteurs (revus le 28/09/2026) | Industrie **manufacturière** où Cyrille a un cas ou un procédé voisin : agroalimentaire, boissons, FMCG, pharmacie, cosmétique, dispositifs médicaux, microélectronique et salles blanches, artisanat semi-industriel. Secondaires (recoupés seulement) : automobile et équipementiers, mécanique, fonderie et forge. |
 | Taille | PME et ETI de 100 à 500 personnes, sites industriels de groupes |
-| Exclus | plasturgie et tuyauterie, chimie et sites SEVESO, BTP, logistique pure, services, énergie, entreprises en procédure collective (voir plus bas) |
+| Exclus | plasturgie et tuyauterie, assemblage d'équipements et de machines (Aldes, 29/09), mécanique générale, chimie et sites SEVESO, BTP, logistique pure, services, énergie, entreprises en procédure collective (voir plus bas) |
 
 ## Les signaux, et ce qu'ils veulent dire
 
@@ -43,10 +44,10 @@ pas de conseil ; une entreprise qui vient d'annoncer une extension, si.
 |---|---|---|---|
 | Offre d'emploi : directeur de site, directeur ou responsable de production | Poste vacant, souvent depuis des semaines : un manager de transition fait le pont | Transition | fort |
 | Offre d'emploi : responsable amélioration continue, Lean, méthodes, maintenance | L'entreprise a identifié un chantier et cherche à l'internaliser | Excellence opérationnelle | fort |
-| Cabinet de management de transition publiant une mission industrielle | Besoin explicite, payeur identifié | Transition | fort |
+| ~~Cabinet de management de transition publiant une mission industrielle~~ | Retiré le 29/09/2026 : les cabinets placent partout en France, la mobilité est exclue | — | nul |
 | Presse : extension, nouvelle ligne, investissement, relocalisation | Montée en cadence à organiser | Excellence opérationnelle, organisation | moyen |
 | Presse : rappel produit, incident qualité, non-conformité | Chantier qualité et rebuts | Excellence opérationnelle | moyen |
-| Presse : plan social, restructuration | Réorganisation à conduire — mais l'entreprise passera par un cabinet | Transition, via cabinet | faible |
+| Presse : plan social, restructuration | Réorganisation à conduire — mais l'entreprise passera par un cabinet, hors de portée | Exclu | nul |
 | BODACC : arrivée ou départ d'un président, DG ou gérant d'une société industrielle | Un nouveau dirigeant audite dans ses cent premiers jours ; un départ sans successeur, c'est un siège vide sans annonce | Transition | fort (revu le 18/09/2026, était « faible ») |
 | BODACC : fusion, cession, reprise | Une intégration à conduire | Transition, organisation | fort |
 | BODACC : sauvegarde, redressement | Trop tard pour du conseil | Exclu | nul |
@@ -76,7 +77,7 @@ son pilote. Aucune interprétation nécessaire.
 | **Indeed** | Postes de direction de production, opérations, amélioration continue | Pas d'API publique. Soit un agent Claude planifié (connecteur Indeed, chaque lundi) qui produit le condensé sans rien développer dans le site, soit un agrégateur ci-dessous | Source principale |
 | **Adzuna ou Jooble** | Agrégateurs avec API gratuite sur inscription ; reprennent une large part d'Indeed, HelloWork et APEC | Clé gratuite | À vérifier sur un échantillon avant de choisir |
 | **France Travail** | Son propre fonds vise surtout opérateurs et techniciens, mais l'API relaie les « offres partenaires » (origine indiquée par offre) | Compte gratuit francetravail.io | Recoupement, une heure d'essai |
-| **Cabinets de management de transition** | Missions industrielles publiées : Valtus, Delville, X-PM, Wayden, Robert Half | Une dizaine de pages lues une fois par semaine | Retenu |
+| ~~**Cabinets de management de transition**~~ | Missions industrielles publiées : Valtus, Delville, X-PM, Wayden, Robert Half | Une dizaine de pages lues une fois par semaine | Retiré le 29/09/2026 (mobilité exclue) |
 | **Alertes Google en RSS** + Bref Eco, L'Usine Nouvelle, Les Echos région | Presse : extension, investissement, incident qualité, restructuration | Flux gratuits | Retenu |
 | **BODACC** | Changement de dirigeant ; exclure les procédures collectives | API Opendatasoft, sans clé | Retenu, poids faible |
 | **Portefeuilles des fonds régionaux** : Siparex (dont FRI et Fonds Souverain AURA), iXO Private Equity, Bpifrance | Entrées récentes au capital d'usines du périmètre ; liste des participations pour recouper les autres signaux | Pages publiques de participations, lues une fois par semaine | Retenu le 24/09/2026 (source F de la consigne) |

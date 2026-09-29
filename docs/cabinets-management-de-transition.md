@@ -1,5 +1,11 @@
 # Cabinets de management de transition — se faire référencer
 
+> **Mis en veille le 29/09/2026, à reprendre vers 2033.** Cyrille a supprimé les huit fiches avec la même
+> raison : les cabinets placent partout en France, hôtel la semaine, et il ne sera pas mobile ainsi avant
+> que son fils ait fini le collège. La transition reste une offre, mais locale, trouvée par la veille du
+> lundi, jamais par un cabinet. La tâche `rails prospects:cabinets` et le service `CabinetReferencing`
+> ont été retirés ce jour-là ; les adresses ci-dessous restent valables le jour où la question se repose.
+
 *Écrit le 24/09/2026 à partir d'une idée de Cyrille du 22/09 : les cabinets de transition sont des
 **clients**, pas seulement une source de signaux pour la routine du lundi. Ils facturent le client
 final et paient le manager ; se faire référencer chez eux est la première action commerciale hors

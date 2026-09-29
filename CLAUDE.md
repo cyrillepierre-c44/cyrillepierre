@@ -557,12 +557,14 @@ aucun pipeline, aucune relance, aucun historique. `Prospect` persiste cette qual
   partie par mail, un échec d'écriture ne doit jamais lui afficher une erreur ni lui faire tout ressaisir.
   L'historique du chat (JSON) est converti en transcription lisible (`contact_history_text`).
 - **Saisie manuelle** : pour les contacts du réseau (LinkedIn, Soce, Le Wagon, 60 000 rebonds),
-  d'où l'enum `source`. Valeur `cabinet` (« Cabinet de transition », 24/09/2026) : les cabinets sont
-  des **clients** à se faire référencer, pas seulement une source de signaux — la tâche
-  `rails prospects:cabinets` (`CabinetReferencing`, idempotente, à lancer une fois en
-  production par `heroku run`) pose huit fiches, une par cabinet et par jour ouvré, d'après
-  `docs/cabinets-management-de-transition.md` (adresses de candidature, bureaux lyonnais,
-  processus de sélection, ordre de traitement).
+  d'où l'enum `source`. Valeur `cabinet` (« Cabinet de transition », 24/09/2026) : huit fiches de cabinets
+  à se faire référencer, **toutes supprimées par Cyrille le 29/09/2026** avec la même raison — les cabinets
+  placent partout en France, hôtel la semaine, impossible avant 2033 (enfant en sixième). ⚠️ **La
+  transition reste une offre, mais locale** : sur site à la journée, retour chaque soir, dans le périmètre
+  de la veille ; c'est le déplacement qui est exclu, pas le métier. La tâche `prospects:cabinets` et
+  `CabinetReferencing` ont été retirés ; `docs/cabinets-management-de-transition.md` reste, en veille. La
+  routine (consigne v13) ne lit plus les cabinets et formule l'offre comme un « appui sur site depuis
+  Lyon ».
 - **`user` est optionnel** : les demandes venues du site n'ont pas d'utilisateur connecté au moment
   de leur création. `ProspectPolicy::Scope` les réserve donc aux admins ; un éditeur ne voit que ses
   propres saisies. `has_many :prospects, dependent: :nullify` sur `User` — une piste commerciale
