@@ -95,10 +95,12 @@ module Studio
 
     # Le 28/09/2026, Nicoll est ressorti en rang 3 alors que la fiche #44 existait depuis le 23 :
     # l'adresse Indeed avait changé, la routine ne l'a pas reconnu. La page, elle, le sait.
+    # Horloge figée : la note affiche la date de la décision, un test qui la compare à « aujourd'hui »
+    # casse le lendemain (vu le 29/09/2026).
     test "a company already settled another week is greyed, with the earlier decision and its reason" do
       earlier = VeilleSignal.create!(run_week: Date.new(2026, 9, 21), company: "Medtronic — Trévoux (01)",
                                      signal_type: "annonce", signal: "Directeur de site", source_url: "https://to.indeed.com/old")
-      fiche = earlier.keep!(@admin, reason: "Site sans pilote depuis juillet")
+      fiche = travel_to(Time.zone.local(2026, 9, 28, 12)) { earlier.keep!(@admin, reason: "Site sans pilote depuis juillet") }
       sign_in @admin
 
       get studio_veille_signals_path
