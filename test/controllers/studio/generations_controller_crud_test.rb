@@ -363,6 +363,31 @@ module Studio
       assert_not_includes text, "La lettre"
     end
 
+    # Cyrille veut remettre la proposition en main propre (05/10/2026) : même PDF que la note, conditions
+    # comprises, puisque Ruby les écrit dans la version finale.
+    test "the commercial proposal downloads as a pdf with its conditions, and offers the preview" do
+      proposal = Generation.create!(user: @editor, kind: :commercial_proposal, title: "Proposition — Fonderie Sud",
+                                    status: :generated,
+                                    output: "###VERSION_FINALE###\nMadame,\n\n## Ce que je vous propose\n\nUn " \
+                                            "diagnostic.\n\n#{ConsultingOffer.conditions_markdown}\n\n" \
+                                            "###VERSION_COURTE###\nLe mail d'envoi.")
+
+      get studio_generation_path(proposal)
+      assert_select "a[href=?][data-turbo=false]", pdf_studio_generation_path(proposal), text: "Télécharger le PDF"
+      assert_select "a[href=?]", document_studio_generation_path(proposal), text: "Aperçu du document"
+
+      get pdf_studio_generation_path(proposal)
+      assert_response :success
+      assert_match(/filename="proposition-fonderie-sud.pdf"/, @response.headers["Content-Disposition"])
+      text = PDF::Reader.new(StringIO.new(@response.body)).pages.map(&:text).join(" ").squish
+      assert_includes text, "Ce que je vous propose"
+      assert_includes text, "8 000 € HT"
+      assert_not_includes text, "Le mail d'envoi"
+
+      get document_studio_generation_path(proposal)
+      assert_response :success
+    end
+
     test "the pdf follows the same rules as the printable document" do
       get pdf_studio_generation_path(@generation)
       assert_response :not_found

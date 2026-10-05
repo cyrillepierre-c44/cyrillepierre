@@ -225,7 +225,10 @@ section « Conditions » sous le texte APRÈS la relecture orthographique, et la
 FigureAudit le retire. ⚠ **Aucun gain promis, aucun « quick win »** : Cyrille n'en a aucun dans son
 parcours et refuse de vendre du rêve ; le plan s'ouvre par « un premier chantier court », mesuré, sans
 promesse. Le bloc 6 (analyse financière) sert aussi à la proposition. Sections : la proposition, points à
-personnaliser, corrections automatiques, mail d'envoi.
+personnaliser, corrections automatiques, mail d'envoi. **PDF et aperçu** comme la note (`Generation#printable?`,
+`PRINTABLE_KINDS`, même `ExecutiveBriefPdf`) : Cyrille veut la remettre en main propre. Les conditions se
+placent avant « ## Pour démarrer » (`NEXT_STEP_HEADING`) — ajoutées en fin de texte, elles tombaient sous la
+signature dans le PDF.
 
 **Les huit gaspillages (TIMWOODS), vocabulaire des pertes** (05/10/2026, demande de Cyrille) :
 `ConsultingOffer::WASTES` porte ses définitions (transport, inventaire, mouvements, attente, surproduction,

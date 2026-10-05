@@ -125,11 +125,11 @@ module Studio
     private
 
     def ensure_printable!
-      raise ActiveRecord::RecordNotFound unless @generation.executive_brief? && @generation.output.present?
+      raise ActiveRecord::RecordNotFound unless @generation.printable?
     end
 
     def pdf_filename
-      "#{@generation.display_title.parameterize.presence || 'note-de-diagnostic'}.pdf"
+      "#{@generation.display_title.parameterize.presence || @generation.kind_name.parameterize}.pdf"
     end
 
     def prefill_from_prospect

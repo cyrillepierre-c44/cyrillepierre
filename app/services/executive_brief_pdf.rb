@@ -5,6 +5,8 @@ require "prawn"
 # qu'un long ruban. Même grammaire que ArticleFormatter — titres « ## »/« ### », paragraphes,
 # listes, gras, liens — mais rendue en Prawn ; le texte du modèle est échappé avant toute
 # interprétation, comme dans ArticleFormatter, pour qu'aucune balise ne puisse s'y glisser.
+# Sert aussi la proposition commerciale depuis le 05/10/2026 (Generation#printable?) : même grammaire,
+# et ses conditions, écrites par Ruby, sont des listes et du gras que ce rendu sait lire.
 class ExecutiveBriefPdf
   FONTS_DIR = Rails.root.join("vendor/fonts/dejavu")
   INK = "1A2332"

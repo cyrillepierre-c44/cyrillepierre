@@ -178,6 +178,14 @@ class Generation < ApplicationRecord
     kind.in?(AUDITED_KINDS)
   end
 
+  # Les documents qui se remettent à un dirigeant : la note de diagnostic, et depuis le 05/10/2026 la
+  # proposition, que Cyrille veut pouvoir laisser en main propre. Même rendu PDF et même aperçu.
+  PRINTABLE_KINDS = %w[executive_brief commercial_proposal].freeze
+
+  def printable?
+    kind.in?(PRINTABLE_KINDS) && output.present?
+  end
+
   # La variante email tient dans la quatrième section : « Objet : … » sur la première ligne, le
   # corps ensuite. Sans objet lisible, le message part avec un objet de repli plutôt que vide.
   def email_subject

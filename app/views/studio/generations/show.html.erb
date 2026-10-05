@@ -96,7 +96,7 @@
           <%= link_to "Fiche prospect", studio_prospect_path(@generation.prospect), class: "btn-cp-outline" %>
         <% end %>
 
-        <% if @generation.executive_brief? && @generation.output.present? %>
+        <% if @generation.printable? %>
           <%# `turbo: false` : Turbo intercepterait le clic, attendrait une page HTML qui n'arrive jamais
               (la réponse est un fichier) et laisserait sa barre de progression traîner en haut de l'écran. %>
           <%= link_to "Télécharger le PDF", pdf_studio_generation_path(@generation), class: "btn-cp-primary",

@@ -869,5 +869,16 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "« muda »"
     assert_includes instructions, ContentGenerator::NO_PRESCRIPTION_RULE
   end
+
+  test "the conditions come before the next step, so the proposal still ends on its signature" do
+    record = Generation.create!(user: @user, kind: :commercial_proposal, input_text: "Brief.")
+    draft = proposal_draft("Ouverture.\n\n## Pour démarrer\n\nValider le format.\n\nCyrille PIERRE")
+    run_generator(record, FakeContext.new(replies: [draft, :echo]))
+
+    final = record.reload.sections[:final]
+    assert_operator final.index("## Conditions"), :<, final.index("## Pour démarrer")
+    assert final.end_with?("Cyrille PIERRE")
+    assert final.start_with?("Ouverture.")
+  end
 end
 

@@ -87,6 +87,10 @@ class ContentGenerator
   # contexte → brief) et le modèle liste ce qu'il a tranché sous ce marqueur, que Ruby verse au
   # journal. Une première version bloquait la génération : le 18/09/2026 elle a arrêté la note 203
   # sur une date d'inauguration que le brief tenait de la presse — la note n'a rien à attendre.
+  # Les conditions de la proposition se placent avant cette section : en fin de texte, elles tombaient
+  # sous la signature (vu dans le PDF de la simulation du 05/10/2026).
+  NEXT_STEP_HEADING = /^## Pour démarrer\b/
+
   DISCREPANCY_MARKER = "###ECARTS###"
   JOURNAL_MARKER = "###JOURNAL###"
 
@@ -804,13 +808,16 @@ class ContentGenerator
     PROMPT
   end
 
-  # Les conditions ne passent jamais par le modèle : elles sont écrites par Ruby sous la proposition,
-  # après la relecture, depuis ConsultingOffer.
+  # Les conditions ne passent jamais par le modèle : elles sont écrites par Ruby, après la relecture,
+  # depuis ConsultingOffer. Elles se placent avant « Pour démarrer » (NEXT_STEP_HEADING).
   def append_conditions(text)
     sections = sections_of(text)
     return text if sections.nil?
 
-    sections[:final] = "#{sections[:final].strip}\n\n#{ConsultingOffer.conditions_markdown}"
+    final = sections[:final].strip
+    conditions = ConsultingOffer.conditions_markdown
+    index = final =~ NEXT_STEP_HEADING
+    sections[:final] = index ? "#{final[0...index]}#{conditions}\n\n#{final[index..]}" : "#{final}\n\n#{conditions}"
     rebuild(sections, sections[:verify])
   end
 
