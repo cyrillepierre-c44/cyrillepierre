@@ -27,4 +27,15 @@ class ConsultingOfferTest < ActiveSupport::TestCase
     assert_equal 16, ConsultingOffer::LEVERS.size
     assert ConsultingOffer.levers_prompt.start_with?("1. Productivité de la main-d'œuvre directe — charges de personnel")
   end
+
+  test "the eight wastes are named, and every lever points to at least one of them" do
+    assert_equal %w[Transport Inventaire Mouvements Attente Surproduction Sur-traitement Défauts Compétences],
+                 ConsultingOffer::WASTES.values.map(&:first)
+    ConsultingOffer::LEVERS.each do |name, _line, wastes|
+      assert wastes.any?, name
+      assert (wastes - ConsultingOffer::WASTES.keys).empty?, name
+    end
+    assert_includes ConsultingOffer.wastes_prompt, "le surdosage en est un"
+  end
 end
+

@@ -176,7 +176,9 @@ Ruby ne la substitue que si elle ressort propre — ajouté parce qu'un « 71 % 
 correction est resté dans la note 203 du 18/09/2026 alors que l'analyse disait 68,8 %. Ruby écrit
 ensuite le journal dans la section `###A_VERIFIER###`, relabellisée **« Corrections automatiques »**
 (« Corrigé ou retiré », « Corrigé par réécriture de la phrase », « Conservé, calcul vérifié »,
-« Non résolu, à contrôler ») ; le modèle ne produit plus de liste à vérifier. Limite
+« Non résolu, à contrôler ») ; le modèle ne produit plus de liste à vérifier. Une fourchette ne porte son unité qu'une fois : dans « de 31,2 à 36,1 M€ », la
+première borne prend l'unité de la seconde (`FigureAudit::RANGE_LINK`), sauf une année — lu nu, le 31,2 était
+signalé et sa phrase réécrite, le chiffre d'affaires de départ disparaissait (simulation du 05/10/2026). Limite
 connue : le catalogue et le CV comptent ~200 nombres, un chiffre inventé proche de l'un d'eux (« 250
 K€ ») passe — l'audit attrape la recopie fausse et l'invention franche, pas la coïncidence. Un
 brouillon sans marqueurs est stocké tel quel. Piège corrigé au passage : `FileTextExtractor` rend
@@ -224,6 +226,24 @@ FigureAudit le retire. ⚠ **Aucun gain promis, aucun « quick win »** : Cyrill
 parcours et refuse de vendre du rêve ; le plan s'ouvre par « un premier chantier court », mesuré, sans
 promesse. Le bloc 6 (analyse financière) sert aussi à la proposition. Sections : la proposition, points à
 personnaliser, corrections automatiques, mail d'envoi.
+
+**Les huit gaspillages (TIMWOODS), vocabulaire des pertes** (05/10/2026, demande de Cyrille) :
+`ConsultingOffer::WASTES` porte ses définitions (transport, inventaire, mouvements, attente, surproduction,
+sur-traitement — le surdosage en est un —, défauts, compétences) et chaque levier de `LEVERS` nomme les
+gaspillages qui nourrissent typiquement sa ligne des comptes. `ContentGenerator#wastes_block` les injecte
+dans la proposition ET dans la note de diagnostic : une perte n'est jamais seulement « de la matière tombée
+par terre », une dérive des achats consommés peut être de la surproduction jetée, du surdosage, de la
+non-qualité, des stocks périmés. Toujours en français, comme hypothèses ; dans la note, nommer un gaspillage
+est un symptôme, pas une ordonnance (compatible avec `NO_PRESCRIPTION_RULE`). Le diagnostic range chaque
+perte dans l'un des huit.
+
+⚠ **Simulation avant toute refonte de prompt** : la proposition a été générée en local sur une entreprise
+fictive (`bin/rails runner` d'un script du scratchpad, `ContentGenerator.call`, ~3 min et quelques dizaines de
+centimes sur Fable). La première version faisait 1 050 mots, inventait des étapes de fabrication, livrait le
+protocole du premier chantier, laissait « [À vérifier avant envoi] » dans le texte, signait en minuscules ; la
+seconde laissait transparaître une note interne (« qui hésite encore »). D'où les plafonds par section et les
+interdits verrouillés par `content_generator_test.rb`. Piège : `critical_writing_guidelines` demande ailleurs
+d'écrire « [À vérifier avant envoi] » — la consigne de la proposition l'interdit dans le texte final.
 
 **Message de premier contact (`outreach_message`)**, ajouté le 22/09/2026 : trois à cinq phrases à un
 décideur repéré par la veille, qui **nomment la source publique du signal avec sa date** (obligation

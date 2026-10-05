@@ -819,6 +819,11 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "Aucune marque de travail dans le texte final"
     assert_includes instructions, "exactement « #{SiteIdentity::NAME} »"
     assert_includes instructions, "ni reformulées ni en sous-entendu"
+    # Les pertes se lisent en gaspillages, pas en « matière tombée par terre » (Cyrille, 05/10/2026).
+    assert_includes instructions, "Sur-traitement : faire plus de travail, d'analyses ou de matière"
+    assert_includes instructions, "6. Rendement matière — achats consommés — gaspillages à chercher : sur-traitement"
+    assert_includes instructions, "du surdosage (sur-traitement)"
+    assert_includes instructions, "avec les deux ou trois"
     assert_not_includes instructions, "8 000 €"
     assert_not_includes instructions, "30 000 €"
     assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]
@@ -852,6 +857,17 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes record.reload.sections[:verify], "- Corrigé ou retiré : 12 000 €"
     assert_not_includes record.sections[:final], "coûte 12 000 €"
     assert_not_includes record.sections[:final], "6 points"
+  end
+
+  test "the executive brief names wastes as symptoms, never as a remedy" do
+    context = FakeContext.new(replies: ["a", "b"])
+    run_generator(Generation.create!(user: @user, kind: :executive_brief, input_text: "Brief."), context)
+    instructions = context.draft_chat.instructions
+
+    assert_includes instructions, "LES HUIT GASPILLAGES"
+    assert_includes instructions, "nommer un gaspillage, c'est nommer un symptôme, pas dire comment le supprimer"
+    assert_includes instructions, "« muda »"
+    assert_includes instructions, ContentGenerator::NO_PRESCRIPTION_RULE
   end
 end
 

@@ -684,6 +684,23 @@ class ContentGenerator
     PROMPT
   end
 
+  # Le vocabulaire des pertes, commun à la note et à la proposition (Cyrille, 05/10/2026) : une perte
+  # n'est presque jamais « de la matière tombée par terre », c'est une somme de gaspillages possibles.
+  # Nommer un gaspillage, c'est nommer un symptôme : la note de diagnostic peut le faire sans enfreindre
+  # NO_PRESCRIPTION_RULE.
+  def wastes_block
+    <<~BLOCK.strip
+      LES HUIT GASPILLAGES — le vocabulaire des pertes, définitions de Cyrille :
+      #{ConsultingOffer.wastes_prompt}
+      UNE PERTE N'EST JAMAIS SEULEMENT « DE LA MATIÈRE TOMBÉE PAR TERRE » : une ligne des comptes qui dérive se
+      lit comme la somme de plusieurs gaspillages possibles. Des achats consommés qui montent, ce peut être de
+      la surproduction jetée ou déclassée, du surdosage (sur-traitement), de la non-qualité (défauts), des
+      stocks périmés (inventaire) ; des heures qui montent, de l'attente, des mouvements, des compétences mal
+      employées. Nomme ces gaspillages en français, comme des hypothèses à vérifier sur le site — jamais
+      « muda », jamais un acronyme sans le traduire, jamais une certitude sur un atelier que Cyrille n'a pas vu.
+    BLOCK
+  end
+
   # La proposition suit l'offre arrêtée le 05/10/2026 (ConsultingOffer) : diagnostic payé dès la
   # commande, plan en tiroirs, exécution, outil en option. Le modèle rédige le fond ; il n'écrit
   # aucun prix ni aucune durée — Ruby ajoute les conditions sous le texte, et FigureAudit retire
@@ -712,8 +729,10 @@ class ContentGenerator
       - Le TEMPS À LIBÉRER chez le client est chiffré à chaque module, valorisé au coût horaire chargé que
         fournit le DAF : un chantier sans équipe disponible ne démarre pas.
 
-      LES SEIZE LEVIERS ET LA LIGNE DES COMPTES QU'ILS TOUCHENT :
+      LES SEIZE LEVIERS, LA LIGNE DES COMPTES QU'ILS TOUCHENT ET LES GASPILLAGES QUI LA NOURRISSENT :
       #{ConsultingOffer.levers_prompt}
+
+      #{wastes_block}
 
       RÉALISATIONS DE CYRILLE (document privé, noms réels autorisés ; sans les identifiants N°XX) :
       #{realisations_str}
@@ -731,12 +750,14 @@ class ContentGenerator
       un dirigeant lit la première page ; chaque section a son plafond, à respecter :
       1. Un paragraphe d'ouverture, 120 mots au plus : ce que j'ai compris de votre situation, dans le langage
          du lecteur (marge, trésorerie, BFR), à partir des sources ; une hypothèse reste une hypothèse.
-      2. « ## Ce que je vous propose » — 200 mots au plus : la démarche en trois étapes. Recommande UN format
+      2. « ## Ce que je vous propose » — 180 mots au plus : la démarche en trois étapes ; le diagnostic range
+         chaque perte dans l'un des huit gaspillages et la chiffre en euros. Recommande UN format
          de diagnostic et dis pourquoi : l'express pour une PME ou un premier pas, le complet pour une ETI, un
          site de groupe ou un board qui attend une vue complète. Nomme l'autre format en une phrase.
-      3. « ## Les leviers que je regarderais en premier » — 220 mots au plus : deux à quatre leviers de la
-         liste, chacun rattaché à un fait des sources et à sa ligne des comptes, présentés comme des hypothèses
-         que le diagnostic confirmera ou écartera. Pour chacun, le premier chantier court qu'il ouvrirait,
+      3. « ## Les leviers que je regarderais en premier » — 250 mots au plus : deux à quatre leviers de la
+         liste, chacun rattaché à un fait des sources et à sa ligne des comptes, avec les deux ou trois
+         gaspillages qui peuvent nourrir cette ligne, le tout présenté comme des hypothèses que le diagnostic
+         confirmera ou écartera. Pour chacun, le premier chantier court qu'il ouvrirait,
          NOMMÉ en une phrase par ce qu'il mesurerait (« mesurer le rendement matière de la fabrication »),
          JAMAIS son protocole : ni durée, ni unités de mesure, ni étapes, ni outil. Le diagnostic sans
          l'ordonnance vaut aussi ici : un lecteur qui reçoit la recette la fait sans signer.
@@ -810,7 +831,10 @@ class ContentGenerator
       LE LECTEUR : il rend des comptes en EBITDA, en dette et en trésorerie, pas en TRS. Chaque constat est
       d'abord dit dans son langage (marge, coût par point de chiffre d'affaires, mois de trésorerie), puis relié
       en une phrase à sa cause d'atelier probable, posée comme une hypothèse ou une question — jamais comme une
-      certitude sur une usine que Cyrille n'a pas visitée.
+      certitude sur une usine que Cyrille n'a pas visitée. Cette cause se nomme parmi les huit gaspillages
+      ci-dessous : nommer un gaspillage, c'est nommer un symptôme, pas dire comment le supprimer.
+
+      #{wastes_block}
 
       RÉALISATIONS DE CYRILLE (preuves à citer avec leurs chiffres et leur contexte réel — document privé, les
       noms d'entreprises sont autorisés — sans jamais décrire la méthode ; sans les identifiants internes N°XX) :

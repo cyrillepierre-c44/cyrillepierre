@@ -13,7 +13,8 @@ module ConsultingOffer
       days: 8,
       price: 8_000,
       scope: "les comptes des trois derniers exercices, une visite approfondie du site, un arbre des pertes " \
-             "simplifié et trois gisements chiffrés en euros",
+             "simplifié où chaque perte est rangée dans l'un des huit gaspillages, et trois gisements " \
+             "chiffrés en euros",
       schedule: [[50, "à la commande"], [50, "à la remise du diagnostic"]]
     },
     complet: {
@@ -21,7 +22,8 @@ module ConsultingOffer
       days: 30,
       price: 30_000,
       scope: "trois à cinq exercices, une immersion sur le site (observations au poste, entretiens de " \
-             "l'opérateur au directeur), la revue des seize leviers, un arbre des pertes complet et les " \
+             "l'opérateur au directeur), la revue des seize leviers, un arbre des pertes complet où chaque perte est " \
+             "rangée dans l'un des huit gaspillages, et les " \
              "gisements classés par euros récupérables, avec leur investissement et leur temps interne",
       schedule: [[30, "à la commande"], [40, "à la remise de l'analyse financière"],
                  [30, "à la remise du diagnostic"]]
@@ -31,29 +33,56 @@ module ConsultingOffer
   BRIDGE_MONTHS = 3
   PAYMENT_DAYS = 30
 
+  # Les huit gaspillages (TIMWOODS), dans les mots de Cyrille (05/10/2026). Une perte n'est presque jamais
+  # « de la matière tombée par terre » : une dérive des achats consommés, c'est aussi de la surproduction
+  # jetée, du surdosage, de la non-qualité. Le diagnostic classe les pertes selon ces huit familles.
+  WASTES = {
+    transport: ["Transport", "déplacement inutile de matériel ou de produits"],
+    inventory: ["Inventaire", "excès de stock ou de matières premières qui encombrent l'espace"],
+    motion: ["Mouvements", "gestes superflus ou déplacements inutiles des employés"],
+    waiting: ["Attente", "temps perdu à attendre des pièces, des informations ou une machine"],
+    overproduction: ["Surproduction", "produire plus ou plus tôt que la demande réelle"],
+    overprocessing: ["Sur-traitement", "faire plus de travail, d'analyses ou de matière que nécessaire pour " \
+                                       "le client — le surdosage en est un"],
+    defects: ["Défauts", "produits non conformes nécessitant des retouches ou un rebut"],
+    skills: ["Compétences", "sous-utilisation du potentiel, de l'expérience et des talents des équipes"]
+  }.freeze
+
   # Les tiroirs de l'étape 2 : chaque levier part d'une ligne des comptes, c'est ce qui permet de
-  # relier un chantier d'atelier au résultat que lit le dirigeant.
+  # relier un chantier d'atelier au résultat que lit le dirigeant, et nomme les gaspillages qui
+  # nourrissent typiquement cette ligne — ceux que le diagnostic ira chercher.
   LEVERS = [
-    ["Productivité de la main-d'œuvre directe", "charges de personnel"],
-    ["Structure et main-d'œuvre indirecte", "charges de personnel, frais généraux"],
-    ["Performance des équipements (TRS)", "coût de revient, investissements évités"],
-    ["Maintenance", "entretien et réparations, stock de pièces"],
-    ["Non-qualité", "coût de revient, avoirs clients"],
-    ["Rendement matière", "achats consommés"],
-    ["Achats", "achats consommés, sous-traitance"],
-    ["BFR : stocks", "stocks au bilan"],
-    ["BFR : délais clients et fournisseurs", "créances et dettes au bilan"],
-    ["Supply chain et logistique", "transports, entreposage"],
-    ["Énergie et utilités", "énergie, eau"],
-    ["Déchets et environnement", "charges externes"],
-    ["Sécurité et absentéisme", "cotisations AT/MP, remplacements"],
-    ["Investissements", "investissements, amortissements"],
-    ["Organisation et management", "transversal"],
-    ["Pilotage et données", "transversal"]
+    ["Productivité de la main-d'œuvre directe", "charges de personnel", %i[waiting motion transport skills]],
+    ["Structure et main-d'œuvre indirecte", "charges de personnel, frais généraux", %i[overprocessing waiting skills]],
+    ["Performance des équipements (TRS)", "coût de revient, investissements évités",
+     %i[waiting defects overproduction]],
+    ["Maintenance", "entretien et réparations, stock de pièces", %i[waiting inventory skills]],
+    ["Non-qualité", "coût de revient, avoirs clients", %i[defects overprocessing]],
+    ["Rendement matière", "achats consommés", %i[overprocessing overproduction defects inventory]],
+    ["Achats", "achats consommés, sous-traitance", %i[inventory overprocessing]],
+    ["BFR : stocks", "stocks au bilan", %i[inventory overproduction]],
+    ["BFR : délais clients et fournisseurs", "créances et dettes au bilan", %i[waiting defects]],
+    ["Supply chain et logistique", "transports, entreposage", %i[transport inventory waiting]],
+    ["Énergie et utilités", "énergie, eau", %i[overproduction waiting overprocessing]],
+    ["Déchets et environnement", "charges externes", %i[defects overproduction]],
+    ["Sécurité et absentéisme", "cotisations AT/MP, remplacements", %i[motion skills]],
+    ["Investissements", "investissements, amortissements", %i[overproduction overprocessing]],
+    ["Organisation et management", "transversal", %i[skills waiting]],
+    ["Pilotage et données", "transversal", %i[overprocessing waiting]]
   ].freeze
 
+  def self.wastes_prompt
+    WASTES.values.map { |label, definition| "- #{label} : #{definition}" }.join("\n")
+  end
+
+  def self.waste_labels(keys)
+    keys.map { |key| WASTES.fetch(key).first.downcase }.join(", ")
+  end
+
   def self.levers_prompt
-    LEVERS.each_with_index.map { |(name, line), i| "#{i + 1}. #{name} — #{line}" }.join("\n")
+    LEVERS.each_with_index.map do |(name, line, wastes), i|
+      "#{i + 1}. #{name} — #{line} — gaspillages à chercher : #{waste_labels(wastes)}"
+    end.join("\n")
   end
 
   def self.euros(amount)
