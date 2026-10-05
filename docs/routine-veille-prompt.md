@@ -5,7 +5,11 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 13 le 29/09 : Cyrille a supprimé les huit fiches
+connecteurs, ce qu'a montré le premier passage). Version 14 le 05/10 : la mémoire liste aussi les **fiches en
+cours** du pipeline — le passage du 05/10 avait remonté Hermès Irigny (fiche #39, saisie à la main, sans décision
+enregistrée) comme un signal neuf, et écarté Bayer Villefranche au nom de la chimie alors que la fiche #41 était
+en relance ce jour-là, sur l'article même qui la justifiait. Une entreprise suivie n'est jamais un signal neuf
+ni écartée par une règle ; ce qu'on apprend sur elle va dans une section « Du nouveau sur tes fiches ». Version 13 le 29/09 : Cyrille a supprimé les huit fiches
 « cabinet » avec la même raison — le management de transition tel que les cabinets le placent exige une mobilité
 nationale, hôtel la semaine, impossible avant 2033 (enfant en sixième) ; **la transition reste, locale** (retour
 chaque soir dans le périmètre). La source C (missions des cabinets) est retirée, l'accroche dit « appui sur site
@@ -75,6 +79,12 @@ par mail. Tu n'écris ni ne commites rien dans le dépôt : tu le lis seulement.
   « groupe qui passe par un cabinet ») s'applique à tous les signaux de la semaine, et quand tu l'appliques
   pour écarter un signal, dis-le dans le mail en citant la raison telle qu'il l'a écrite. Une réponse 401
   signifie un jeton manquant ou faux : dis-le dans le mail et continue sans la mémoire.
+  La même réponse se termine par les **fiches en cours** (« fiche #N · entreprise · statut ») : les
+  entreprises que Cyrille suit déjà, ouvertes ou en veille. (3) Une entreprise qui y figure n'est **jamais**
+  un signal du top 5 ni des « autres signaux vus », et **aucune règle de tri ne l'écarte** (secteur,
+  distance, niveau) : Cyrille l'a gardée en connaissance de cause. Tout ce que tu apprends de nouveau sur
+  elle (annonce, article, dirigeant, comptes) va dans la section « Du nouveau sur tes fiches » du mail,
+  avec le numéro de fiche et le lien ; ne la dépose pas dans le Studio. Rien de nouveau : n'en parle pas.
 - `docs/cadrage-veille-prospects.md` : le périmètre, la grille de lecture des signaux et
   leurs poids. C'est ta règle de tri, applique-la telle quelle.
 - `app/models/realisation_catalog.rb` : les 26 réalisations de Cyrille (`ITEMS`). Pour chaque
@@ -363,6 +373,8 @@ lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, so
    2 bis. **À suivre** : les annonces de direction de moins de six semaines, une ligne chacune —
    entreprise, poste, date de publication, âge en jours, et la date à laquelle elles atteindront
    six semaines. Reprends celles des condensés précédents qui n'ont pas encore atteint l'échéance.
+   2 ter. **Du nouveau sur tes fiches** : une ligne par entreprise des fiches en cours sur laquelle tu
+   as trouvé du nouveau — « fiche #N, entreprise : le fait, sa date, le lien ». Section omise s'il n'y a rien.
 3. **Ce que tu as consulté** : nombre d'annonces lues par source (Indeed et LinkedIn via Tavily séparément), avis BODACC lus, sociétés
    parcourues dans l'annuaire, rappels lus, installations classées couvertes, flux presse lus,
    pages de fonds lues, et ce qui n'a pas répondu. Une erreur Indeed « 429 » ou « rate limit » est

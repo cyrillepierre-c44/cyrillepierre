@@ -493,7 +493,9 @@ raison. Trois usages : `/studio/veille` grise une entreprise déjà tranchée un
 raison — Nicoll était ressorti en rang 3 le 28/09 alors que la fiche #44 existait depuis le 23), la
 liste « Ta mémoire de tri » en bas de page permet de corriger une raison
 (`Studio::VeilleDecisionsController#update`, admins), et **`GET /api/veille_memory`** (même jeton,
-texte brut, `VeilleDecision.to_prompt`, 200 lignes au plus) est lu par la routine **avant toute
+texte brut, `VeilleDecision.to_prompt`, 200 lignes au plus, suivi depuis le 05/10/2026 des fiches en
+cours ouvertes ou en veille, `Prospect.pipeline_prompt`, sans nom d'interlocuteur ni notes — Hermès #39,
+saisie à la main, était revenue en signal neuf) est lu par la routine **avant toute
 recherche** (consigne v11 : entreprise déjà tranchée → jamais en top 5 sans nouveauté ; raison qui
 ressemble à une règle → appliquée à toute la semaine et citée dans le mail). `ProspectPurgeJob` purge
 les décisions au même délai, et la politique de confidentialité le dit. Premier usage le soir même :

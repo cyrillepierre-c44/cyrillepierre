@@ -95,4 +95,25 @@ class ProspectTest < ActiveSupport::TestCase
   test "name is required" do
     assert_not Prospect.new.valid?
   end
+
+  test "pipeline_prompt lists open and dormant fiches, never closed ones nor people" do
+    bayer = Prospect.create!(name: "Jeanne Martin", company: "Bayer CropScience — Villefranche",
+                             status: :a_contacter, next_action_on: Date.new(2026, 10, 5),
+                             notes: "Rappeler son assistante")
+    mapei = Prospect.create!(name: "Décideur à identifier", company: "MAPEI France", status: :en_veille)
+    Prospect.create!(name: "Fini", company: "Usine gagnée", status: :gagne)
+    Prospect.create!(name: "Perdu", company: "Usine perdue", status: :perdu)
+    Prospect.create!(name: "Visiteur du site", company: nil, status: :nouveau)
+
+    text = Prospect.pipeline_prompt
+
+    assert_includes text, "Fiches en cours dans le pipeline de Cyrille (2)"
+    assert_includes text, "- fiche ##{bayer.id} · Bayer CropScience — Villefranche · À contacter · prochaine action le 05/10/2026"
+    assert_includes text, "- fiche ##{mapei.id} · MAPEI France · En veille"
+    assert_no_match(/Usine gagnée|Usine perdue|Jeanne Martin|assistante/, text)
+  end
+
+  test "pipeline_prompt says so when nothing is open" do
+    assert_includes Prospect.pipeline_prompt, "aucune"
+  end
 end

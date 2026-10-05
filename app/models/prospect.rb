@@ -74,6 +74,30 @@ class Prospect < ApplicationRecord
     )
   end
 
+  # Les entreprises que Cyrille suit déjà, pour la routine du lundi (GET /api/veille_memory, après
+  # la mémoire de tri). La mémoire ne connaît que les décisions : une fiche saisie à la main
+  # (Hermès #39) ou retenue malgré une règle (Bayer #41, chimie) ressortait le 05/10/2026 comme un
+  # signal neuf, ou écartée au nom d'un secteur exclu. « En veille » compte : MAPEI attend son heure.
+  # Ni nom d'interlocuteur ni notes : l'entreprise et l'état de la fiche suffisent à la routine.
+  PIPELINE_STATUSES = (OPEN_STATUSES + %w[en_veille]).freeze
+
+  def self.pipeline_prompt
+    fiches = where(status: PIPELINE_STATUSES).where.not(company: [nil, ""]).order(:company, :id)
+    return "Fiches en cours dans le pipeline de Cyrille : aucune." if fiches.empty?
+
+    lines = ["Fiches en cours dans le pipeline de Cyrille (#{fiches.size}) : ces entreprises, il les suit déjà. " \
+             "Elles ne sont jamais un signal neuf du top 5, et aucune règle de tri ne les écarte. " \
+             "Tout ce qui est nouveau sur l'une d'elles va dans « Du nouveau sur tes fiches », avec son numéro."]
+    fiches.each { |fiche| lines << "- #{fiche.pipeline_line}" }
+    lines.join("\n")
+  end
+
+  def pipeline_line
+    parts = ["fiche ##{id}", company, status_label]
+    parts << "prochaine action le #{next_action_on.strftime('%d/%m/%Y')}" if next_action_on
+    parts.join(" · ")
+  end
+
   def source_label
     SOURCES.fetch(source.to_sym, source)
   end
