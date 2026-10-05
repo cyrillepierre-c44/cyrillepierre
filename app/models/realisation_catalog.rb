@@ -346,15 +346,16 @@ module RealisationCatalog
       type_orga: "usine industrielle process continu",
       context: "CENEXI (CMO pharma, ETI 400p) · site Fontenay-sous-Bois · 170 personnes · pilotage MO",
       titre: "Mise en place d'indicateurs de suivi des consommations de main d'œuvre",
-      resultat: "DLE 70% → 88% immédiat · commandes intérimaires pilotées en temps réel",
+      resultat: "DLE 70% → 88% · commandes intérimaires pilotées en temps réel",
+      semantic_scope: "Le délai d'obtention de ce résultat n'est pas connu : ne jamais le présenter comme immédiat, rapide ou obtenu en quelques semaines (formulation retirée le 05/10/2026, Cyrille la jugeant exagérée).",
       visual_hint: "Deux jauges horizontales côte à côte, l'une majoritairement rouge (avant) et l'autre " \
                    "majoritairement remplie dans la couleur de marque (après).",
       tags: %w[pharma KPI indicateurs MO suivi intérimaires DLE pilotage-RH tableau-de-bord optimisation-effectifs],
       page: { company: "CENEXI · Pharma aseptique · Pilotage MO",
               title: "Mise en place d'indicateurs de suivi des consommations de MO",
-              result: "DLE 70% → 88% · dès la mise en place",
+              result: "DLE 70% → 88%",
               icon: "fa-chart-line",
-              description: "Aucun suivi opérationnel des consommations intérimaires — DLE à 70%. Création d'un tableau Excel de suivi du nombre d'ETP nécessaires selon le planning de production, rempli par l'assistante administrative. Commandes intérimaires pilotées en temps réel. DLE à 88% immédiatement." } }
+              description: "Aucun suivi opérationnel des consommations intérimaires — DLE à 70%. Création d'un tableau Excel de suivi du nombre d'ETP nécessaires selon le planning de production, rempli par l'assistante administrative. Commandes intérimaires pilotées en temps réel. DLE porté de 70 % à 88 %." } }
   ].freeze
 
   # La page /realisations, dans l'ordre d'affichage. Chaque réalisation doit figurer dans une
