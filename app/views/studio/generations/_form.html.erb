@@ -128,7 +128,9 @@
         Colle l'offre d'emploi ou de mission : la lettre s'écrit contre elle.
       </p>
       <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="commercial_proposal">
-        Colle le brief client — il est pré-rempli quand tu viens d'une fiche prospect.
+        Le brief est pré-rempli depuis la fiche prospect. Les prix et l'échéancier ne passent pas par l'IA :
+        ils sont ajoutés automatiquement sous la proposition. L'analyse financière validée, si tu l'as, va
+        dans le bloc 6.
       </p>
       <p class="studio-field-hint d-none" data-studio-generation-target="sourceHint" data-kinds="outreach_message">
         Le brief prospect est pré-rempli depuis la fiche (signal, source, accroche proposée). Le message nommera la
@@ -225,14 +227,14 @@
   <%# Le dernier geste avant de générer une note de diagnostic : coller l'analyse qui vient d'être
       validée dans l'autre outil, puis le bouton juste dessous. Facultatif — vide, la note se
       construit sur les signaux publics du brief ; remplie, elle est la seule source de chiffres. %>
-  <div class="studio-card <%= "d-none" unless generation.executive_brief? %>"
-       data-studio-generation-target="kindField" data-kinds="executive_brief">
+  <div class="studio-card <%= "d-none" unless generation.executive_brief? || generation.commercial_proposal? %>"
+       data-studio-generation-target="kindField" data-kinds="executive_brief commercial_proposal">
     <h2 class="studio-card-subtitle">6. Analyse financière (optionnel)</h2>
     <div class="cf-field">
       <%= f.text_area :financial_analysis, class: "cf-input cf-textarea", rows: 10,
                       placeholder: "Colle ici l'analyse financière validée (texte ou markdown)" %>
       <p class="studio-field-hint">
-        Vide : la note se construit sur les signaux publics du brief. Remplie : elle devient la
+        Vide : le texte se construit sur les signaux publics du brief. Remplie : elle devient la
         <strong>seule source de chiffres</strong>, chacun relu automatiquement contre elle.
       </p>
     </div>

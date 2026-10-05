@@ -794,4 +794,55 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_equal "Aucune correction : chaque chiffre de la note figure dans les sources.", record.reload.sections[:verify]
     assert_equal "Message LinkedIn", record.section_labels[:final]
   end
+
+  # --- proposition commerciale (offre du 05/10/2026) --------------------------
+
+  def proposal_draft(body)
+    "###VERSION_FINALE###\n#{body}\n\n###A_PERSONNALISER###\n- Destinataire.\n\n###VERSION_COURTE###\nMail."
+  end
+
+  test "the proposal prompt carries the offer but never its prices nor a promised gain" do
+    context = FakeContext.new(replies: ["a", "b"])
+    run_generator(Generation.create!(user: @user, kind: :commercial_proposal, input_text: "Brief."), context)
+    instructions = context.draft_chat.instructions
+
+    assert_includes instructions, ConsultingOffer::DIAGNOSTICS[:express][:scope]
+    assert_includes instructions, "16. Pilotage et données"
+    assert_includes instructions, "Aucun prix, aucun montant d'honoraires, aucun nombre de jours"
+    assert_includes instructions, "aucun « quick win »"
+    assert_not_includes instructions, "8 000 €"
+    assert_not_includes instructions, "30 000 €"
+    assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]
+  end
+
+  # Les prix ne passent jamais par un modèle : ni par le brouillon, ni par la relecture.
+  test "Ruby writes the conditions under the proposal, after the proofreading" do
+    record = Generation.create!(user: @user, kind: :commercial_proposal, input_text: "Brief.")
+    context = FakeContext.new(replies: [proposal_draft("Je vous propose un diagnostic."), :echo])
+
+    run_generator(record, context)
+
+    assert_not_includes context.proofreading_chat.question, "## Conditions"
+    final = record.reload.sections[:final]
+    assert final.start_with?("Je vous propose un diagnostic.")
+    assert final.end_with?(ConsultingOffer.conditions_markdown)
+    assert_includes record.sections[:verify], "Aucune correction"
+    assert_equal "Mail.", record.sections[:short]
+    assert_equal "Mail d'envoi", record.section_labels[:short]
+  end
+
+  test "a price or a gain the model wrote anyway is caught by the figure audit" do
+    record = Generation.create!(user: @user, kind: :commercial_proposal, input_text: "Brief.")
+    draft = proposal_draft("Le diagnostic coûte 12 000 € et vous fera gagner 6 points de marge.")
+    corrected = proposal_draft("Le diagnostic vous donnera une vue chiffrée de vos marges.") + "\n###JOURNAL###\n"
+    context = FakeContext.new(replies: [draft, corrected, :echo])
+
+    run_generator(record, context)
+
+    assert_includes context.chats[1].instructions, "12 000 €"
+    assert_includes record.reload.sections[:verify], "- Corrigé ou retiré : 12 000 €"
+    assert_not_includes record.sections[:final], "coûte 12 000 €"
+    assert_not_includes record.sections[:final], "6 points"
+  end
 end
+

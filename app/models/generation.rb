@@ -44,8 +44,9 @@ class Generation < ApplicationRecord
 
   STRUCTURED_KINDS = %w[cover_letter commercial_proposal executive_brief outreach_message].freeze
   # Les contenus dont Ruby relit les chiffres contre les sources (FigureAudit) : ceux qui partent
-  # chez un dirigeant sans relecture.
-  AUDITED_KINDS = %w[executive_brief outreach_message].freeze
+  # chez un dirigeant sans relecture. La proposition y est depuis le 05/10/2026 : un prix ou un gain
+  # que le modèle aurait écrit malgré la consigne n'est dans aucune source, l'audit le retire.
+  AUDITED_KINDS = %w[executive_brief outreach_message commercial_proposal].freeze
   SENT_VIA = { "linkedin" => "LinkedIn", "email" => "email" }.freeze
 
   # L'ordre est celui de l'affichage et de la réécriture par ContentGenerator#rebuild.
@@ -86,6 +87,12 @@ class Generation < ApplicationRecord
     invitation: "Note d'invitation LinkedIn (#{INVITATION_LIMIT} caractères au plus)",
     verify: "Corrections automatiques",
     short: "Variante email (objet en première ligne)"
+  ).freeze
+
+  PROPOSAL_SECTION_LABELS = SECTION_LABELS.merge(
+    final: "La proposition (conditions ajoutées automatiquement)",
+    verify: "Corrections automatiques",
+    short: "Mail d'envoi"
   ).freeze
 
   # value => label. All models are served by the Mammouth.ai OpenAI-compatible gateway
@@ -162,6 +169,7 @@ class Generation < ApplicationRecord
   def section_labels
     return EXECUTIVE_BRIEF_SECTION_LABELS if executive_brief?
     return OUTREACH_SECTION_LABELS if outreach_message?
+    return PROPOSAL_SECTION_LABELS if commercial_proposal?
 
     SECTION_LABELS
   end

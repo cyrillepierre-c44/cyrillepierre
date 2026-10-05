@@ -139,6 +139,7 @@ class ContentGenerator
     draft = audit_figures(draft) if generation.audited?
     output = proofread(draft)
     output = fit_invitation(output) if generation.outreach_message?
+    output = append_conditions(output) if generation.commercial_proposal?
     generation.update!(output: output, status: :generated)
     generation
   rescue StandardError => e
@@ -683,31 +684,100 @@ class ContentGenerator
     PROMPT
   end
 
+  # La proposition suit l'offre arrêtée le 05/10/2026 (ConsultingOffer) : diagnostic payé dès la
+  # commande, plan en tiroirs, exécution, outil en option. Le modèle rédige le fond ; il n'écrit
+  # aucun prix ni aucune durée — Ruby ajoute les conditions sous le texte, et FigureAudit retire
+  # tout chiffre qui ne vient pas des sources. Aucun gain promis, aucun « quick win » : Cyrille
+  # n'en a pas dans son parcours et refuse de vendre du rêve.
   def commercial_proposal_prompt
     <<~PROMPT
-      Tu rédiges une proposition commerciale courte pour Cyrille PIERRE (consultant indépendant en management de
-      transition, excellence opérationnelle et tech/IA, 20 ans d'expérience industrielle), en réponse à un brief
-      client. Le destinataire est un décideur qui doit arbitrer un budget — pas un recruteur.
+      Tu rédiges une PROPOSITION COMMERCIALE de Cyrille PIERRE, manager de transition et consultant en
+      excellence opérationnelle à Lyon (20 ans d'industrie, ingénieur Arts & Métiers, formation ICCF HEC en
+      analyse financière), adressée au décideur qui paiera la mission : DG, DAF, board ou directeur d'usine.
+      Elle suit le premier contact et, souvent, la note de diagnostic. Son but : une commande du diagnostic.
 
-      RÉALISATIONS DE CYRILLE (à mobiliser comme preuves de capacité à délivrer, sans citer les identifiants
-      internes type N°XX) :
+      LA DÉMARCHE QUE CYRILLE VEND — partir des comptes pour remonter aux pertes de l'atelier, puis relier
+      chaque amélioration à une ligne du compte de résultat ou du bilan :
+      - Étape 1, le DIAGNOSTIC, en deux formats. L'express : #{ConsultingOffer::DIAGNOSTICS[:express][:scope]}.
+        Le complet : #{ConsultingOffer::DIAGNOSTICS[:complet][:scope]}. Le diagnostic a une valeur en soi : un
+        dirigeant peut s'en servir pour comprendre et expliquer ses résultats, même sans lancer les chantiers.
+      - Étape 2, le PLAN D'AMÉLIORATION en tiroirs : le diagnostic passe en revue seize leviers, le plan n'en
+        retient que trois à cinq, ceux où l'argent récupérable est le plus élevé. Chaque module s'ouvre par
+        un premier chantier court, visible sur le terrain et mesuré en euros, qui teste la démarche avant
+        d'engager le reste — sans aucun gain promis d'avance.
+      - Étape 3, l'EXÉCUTION : par Cyrille sur site à la journée, par les équipes du client, ou par d'autres
+        consultants auxquels il délègue.
+      - En option, un OUTIL DE SUIVI personnalisé qui relie les pertes de l'atelier aux indicateurs des équipes,
+        puis aux indicateurs du dirigeant, puis au compte de résultat.
+      - Le TEMPS À LIBÉRER chez le client est chiffré à chaque module, valorisé au coût horaire chargé que
+        fournit le DAF : un chantier sans équipe disponible ne démarre pas.
+
+      LES SEIZE LEVIERS ET LA LIGNE DES COMPTES QU'ILS TOUCHENT :
+      #{ConsultingOffer.levers_prompt}
+
+      RÉALISATIONS DE CYRILLE (document privé, noms réels autorisés ; sans les identifiants N°XX) :
       #{realisations_str}
 
       #{cv_context}
 
-      CONSIGNES :
-      - C'est Cyrille lui-même qui écrit cette proposition : écris à la première personne ("je propose",
-        "j'interviens"), jamais à la 3e personne ("Cyrille PIERRE propose"). Ton moins personnel que pour une
-        lettre de motivation : "voici ce que je propose", pas "je suis le candidat idéal"
-      - Structure du texte final : reformulation du besoin client (montre l'écoute, pas du remplissage),
-        approche proposée (méthode, grandes étapes), 1 à 2 réalisations comparables comme preuve, modalités
-        (format de mission, durée indicative, ce qu'il faut côté client)
-      - Ne jamais inventer de compétences, chiffres ou expériences non présents dans les sources fournies
-      - Pas de survente ni de formules commerciales creuses ("solution sur mesure", "véritable partenaire")
-      - Longueur du texte final : 200 à 350 mots
+      LES SOURCES : le brief vient de la fiche prospect (signal, renseignements publics, échanges) et contient
+      des NOTES INTERNES de Cyrille qui ne se reprennent jamais. Une ANALYSE FINANCIÈRE VALIDÉE, si elle est
+      fournie, est la seule source des chiffres sur l'entreprise. N'ajoute aucun chiffre sur l'entreprise qui
+      ne soit dans les sources : une relecture automatique retirera tout chiffre absent des sources.
 
-      #{structured_output_instructions}
+      STRUCTURE DE LA PROPOSITION (texte final), en markdown avec des titres « ## », 600 à 900 mots :
+      1. Un paragraphe d'ouverture : ce que j'ai compris de votre situation, dans le langage du lecteur
+         (marge, trésorerie, BFR), à partir des sources ; une hypothèse reste une hypothèse.
+      2. « ## Ce que je vous propose » — la démarche en trois étapes. Recommande UN format de diagnostic et
+         dis pourquoi : l'express pour une PME ou un premier pas, le complet pour une ETI, un site de groupe
+         ou un board qui attend une vue complète. Nomme l'autre format en une phrase.
+      3. « ## Les leviers que je regarderais en premier » — deux à quatre leviers de la liste, chacun rattaché
+         à un fait des sources et à sa ligne des comptes, présentés comme des hypothèses que le diagnostic
+         confirmera ou écartera. Pour chacun, le premier chantier court qu'il ouvrirait, sans gain chiffré.
+      4. « ## Ce que la démarche demande à vos équipes » — qui sera sollicité pendant le diagnostic (direction,
+         encadrement, opérateurs, accès aux données), et le principe du temps chiffré à chaque module, au
+         coût horaire chargé fourni par votre DAF. Aucun nombre d'heures inventé.
+      5. « ## Ce que j'ai déjà obtenu » — une ou deux réalisations comparables, avec leur contexte et leur
+         chiffre exacts ; quand un résultat est un résultat de site, obtenu par plusieurs chantiers de front,
+         le dire.
+      6. « ## Pour démarrer » — la prochaine étape concrète (valider le format, fixer la date de lancement).
+
+      INTERDITS :
+      - Aucun prix, aucun montant d'honoraires, aucun nombre de jours, aucun échéancier : les conditions sont
+        ajoutées automatiquement sous ton texte. N'écris pas de section « Conditions ».
+      - Aucun gain promis pour le client, aucun pourcentage d'amélioration attendu, aucun « quick win », aucun
+        « résultats en quelques semaines ».
+      - Aucune survente ni formule commerciale creuse (« solution sur mesure », « véritable partenaire »,
+        « accompagnement clé en main »).
+      - Première personne, vouvoiement, ton d'un pair : « je vous propose », jamais « Cyrille PIERRE propose ».
+
+      FORMAT DE RÉPONSE OBLIGATOIRE — trois sections, chacune précédée de son marqueur exact, seul sur sa
+      ligne, dans cet ordre :
+
+      #{Generation::SECTION_MARKERS[:final]}
+      La proposition complète, selon la structure ci-dessus.
+
+      #{Generation::SECTION_MARKERS[:personalize]}
+      Liste à puces de ce que Cyrille doit relire ou adapter avant envoi (destinataire, format recommandé,
+      leviers retenus, rayon des frais kilométriques). Aucune liste de chiffres à vérifier : la relecture des
+      chiffres est automatique.
+
+      #{Generation::SECTION_MARKERS[:short]}
+      Le MAIL D'ENVOI de la proposition, 80 à 140 mots, adressé au destinataire, qui rappelle l'échange ou le
+      signal à l'origine de la démarche et donne envie d'ouvrir la proposition sans en répéter le contenu.
+
+      N'écris rien avant le premier marqueur ni après la dernière section.
     PROMPT
+  end
+
+  # Les conditions ne passent jamais par le modèle : elles sont écrites par Ruby sous la proposition,
+  # après la relecture, depuis ConsultingOffer.
+  def append_conditions(text)
+    sections = sections_of(text)
+    return text if sections.nil?
+
+    sections[:final] = "#{sections[:final].strip}\n\n#{ConsultingOffer.conditions_markdown}"
+    rebuild(sections, sections[:verify])
   end
 
   # La note de diagnostic dirigeant : la seule pièce du Studio qui parte du chiffre. Elle combine

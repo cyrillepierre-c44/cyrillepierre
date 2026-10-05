@@ -212,6 +212,19 @@ sombre. Chaque réalisation citée renvoie à sa carte sur `/realisations` par u
 la liste des adresses (`realisation_links`). Le document ne part qu'après lecture de la section
 « Corrections automatiques » : une ligne « Non résolu » désigne un chiffre à contrôler avant envoi.
 
+**Proposition commerciale (`commercial_proposal`)**, refondue le 05/10/2026 sur l'offre arrêtée avec
+Cyrille (document « Offre de conseil — des comptes au terrain ») : diagnostic payé dès la commande (express
+8 j / 8 000 € HT, complet 30 j / 30 000 € HT), plan d'amélioration en tiroirs parmi seize leviers reliés
+chacun à une ligne des comptes, exécution au TJM de 1 000 € HT, outil de suivi en option. Tout cela vit
+dans **`ConsultingOffer`** (`app/models/consulting_offer.rb`) et nulle part ailleurs. ⚠ **Les prix ne
+passent jamais par un modèle** : le prompt les interdit, `ContentGenerator#append_conditions` écrit la
+section « Conditions » sous le texte APRÈS la relecture orthographique, et la proposition est dans
+`AUDITED_KINDS` — un prix ou un gain que le modèle écrirait malgré la consigne n'est dans aucune source,
+FigureAudit le retire. ⚠ **Aucun gain promis, aucun « quick win »** : Cyrille n'en a aucun dans son
+parcours et refuse de vendre du rêve ; le plan s'ouvre par « un premier chantier court », mesuré, sans
+promesse. Le bloc 6 (analyse financière) sert aussi à la proposition. Sections : la proposition, points à
+personnaliser, corrections automatiques, mail d'envoi.
+
 **Message de premier contact (`outreach_message`)**, ajouté le 22/09/2026 : trois à cinq phrases à un
 décideur repéré par la veille, qui **nomment la source publique du signal avec sa date** (obligation
 d'information du RGPD et crédibilité), citent UNE réalisation avec son chiffre exact, posent une

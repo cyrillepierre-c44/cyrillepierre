@@ -290,13 +290,15 @@ module Studio
 
     # L'analyse financière a son propre champ, dernier bloc avant le bouton : collée à la suite du
     # brief, elle se confondait avec lui et la note partait en mode signaux publics (18/09/2026).
-    test "the financial analysis has its own optional field, shown for the executive brief only" do
-      get new_studio_generation_path(kind: "executive_brief")
-      assert_select ".studio-card[data-kinds=executive_brief]:not(.d-none) textarea[name=?]",
-                    "generation[financial_analysis]"
+    test "the financial analysis has its own optional field, for the brief and the proposal only" do
+      selector = ".studio-card[data-kinds='executive_brief commercial_proposal']"
+      %w[executive_brief commercial_proposal].each do |kind|
+        get new_studio_generation_path(kind: kind)
+        assert_select "#{selector}:not(.d-none) textarea[name=?]", "generation[financial_analysis]"
+      end
 
       get new_studio_generation_path(kind: "linkedin_post")
-      assert_select ".studio-card.d-none[data-kinds=executive_brief] textarea[name=?]", "generation[financial_analysis]"
+      assert_select "#{selector}.d-none textarea[name=?]", "generation[financial_analysis]"
 
       post studio_generations_path, params: { generation: { kind: "executive_brief", input_text: "Brief",
                                                             financial_analysis: "CA 30,7 M€" } }
