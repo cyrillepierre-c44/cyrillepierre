@@ -721,32 +721,45 @@ class ContentGenerator
       #{cv_context}
 
       LES SOURCES : le brief vient de la fiche prospect (signal, renseignements publics, échanges) et contient
-      des NOTES INTERNES de Cyrille qui ne se reprennent jamais. Une ANALYSE FINANCIÈRE VALIDÉE, si elle est
+      des NOTES INTERNES de Cyrille qui ne se reprennent jamais, ni reformulées ni en sous-entendu : une
+      hésitation, un budget serré, une relation au conseil ou à l'actionnaire notés pour Cyrille ne doivent
+      pas transparaître (la simulation du 05/10/2026 avait écrit « qui hésite encore sur la suite »). Une ANALYSE FINANCIÈRE VALIDÉE, si elle est
       fournie, est la seule source des chiffres sur l'entreprise. N'ajoute aucun chiffre sur l'entreprise qui
       ne soit dans les sources : une relecture automatique retirera tout chiffre absent des sources.
 
-      STRUCTURE DE LA PROPOSITION (texte final), en markdown avec des titres « ## », 600 à 900 mots :
-      1. Un paragraphe d'ouverture : ce que j'ai compris de votre situation, dans le langage du lecteur
-         (marge, trésorerie, BFR), à partir des sources ; une hypothèse reste une hypothèse.
-      2. « ## Ce que je vous propose » — la démarche en trois étapes. Recommande UN format de diagnostic et
-         dis pourquoi : l'express pour une PME ou un premier pas, le complet pour une ETI, un site de groupe
-         ou un board qui attend une vue complète. Nomme l'autre format en une phrase.
-      3. « ## Les leviers que je regarderais en premier » — deux à quatre leviers de la liste, chacun rattaché
-         à un fait des sources et à sa ligne des comptes, présentés comme des hypothèses que le diagnostic
-         confirmera ou écartera. Pour chacun, le premier chantier court qu'il ouvrirait, sans gain chiffré.
-      4. « ## Ce que la démarche demande à vos équipes » — qui sera sollicité pendant le diagnostic (direction,
-         encadrement, opérateurs, accès aux données), et le principe du temps chiffré à chaque module, au
-         coût horaire chargé fourni par votre DAF. Aucun nombre d'heures inventé.
-      5. « ## Ce que j'ai déjà obtenu » — une ou deux réalisations comparables, avec leur contexte et leur
-         chiffre exacts ; quand un résultat est un résultat de site, obtenu par plusieurs chantiers de front,
-         le dire.
-      6. « ## Pour démarrer » — la prochaine étape concrète (valider le format, fixer la date de lancement).
+      STRUCTURE DE LA PROPOSITION (texte final), en markdown avec des titres « ## », 600 à 850 mots AU TOTAL —
+      un dirigeant lit la première page ; chaque section a son plafond, à respecter :
+      1. Un paragraphe d'ouverture, 120 mots au plus : ce que j'ai compris de votre situation, dans le langage
+         du lecteur (marge, trésorerie, BFR), à partir des sources ; une hypothèse reste une hypothèse.
+      2. « ## Ce que je vous propose » — 200 mots au plus : la démarche en trois étapes. Recommande UN format
+         de diagnostic et dis pourquoi : l'express pour une PME ou un premier pas, le complet pour une ETI, un
+         site de groupe ou un board qui attend une vue complète. Nomme l'autre format en une phrase.
+      3. « ## Les leviers que je regarderais en premier » — 220 mots au plus : deux à quatre leviers de la
+         liste, chacun rattaché à un fait des sources et à sa ligne des comptes, présentés comme des hypothèses
+         que le diagnostic confirmera ou écartera. Pour chacun, le premier chantier court qu'il ouvrirait,
+         NOMMÉ en une phrase par ce qu'il mesurerait (« mesurer le rendement matière de la fabrication »),
+         JAMAIS son protocole : ni durée, ni unités de mesure, ni étapes, ni outil. Le diagnostic sans
+         l'ordonnance vaut aussi ici : un lecteur qui reçoit la recette la fait sans signer.
+      4. « ## Ce que la démarche demande à vos équipes » — 120 mots au plus : qui sera sollicité pendant le
+         diagnostic (direction, encadrement, opérateurs, accès aux données), et le principe du temps chiffré à
+         chaque module, au coût horaire chargé fourni par votre DAF. Aucun nombre d'heures inventé.
+      5. « ## Ce que j'ai déjà obtenu » — 150 mots au plus : une ou deux réalisations comparables, avec leur
+         contexte et leur chiffre exacts ; quand un résultat est un résultat de site, obtenu par plusieurs
+         chantiers de front, le dire.
+      6. « ## Pour démarrer » — 50 mots au plus : la prochaine étape concrète (valider le format, fixer la
+         date de lancement), puis la signature, exactement « #{SiteIdentity::NAME} ».
 
       INTERDITS :
       - Aucun prix, aucun montant d'honoraires, aucun nombre de jours, aucun échéancier : les conditions sont
         ajoutées automatiquement sous ton texte. N'écris pas de section « Conditions ».
       - Aucun gain promis pour le client, aucun pourcentage d'amélioration attendu, aucun « quick win », aucun
         « résultats en quelques semaines ».
+      - Aucun détail de procédé, d'étape de fabrication ou d'équipement qui ne figure pas dans les sources :
+        l'hypothèse reste au niveau du levier (« des pertes de matière à la fabrication »), jamais au niveau
+        de l'atelier que Cyrille n'a pas encore vu. Une erreur sur le métier du lecteur ruine la proposition.
+      - Aucun investissement, aucun équipement ni aucune installation suggérés : c'est au diagnostic de le dire.
+      - Aucune marque de travail dans le texte final (« [À vérifier] », « [nom] », « XX ») : ce qui reste à
+        vérifier ou à compléter va dans les points à personnaliser.
       - Aucune survente ni formule commerciale creuse (« solution sur mesure », « véritable partenaire »,
         « accompagnement clé en main »).
       - Première personne, vouvoiement, ton d'un pair : « je vous propose », jamais « Cyrille PIERRE propose ».

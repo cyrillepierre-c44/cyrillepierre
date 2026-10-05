@@ -78,4 +78,12 @@ class FigureAuditTest < ActiveSupport::TestCase
     assert audit.same_figure?(point, "307 K€ = 30,7 M€ × 1 %")
     assert_not audit.same_figure?(point, "950 K€ = 30,7 M€ × 3 %")
   end
+
+  # Simulation du 05/10/2026 : « de 31,2 à 36,1 M€ » faisait signaler le 31,2, lu sans unité.
+  test "the first bound of a range takes the unit written after the second" do
+    assert_empty unsourced("Le chiffre d'affaires passe de 26,8 à 30,7 M€, les frais de 39,6 à 42,7 %.")
+    assert_equal ["29,0"], unsourced("Le chiffre d'affaires passe de 29,0 à 30,7 M€.")
+    assert_empty unsourced("Entre 2021 et 2025, la ligne de novembre 2023.")
+  end
 end
+

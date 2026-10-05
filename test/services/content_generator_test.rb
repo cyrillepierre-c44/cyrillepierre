@@ -810,6 +810,15 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "16. Pilotage et données"
     assert_includes instructions, "Aucun prix, aucun montant d'honoraires, aucun nombre de jours"
     assert_includes instructions, "aucun « quick win »"
+    # Simulation du 05/10/2026 : 1 050 mots, des étapes de fabrication inventées, le protocole du premier
+    # chantier livré, un « [À vérifier avant envoi] » dans le texte final, la signature en minuscules.
+    assert_includes instructions, "600 à 850 mots AU TOTAL"
+    assert_includes instructions, "JAMAIS son protocole"
+    assert_includes instructions, "Aucun détail de procédé"
+    assert_includes instructions, "Aucun investissement, aucun équipement"
+    assert_includes instructions, "Aucune marque de travail dans le texte final"
+    assert_includes instructions, "exactement « #{SiteIdentity::NAME} »"
+    assert_includes instructions, "ni reformulées ni en sous-entendu"
     assert_not_includes instructions, "8 000 €"
     assert_not_includes instructions, "30 000 €"
     assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]

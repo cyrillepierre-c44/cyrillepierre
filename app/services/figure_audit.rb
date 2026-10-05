@@ -33,6 +33,10 @@ class FigureAudit
     (?!\d|[.,]\d)
   /x
 
+  # Ce qui relie les deux bornes d'une fourchette. Lu nu, le 31,2 de « de 31,2 à 36,1 M€ » était
+  # signalé absent des sources et sa phrase réécrite (simulation du 05/10/2026).
+  RANGE_LINK = /\A\s*(?:à|a|et|to|and|-|–|—)\s*\z/
+
   MONTH_YEAR = /\b(?<month>#{MONTHS.keys.join('|')})\s+(?<year>(?:19|20)\d{2})\b/i
 
   # Ce qui porte des nombres sans rien affirmer : adresses, numéros de liste, marqueurs de
@@ -166,11 +170,22 @@ class FigureAudit
       match = Regexp.last_match
       Figure.new(match[0], (match[:year].to_i * 100) + MONTHS.fetch(match[:month].downcase), :date)
     end
-    numbers = cleaned.to_enum(:scan, NUMBER).filter_map do
-      match = Regexp.last_match
-      build(match[0].strip, match[:currency].to_s, match[:num], match[:unit].to_s)
+    matches = cleaned.to_enum(:scan, NUMBER).map { Regexp.last_match }
+    numbers = matches.each_with_index.filter_map do |match, index|
+      currency, unit = shared_unit(cleaned, match, matches[index + 1])
+      build(match[0].strip, currency, match[:num], unit)
     end
     dates + numbers
+  end
+
+  # Une fourchette ne porte son unité qu'une fois : dans « de 31,2 à 36,1 M€ », le 31,2 est en M€.
+  # Une année n'en hérite jamais (« in 2021 to €30.7m »).
+  def shared_unit(text, match, following)
+    own = [match[:currency].to_s, match[:unit].to_s]
+    return own unless own.all?(&:empty?) && following && kind_for(match[:num], "", "") != :year
+    return own unless text[match.end(0)...following.begin(0)].match?(RANGE_LINK)
+
+    [following[:currency].to_s, following[:unit].to_s]
   end
 
   def build(raw, currency, num, unit, ignore_small: true)
