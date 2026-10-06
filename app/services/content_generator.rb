@@ -705,6 +705,27 @@ class ContentGenerator
     BLOCK
   end
 
+  # Le discours (chantier 5, 06/10/2026, d'après un proche de Cyrille, consultant expérimenté) : le texte
+  # répond à quatre questions avant que le lecteur ne les pose. Les trois premières existaient en pièces
+  # détachées (signal, réalisation, chiffre) ; la quatrième — pourquoi lui — manquait.
+  def discourse_block
+    <<~BLOCK.strip
+      LE DISCOURS — le texte répond à quatre questions avant que le lecteur ne les pose, dans ses phrases, sans
+      les énoncer ni les numéroter :
+      1. Pourquoi votre entreprise ? Le signal public daté, avec sa source.
+      2. Pourquoi votre secteur ? Une réalisation comparable, avec son contexte et son chiffre exacts.
+      3. Pourquoi maintenant, en euros ? Un chiffre des comptes, s'il figure dans les sources, relié à sa cause
+         d'atelier probable (un ou deux gaspillages), posé comme une question. Sans chiffre dans les sources, la
+         question se pose sans chiffre — jamais un chiffre venu d'ailleurs.
+      4. Pourquoi vous ? La ligne des comptes que porte le destinataire, d'après sa fonction : c'est elle qui
+         justifie de lui écrire à lui. Le lien se dit en une proposition (« c'est votre BFR qui porte ces
+         stocks »), jamais comme une leçon sur son métier.
+      LES FONCTIONS ET LA LIGNE DES COMPTES QU'ELLES PORTENT :
+      #{Interlocutors.to_prompt}
+      Fonction absente du brief : écris pour le dirigeant, et signale-le dans les points à personnaliser.
+    BLOCK
+  end
+
   # La proposition suit l'offre arrêtée le 05/10/2026 (ConsultingOffer) : diagnostic payé dès la
   # commande, plan en tiroirs, exécution, outil en option. Le modèle rédige le fond ; il n'écrit
   # aucun prix ni aucune durée — Ruby ajoute les conditions sous le texte, et FigureAudit retire
@@ -843,6 +864,10 @@ class ContentGenerator
 
       #{wastes_block}
 
+      #{discourse_block}
+      Dans la note, les questions 1 à 3 portent l'ouverture et les constats ; la 4 décide quel constat passe en
+      premier — celui qui touche la ligne du destinataire.
+
       RÉALISATIONS DE CYRILLE (preuves à citer avec leurs chiffres et leur contexte réel — document privé, les
       noms d'entreprises sont autorisés — sans jamais décrire la méthode ; sans les identifiants internes N°XX) :
       #{realisations_str}
@@ -933,7 +958,8 @@ class ContentGenerator
       est automatique.
 
       #{Generation::SECTION_MARKERS[:short]}
-      La LETTRE D'ACCOMPAGNEMENT de la note, 120 à 180 mots, adressée au destinataire, qui nomme la source
+      La LETTRE D'ACCOMPAGNEMENT de la note, 120 à 180 mots, adressée au destinataire, qui dit en une phrase
+      pourquoi c'est à lui qu'elle s'adresse (la ligne des comptes qu'il porte, voir LE DISCOURS), qui nomme la source
       publique d'où vient le signal (une annonce, un article, des comptes déposés) et qui donne envie d'ouvrir
       la note sans en répéter le contenu.
 
@@ -1036,6 +1062,12 @@ class ContentGenerator
         signal ne lui appartient pas : « l'annonce de <entreprise> du 20 juillet pour le site de X », jamais
         « votre annonce » — il ne l'a sans doute pas rédigée et n'en suit peut-être pas le détail.
       - Langue : français, sauf instruction contraire.
+
+      #{discourse_block}
+      Dans trois à cinq phrases, la place manque : la question 4 tient en une proposition, et si une question
+      doit céder, c'est la 3. Un seul chiffre sur l'entreprise au plus.
+
+      #{wastes_block}
 
       RÉALISATIONS DE CYRILLE (document privé, noms réels autorisés) :
       #{realisations_str}

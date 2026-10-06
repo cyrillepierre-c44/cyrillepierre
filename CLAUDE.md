@@ -259,6 +259,17 @@ non-qualité, des stocks périmés. Toujours en français, comme hypothèses ; d
 est un symptôme, pas une ordonnance (compatible avec `NO_PRESCRIPTION_RULE`). Le diagnostic range chaque
 perte dans l'un des huit.
 
+**Le discours, quatre questions** (chantier 5, 06/10/2026) : le premier message et la note de diagnostic
+répondent, dans leurs phrases et sans les énoncer, à « pourquoi votre entreprise » (signal daté), « pourquoi
+votre secteur » (réalisation comparable), « pourquoi maintenant, en euros » (un chiffre des comptes relié à sa
+cause probable, jamais un chiffre venu d'ailleurs) et « **pourquoi vous** » — la ligne des comptes que porte le
+destinataire d'après sa fonction (**`Interlocutors`**, `app/models/interlocutors.rb` : un DAF porte le BFR, un
+directeur d'usine le coût de revient et les heures, un DRH l'intérim et l'absentéisme). C'était la pièce qui
+manquait. `ContentGenerator#discourse_block` ; dans le message de 90 mots la question 3 cède la première,
+dans la note la question 4 décide quel constat passe en premier, et la lettre d'accompagnement dit pourquoi
+elle s'adresse à ce lecteur. Simulation du 06/10 (DAF fictif) : « Je vous écris à vous parce que … un poste
+de production vacant finit dans vos lignes avant celles de l'atelier ».
+
 ⚠ **Simulation avant toute refonte de prompt** : la proposition a été générée en local sur une entreprise
 fictive (`bin/rails runner` d'un script du scratchpad, `ContentGenerator.call`, ~3 min et quelques dizaines de
 centimes sur Fable). La première version faisait 1 050 mots, inventait des étapes de fabrication, livrait le

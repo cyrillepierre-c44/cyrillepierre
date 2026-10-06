@@ -880,5 +880,27 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert final.end_with?("Cyrille PIERRE")
     assert final.start_with?("Ouverture.")
   end
+
+  # Le discours (chantier 5, 06/10/2026) : quatre questions, dont « pourquoi vous », qui manquait.
+  test "the outreach message and the brief answer the four questions, why you included" do
+    { outreach_message: "Dans trois à cinq phrases", executive_brief: "la 4 décide quel constat passe en" }.each do |kind, rule|
+      context = FakeContext.new(replies: ["a", "b"])
+      run_generator(Generation.create!(user: @user, kind: kind, input_text: "Brief."), context)
+      instructions = context.draft_chat.instructions
+
+      assert_includes instructions, "4. Pourquoi vous ? La ligne des comptes que porte le destinataire", kind
+      assert_includes instructions, "- Directeur financier (DAF) : porte le BFR, la trésorerie et la marge brute", kind
+      assert_includes instructions, "jamais un chiffre venu d'ailleurs", kind
+      assert_includes instructions, "LES HUIT GASPILLAGES", kind
+      assert_includes instructions, rule, kind
+    end
+  end
+
+  test "the cover letter of the brief says why it is addressed to this reader" do
+    context = FakeContext.new(replies: ["a", "b"])
+    run_generator(Generation.create!(user: @user, kind: :executive_brief, input_text: "Brief."), context)
+
+    assert_includes context.draft_chat.instructions, "pourquoi c'est à lui qu'elle s'adresse"
+  end
 end
 
