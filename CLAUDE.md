@@ -231,6 +231,13 @@ personnaliser, corrections automatiques, mail d'envoi. **PDF et aperçu** comme 
 placent avant « ## Pour démarrer » (`NEXT_STEP_HEADING`) — ajoutées en fin de texte, elles tombaient sous la
 signature dans le PDF.
 
+**Outil de suivi des pertes (option de l'offre) : PAS dans ce dépôt, pas commencé.** Cadrage décidé le
+06/10/2026 : vendu en option signée sur une maquette de démonstration (exemple fictif de la fromagerie : perte
+saisie au poste → gaspillage TIMWOODS → indicateurs atelier → indicateurs dirigeant → euros au compte de
+résultat), construite APRÈS la revue des 26 réalisations, qui dira quels gaspillages chaque mission a traités.
+La V1 se conçoit avec le premier client ; maquette et V1 de démonstration tournent en local chez Cyrille, un
+hébergement par client ne se décide qu'à l'usage réel. Ne pas l'ajouter au site sans demande explicite.
+
 **Version Word (.docx)** de la note et de la proposition (06/10/2026, demande de Cyrille : corriger dans
 Word puis faire lui-même le PDF) : bouton « Télécharger en Word », action `docx`, service **`GenerationDocx`**,
 même grammaire que le PDF mais en vrais styles Word (Titre, Titre 1 à filet doré, Titre 2, listes à puces et
