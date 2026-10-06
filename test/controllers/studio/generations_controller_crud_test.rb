@@ -480,6 +480,15 @@ module Studio
       end
     end
 
+    # Le message se compte en mots sous son titre, en rouge au-delà de 90, comme la note d'invitation.
+    test "the first message shows its word count against the limit" do
+      message = outreach_for(prospect_for(@editor))
+
+      get studio_generation_path(message)
+
+      assert_select ".studio-char-count:not(.studio-char-count--over)", text: "2/90 mots"
+    end
+
     test "sending the email delivers from contact@ and journals the contact on the prospect sheet" do
       prospect = prospect_for(@editor)
       message = outreach_for(prospect)

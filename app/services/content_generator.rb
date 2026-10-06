@@ -10,6 +10,13 @@ class ContentGenerator
     aucun chiffre ni aucune date, n'ajoute rien. Réponds par la note seule, sans guillemets ni commentaire.
   PROMPT
 
+  MESSAGE_SHORTEN_INSTRUCTIONS = <<~PROMPT
+    Tu raccourcis un message LinkedIn de premier contact pour qu'il tienne en #{Generation::MESSAGE_WORD_LIMIT} mots
+    AU PLUS. Garde la formule d'appel telle quelle, la source datée du signal, la raison pour laquelle on écrit à ce
+    destinataire, la réalisation avec son chiffre et la question finale ; resserre ou retire le reste. Ne change
+    aucun chiffre, aucune date, aucun nom, n'ajoute rien. Réponds par le message seul, sans guillemets ni commentaire.
+  PROMPT
+
   # Les pages de fond du site, qui sont les cibles de lien les plus stables : leurs adresses ne
   # bougent pas, contrairement à celle d'un article qu'on pourrait dépublier.
   SITE_PAGES = {
@@ -142,7 +149,7 @@ class ContentGenerator
     draft = ask(new_chat.with_instructions(system_prompt), user_prompt)
     draft = audit_figures(draft) if generation.audited?
     output = proofread(draft)
-    output = fit_invitation(output) if generation.outreach_message?
+    output = fit_outreach(output) if generation.outreach_message?
     output = append_conditions(output) if generation.commercial_proposal?
     generation.update!(output: output, status: :generated)
     generation
@@ -175,25 +182,34 @@ class ContentGenerator
     title ? "passerelle Mammouth — #{title.strip}" : error.message.truncate(300)
   end
 
-  # Le modèle compte mal les caractères ; Ruby mesure la note d'invitation et, si elle dépasse,
-  # la fait raccourcir par le modèle rapide, deux fois au plus. Ce qui dépasse encore reste tel
-  # quel et la page l'affiche en rouge : mieux vaut une note à couper à la main qu'une note tronquée.
-  def fit_invitation(text)
+  # Le modèle compte mal : Ruby mesure la note d'invitation (caractères) et le message (mots) et, s'ils
+  # dépassent, les fait raccourcir par le modèle rapide, deux fois au plus. Ce qui dépasse encore reste tel
+  # quel et la page l'affiche en rouge : mieux vaut un texte à couper à la main qu'un texte tronqué.
+  def fit_outreach(text)
+    text = fit_section(text, :invitation, Generation::INVITATION_LIMIT, :length, INVITATION_SHORTEN_INSTRUCTIONS)
+    fit_section(text, :final, Generation::MESSAGE_WORD_LIMIT, :words, MESSAGE_SHORTEN_INSTRUCTIONS)
+  end
+
+  def fit_section(text, key, limit, measure, instructions)
     sections = sections_of(text)
-    note = sections&.dig(:invitation)
-    return text if note.nil? || note.length <= Generation::INVITATION_LIMIT
+    content = sections&.dig(key)
+    return text if content.nil? || size_of(content, measure) <= limit
 
     2.times do
-      shorter = ask(Mammouth.chat(model: PROOFREADING_MODEL).with_instructions(INVITATION_SHORTEN_INSTRUCTIONS), note)
+      shorter = ask(Mammouth.chat(model: PROOFREADING_MODEL).with_instructions(instructions), content)
                 .strip.delete_prefix("«").delete_suffix("»").strip
-      note = shorter if shorter.present? && shorter.length < note.length
-      break if note.length <= Generation::INVITATION_LIMIT
+      content = shorter if shorter.present? && size_of(shorter, measure) < size_of(content, measure)
+      break if size_of(content, measure) <= limit
     end
-    sections[:invitation] = note
+    sections[key] = content
     rebuild(sections, sections[:verify])
   rescue StandardError => e
-    Rails.logger.error "ContentGenerator invitation error: #{e.class} — #{e.message}"
+    Rails.logger.error "ContentGenerator #{key} fitting error: #{e.class} — #{e.message}"
     text
+  end
+
+  def size_of(content, measure)
+    measure == :words ? content.split.size : content.length
   end
 
   def proofread(text)
@@ -1050,8 +1066,11 @@ class ContentGenerator
       - Aucune flatterie, aucun « j'espère que vous allez bien », aucun « n'hésitez pas », aucun « je me permets »,
         aucune pièce jointe annoncée, aucun lien sauf, si un article publié ci-dessous traite du sujet exact, son
         adresse en fin de message. Vouvoiement. Ton d'un pair, direct, sobre.
-      - Le destinataire : si le brief le nomme, adresse-toi à lui ; sinon commence par « Bonjour [Prénom], » et
-        signale-le dans les points à personnaliser.
+      - La formule d'appel, dans le message, la note d'invitation et l'email : « Bonjour Monsieur Nom, » ou
+        « Bonjour Madame Nom, » quand le brief nomme le destinataire — JAMAIS le prénom seul, c'est un premier
+        contact avec un dirigeant (« Bonjour Julien » sonnait familier, simulation du 06/10/2026). Civilité
+        incertaine (ni « M. » ni « Mme » dans le brief, prénom épicène) : « Bonjour Prénom Nom, ». Destinataire
+        non nommé : « Bonjour Madame, Monsieur, ». Dans les deux cas, signale-le dans les points à personnaliser.
       - Si le brief dit POURQUOI ce destinataire (une nomination au BODACC, un article qui le cite), dis-le en
         une proposition avec la source et sa date : c'est ce qui justifie qu'on lui écrive à lui.
       - DESTINATAIRE AU-DESSUS DU SITE (direction groupe, vice-président des opérations, président de l'entité,
@@ -1080,7 +1099,8 @@ class ContentGenerator
       ligne, dans cet ordre :
 
       #{Generation::SECTION_MARKERS[:final]}
-      Le MESSAGE LINKEDIN : trois à cinq phrases, 90 mots au plus, 550 caractères au plus, sans objet ni
+      Le MESSAGE LINKEDIN : trois à cinq phrases, #{Generation::MESSAGE_WORD_LIMIT} mots AU PLUS, formule d'appel comprise — ils
+      seront comptés —, 550 caractères au plus, sans objet ni
       signature (LinkedIn les porte).
 
       #{Generation::SECTION_MARKERS[:invitation]}

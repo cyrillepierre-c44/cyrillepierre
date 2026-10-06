@@ -902,5 +902,30 @@ class ContentGeneratorTest < ActiveSupport::TestCase
 
     assert_includes context.draft_chat.instructions, "pourquoi c'est à lui qu'elle s'adresse"
   end
+
+  # Simulation du 06/10/2026 : 93 mots pour 90, et « Bonjour Julien » à un DAF qu'on ne connaît pas.
+  test "a first message over 90 words is shortened by the fast model, keeping the salutation rule" do
+    long_message = "Bonjour Monsieur Morel, #{'votre annonce est ouverte depuis juin et votre BFR la porte. ' * 10}Utile ?"
+    assert_operator long_message.split.size, :>, 90
+    short = "Bonjour Monsieur Morel, votre annonce est ouverte depuis juin : un relais vous serait-il utile ?"
+    draft = "###VERSION_FINALE###\n#{long_message}\n\n###NOTE_INVITATION###\nBonjour Monsieur Morel, qui pilote ?\n\n" \
+            "###A_PERSONNALISER###\n- x\n\n###VERSION_COURTE###\nObjet : Votre annonce\nCorps."
+    record = Generation.create!(user: @user, kind: :outreach_message, input_text: "SIGNAL : annonce.")
+    context = FakeContext.new(replies: [draft, :echo, short])
+
+    run_generator(record, context)
+
+    shortener = context.chats.find { |c| c.instructions.to_s.include?("raccourcis un message LinkedIn") }
+    assert_equal long_message, shortener.question
+    assert_equal ContentGenerator::PROOFREADING_MODEL, shortener.model
+    assert_equal short, record.reload.sections[:final]
+    assert_not record.message_too_long?
+    assert_equal "Bonjour Monsieur Morel, qui pilote ?", record.invitation_note, "la note d'invitation est intacte"
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "JAMAIS le prénom seul"
+    assert_includes instructions, "« Bonjour Madame, Monsieur, »"
+    assert_includes instructions, "90 mots AU PLUS, formule d'appel comprise"
+  end
 end
 

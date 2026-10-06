@@ -63,6 +63,9 @@ class Generation < ApplicationRecord
   # (constaté le 23/09/2026 : 356 caractères refusés). Le modèle compte mal : Ruby mesure, et
   # ContentGenerator fait raccourcir ce qui dépasse.
   INVITATION_LIMIT = 200
+  # Le message LinkedIn de premier contact : 90 mots, que le modèle dépassait aussi (93 sur la simulation
+  # du 06/10/2026). Ruby compte, le modèle rapide raccourcit, comme pour la note d'invitation.
+  MESSAGE_WORD_LIMIT = 90
 
   SECTION_LABELS = {
     final: "Version finale",
@@ -206,6 +209,14 @@ class Generation < ApplicationRecord
 
   def invitation_too_long?
     invitation_note.to_s.length > INVITATION_LIMIT
+  end
+
+  def message_word_count
+    sections[:final].to_s.split.size
+  end
+
+  def message_too_long?
+    message_word_count > MESSAGE_WORD_LIMIT
   end
 
   def email_sendable?

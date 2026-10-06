@@ -285,8 +285,11 @@ question, et ne vendent rien — il précède la note de diagnostic, comme pour 
 message LinkedIn (90 mots), **note d'invitation** (`###NOTE_INVITATION###`, ajoutée le 23/09/2026 :
 sans abonnement LinkedIn n'accepte que 200 caractères avec une demande de mise en relation, et c'est
 souvent le seul canal — 356 caractères refusés ce jour-là ; `Generation::INVITATION_LIMIT`, le modèle
-compte mal donc `ContentGenerator#fit_invitation` mesure en Ruby et fait raccourcir par le modèle
-rapide deux fois au plus, la page affiche le compteur, en rouge au-delà), points à personnaliser,
+compte mal donc `ContentGenerator#fit_outreach` mesure en Ruby et fait raccourcir par le modèle
+rapide deux fois au plus, la page affiche le compteur, en rouge au-delà ; depuis le 06/10/2026 le message
+lui-même est tenu de la même façon à 90 mots, `Generation::MESSAGE_WORD_LIMIT`, compteur « n/90 mots » —
+93 mots sur une simulation —, et la formule d'appel est « Bonjour Monsieur / Madame Nom », jamais le
+prénom seul, « Bonjour Madame, Monsieur » sans nom), points à personnaliser,
 « Corrections automatiques » (FigureAudit, via `Generation::AUDITED_KINDS`), variante email dont la
 première ligne est « Objet : … » (`Generation#email_subject` / `#email_body`). Le marqueur
 d'invitation est dans `SECTION_MARKERS` pour tous les types (ordre d'affichage et de `rebuild`), mais

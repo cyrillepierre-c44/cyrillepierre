@@ -150,6 +150,9 @@
               <div class="studio-section" data-controller="studio-clipboard">
                 <h3 class="studio-section-title">
                   <%= @generation.section_labels.fetch(key, key.to_s.humanize) %>
+                  <% if key == :final && @generation.outreach_message? %>
+                    <span class="studio-char-count <%= 'studio-char-count--over' if @generation.message_too_long? %>"><%= @generation.message_word_count %>/<%= Generation::MESSAGE_WORD_LIMIT %> mots</span>
+                  <% end %>
                   <% if key == :invitation %>
                     <span class="studio-char-count <%= 'studio-char-count--over' if content.length > Generation::INVITATION_LIMIT %>"><%= content.length %>/<%= Generation::INVITATION_LIMIT %></span>
                   <% end %>
