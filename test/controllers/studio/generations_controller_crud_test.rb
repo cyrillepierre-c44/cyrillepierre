@@ -386,6 +386,18 @@ module Studio
 
       get document_studio_generation_path(proposal)
       assert_response :success
+
+      # En Word aussi, pour que Cyrille corrige puis fasse lui-même le PDF (06/10/2026).
+      get studio_generation_path(proposal)
+      assert_select "a[href=?][data-turbo=false]", docx_studio_generation_path(proposal), text: "Télécharger en Word"
+      get docx_studio_generation_path(proposal)
+      assert_response :success
+      assert_equal "application/vnd.openxmlformats-officedocument.wordprocessingml.document", @response.media_type
+      assert_match(/filename="proposition-fonderie-sud.docx"/, @response.headers["Content-Disposition"])
+      assert @response.body.start_with?("PK"), "une archive zip"
+
+      get docx_studio_generation_path(@generation)
+      assert_response :not_found, "un post LinkedIn n'a pas de version Word"
     end
 
     test "the pdf follows the same rules as the printable document" do

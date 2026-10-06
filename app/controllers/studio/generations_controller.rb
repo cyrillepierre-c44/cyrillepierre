@@ -3,7 +3,7 @@ module Studio
     before_action :authenticate_user!
     before_action :set_generation,
                   only: %i[show edit update destroy regenerate publish unpublish generate_visual publish_to_linkedin
-                           document pdf send_email mark_sent]
+                           document pdf docx send_email mark_sent]
 
     def index
       @generations = policy_scope(Generation).order(updated_at: :desc)
@@ -111,8 +111,17 @@ module Studio
     # donnait qu'un long ruban.
     def pdf
       ensure_printable!
-      send_data ExecutiveBriefPdf.call(@generation), filename: pdf_filename, type: "application/pdf",
+      send_data ExecutiveBriefPdf.call(@generation), filename: download_filename("pdf"), type: "application/pdf",
                                                      disposition: "attachment"
+    end
+
+    # Le même document en Word, pour que Cyrille le corrige puis fasse lui-même le PDF (06/10/2026).
+    DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document".freeze
+
+    def docx
+      ensure_printable!
+      send_data GenerationDocx.call(@generation), filename: download_filename("docx"), type: DOCX_TYPE,
+                                                  disposition: "attachment"
     end
 
     def publish_to_linkedin
@@ -128,8 +137,8 @@ module Studio
       raise ActiveRecord::RecordNotFound unless @generation.printable?
     end
 
-    def pdf_filename
-      "#{@generation.display_title.parameterize.presence || @generation.kind_name.parameterize}.pdf"
+    def download_filename(extension)
+      "#{@generation.display_title.parameterize.presence || @generation.kind_name.parameterize}.#{extension}"
     end
 
     def prefill_from_prospect

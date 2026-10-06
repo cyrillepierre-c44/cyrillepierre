@@ -230,6 +230,17 @@ personnaliser, corrections automatiques, mail d'envoi. **PDF et aperçu** comme 
 placent avant « ## Pour démarrer » (`NEXT_STEP_HEADING`) — ajoutées en fin de texte, elles tombaient sous la
 signature dans le PDF.
 
+**Version Word (.docx)** de la note et de la proposition (06/10/2026, demande de Cyrille : corriger dans
+Word puis faire lui-même le PDF) : bouton « Télécharger en Word », action `docx`, service **`GenerationDocx`**,
+même grammaire que le PDF mais en vrais styles Word (Titre, Titre 1 à filet doré, Titre 2, listes à puces et
+numérotées qui repartent à 1), langue `fr-FR` pour le correcteur, en-tête « CONFIDENTIEL » + date, pied de
+page avec « page / total ». Écrit à la main avec `rubyzip` (déclarée dans le Gemfile : elle n'arrivait que via
+Selenium, groupe test, donc absente en production). Corps en Cambria : les chiffres « à l'ancienne » de Georgia
+descendaient sous la ligne. Espaces insécables entre milliers et devant €, %, K€, M€ (`NUMBER_SPACE`) : Word
+coupait « 12 | 000 € HT ». **Vérifier un .docx avec le vrai Word** : Office est installé côté Windows ; un
+script PowerShell (`Word.Application`, `Documents.Open`, `SaveAs2(…, 17)`) le convertit en PDF, lisible
+ensuite — c'est ainsi qu'ont été vus la marge haute trop courte et les chiffres de Georgia.
+
 **Les huit gaspillages (TIMWOODS), vocabulaire des pertes** (05/10/2026, demande de Cyrille) :
 `ConsultingOffer::WASTES` porte ses définitions (transport, inventaire, mouvements, attente, surproduction,
 sur-traitement — le surdosage en est un —, défauts, compétences) et chaque levier de `LEVERS` nomme les

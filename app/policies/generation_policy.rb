@@ -31,6 +31,10 @@ class GenerationPolicy < ApplicationPolicy
     show?
   end
 
+  def docx?
+    show?
+  end
+
   def generate_visual?
     update?
   end

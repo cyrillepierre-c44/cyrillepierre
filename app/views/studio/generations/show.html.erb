@@ -101,6 +101,8 @@
               (la réponse est un fichier) et laisserait sa barre de progression traîner en haut de l'écran. %>
           <%= link_to "Télécharger le PDF", pdf_studio_generation_path(@generation), class: "btn-cp-primary",
                       data: { turbo: false } %>
+          <%= link_to "Télécharger en Word", docx_studio_generation_path(@generation), class: "btn-cp-outline",
+                      data: { turbo: false } %>
           <%= link_to "Aperçu du document", document_studio_generation_path(@generation),
                       class: "btn-cp-outline", target: "_blank", rel: "noopener" %>
         <% end %>

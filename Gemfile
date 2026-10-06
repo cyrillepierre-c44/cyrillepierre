@@ -53,6 +53,8 @@ gem "pdf-reader"
 # La note de diagnostic en PDF paginé A4, générée côté serveur (pure Ruby, polices vendorées
 # dans vendor/fonts — les polices intégrées de Prawn ne couvrent pas « → », « × » ou « ≈ »)
 gem "prawn"
+# La note et la proposition en Word (GenerationDocx) : un .docx est une archive zip de fichiers XML.
+gem "rubyzip", require: "zip"
 # Prawn exige `matrix`, gem « bundled » de Ruby 3.1+ qui n'est plus chargeable sans être déclarée.
 # En local elle arrivait par Capybara (groupe test) ; en production elle manquait, et Heroku
 # refusait le build (« error while trying to load the gem 'prawn' »).
