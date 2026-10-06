@@ -76,4 +76,23 @@ class GenerationDocxTest < ActiveSupport::TestCase
     assert_includes text_of("word/header1.xml"), "CONFIDENTIEL"
     assert_includes @entries["word/footer1.xml"], %(w:instr="NUMPAGES")
   end
+
+  # Ordre imposé par la norme (ECMA-376, CT_PPr et CT_RPr), limité aux balises que le générateur emploie.
+  # Word 2007 refuse un fichier où elles sont dans le désordre ; Word 2016 l'accepte, d'où le piège.
+  PPR_ORDER = %w[pStyle keepNext numPr pBdr tabs spacing ind jc outlineLvl].freeze
+  RPR_ORDER = %w[rStyle rFonts b color spacing sz szCs u lang].freeze
+
+  test "paragraph and run properties follow the order the standard imposes" do
+    @entries.each do |name, content|
+      xml = Nokogiri::XML(content)
+      { "pPr" => PPR_ORDER, "rPr" => RPR_ORDER }.each do |node, order|
+        xml.xpath("//w:#{node}", "w" => W).each do |props|
+          children = props.element_children.map(&:name)
+          assert (children - order).empty?, "#{name} : balise inconnue dans #{node} #{children}"
+          assert_equal children.sort_by { |child| order.index(child) }, children, "#{name} : #{node} dans le désordre"
+        end
+      end
+    end
+  end
 end
+

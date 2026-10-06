@@ -239,7 +239,12 @@ Selenium, groupe test, donc absente en production). Corps en Cambria : les chiff
 descendaient sous la ligne. Espaces insécables entre milliers et devant €, %, K€, M€ (`NUMBER_SPACE`) : Word
 coupait « 12 | 000 € HT ». **Vérifier un .docx avec le vrai Word** : Office est installé côté Windows ; un
 script PowerShell (`Word.Application`, `Documents.Open`, `SaveAs2(…, 17)`) le convertit en PDF, lisible
-ensuite — c'est ainsi qu'ont été vus la marge haute trop courte et les chiffres de Georgia.
+ensuite — c'est ainsi qu'ont été vus la marge haute trop courte et les chiffres de Georgia. ⚠ **Mais le PC de
+Cyrille a aussi Word 2007** (`Program Files (x86)\Microsoft Office\Office12`), qui s'ouvre au double-clic, alors
+que l'automatisation COM lance Word 2016. Word 2016 tolère des réglages de paragraphe dans le désordre, Word
+2007 déclare alors le fichier « corrompu » — c'est arrivé au premier essai le 06/10/2026. L'ordre de `w:pPr`
+et `w:rPr` suit la norme (ECMA-376), et `generation_docx_test.rb` le vérifie : un passage Word 2016 sans erreur
+ne prouve pas que le fichier s'ouvre chez Cyrille.
 
 **Les huit gaspillages (TIMWOODS), vocabulaire des pertes** (05/10/2026, demande de Cyrille) :
 `ConsultingOffer::WASTES` porte ses définitions (transport, inventaire, mouvements, attente, surproduction,

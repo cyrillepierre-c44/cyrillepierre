@@ -10,6 +10,10 @@ require "zip"
 # Corps en Cambria, pas en Georgia : les chiffres « à l'ancienne » de Georgia descendaient sous la ligne,
 # illisible dans un document chiffré. Cambria est livrée avec Office.
 #
+# ⚠ L'ORDRE DES BALISES COMPTE : la norme fixe l'ordre des réglages d'un paragraphe (w:pPr) et d'un
+# texte (w:rPr). Word 2016 tolère le désordre, Word 2007 déclare le fichier corrompu — c'est la version
+# qui s'ouvre au double-clic chez Cyrille (06/10/2026). generation_docx_test.rb vérifie l'ordre.
+#
 # Écrit à la main plutôt qu'avec une gem : un .docx n'est qu'une archive de quelques fichiers XML,
 # et les gems de génération Word ne sont plus maintenues.
 class GenerationDocx
@@ -171,7 +175,7 @@ class GenerationDocx
       %(<w:hdr #{W}><w:p><w:pPr><w:pStyle w:val="Header"/>#{tab}</w:pPr>),
       %(<w:r>#{name}<w:t>#{escape(SiteIdentity::NAME)}</w:t></w:r>),
       %(<w:r><w:tab/></w:r><w:r>#{label}<w:t>CONFIDENTIEL</w:t></w:r></w:p>),
-      %(<w:p><w:pPr><w:pStyle w:val="Header"/>#{tab}#{rule}</w:pPr>),
+      %(<w:p><w:pPr><w:pStyle w:val="Header"/>#{rule}#{tab}</w:pPr>),
       %(<w:r><w:t xml:space="preserve">#{escape(subtitle)}</w:t></w:r>),
       %(<w:r><w:tab/></w:r><w:r><w:t>#{date}</w:t></w:r></w:p></w:hdr>)
     )
@@ -203,21 +207,21 @@ class GenerationDocx
       <w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/>
       <w:pPr><w:jc w:val="both"/></w:pPr></w:style>
       <w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/>
-      <w:next w:val="Normal"/><w:qFormat/><w:pPr><w:jc w:val="left"/><w:spacing w:before="120" w:after="240"/></w:pPr>
+      <w:next w:val="Normal"/><w:qFormat/><w:pPr><w:spacing w:before="120" w:after="240"/><w:jc w:val="left"/></w:pPr>
       <w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:b/><w:sz w:val="34"/></w:rPr></w:style>
       <w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/>
-      <w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:jc w:val="left"/>
+      <w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/>
       <w:pBdr><w:left w:val="single" w:sz="24" w:space="6" w:color="#{GOLD}"/></w:pBdr>
-      <w:spacing w:before="280" w:after="100"/><w:outlineLvl w:val="0"/></w:pPr>
+      <w:spacing w:before="280" w:after="100"/><w:jc w:val="left"/><w:outlineLvl w:val="0"/></w:pPr>
       <w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:b/><w:sz w:val="23"/></w:rPr></w:style>
       <w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/>
-      <w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:jc w:val="left"/>
-      <w:spacing w:before="200" w:after="80"/><w:outlineLvl w:val="1"/></w:pPr>
+      <w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/>
+      <w:spacing w:before="200" w:after="80"/><w:jc w:val="left"/><w:outlineLvl w:val="1"/></w:pPr>
       <w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:b/><w:sz w:val="21"/></w:rPr></w:style>
       <w:style w:type="paragraph" w:styleId="ListParagraph"><w:name w:val="List Paragraph"/>
       <w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:spacing w:after="60"/><w:ind w:left="360"/></w:pPr></w:style>
       <w:style w:type="paragraph" w:styleId="Header"><w:name w:val="header"/><w:basedOn w:val="Normal"/>
-      <w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr>
+      <w:pPr><w:spacing w:after="0"/><w:jc w:val="left"/></w:pPr>
       <w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:color w:val="#{MUTED}"/><w:sz w:val="16"/></w:rPr></w:style>
       <w:style w:type="paragraph" w:styleId="Footer"><w:name w:val="footer"/><w:basedOn w:val="Header"/></w:style>
       <w:style w:type="character" w:styleId="Hyperlink"><w:name w:val="Hyperlink"/>
