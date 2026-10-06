@@ -216,7 +216,8 @@ la liste des adresses (`realisation_links`). Le document ne part qu'après lectu
 
 **Proposition commerciale (`commercial_proposal`)**, refondue le 05/10/2026 sur l'offre arrêtée avec
 Cyrille (document « Offre de conseil — des comptes au terrain ») : diagnostic payé dès la commande (express
-8 j / 8 000 € HT, complet 30 j / 30 000 € HT), plan d'amélioration en tiroirs parmi seize leviers reliés
+8 j / 8 000 € HT sur **un seul atelier ou une seule ligne, jamais le site entier** — décision du 06/10/2026,
+sinon un grand groupe le prendrait comme prix d'appel —, complet 30 j / 30 000 € HT sur le site entier), plan d'amélioration en tiroirs parmi seize leviers reliés
 chacun à une ligne des comptes, exécution au TJM de 1 000 € HT, outil de suivi en option. Tout cela vit
 dans **`ConsultingOffer`** (`app/models/consulting_offer.rb`) et nulle part ailleurs. ⚠ **Les prix ne
 passent jamais par un modèle** : le prompt les interdit, `ContentGenerator#append_conditions` écrit la

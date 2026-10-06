@@ -21,6 +21,8 @@ class ConsultingOfferTest < ActiveSupport::TestCase
     assert_includes text, "30 jours date de facture"
     assert_includes text, "des estimations"
     assert_no_match(/quick win/i, text)
+    # Décision du 06/10/2026 : l'express ne couvre jamais le site entier, sinon il sert de prix d'appel.
+    assert_includes text, "un seul atelier ou une seule ligne de production, jamais le site entier"
   end
 
   test "the sixteen levers are numbered for the prompt" do

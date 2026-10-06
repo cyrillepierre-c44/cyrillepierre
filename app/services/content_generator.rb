@@ -793,8 +793,9 @@ class ContentGenerator
          du lecteur (marge, trésorerie, BFR), à partir des sources ; une hypothèse reste une hypothèse.
       2. « ## Ce que je vous propose » — 180 mots au plus : la démarche en trois étapes ; le diagnostic range
          chaque perte dans l'un des huit gaspillages et la chiffre en euros. Recommande UN format
-         de diagnostic et dis pourquoi : l'express pour une PME ou un premier pas, le complet pour une ETI, un
-         site de groupe ou un board qui attend une vue complète. Nomme l'autre format en une phrase.
+         de diagnostic et dis pourquoi : l'express quand un atelier ou une ligne concentre l'enjeu (souvent une
+         PME, ou un premier pas), le complet dès que la question porte sur le site entier (ETI, site de groupe,
+         board qui attend une vue complète). Nomme l'autre format en une phrase.
       3. « ## Les leviers que je regarderais en premier » — 250 mots au plus : deux à quatre leviers de la
          liste, chacun rattaché à un fait des sources et à sa ligne des comptes, avec les deux ou trois
          gaspillages qui peuvent nourrir cette ligne, le tout présenté comme des hypothèses que le diagnostic

@@ -12,19 +12,21 @@ module ConsultingOffer
       name: "Diagnostic express",
       days: 8,
       price: 8_000,
-      scope: "les comptes des trois derniers exercices, une visite approfondie du site, un arbre des pertes " \
-             "simplifié où chaque perte est rangée dans l'un des huit gaspillages, et trois gisements " \
-             "chiffrés en euros",
+      # Un atelier ou une ligne, jamais le site entier (décision du 06/10/2026) : sinon un grand groupe
+      # prendrait l'express comme prix d'appel pour un diagnostic de site.
+      scope: "un seul atelier ou une seule ligne de production, jamais le site entier : les comptes des trois " \
+             "derniers exercices, une visite approfondie de ce périmètre, un arbre des pertes simplifié où " \
+             "chaque perte est rangée dans l'un des huit gaspillages, et trois gisements chiffrés en euros",
       schedule: [[50, "à la commande"], [50, "à la remise du diagnostic"]]
     },
     complet: {
       name: "Diagnostic complet",
       days: 30,
       price: 30_000,
-      scope: "trois à cinq exercices, une immersion sur le site (observations au poste, entretiens de " \
-             "l'opérateur au directeur), la revue des seize leviers, un arbre des pertes complet où chaque perte est " \
-             "rangée dans l'un des huit gaspillages, et les " \
-             "gisements classés par euros récupérables, avec leur investissement et leur temps interne",
+      scope: "le site entier : trois à cinq exercices, une immersion sur le site (observations au poste, " \
+             "entretiens de l'opérateur au directeur), la revue des seize leviers, un arbre des pertes complet " \
+             "où chaque perte est rangée dans l'un des huit gaspillages, et les gisements classés par euros " \
+             "récupérables, avec leur investissement et leur temps interne",
       schedule: [[30, "à la commande"], [40, "à la remise de l'analyse financière"],
                  [30, "à la remise du diagnostic"]]
     }
