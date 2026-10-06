@@ -29,6 +29,13 @@ bin/ci                 # full CI: setup → rubocop → brakeman → bundler-aud
 
 **Deployment**: Heroku. Deploy with `git push heroku master`. App Heroku : `cyrillepierre`. Site en production : **cyrillepierre.com** (pas cyrillepierre.fr). Les migrations tournent via la `release` phase du `Procfile`. `config.force_ssl` est actif ; **`assume_ssl` doit rester désactivé** sur Heroku (le routeur envoie déjà `X-Forwarded-Proto` ; l'activer empêche la redirection HTTP→HTTPS de se déclencher).
 
+**Push et déploiement autonomes (autorisés par Cyrille le 06/10/2026)** : après un commit, Claude pousse seul
+`git push` puis `git push heroku master` **si et seulement si** la suite complète est verte (ligne exacte
+« 0 failures, 0 errors », lue dans le journal, enchaînée avec `&&`) et RuboCop sans remarque ; puis il vérifie que
+la dernière version Heroku porte le commit (`heroku releases -a cyrillepierre -n 1`) et le dit. **Il demande
+avant** : toute migration de base de données (elle s'exécute en production à la release), tout `--force`
+(jamais sans Cyrille), et il s'arrête en montrant l'erreur si la CI GitHub ou la release Heroku échoue.
+
 **DNS / domaine nu** : depuis le 09/08/2026, les DNS sont **délégués à Cloudflare** (plan Free, NS `imani`/`lee.ns.cloudflare.com`, runbook suivi : `docs/runbook-dns-cloudflare.md`). L'apex `https://cyrillepierre.com` est proxifié par Cloudflare (SSL Full strict + Always Use HTTPS) et répond en 301 vers `www`, servi en direct par Heroku (`www` en DNS only). **DNSSEC actif depuis le 16/09/2026** (clé chez Cloudflare, DS Key Tag 2371 saisi chez Namecheap) et **DMARC `p=none`** géré par « DMARC Management » de Cloudflare, qui héberge lui-même l'adresse de rapport. Pas de CAA, à dessein (voir le runbook). ⚠️ Le transfert d'emails Namecheap (`eforward`) **ne fonctionne qu'avec ses propres serveurs de noms** : les MX recopiés en août étaient morts. Depuis le 16/09/2026, la réception passe par **Email Routing** de Cloudflare (gratuit) : MX `route1/2/3.mx.cloudflare.net`, SPF `include:_spf.mx.cloudflare.net`, DKIM `cf2024-1._domainkey`, et l'adresse `contact@cyrillepierre.com` redirigée vers la Gmail de Cyrille, catch-all sur *Drop*. L'application envoie toujours depuis Gmail ; Cyrille répond « en tant que » `contact@` depuis Gmail (SMTP Gmail), ce qui donne un **DMARC non aligné** (enveloppe `gmail.com`, pas de DKIM) — sans effet en `p=none`, mais `p=reject` est exclu tant qu'aucun relais ne signe DKIM pour le domaine. Piège de test : un mail envoyé depuis la Gmail vers `contact@` est dédupliqué par Gmail et n'apparaît pas en réception, Cloudflare envoie alors une notification « Missing email » qui n'est pas une erreur.
 
 **Référencement & lisibilité par les assistants** : `/sitemap.xml` est **dynamique**
