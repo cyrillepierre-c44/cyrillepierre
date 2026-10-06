@@ -94,5 +94,13 @@ class GenerationDocxTest < ActiveSupport::TestCase
       end
     end
   end
+
+  # rubyzip 3 écrivait du Zip64 par défaut : Word 2007 refusait le fichier (06/10/2026). Un en-tête local
+  # porte la version minimale requise en octets 4-5 ; 45 signale le Zip64, 20 est la version de base.
+  test "the archive is a plain zip that Word 2007 can read, without Zip64" do
+    bytes = GenerationDocx.call(@generation)
+    assert_equal 20, bytes.byteslice(4, 2).unpack1("v")
+    assert_not_includes bytes.b, [0x0001].pack("v") + [16].pack("v"), "pas de champ Zip64 dans les en-têtes"
+  end
 end
 

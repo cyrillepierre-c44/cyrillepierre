@@ -244,7 +244,10 @@ Cyrille a aussi Word 2007** (`Program Files (x86)\Microsoft Office\Office12`), q
 que l'automatisation COM lance Word 2016. Word 2016 tolère des réglages de paragraphe dans le désordre, Word
 2007 déclare alors le fichier « corrompu » — c'est arrivé au premier essai le 06/10/2026. L'ordre de `w:pPr`
 et `w:rPr` suit la norme (ECMA-376), et `generation_docx_test.rb` le vérifie : un passage Word 2016 sans erreur
-ne prouve pas que le fichier s'ouvre chez Cyrille.
+ne prouve pas que le fichier s'ouvre chez Cyrille. La vraie cause du « fichier corrompu » était ailleurs : **rubyzip 3 écrit du Zip64
+par défaut** (en-têtes « version 4.5 requise »), que Word 2007 ne lit pas. `config/initializers/rubyzip.rb`
+pose `Zip.write_zip64_support = false` et un test vérifie la version 2.0 dans l'en-tête de l'archive. Pour
+inspecter un .docx : `zipinfo -v fichier.docx` (version minimale requise, champs étendus).
 
 **Les huit gaspillages (TIMWOODS), vocabulaire des pertes** (05/10/2026, demande de Cyrille) :
 `ConsultingOffer::WASTES` porte ses définitions (transport, inventaire, mouvements, attente, surproduction,
