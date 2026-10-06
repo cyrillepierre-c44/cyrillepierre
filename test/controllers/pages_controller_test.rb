@@ -144,4 +144,29 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     # Les ancres servent de cible aux liens de la note de diagnostic.
     RealisationCatalog::ITEMS.each { |item| assert_select ".real-card##{RealisationCatalog.anchor(item)}", 1 }
   end
+
+  # L'offre dite publiquement (06/10/2026) : la démarche, les huit gaspillages depuis ConsultingOffer, le
+  # parcours en tiroirs — et jamais un prix, qui n'appartient qu'à la proposition.
+  test "the operations page states the offer, its eight wastes, and no price" do
+    get operations_path
+
+    assert_select "h2", text: "Des comptes au terrain"
+    assert_select "h2", text: "Lire les pertes au-delà de la matière"
+    ConsultingOffer::WASTES.each_value do |label, _definition|
+      assert_select ".glass-card-title", text: label
+    end
+    assert_select "h2", text: "Un parcours en tiroirs, payé étape par étape"
+    assert_no_match(/€ HT|8 000|30 000/, response.body)
+    assert_no_match(/premières semaines|court terme/, response.body)
+  end
+
+  test "the home page opens on the offer and promises no quick result" do
+    get root_path
+
+    assert_includes response.body, "je pars de vos comptes pour retrouver, dans l'atelier, le résultat qu'ils laissent entrevoir"
+    assert_no_match(/premières semaines/, response.body)
+    assert_includes response.body, "Sept 2025 – aujourd'hui"
+    assert_no_match(/2 000 employés|−10% absentéisme/, response.body)
+  end
 end
+

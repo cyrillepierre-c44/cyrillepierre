@@ -927,5 +927,32 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "« Bonjour Madame, Monsieur, »"
     assert_includes instructions, "90 mots AU PLUS, formule d'appel comprise"
   end
+
+  # Parade A du 06/10/2026 : seul le format recommandé apparaît dans les conditions, l'autre prix jamais.
+  test "the conditions show only the format the proposal recommends, and the marker never shows" do
+    record = Generation.create!(user: @user, kind: :commercial_proposal, input_text: "Brief.")
+    draft = proposal_draft("Je vous recommande le diagnostic complet.") + "\n\n###FORMAT###\ncomplet"
+    context = FakeContext.new(replies: [draft, :echo])
+
+    run_generator(record, context)
+
+    final = record.reload.sections[:final]
+    assert_includes final, "Diagnostic complet : 30 000 € HT"
+    assert_not_includes final, "8 000 €"
+    assert_not_includes record.output, "###FORMAT###"
+    assert_equal "Mail.", record.sections[:short]
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "Ne mentionne PAS l'autre format"
+    assert_includes instructions, ContentGenerator::FORMAT_MARKER
+  end
+
+  test "without a recommended format, both formats stay in the conditions" do
+    record = Generation.create!(user: @user, kind: :commercial_proposal, input_text: "Brief.")
+    run_generator(record, FakeContext.new(replies: [proposal_draft("Texte."), :echo]))
+
+    final = record.reload.sections[:final]
+    assert_includes final, "8 000 € HT"
+    assert_includes final, "30 000 € HT"
+  end
 end
 

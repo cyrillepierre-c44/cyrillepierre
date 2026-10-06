@@ -167,6 +167,8 @@ class SeoTest < ActionDispatch::IntegrationTest
       assert_select ".zone-block", 1, "#{path} devrait annoncer sa zone d'intervention"
       assert_select ".zone-block strong", text: "Lyon"
       assert_select ".zone-block strong", text: "Auvergne-Rhône-Alpes"
+      # Missions locales, retour chaque soir (décision du 29/09/2026) : plus de « toute la France ».
+      assert_no_match(/toute la France|partout en France/, css_select(".zone-block").text)
     end
   end
 

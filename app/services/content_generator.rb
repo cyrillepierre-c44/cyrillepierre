@@ -94,6 +94,10 @@ class ContentGenerator
   # contexte → brief) et le modèle liste ce qu'il a tranché sous ce marqueur, que Ruby verse au
   # journal. Une première version bloquait la génération : le 18/09/2026 elle a arrêté la note 203
   # sur une date d'inauguration que le brief tenait de la presse — la note n'a rien à attendre.
+  # Le format de diagnostic que la proposition recommande, donné par le modèle sur une ligne à part et retiré
+  # du texte : les conditions n'affichent que lui (parade A du 06/10/2026).
+  FORMAT_MARKER = "###FORMAT###"
+
   # Les conditions de la proposition se placent avant cette section : en fin de texte, elles tombaient
   # sous la signature (vu dans le PDF de la simulation du 05/10/2026).
   NEXT_STEP_HEADING = /^## Pour démarrer\b/
@@ -147,10 +151,11 @@ class ContentGenerator
 
   def call
     draft = ask(new_chat.with_instructions(system_prompt), user_prompt)
+    draft, recommended_format = split_format(draft) if generation.commercial_proposal?
     draft = audit_figures(draft) if generation.audited?
     output = proofread(draft)
     output = fit_outreach(output) if generation.outreach_message?
-    output = append_conditions(output) if generation.commercial_proposal?
+    output = append_conditions(output, recommended_format) if generation.commercial_proposal?
     generation.update!(output: output, status: :generated)
     generation
   rescue StandardError => e
@@ -795,7 +800,8 @@ class ContentGenerator
          chaque perte dans l'un des huit gaspillages et la chiffre en euros. Recommande UN format
          de diagnostic et dis pourquoi : l'express quand un atelier ou une ligne concentre l'enjeu (souvent une
          PME, ou un premier pas), le complet dès que la question porte sur le site entier (ETI, site de groupe,
-         board qui attend une vue complète). Nomme l'autre format en une phrase.
+         board qui attend une vue complète). Ne mentionne PAS l'autre format : seul le recommandé est présenté
+         (montrés côte à côte, l'express servait de prix d'appel, même à un grand groupe).
       3. « ## Les leviers que je regarderais en premier » — 250 mots au plus : deux à quatre leviers de la
          liste, chacun rattaché à un fait des sources et à sa ligne des comptes, avec les deux ou trois
          gaspillages qui peuvent nourrir cette ligne, le tout présenté comme des hypothèses que le diagnostic
@@ -842,18 +848,28 @@ class ContentGenerator
       Le MAIL D'ENVOI de la proposition, 80 à 140 mots, adressé au destinataire, qui rappelle l'échange ou le
       signal à l'origine de la démarche et donne envie d'ouvrir la proposition sans en répéter le contenu.
 
+      #{FORMAT_MARKER}
+      Un seul mot : « express » ou « complet », le format de diagnostic que tu as recommandé. Il ne sera pas
+      affiché : il décide des conditions que Ruby écrira sous la proposition.
+
       N'écris rien avant le premier marqueur ni après la dernière section.
     PROMPT
   end
 
   # Les conditions ne passent jamais par le modèle : elles sont écrites par Ruby, après la relecture,
   # depuis ConsultingOffer. Elles se placent avant « Pour démarrer » (NEXT_STEP_HEADING).
-  def append_conditions(text)
+  def split_format(draft)
+    text, format = draft.split(FORMAT_MARKER, 2)
+    word = format.to_s.strip.downcase[/\A(express|complet)\b/, 1]
+    [text.to_s.rstrip, word&.to_sym]
+  end
+
+  def append_conditions(text, format = nil)
     sections = sections_of(text)
     return text if sections.nil?
 
     final = sections[:final].strip
-    conditions = ConsultingOffer.conditions_markdown
+    conditions = ConsultingOffer.conditions_markdown(format)
     index = final =~ NEXT_STEP_HEADING
     sections[:final] = index ? "#{final[0...index]}#{conditions}\n\n#{final[index..]}" : "#{final}\n\n#{conditions}"
     rebuild(sections, sections[:verify])

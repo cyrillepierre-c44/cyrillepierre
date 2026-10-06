@@ -99,16 +99,15 @@ module ConsultingOffer
 
   # Écrit tel quel sous la proposition, après la relecture orthographique : rien ici ne passe par
   # un modèle.
-  def self.conditions_markdown
-    express, complet = DIAGNOSTICS.values_at(:express, :complet)
+  # Un seul format affiché quand la proposition en recommande un (parade A du 06/10/2026 : montrés côte à
+  # côte, l'express servait de prix d'appel) ; les deux, par sécurité, quand le format n'est pas connu.
+  def self.conditions_markdown(format = nil)
     <<~MARKDOWN.strip
       ## Conditions
 
       **Étape 1 — le diagnostic, au forfait, payé dès la commande**
 
-      - #{express[:name]} : #{euros(express[:price])} HT, #{express[:days]} jours de travail — #{express[:scope]}. Échéancier : #{schedule_line(express)}.
-      - #{complet[:name]} : #{euros(complet[:price])} HT, #{complet[:days]} jours de travail — #{complet[:scope]}. Échéancier : #{schedule_line(complet)}.
-      - Si le diagnostic complet est commandé dans les #{BRIDGE_MONTHS} mois qui suivent la remise de l'express, pour le même site, le prix de l'express en est déduit.
+      #{diagnostic_lines(format)}
 
       **Étape 2 — le plan d'amélioration** : chaque module retenu est chiffré au forfait à l'issue du diagnostic, avec son gain estimé, son investissement éventuel et le temps à libérer chez vous.
 
@@ -118,5 +117,19 @@ module ConsultingOffer
 
       Les travaux démarrent à l'encaissement de l'acompte. Factures payables à #{PAYMENT_DAYS} jours date de facture. Missions sur site depuis Lyon, à la journée : frais kilométriques seulement au-delà du rayon convenu, aucun frais d'hébergement. Les gains présentés dans le diagnostic et le plan sont des estimations : leur obtention dépend des décisions prises et du temps libéré par vos équipes.
     MARKDOWN
+  end
+
+  def self.diagnostic_lines(format)
+    keys = DIAGNOSTICS.key?(format) ? [format] : DIAGNOSTICS.keys
+    lines = keys.map do |key|
+      diagnostic = DIAGNOSTICS.fetch(key)
+      "- #{diagnostic[:name]} : #{euros(diagnostic[:price])} HT, #{diagnostic[:days]} jours de travail — " \
+        "#{diagnostic[:scope]}. Échéancier : #{schedule_line(diagnostic)}."
+    end
+    unless format == :complet
+      lines << "- Si le diagnostic du site entier est commandé dans les #{BRIDGE_MONTHS} mois qui suivent la remise " \
+               "de l'express, pour le même site, le prix de l'express en est déduit."
+    end
+    lines.join("\n")
   end
 end

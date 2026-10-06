@@ -1,5 +1,5 @@
 <% content_for :title, "Excellence Opérationnelle — Cyrille PIERRE" %>
-<% content_for :description, "Consultant en excellence opérationnelle à Lyon et en Auvergne-Rhône-Alpes. Identifier les pertes, déployer les bonnes méthodes et ancrer les gains : Lean, TRS, rebuts, flux." %>
+<% content_for :description, "Consultant en excellence opérationnelle à Lyon et en Auvergne-Rhône-Alpes. Partir de vos comptes pour retrouver les pertes de l'atelier, chiffrées en euros : Lean, TRS, rebuts." %>
 
 <section class="service-hero">
   <div class="container">
@@ -38,14 +38,117 @@
       </div>
       <div class="col-6 col-md-3">
         <div class="result-item">
-          <div class="result-value">−10%</div>
+          <div class="result-value">÷2</div>
           <div class="result-label">Absentéisme</div>
-          <div class="result-company">CENEXI · dès la 1ère année</div>
+          <div class="result-company">CENEXI · de 20 % à 10 % la 1ère année</div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<%# L'offre arrêtée le 05/10/2026, dite publiquement le 06/10 : la démarche « des comptes au terrain »,
+    les huit gaspillages et le parcours en tiroirs. Aucun prix ici, à dessein : ils ne figurent que dans
+    la proposition. Les gaspillages viennent de ConsultingOffer::WASTES, seule source de leurs définitions. %>
+<section class="py-5" data-controller="reveal">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-5 reveal">
+        <span class="section-eyebrow">La démarche</span>
+        <h2 class="section-title">Des comptes au terrain</h2>
+        <div class="accent-line"></div>
+        <p class="section-subtitle">
+          Je pars de vos comptes : les lignes qui dérivent, marge, heures, achats, stocks. Je descends ensuite dans
+          l'atelier retrouver les pertes qui les expliquent, chacune chiffrée en euros. Puis je reviens aux comptes :
+          chaque amélioration se relit au compte de résultat que vous présentez à votre conseil.
+        </p>
+        <p class="section-subtitle mt-3">
+          Le diagnostic a une valeur en soi : vous pouvez vous en servir pour expliquer vos résultats, que vous
+          lanciez les chantiers ensuite ou non. Ingénieur Arts &amp; Métiers, je suis aussi formé à l'analyse
+          financière (ICCF, HEC Paris).
+        </p>
+      </div>
+      <div class="col-lg-6 offset-lg-1 reveal reveal-delay-2">
+        <%= render "pages/method_steps", steps: [
+          { icon: "📒", title: "Vos comptes",        desc: "Les lignes qui dérivent" },
+          { icon: "🏭", title: "L'atelier",          desc: "Chaque perte rangée par gaspillage" },
+          { icon: "💶", title: "Les euros",          desc: "Chaque gisement chiffré" },
+          { icon: "🔁", title: "Retour aux comptes", desc: "Relu au compte de résultat" }
+        ] %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5" data-controller="reveal">
+  <div class="container">
+    <div class="row g-0 mb-4 reveal">
+      <div class="col-lg-8">
+        <span class="section-eyebrow">Les huit gaspillages</span>
+        <h2 class="section-title">Lire les pertes au-delà de la matière</h2>
+        <p class="section-subtitle">
+          Une perte n'est presque jamais de la matière tombée par terre. Des achats qui dérivent, c'est souvent de la
+          surproduction jetée, du surdosage, de la non-qualité ou des stocks périmés. Le diagnostic range chaque perte
+          dans l'un des huit gaspillages du Lean, puis la chiffre.
+        </p>
+      </div>
+    </div>
+    <% waste_icons = { transport: "🚚", inventory: "📦", motion: "🚶", waiting: "⏳",
+                       overproduction: "📈", overprocessing: "🔁", defects: "⚠️", skills: "🧠" } %>
+    <div class="row g-3">
+      <% ConsultingOffer::WASTES.each do |key, (label, definition)| %>
+        <div class="col-6 col-lg-3 reveal">
+          <div class="glass-card h-100">
+            <div class="glass-card-icon"><%= waste_icons.fetch(key) %></div>
+            <div class="glass-card-title"><%= label %></div>
+            <p class="glass-card-text"><%= definition.upcase_first %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="py-5" data-controller="reveal">
+  <div class="container">
+    <div class="row g-0 mb-5 reveal">
+      <div class="col-12">
+        <span class="section-eyebrow">Le parcours</span>
+        <h2 class="section-title">Un parcours en tiroirs, payé étape par étape</h2>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3 reveal reveal-delay-1">
+        <div class="service-card">
+          <span class="card-icon">📝</span>
+          <h3>La note de diagnostic</h3>
+          <p class="card-desc">Gratuite. Ce que disent vos comptes, les symptômes chiffrés et les questions à poser à votre site — sans l'ordonnance.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3 reveal reveal-delay-1">
+        <div class="service-card">
+          <span class="card-icon">🔍</span>
+          <h3>Le diagnostic</h3>
+          <p class="card-desc">Un atelier, une ligne ou le site entier, au forfait. Un arbre des pertes et des gisements classés par euros récupérables.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3 reveal reveal-delay-2">
+        <div class="service-card">
+          <span class="card-icon">🗂️</span>
+          <h3>Le plan à tiroirs</h3>
+          <p class="card-desc">Trois à cinq leviers parmi seize, chacun ouvert par un chantier court et mesuré. Aucun gain promis d'avance.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3 reveal reveal-delay-2">
+        <div class="service-card">
+          <span class="card-icon">🛠️</span>
+          <h3>L'exécution</h3>
+          <p class="card-desc">Par moi sur site, par vos équipes ou par des consultants délégués. Le temps à libérer chez vous est chiffré à chaque module.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section class="py-5" data-controller="reveal">
   <div class="container">
@@ -61,7 +164,7 @@
         <div class="service-card">
           <span class="card-icon">🔍</span>
           <h3>Diagnostic & Analyse des Pertes</h3>
-          <p class="card-desc">Je cartographie vos flux, quantifie vos pertes et construis avec vous le plan de progrès le plus rentable à court terme.</p>
+          <p class="card-desc">Je cartographie vos flux, quantifie vos pertes et construis avec vous le plan de progrès le plus rentable, chaque gisement chiffré en euros.</p>
           <ul class="card-list">
             <li>Value Stream Mapping (VSM)</li>
             <li>Analyse OEE / TRS et identification des gisements</li>
@@ -89,7 +192,7 @@
         <div class="service-card">
           <span class="card-icon">📊</span>
           <h3>Pilotage & Pérennisation</h3>
-          <p class="card-desc">La vraie valeur n'est pas dans le diagnostic — elle est dans la durabilité des gains. Je mets en place les routines qui font que ça tient.</p>
+          <p class="card-desc">Quand vous lancez les chantiers, la valeur est dans la durabilité des gains. Je mets en place les routines qui font que ça tient.</p>
           <ul class="card-list">
             <li>Indicateurs de performance (KPI) adaptés</li>
             <li>Routines quotidiennes et hebdomadaires d'animation</li>

@@ -39,5 +39,17 @@ class ConsultingOfferTest < ActiveSupport::TestCase
     end
     assert_includes ConsultingOffer.wastes_prompt, "le surdosage en est un"
   end
+
+  test "a recommended format shows alone, the bridge only after an express" do
+    express = ConsultingOffer.conditions_markdown(:express)
+    complet = ConsultingOffer.conditions_markdown(:complet)
+
+    assert_includes express, "8 000 € HT"
+    assert_not_includes express, "30 000 €"
+    assert_includes express, "le prix de l'express en est déduit"
+    assert_includes complet, "30 000 € HT"
+    assert_not_includes complet, "8 000 €"
+    assert_not_includes complet, "le prix de l'express en est déduit"
+  end
 end
 

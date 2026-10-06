@@ -231,6 +231,26 @@ personnaliser, corrections automatiques, mail d'envoi. **PDF et aperçu** comme 
 placent avant « ## Pour démarrer » (`NEXT_STEP_HEADING`) — ajoutées en fin de texte, elles tombaient sous la
 signature dans le PDF.
 
+**Un seul format dans la proposition (parade A, 06/10/2026)** : montrés côte à côte, l'express à 8 000 €
+servait de prix d'appel. Le modèle recommande un format, n'en mentionne pas d'autre, et l'indique sur une
+ligne `ContentGenerator::FORMAT_MARKER` (`###FORMAT###` express|complet) que Ruby retire du texte (`split_format`)
+avant d'appeler `ConsultingOffer.conditions_markdown(format)` : un seul format dans les conditions, la
+déduction de l'express seulement après un express. Marqueur absent → les deux formats, par sécurité.
+
+**L'offre sur les pages publiques (chantier 8, 06/10/2026)** : `/expertise-operationnelle` porte trois sections
+après la barre de résultats — « Des comptes au terrain » (démarche, diagnostic qui se vend seul, ICCF HEC),
+« Lire les pertes au-delà de la matière » (les huit gaspillages **rendus depuis `ConsultingOffer::WASTES`**, seule
+source) et « Un parcours en tiroirs ». ⚠ **Aucun prix sur le site** : ils n'appartiennent qu'à la proposition ;
+`pages_controller_test.rb` échoue si « € HT » apparaît sur la page. Accroche de l'accueil : « je pars de vos
+comptes pour retrouver, dans l'atelier, le résultat qu'ils laissent entrevoir ». Retirés le même jour, parce
+qu'ils contredisaient l'offre : « des résultats mesurables dès les premières semaines » (accueil), « à court
+terme » (expertise), « je me déplace sur toute la France » (partiel `_zone` et description de la page
+leadership — missions locales, retour chaque soir). Chiffres alignés sur le CV : CENEXI absentéisme 20 % → 10 %
+(et non « −10 % »), STMicroelectronics sans effectif inventé, indépendant depuis sept. 2025.
+
+⚠ Pour arrêter un serveur local lancé en arrière-plan, viser son PID (`lsof -ti :PORT`), jamais `pkill -f`
+avec un motif : le motif correspond aussi à la commande qui le lance, et le terminal s'interrompt (06/10/2026).
+
 **Outil de suivi des pertes (option de l'offre) : PAS dans ce dépôt, pas commencé.** Cadrage décidé le
 06/10/2026 : vendu en option signée sur une maquette de démonstration (exemple fictif de la fromagerie : perte
 saisie au poste → gaspillage TIMWOODS → indicateurs atelier → indicateurs dirigeant → euros au compte de
