@@ -376,6 +376,16 @@ plutôt que de l'attribuer : huit points de TRS, c'est énorme en industrie, et 
 industriel croit davantage celui qui reconnaît qu'aucun levier unique ne produit ça.
 **Appliquer la même prudence à toute réalisation dont le chiffre agrège plusieurs chantiers.**
 
+**Revue des 26 réalisations (à partir du 07/10/2026, dans l'ordre N°01 → N°26)** : chaque fiche est reprise avec
+Cyrille selon huit questions fixes (contexte réel, point de départ chiffré, **gaspillages TIMWOODS traités**,
+**chantiers menés et outils Lean** — souvent une dizaine —, résultats par chantier ou « résultat de site », ce qui
+ne doit jamais lui être attribué, public / confidentiel, preuve). Les réponses vivent dans le document partagé
+« Revue des réalisations » ; après chaque lot, le catalogue gagne des champs structurés (gaspillages en clés de
+`ConsultingOffer::WASTES`, outils, chantiers, durée), exigés par un test pour les fiches revues, et le Studio, la
+présentation de rendez-vous et la future maquette de l'outil de suivi s'en nourrissent. Points déjà relevés : N°02
+« gains rapides dès les premières semaines » (contraire à « aucun gain promis »), N°15 (rôle chez ST), N°16 (OEE
+Toolkit absent), bandeau « 1,7 M€ » de l'accueil.
+
 **Catalogue de réalisations = source unique** : depuis le 16/09/2026, la page `/realisations` est
 rendue depuis `RealisationCatalog` — `PAGE_SECTIONS` donne les sections et l'ordre éditorial des
 cartes, et chaque entrée porte un champ `page` (entreprise affichée, icône, description ou pivots,
