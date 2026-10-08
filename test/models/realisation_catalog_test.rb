@@ -124,7 +124,7 @@ class RealisationCatalogTest < ActiveSupport::TestCase
     item = RealisationCatalog.find("N°01")
     text = [item[:titre], item[:resultat], item.dig(:page, :description)].join(" ")
     assert_no_match(/silos|maintenance/i, text)
-    assert_includes item[:resultat], "+8 points"
+    assert_includes item[:resultat], "TRS de 57 % à 65 %"
   end
 end
 

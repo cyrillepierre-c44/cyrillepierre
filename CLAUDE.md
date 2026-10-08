@@ -367,13 +367,14 @@ lettres et propositions, `:anonymized` pour les contenus publics, `:detailed` po
 contact), et les trois formes portent le périmètre. Ne jamais recréer un rendu du catalogue à
 côté : c'est précisément l'oubli qui a produit les contenus faux.
 
-⚠️ **Résultats de site, non décomposables** : les +8 points de TRS (57 % → 65 %) et −30 % d'arrêts non
+⚠️ **Résultats de site, non décomposables** : les +8 % de TRS (57 % → 65 %) et −30 % d'arrêts non
 planifiés de la N°01 ne viennent d'aucun outil isolé. C'est un résultat de **site**, produit par le management
 de la performance mené de front pendant deux ans (DDS coachée, animation hebdomadaire par unité, SMED, coaching
 des managers), dont la contribution individuelle n'est pas isolable. ⚠ Jusqu'au 08/10/2026 le catalogue
 attribuait à la N°01 une « fusion des silos Production / Maintenance / Process » : elle a eu lieu chez LIEBIG
-(N°05), Cyrille n'avait pas la maintenance chez Yoplait. Écrire « +8 points », jamais « +8 % » (ce serait
-+14 % en relatif).
+(N°05), Cyrille n'avait pas la maintenance chez Yoplait. Vocabulaire de Cyrille (08/10/2026) : « +8 % de TRS »,
+comme en atelier, où l'écart d'un TRS se dit en pourcent ; écrire « 57 % → 65 % » partout où il y a la place,
+ce qui ôte toute lecture relative.
 Le `semantic_scope` de la N°01 l'interdit explicitement, et le prompt article demande de le dire
 plutôt que de l'attribuer : huit points de TRS, c'est énorme en industrie, et un directeur
 industriel croit davantage celui qui reconnaît qu'aucun levier unique ne produit ça.

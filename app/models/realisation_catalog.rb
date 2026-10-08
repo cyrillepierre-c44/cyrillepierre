@@ -9,7 +9,7 @@ module RealisationCatalog
                "tubes et desserts · directeur de production, membre du comité de direction, 3 managers d'unité en " \
                "direct · périmètre production et process, maintenance hors périmètre",
       titre: "Management de la performance de trois unités : TRS de 57 % à 65 % en moins de deux ans",
-      resultat: "TRS de 57 % à 65 % (+8 points) en moins de deux ans · −30 % d'arrêts non planifiés · 480 K€/an " \
+      resultat: "TRS de 57 % à 65 % (+8 %) en moins de deux ans · −30 % d'arrêts non planifiés · 480 K€/an " \
                 "(moins d'ouvertures de lignes le week-end, moins d'intérim et d'heures supplémentaires) — résultat " \
                 "de SITE, produit par le management de la performance (DDS coachée, animation hebdomadaire par " \
                 "unité, SMED, coaching des managers)",
