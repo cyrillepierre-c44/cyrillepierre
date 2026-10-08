@@ -4,17 +4,45 @@ module RealisationCatalog
     { id: "N°01",
       scale: "PME-site / filiale GE (General Mills)",
       type_orga: "usine industrielle automatisée",
-      context: "Yoplait (marque General Mills, GE mondial) · site Vienne · agroalimentaire · 200 personnes · 3 unités de production",
-      titre: "Fusion des silos Production / Maintenance / Process",
-      resultat: "+8% TRS · 480 K€/an · −30% aléas — résultat de SITE, produit par plusieurs chantiers menés de front (indicateurs de performance, routines quotidiennes et hebdomadaires, outils d'animation, fusion des silos, suivi des arrêts)",
+      context: "Yoplait (marque General Mills, GE mondial) · site Vienne · produits laitiers frais (yaourts, desserts) · " \
+               "200 personnes en 3×8 et week-end · 3 unités : fabrication, conditionnement en pots, conditionnement " \
+               "tubes et desserts · directeur de production, membre du comité de direction, 3 managers d'unité en " \
+               "direct · périmètre production et process, maintenance hors périmètre",
+      titre: "Management de la performance de trois unités : TRS de 57 % à 65 % en moins de deux ans",
+      resultat: "TRS de 57 % à 65 % (+8 points) en moins de deux ans · −30 % d'arrêts non planifiés · 480 K€/an " \
+                "(moins d'ouvertures de lignes le week-end, moins d'intérim et d'heures supplémentaires) — résultat " \
+                "de SITE, produit par le management de la performance (DDS coachée, animation hebdomadaire par " \
+                "unité, SMED, coaching des managers)",
+      # Revue du 08/10/2026 avec Cyrille : la « fusion des silos » que portait le titre a eu lieu chez
+      # LIEBIG (N°05), pas ici — chez Yoplait la maintenance n'était pas dans son périmètre.
+      reviewed_on: "2026-10-08",
+      period: "oct. 2018 → déc. 2020",
+      wastes: %i[waiting skills],
+      workstreams: [
+        "Routine quotidienne de performance (DDS), coachée auprès des managers d'unité",
+        "Animation hebdomadaire de la performance par unité, menée par Cyrille",
+        "SMED sur les changements de format (pots, tubes, desserts)",
+        "Travail transverse avec la maintenance préventive pour réduire ses temps d'arrêt",
+        "Coaching des managers d'unité, et souvent de leurs chefs d'équipe postés et responsables technique et " \
+        "méthodes : priorisation, causes racines, actions durables"
+      ],
       visual_hint: "Graphique en barres avant/après (57%→65%) avec une rangée d'icônes engrenage, personnes et " \
                    "poignée de main, et un encart montant en euros.",
-      semantic_scope: "Huit points de TRS, c'est énorme en industrie : ce résultat n'est PAS attribuable à la seule fusion des silos. Il vient de chantiers simultanés dont la contribution individuelle n'est pas isolable — et qui ne produisent cet effet que pris ensemble. Ne jamais présenter ce chiffre comme le rendement d'une initiative isolée ; dire au contraire que c'est un résultat d'ensemble.",
-      tags: %w[agro agroalimentaire TRS rendement performance silos management résultat-systémique],
+      semantic_scope: "Huit points de TRS, c'est énorme en industrie : ce résultat n'est PAS attribuable à un outil " \
+                      "ou à un chantier isolé. Il vient de l'ensemble du management de la performance (DDS, animation " \
+                      "hebdomadaire, SMED, coaching des managers), mené de front pendant deux ans — dire que c'est un " \
+                      "résultat d'ensemble. Ce n'est PAS un quick win : les résultats sont venus au-delà de trois mois " \
+                      "et ont crû ensuite. Ne jamais parler de « fusion des silos » ni de maintenance sous la " \
+                      "responsabilité de Cyrille pour ce site (c'était LIEBIG, N°05).",
+      tags: %w[agro agroalimentaire laitier TRS OEE performance DDS SMED animation-performance coaching-managers
+               arrêts-non-planifiés résultat-systémique],
       page: { company: "Yoplait · Vienne · 200 personnes · 3 unités",
-              result: "+8% TRS · 480 K€/an · −30% aléas",
+              result: "TRS 57 % → 65 % · 480 K€/an · −30 % d'arrêts non planifiés",
               icon: "fa-arrow-trend-up",
-              description: "Rituels de pilotage fondés sur l'équité factuelle, binômes mixtes TPM sur le terrain. Les équipes ont cessé de se renvoyer la balle pour devenir acteurs de la performance. 480 000 € d'économies annuelles sur 3 unités." } },
+              description: "Trois unités (fabrication, pots, tubes et desserts) pilotées par la performance : DDS coachée, " \
+                           "animation hebdomadaire par unité, SMED sur les changements de format, coaching des managers " \
+                           "à la priorisation et aux causes racines. TRS de 57 % à 65 % en moins de deux ans, 480 000 € " \
+                           "d'économies annuelles." } },
     { id: "N°02",
       scale: "ETI (CENEXI, 400p, 3 sites)",
       type_orga: "usine industrielle process continu",
@@ -405,11 +433,13 @@ module RealisationCatalog
   end
 
   def self.named_prompt_entry(item)
-    "#{item[:id]} #{item[:titre]} — #{item[:context]} — #{item[:resultat]}#{semantic_scope_line(item, indent: 5)}"
+    "#{item[:id]} #{item[:titre]} — #{item[:context]} — #{item[:resultat]}" \
+      "#{review_lines(item, indent: 5)}#{semantic_scope_line(item, indent: 5)}"
   end
 
   def self.anonymized_prompt_entry(item)
-    "#{item[:id]} #{item[:titre]} — #{item[:scale]}, #{item[:type_orga]} — #{item[:resultat]}#{semantic_scope_line(item, indent: 5)}"
+    "#{item[:id]} #{item[:titre]} — #{item[:scale]}, #{item[:type_orga]} — #{item[:resultat]}" \
+      "#{review_lines(item, indent: 5)}#{semantic_scope_line(item, indent: 5)}"
   end
 
   def self.detailed_prompt_entry(item)
@@ -418,7 +448,20 @@ module RealisationCatalog
       "  Contexte : #{item[:context]}",
       "  Réalisation : #{item[:titre]}",
       "  Résultat : #{item[:resultat]}"
-    ].join("\n") + semantic_scope_line(item, indent: 2)
+    ].join("\n") + review_lines(item, indent: 2) + semantic_scope_line(item, indent: 2)
+  end
+
+  # Les champs posés par la revue des réalisations (08/10/2026 →) : période, gaspillages traités et
+  # chantiers menés. Transmis au modèle pour qu'il cite des chantiers réels, jamais inventés.
+  def self.review_lines(item, indent:)
+    return "" if item[:reviewed_on].blank?
+
+    pad = " " * indent
+    [
+      "\n#{pad}Période : #{item[:period]}",
+      "\n#{pad}Gaspillages traités : #{ConsultingOffer.waste_labels(item[:wastes])}",
+      "\n#{pad}Chantiers : #{item[:workstreams].join(' ; ')}"
+    ].join
   end
 
   def self.semantic_scope_line(item, indent:)

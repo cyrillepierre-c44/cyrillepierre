@@ -480,7 +480,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     instructions = context.draft_chat.instructions
     assert_includes instructions, "résultats de SITE"
     assert_includes instructions, "contribution individuelle n'est pas isolable"
-    assert_includes instructions, "n'est PAS attribuable à la seule fusion des silos"
+    assert_includes instructions, "n'est PAS attribuable à un outil"
   end
   # --- post LinkedIn qui promeut un article ---------------------------------
 

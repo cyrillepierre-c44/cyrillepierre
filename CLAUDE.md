@@ -367,10 +367,13 @@ lettres et propositions, `:anonymized` pour les contenus publics, `:detailed` po
 contact), et les trois formes portent le périmètre. Ne jamais recréer un rendu du catalogue à
 côté : c'est précisément l'oubli qui a produit les contenus faux.
 
-⚠️ **Résultats de site, non décomposables** : les +8 % de TRS et −30 % d'aléas de la N°01 ne
-viennent pas de la fusion des silos seule. C'est un résultat de **site**, produit par des chantiers
-menés de front (indicateurs, routines d'animation, fusion des silos, suivi des arrêts), dont la
-contribution individuelle n'est pas isolable — et qui ne produisent cet effet que pris ensemble.
+⚠️ **Résultats de site, non décomposables** : les +8 points de TRS (57 % → 65 %) et −30 % d'arrêts non
+planifiés de la N°01 ne viennent d'aucun outil isolé. C'est un résultat de **site**, produit par le management
+de la performance mené de front pendant deux ans (DDS coachée, animation hebdomadaire par unité, SMED, coaching
+des managers), dont la contribution individuelle n'est pas isolable. ⚠ Jusqu'au 08/10/2026 le catalogue
+attribuait à la N°01 une « fusion des silos Production / Maintenance / Process » : elle a eu lieu chez LIEBIG
+(N°05), Cyrille n'avait pas la maintenance chez Yoplait. Écrire « +8 points », jamais « +8 % » (ce serait
++14 % en relatif).
 Le `semantic_scope` de la N°01 l'interdit explicitement, et le prompt article demande de le dire
 plutôt que de l'attribuer : huit points de TRS, c'est énorme en industrie, et un directeur
 industriel croit davantage celui qui reconnaît qu'aucun levier unique ne produit ça.
@@ -384,7 +387,13 @@ ne doit jamais lui être attribué, public / confidentiel, preuve). Les réponse
 `ConsultingOffer::WASTES`, outils, chantiers, durée), exigés par un test pour les fiches revues, et le Studio, la
 présentation de rendez-vous et la future maquette de l'outil de suivi s'en nourrissent. Points déjà relevés : N°02
 « gains rapides dès les premières semaines » (contraire à « aucun gain promis »), N°15 (rôle chez ST), N°16 (OEE
-Toolkit absent), bandeau « 1,7 M€ » de l'accueil.
+Toolkit absent), bandeau « 1,7 M€ » de l'accueil. **Champs d'une fiche revue** : `reviewed_on`, `period`, `wastes` (clés
+`ConsultingOffer::WASTES`), `workstreams` (chantiers réels) ; `RealisationCatalog.review_lines` les transmet aux
+trois formes de prompt, `realisation_catalog_test.rb` les exige. Leçons de la N°01 (08/10/2026) : un quick win
+suppose des chantiers Kaizen ou A3 avec des équipes **formées** (vécu chez LIEBIG et chez EFESO) ; ailleurs,
+l'animation de la performance produit des résultats puissants et croissants **au-delà de trois mois** — jamais
+« rapides ». Les jugements de Cyrille sur d'anciens collègues ne vont jamais dans le site. Aucune archive
+2003-2020 (disque perdu en 2025) : la revue repose sur son témoignage.
 
 **Catalogue de réalisations = source unique** : depuis le 16/09/2026, la page `/realisations` est
 rendue depuis `RealisationCatalog` — `PAGE_SECTIONS` donne les sections et l'ordre éditorial des

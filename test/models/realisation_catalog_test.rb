@@ -102,4 +102,29 @@ class RealisationCatalogTest < ActiveSupport::TestCase
     assert_equal "n07", RealisationCatalog.anchor(item)
     assert_equal "https://www.cyrillepierre.com/realisations#n07", RealisationCatalog.public_url(item)
   end
+
+  # La revue des réalisations (08/10/2026 →) : une fiche revue porte sa période, les gaspillages qu'elle
+  # a traités (clés de ConsultingOffer::WASTES) et ses chantiers, et le modèle les reçoit.
+  test "a reviewed realisation carries its period, its wastes and its workstreams to the prompts" do
+    reviewed = RealisationCatalog::ITEMS.select { |item| item[:reviewed_on].present? }
+    assert_includes reviewed.map { |item| item[:id] }, "N°01"
+    reviewed.each do |item|
+      assert item[:period].present?, item[:id]
+      assert item[:wastes].present?, item[:id]
+      assert (item[:wastes] - ConsultingOffer::WASTES.keys).empty?, item[:id]
+      assert item[:workstreams].size >= 2, item[:id]
+      %i[named anonymized detailed].each do |style|
+        assert_includes RealisationCatalog.to_prompt(style), item[:workstreams].first, "#{item[:id]} #{style}"
+      end
+    end
+  end
+
+  # Revue du 08/10/2026 : la fusion des silos et la maintenance appartiennent à LIEBIG, pas à Yoplait.
+  test "N°01 no longer claims the silo merger nor the maintenance" do
+    item = RealisationCatalog.find("N°01")
+    text = [item[:titre], item[:resultat], item.dig(:page, :description)].join(" ")
+    assert_no_match(/silos|maintenance/i, text)
+    assert_includes item[:resultat], "+8 points"
+  end
 end
+
