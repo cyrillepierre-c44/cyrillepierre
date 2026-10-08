@@ -449,6 +449,8 @@ prudence » — après le masque d'Android, il n'en restait qu'un CP minuscule p
 C'est l'icône masquable qu'Android choisit pour l'écran d'accueil, donc elle décide du rendu. `seo_test.rb` vérifie que chaque icône déclarée existe et
 a réellement la taille annoncée — l'ancien manifeste en annonçait une de 512 qui en faisait 64.
 
+**Titre affiché : « Manager industriel · Performance & Excellence opérationnelle »** (08/10/2026, Cyrille cherche aussi un CDI — entretien Sanofi Lyon le 09/10) : « Consultant & Manager de Transition » sur l'accueil, dans le titre Google, le schema.org (`jobTitle`, `disambiguatingDescription`), `SiteIdentity::DESCRIPTION`, le manifeste et le titre du CV se lisait comme un prestataire. Seule l'**identité** a changé : les pages d'offre (leadership, expertise), le Studio, la proposition et la veille gardent le vocabulaire du conseil et de la transition locale.
+
 **Identité du site** : nom, hôte, description, email, téléphone, LinkedIn et Malt vivent dans
 **`SiteIdentity`** (`app/services/site_identity.rb`) et nulle part ailleurs — balisage, pied de page,
 mentions légales, mails et expéditeur les lisent là. Seule exception : la page CV, autonome et

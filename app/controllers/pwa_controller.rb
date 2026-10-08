@@ -13,7 +13,7 @@ class PwaController < ApplicationController
       # application ordinaire. L'accroche reste sur le site, à sa place.
       name: "Cyrille PIERRE",
       short_name: "Cyrille PIERRE",
-      description: "Manager de transition et consultant en excellence opérationnelle, basé à Lyon.",
+      description: "Manager industriel, performance et excellence opérationnelle, basé à Lyon.",
       start_url: "/",
       scope: "/",
       display: "standalone",

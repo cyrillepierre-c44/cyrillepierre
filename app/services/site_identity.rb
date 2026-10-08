@@ -6,7 +6,7 @@ module SiteIdentity
   NAME = "Cyrille PIERRE".freeze
   # L'apex répond 301 vers www : toute adresse déclarée doit désigner www.
   HOST = "https://www.cyrillepierre.com".freeze
-  DESCRIPTION = "Cyrille PIERRE — Manager de transition et consultant en excellence " \
+  DESCRIPTION = "Cyrille PIERRE — Manager industriel, performance et excellence " \
                 "opérationnelle. Ingénieur Arts & Métiers, 20 ans d'industrie. Lyon.".freeze
   EMAIL = "contact@cyrillepierre.com".freeze
   PHONE_E164 = "+33618022452".freeze

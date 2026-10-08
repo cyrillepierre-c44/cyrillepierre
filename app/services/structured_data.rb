@@ -10,12 +10,12 @@ module StructuredData
       "@type" => "Person",
       "@id" => "#{HOST}/#person",
       "name" => SiteIdentity::NAME,
-      "jobTitle" => "Manager de transition et consultant en excellence opérationnelle",
+      "jobTitle" => "Manager industriel — performance et excellence opérationnelle",
       # Un homonyme très référencé existe : l'ambassadeur de France auprès de l'OCDE. Cette
       # propriété de schema.org est faite pour distinguer deux entités qui portent le même nom.
       # On décrit CE Cyrille PIERRE de façon spécifique, sans jamais nommer l'autre.
-      "disambiguatingDescription" => "Consultant indépendant et manager de transition en " \
-                                     "industrie, basé à Lyon 4e. Ingénieur Arts et Métiers, " \
+      "disambiguatingDescription" => "Manager industriel en performance et excellence " \
+                                     "opérationnelle, basé à Lyon 4e. Ingénieur Arts et Métiers, " \
                                      "20 ans en direction de production et d'opérations " \
                                      "industrielles (agroalimentaire, pharmaceutique, " \
                                      "microélectronique, métallurgie).",
@@ -37,7 +37,7 @@ module StructuredData
       },
       "workLocation" => { "@type" => "Place", "name" => "Lyon, Auvergne-Rhône-Alpes, France" },
       "knowsAbout" => [
-        "Management de transition", "Excellence opérationnelle", "Lean manufacturing",
+        "Management de la performance industrielle", "Excellence opérationnelle", "Lean manufacturing",
         "TRS (taux de rendement synthétique)", "Conduite du changement", "Industrie agroalimentaire",
         "Industrie pharmaceutique", "Digitalisation des processus industriels",
         "Ruby on Rails", "Intelligence artificielle appliquée à l'industrie"
@@ -49,7 +49,7 @@ module StructuredData
     {
       "@type" => "ProfessionalService",
       "@id" => "#{HOST}/#service",
-      "name" => "Cyrille PIERRE — Management de transition et excellence opérationnelle",
+      "name" => "Cyrille PIERRE — Performance et excellence opérationnelle industrielles",
       "legalName" => "Centaur Bike",
       # C'est ce que Google lit pour afficher une vignette de marque à côté du nom.
       "logo" => "#{HOST}/images/logo-cp.png",
