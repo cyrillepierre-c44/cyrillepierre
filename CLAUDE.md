@@ -248,8 +248,11 @@ déduction de l'express seulement après un express. Marqueur absent → les deu
 après la barre de résultats — « Des comptes au terrain » (démarche, diagnostic qui se vend seul, ICCF HEC),
 « Lire les pertes au-delà de la matière » (les huit gaspillages **rendus depuis `ConsultingOffer::WASTES`**, seule
 source) et « Un parcours en tiroirs ». ⚠ **Aucun prix sur le site** : ils n'appartiennent qu'à la proposition ;
-`pages_controller_test.rb` échoue si « € HT » apparaît sur la page. Accroche de l'accueil : « je pars de vos
-comptes pour retrouver, dans l'atelier, le résultat qu'ils laissent entrevoir ». Retirés le même jour, parce
+`pages_controller_test.rb` échoue si « € HT » apparaît sur la page. Accroche de l'accueil (réécrite le 08/10/2026 pour passer partout — CDI, conseil, transition) : « Expert de la
+performance dans les industries très réglementées — pharmaceutique, agroalimentaire, microélectronique — et les
+ateliers manufacturiers, je pars des comptes pour retrouver, dans l'atelier, le résultat qu'ils laissent entrevoir »,
+suivie de l'engagement en intrapreneur (« Salarié, consultant ou manager de transition… »). « les équipes », jamais
+« vos équipes ». Retirés le même jour, parce
 qu'ils contredisaient l'offre : « des résultats mesurables dès les premières semaines » (accueil), « à court
 terme » (expertise), « je me déplace sur toute la France » (partiel `_zone` et description de la page
 leadership — missions locales, retour chaque soir). Chiffres alignés sur le CV : CENEXI absentéisme 20 % → 10 %

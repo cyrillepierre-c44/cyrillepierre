@@ -71,6 +71,11 @@
     margin-bottom: 2.5rem;
   }
 
+  // Le premier des deux paragraphes de l'accroche : rapproché du second.
+  .hero-desc--lead {
+    margin-bottom: 1rem;
+  }
+
   .hero-ctas {
     display: flex;
     gap: 1rem;

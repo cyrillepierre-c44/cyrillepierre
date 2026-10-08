@@ -163,7 +163,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "the home page opens on the offer and promises no quick result" do
     get root_path
 
-    assert_includes response.body, "je pars de vos comptes pour retrouver, dans l'atelier, le résultat qu'ils laissent entrevoir"
+    assert_includes response.body, "je pars des comptes pour retrouver, dans l'atelier, le résultat qu'ils laissent entrevoir"
+    assert_includes response.body, "je m'engage toujours en intrapreneur"
     assert_no_match(/premières semaines/, response.body)
     assert_includes response.body, "Sept 2025 – aujourd'hui"
     assert_no_match(/2 000 employés|−10% absentéisme/, response.body)
