@@ -46,15 +46,47 @@ module RealisationCatalog
     { id: "N°02",
       scale: "ETI (CENEXI, 400p, 3 sites)",
       type_orga: "usine industrielle process continu",
-      context: "CENEXI (CMO pharma indépendant, 400 personnes, 3 sites) · site Fontenay-sous-Bois · lignes de remplissage aseptiques automatisées",
-      titre: "Plan de réduction des rebuts sur 18 mois",
-      resultat: "450 K€/an économisés",
+      context: "CENEXI (façonnier pharmaceutique indépendant, 400 personnes, 3 sites) · site Fontenay-sous-Bois · " \
+               "injectables aseptiques en ampoules, BPF/GMP, salle blanche classe A · 6 lignes de remplissage et une " \
+               "dizaine de machines de contrôle optique (mirage), d'ancienne génération · responsable fabrication " \
+               "(170 personnes en 3×8), plan mené personnellement · maintenance hors périmètre",
+      titre: "Réduction des pertes d'ampoules : une dizaine de chantiers, 450 K€/an en six mois",
+      resultat: "450 K€/an en six mois, par une dizaine de chantiers de 30 à 70 K€/an chacun (valeur directe des " \
+                "ampoules : coût de revient, et contenu perdu pour les ampoules pleines) · sur 3,3 M€/an de pertes " \
+                "identifiées, dont environ la moitié tenait à une technologie ancienne dont le remplacement ne se " \
+                "justifiait pas · premiers résultats dès les premiers mois",
+      # Revue du 08/10/2026 avec Cyrille : le plan a duré six mois (et non 18), et McKinsey n'y a jamais
+      # pris part — deux erreurs de l'ancienne fiche.
+      reviewed_on: "2026-10-08",
+      period: "plan de six mois, pendant le poste de responsable fabrication (juin 2016 → sept. 2018)",
+      wastes: %i[defects overprocessing],
+      workstreams: [
+        "Analyse des pertes en entonnoir à partir de la traçabilité SAP (consommation d'ampoules vides, stock de " \
+        "produits finis, compatibilité équipements et modèles) : par ligne, puis par équipement, puis par mode de perte",
+        "Priorisation par Pareto, uniquement sur les pertes au-delà des standards qualité BPF",
+        "Une dizaine de chantiers en petits groupes GEMBA + PDCA (45 minutes sur le terrain, 15 au bureau) : deux " \
+        "experts process, deux référents de la maintenance, des opérateurs de production ; décision en 2 à 3 semaines",
+        "Remise aux points zéro des machines (les basics)",
+        "Rénovation de petits équipements qui causaient des défauts cosmétiques et des casses récurrentes, au " \
+        "remplissage comme au mirage"
+      ],
       visual_hint: "Courbe en pointillés descendante (rebuts), une petite icône d'ampoule injectable, encart " \
                    "montant économisé.",
-      tags: %w[pharma pharmaceutique rebuts qualité pertes SAP],
+      semantic_scope: "Ne jamais citer de cabinet de conseil : Cyrille a mené seul l'analyse et le plan. Ne jamais " \
+                      "présenter les 3,3 M€ comme récupérés : seule la part atteignable sans changer la technologie " \
+                      "l'a été (450 K€/an). Les standards qualité BPF n'ont pas été touchés : seules les pertes au-delà " \
+                      "des standards ont été traitées. Ne jamais nommer ni critiquer les fabricants des équipements. " \
+                      "Premiers résultats « dès les premiers mois », jamais « dès les premières semaines ».",
+      tags: %w[pharma pharmaceutique aseptique ampoules rebuts pertes-matière casse SAP Pareto GEMBA PDCA
+               points-zéro analyse-des-pertes],
       page: { company: "CENEXI · Pharma aseptique · Fontenay-sous-Bois",
+              result: "450 K€/an en six mois · une dizaine de chantiers",
               icon: "fa-arrow-trend-down",
-              description: "3,3 M€ de pertes identifiées via extraction SAP croisée sur 3 routines. 7 chantiers prioritaires pilotés conjointement avec McKinsey. Analyse fine par produit et machine, gains rapides sécurisés dès les premières semaines." } },
+              description: "3,3 M€ de pertes annuelles identifiées par une analyse en entonnoir des données SAP : par " \
+                           "ligne, puis par équipement, puis par mode de perte. Priorisation par Pareto, uniquement sur " \
+                           "les pertes au-delà des standards BPF. Une dizaine de chantiers GEMBA-PDCA en petits groupes, " \
+                           "avec un opérateur à chaque fois : remise aux points zéro des machines, rénovation des petits " \
+                           "équipements qui cassaient ou marquaient les ampoules. Premiers résultats dès les premiers mois." } },
     { id: "N°03",
       scale: "PME-site / filiale GE (Campbell Soup Co.)",
       type_orga: "usine industrielle automatisée",
