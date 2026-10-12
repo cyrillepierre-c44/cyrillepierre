@@ -88,6 +88,24 @@ class ContentGenerator
     chiffres, jamais sur l'identité de l'entreprise.
   TXT
 
+  # Hashtags des posts LinkedIn (12/10/2026, demande de Cyrille : « une bien meilleure visibilité »).
+  # Jusque-là le prompt ne faisait que les tolérer (« 3 maximum ») et, sur un post tiré d'un article,
+  # la consigne « l'adresse seule sur la dernière ligne » les faisait sauter. Un vocabulaire fermé
+  # vaut mieux qu'un hashtag inventé à chaque post : LinkedIn range les lecteurs par hashtag suivi.
+  LINKEDIN_HASHTAG_COUNT = 3
+  LINKEDIN_HASHTAG_FIXED = "#ExcellenceOpérationnelle"
+  LINKEDIN_HASHTAG_POOL = %w[
+    #Industrie #Lean #PerformanceIndustrielle #TRS #Production #Maintenance #Qualité #SupplyChain
+    #Management #Leadership #ManagementDeTransition #Pharma #Agroalimentaire #IA
+  ].freeze
+  # Trio de repli, posé par Ruby quand le modèle n'a mis aucun hashtag : le modèle compte mal, et
+  # un post sans hashtag ne se verrait qu'une fois publié.
+  LINKEDIN_DEFAULT_HASHTAGS = {
+    "consultant" => [LINKEDIN_HASHTAG_FIXED, "#Industrie", "#Lean"],
+    "transition_management" => [LINKEDIN_HASHTAG_FIXED, "#ManagementDeTransition", "#Industrie"],
+    "cdi_search" => [LINKEDIN_HASHTAG_FIXED, "#Leadership", "#Industrie"]
+  }.freeze
+
   # La note de diagnostic ne se relit plus à la main : ses chiffres sont comparés aux sources par
   # FigureAudit, et le modèle ne reprend la plume que sur ce que l'audit a signalé. Quand l'analyse
   # et le brief se contredisent, une règle de préséance tranche (chiffres → analyse, faits de
@@ -156,6 +174,7 @@ class ContentGenerator
     output = proofread(draft)
     output = fit_outreach(output) if generation.outreach_message?
     output = append_conditions(output, recommended_format) if generation.commercial_proposal?
+    output = ensure_hashtags(output) if generation.linkedin_post?
     generation.update!(output: output, status: :generated)
     generation
   rescue StandardError => e
@@ -215,6 +234,16 @@ class ContentGenerator
 
   def size_of(content, measure)
     measure == :words ? content.split.size : content.length
+  end
+
+  # Un post sans aucun hashtag reçoit le trio de son orientation, en dernière ligne. Ruby ne
+  # retouche jamais un post qui en porte déjà : déplacer ou compléter des hashtags choisis par
+  # le modèle abîmerait le texte plus sûrement qu'il ne l'améliorerait.
+  def ensure_hashtags(text)
+    return text if text.blank? || text.match?(/(?:^|\s)#[[:alnum:]]/)
+
+    defaults = LINKEDIN_DEFAULT_HASHTAGS.fetch(generation.orientation, LINKEDIN_DEFAULT_HASHTAGS["consultant"])
+    "#{text.rstrip}\n\n#{defaults.join(' ')}"
   end
 
   def proofread(text)
@@ -549,7 +578,7 @@ class ContentGenerator
         identique aux deux endroits
       - Termine par une question ouverte ou une invitation à réagir, sans "lien en commentaire" artificiel et
         sans formule de growth-hacking creuse (pas de "MP-moi le mot clé X, je t'envoie mon template")
-      - Pas de hashtags excessifs (3 maximum, à la fin)
+      #{linkedin_hashtags_block}
       - Ne jamais inventer de chiffres ou de faits non fournis dans les sources
 
       AVANT DE RÉPONDRE, vérifie ton brouillon sur ces deux points précis (corrige-le si besoin avant de
@@ -560,9 +589,25 @@ class ContentGenerator
          en as plus de 2, retire les marqueurs ** des passages en trop. Si un passage en gras contient un verbe
          ou plus de 3 mots, raccourcis-le au seul chiffre ou mot-clé qu'il contient (ex. "**240 000 €
          économisés**" devient "**240 000 €**").
+      3. Regarde la dernière ligne : elle doit porter EXACTEMENT #{LINKEDIN_HASHTAG_COUNT} hashtags de la liste
+         fournie, dont #{LINKEDIN_HASHTAG_FIXED}, et rien d'autre. S'il en manque, ajoute-les ; s'il y en a trop
+         ou hors liste, retire-les.
 
       Réponds uniquement avec le texte du post, sans titre ni commentaire autour.
     PROMPT
+  end
+
+  # Les hashtags sont une obligation de présence, pas une tolérance : exactement trois, en toute
+  # dernière ligne, pris dans un vocabulaire fermé pour que les posts se retrouvent sous les
+  # mêmes mots-clés d'une semaine sur l'autre. L'un est fixe, les deux autres suivent le sujet et
+  # l'orientation du post.
+  def linkedin_hashtags_block
+    <<~BLOCK.strip
+      - HASHTAGS : le post se termine par EXACTEMENT #{LINKEDIN_HASHTAG_COUNT} hashtags, sur une dernière ligne
+        à part, après tout le reste (après l'adresse de l'article s'il y en a une). Toujours
+        #{LINKEDIN_HASHTAG_FIXED}, plus deux choisis dans cette liste selon le sujet et l'orientation du post,
+        jamais un hashtag inventé hors de la liste : #{LINKEDIN_HASHTAG_POOL.join(' ')}
+    BLOCK
   end
 
   # Quand le post promeut un article, il change de nature : son but n'est plus de susciter une
@@ -587,7 +632,9 @@ class ContentGenerator
       - Le post doit tenir debout seul. Quelqu'un qui ne clique pas doit quand même avoir appris
         quelque chose — c'est ce qui donne envie de cliquer.
       - Remplace l'Ouverture du canevas par une invitation à lire l'article, en une phrase, puis
-        l'adresse seule sur sa dernière ligne. Pas de « lien en commentaire », pas de « 👇 ».
+        l'adresse seule sur sa propre ligne. Pas de « lien en commentaire », pas de « 👇 ».
+      - Les #{LINKEDIN_HASHTAG_COUNT} hashtags viennent APRÈS l'adresse, sur la toute dernière ligne du post :
+        l'adresse n'est pas la fin du post, les hashtags le sont.
       - N'invente rien qui ne soit pas dans l'article.
     BLOCK
   end

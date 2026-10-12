@@ -91,11 +91,12 @@ class ContentGeneratorTest < ActiveSupport::TestCase
 
   test "stores the proofread text and marks the generation as generated" do
     record = generation
-    context = FakeContext.new(replies: [ "Brouillon avec una faute.", "Brouillon avec une faute." ])
+    context = FakeContext.new(replies: [ "Brouillon avec una faute.\n\n#Lean #TRS #ExcellenceOpérationnelle",
+                                         "Brouillon avec une faute.\n\n#Lean #TRS #ExcellenceOpérationnelle" ])
 
     run_generator(record, context)
 
-    assert_equal "Brouillon avec une faute.", record.reload.output
+    assert_equal "Brouillon avec une faute.\n\n#Lean #TRS #ExcellenceOpérationnelle", record.reload.output
     assert record.generated?
   end
 
@@ -135,12 +136,12 @@ class ContentGeneratorTest < ActiveSupport::TestCase
   # Une panne de relecture ne doit pas perdre le brouillon déjà produit.
   test "keeps the raw draft when proofreading fails" do
     record = generation
-    context = FakeContext.new(replies: [ "Le brouillon utile." ],
+    context = FakeContext.new(replies: [ "Le brouillon utile. #Lean #TRS #ExcellenceOpérationnelle" ],
                               proofread_error: RuntimeError.new("timeout"))
 
     run_generator(record, context)
 
-    assert_equal "Le brouillon utile.", record.reload.output
+    assert_equal "Le brouillon utile. #Lean #TRS #ExcellenceOpérationnelle", record.reload.output
     assert record.generated?
   end
 
@@ -520,6 +521,81 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     run_generator(Generation.create!(user: @user, kind: :linkedin_post), context)
 
     assert_not_includes context.draft_chat.instructions, "CE POST PROMEUT UN ARTICLE DU SITE"
+  end
+
+  # --- hashtags ---------------------------------------------------------------
+
+  # Les hashtags sont ce qui donne de la portée à un post ; jusqu'au 12/10/2026 le prompt ne faisait
+  # que les tolérer, et un post tiré d'un article les perdait derrière « l'adresse seule sur la
+  # dernière ligne ». Obligation de présence, vocabulaire fermé, dernière ligne : les trois se
+  # vérifient dans le prompt, et le filet Ruby se vérifie sur le texte.
+  test "a post is told to end on exactly three hashtags from a closed list" do
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(Generation.create!(user: @user, kind: :linkedin_post), context)
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "EXACTEMENT 3 hashtags, sur une dernière ligne"
+    assert_match(/Toujours\s+#ExcellenceOpérationnelle/, instructions)
+    assert_includes instructions, "jamais un hashtag inventé hors de la liste"
+    assert_includes instructions, ContentGenerator::LINKEDIN_HASHTAG_POOL.join(" ")
+    assert_not_includes instructions, "3 maximum"
+  end
+
+  test "a post promoting an article puts the hashtags after the link" do
+    article = Generation.create!(user: @user, kind: :article, status: :published,
+                                 published_at: Time.current, title: "Un titre", output: "Un texte.")
+    context = FakeContext.new(replies: [ "a", "b" ])
+
+    run_generator(Generation.create!(user: @user, kind: :linkedin_post, source_article: article), context)
+
+    instructions = context.draft_chat.instructions
+    assert_includes instructions, "hashtags viennent APRÈS l'adresse"
+    assert_not_includes instructions, "l'adresse seule sur sa dernière ligne"
+  end
+
+  test "the closed list and the fallback trios only hold well-formed hashtags" do
+    pool = ContentGenerator::LINKEDIN_HASHTAG_POOL
+    assert pool.all? { |tag| tag.match?(/\A#[[:alnum:]]+\z/) }, pool.inspect
+    assert_equal pool, pool.uniq
+
+    ContentGenerator::LINKEDIN_DEFAULT_HASHTAGS.each do |orientation, trio|
+      assert_equal ContentGenerator::LINKEDIN_HASHTAG_COUNT, trio.size, orientation
+      assert_equal ContentGenerator::LINKEDIN_HASHTAG_FIXED, trio.first, orientation
+      assert (trio - [ ContentGenerator::LINKEDIN_HASHTAG_FIXED ] - pool).empty?, "#{orientation} hors liste"
+    end
+    assert_equal Generation.orientations.keys.sort, ContentGenerator::LINKEDIN_DEFAULT_HASHTAGS.keys.sort
+  end
+
+  test "a post that came back without any hashtag receives the trio of its orientation" do
+    record = Generation.create!(user: @user, kind: :linkedin_post, orientation: :transition_management)
+    context = FakeContext.new(replies: [ "Un post nu.", "Un post nu.\n" ])
+
+    run_generator(record, context)
+
+    assert_equal "Un post nu.\n\n#ExcellenceOpérationnelle #ManagementDeTransition #Industrie",
+                 record.reload.output
+  end
+
+  test "a post that already carries hashtags is left untouched" do
+    record = Generation.create!(user: @user, kind: :linkedin_post)
+    context = FakeContext.new(replies: [ "a", "Un post.\n\n#Lean #TRS" ])
+
+    run_generator(record, context)
+
+    assert_equal "Un post.\n\n#Lean #TRS", record.reload.output
+  end
+
+  test "an article or a brief never receives hashtags" do
+    %w[article site_actu].each do |kind|
+      record = Generation.create!(user: @user, kind: kind)
+      context = FakeContext.new(replies: [ "a", "Un texte sans hashtag." ])
+
+      run_generator(record, context)
+
+      assert_equal "Un texte sans hashtag.", record.reload.output, kind
+      assert_not_includes context.draft_chat.instructions, "HASHTAGS :", kind
+    end
   end
 
 
