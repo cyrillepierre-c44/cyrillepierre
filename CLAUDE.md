@@ -794,7 +794,8 @@ sujet, une réalisation tirée au sort le ferait parler d'autre chose — et `li
 **lève explicitement** l'interdiction de pousser un lien, posée ailleurs dans le prompt et dans
 `ORIENTATION_GUIDANCE`. C'est la seule situation où un post doit se terminer par une adresse. Le prompt
 demande de bâtir le post sur UNE idée de l'article, pas de le résumer : un résumé complet supprime la
-raison de cliquer.
+raison de cliquer. Depuis le 12/10/2026 l'adresse n'est plus la dernière ligne : les trois hashtags
+obligatoires viennent après elle (voir « Hashtags obligatoires » plus haut).
 
 ## Publication directe sur LinkedIn (`LinkedinAuthController`, `LinkedinPublisher`)
 
