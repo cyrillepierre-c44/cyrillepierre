@@ -156,7 +156,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
       assert_select ".glass-card-title", text: label
     end
     assert_select "h2", text: "Un parcours en tiroirs, payé étape par étape"
-    assert_no_match(/€ HT|8 000|30 000/, response.body)
+    assert_no_match(/€ HT|7 000|11 000|40 000|1 400/, response.body)
+    assert_includes response.body, "un jour par semaine sur plusieurs mois"
     assert_no_match(/premières semaines|court terme/, response.body)
   end
 

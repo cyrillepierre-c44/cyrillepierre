@@ -381,7 +381,7 @@ module Studio
       assert_match(/filename="proposition-fonderie-sud.pdf"/, @response.headers["Content-Disposition"])
       text = PDF::Reader.new(StringIO.new(@response.body)).pages.map(&:text).join(" ").squish
       assert_includes text, "Ce que je vous propose"
-      assert_includes text, "8 000 € HT"
+      assert_includes text, "11 000 € HT"
       assert_not_includes text, "Le mail d'envoi"
 
       get document_studio_generation_path(proposal)

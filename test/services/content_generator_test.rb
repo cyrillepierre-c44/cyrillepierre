@@ -900,8 +900,15 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "6. Rendement matière — achats consommés — gaspillages à chercher : sur-traitement"
     assert_includes instructions, "du surdosage (sur-traitement)"
     assert_includes instructions, "avec les deux ou trois"
-    assert_not_includes instructions, "8 000 €"
-    assert_not_includes instructions, "30 000 €"
+    # Reprise du 21/10/2026 : trois portes d'entrée, trois rythmes, l'analyse financière n'est pas le livrable.
+    assert_includes instructions, ConsultingOffer::DIAGNOSTICS[:atelier][:scope]
+    assert_includes instructions, "en trois rythmes"
+    assert_includes instructions, "L'analyse financière n'est jamais le livrable"
+    assert_includes instructions, "« atelier », « express » ou « complet »"
+    assert_not_includes instructions, "7 000 €"
+    assert_not_includes instructions, "11 000 €"
+    assert_not_includes instructions, "40 000 €"
+    assert_not_includes instructions, "1 400 €"
     assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]
   end
 
@@ -1013,22 +1020,24 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     run_generator(record, context)
 
     final = record.reload.sections[:final]
-    assert_includes final, "Diagnostic complet : 30 000 € HT"
-    assert_not_includes final, "8 000 €"
+    assert_includes final, "Diagnostic complet : 40 000 € HT"
+    assert_not_includes final, "11 000 €"
+    assert_not_includes final, "7 000 €"
     assert_not_includes record.output, "###FORMAT###"
     assert_equal "Mail.", record.sections[:short]
     instructions = context.draft_chat.instructions
-    assert_includes instructions, "Ne mentionne PAS l'autre format"
+    assert_includes instructions, "Ne mentionne PAS les autres formats"
     assert_includes instructions, ContentGenerator::FORMAT_MARKER
   end
 
-  test "without a recommended format, both formats stay in the conditions" do
+  test "without a recommended format, all three formats stay in the conditions" do
     record = Generation.create!(user: @user, kind: :commercial_proposal, input_text: "Brief.")
     run_generator(record, FakeContext.new(replies: [proposal_draft("Texte."), :echo]))
 
     final = record.reload.sections[:final]
-    assert_includes final, "8 000 € HT"
-    assert_includes final, "30 000 € HT"
+    assert_includes final, "7 000 € HT"
+    assert_includes final, "11 000 € HT"
+    assert_includes final, "40 000 € HT"
   end
 end
 

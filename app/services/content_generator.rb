@@ -794,8 +794,9 @@ class ContentGenerator
     BLOCK
   end
 
-  # La proposition suit l'offre arrêtée le 05/10/2026 (ConsultingOffer) : diagnostic payé dès la
-  # commande, plan en tiroirs, exécution, outil en option. Le modèle rédige le fond ; il n'écrit
+  # La proposition suit l'offre arrêtée le 05/10/2026 et reprise le 21/10/2026 (ConsultingOffer) : une
+  # porte d'entrée payée dès la commande (atelier, express ou complet), plan en tiroirs, exécution en trois
+  # rythmes, outil de suivi conçu avec les équipes. Le modèle rédige le fond ; il n'écrit
   # aucun prix ni aucune durée — Ruby ajoute les conditions sous le texte, et FigureAudit retire
   # tout chiffre qui ne vient pas des sources. Aucun gain promis, aucun « quick win » : Cyrille
   # n'en a pas dans son parcours et refuse de vendre du rêve.
@@ -808,17 +809,24 @@ class ContentGenerator
 
       LA DÉMARCHE QUE CYRILLE VEND — partir des comptes pour remonter aux pertes de l'atelier, puis relier
       chaque amélioration à une ligne du compte de résultat ou du bilan :
-      - Étape 1, le DIAGNOSTIC, en deux formats. L'express : #{ConsultingOffer::DIAGNOSTICS[:express][:scope]}.
-        Le complet : #{ConsultingOffer::DIAGNOSTICS[:complet][:scope]}. Le diagnostic a une valeur en soi : un
-        dirigeant peut s'en servir pour comprendre et expliquer ses résultats, même sans lancer les chantiers.
+      - Étape 1, la PORTE D'ENTRÉE, en trois formats, payée dès la commande. L'atelier de direction
+        « assis / debout » : #{ConsultingOffer::DIAGNOSTICS[:atelier][:scope]}. Le diagnostic express :
+        #{ConsultingOffer::DIAGNOSTICS[:express][:scope]}. Le diagnostic complet :
+        #{ConsultingOffer::DIAGNOSTICS[:complet][:scope]}. Le diagnostic a une valeur en soi : un dirigeant
+        peut s'en servir pour comprendre et expliquer ses résultats, même sans lancer les chantiers.
+        L'analyse financière n'est jamais le livrable : Cyrille la produit en quelques heures et la remet en
+        ouverture ; ce qui se paie, c'est ce qui se voit au poste — y compris les pertes qu'aucun compteur ne
+        mesure, celles qu'on mesure mal et celles qu'on a choisi de ne pas regarder.
       - Étape 2, le PLAN D'AMÉLIORATION en tiroirs : le diagnostic passe en revue seize leviers, le plan n'en
         retient que trois à cinq, ceux où l'argent récupérable est le plus élevé. Chaque module s'ouvre par
         un premier chantier court, visible sur le terrain et mesuré en euros, qui teste la démarche avant
         d'engager le reste — sans aucun gain promis d'avance.
-      - Étape 3, l'EXÉCUTION : par Cyrille sur site à la journée, par les équipes du client, ou par d'autres
-        consultants auxquels il délègue.
-      - En option, un OUTIL DE SUIVI personnalisé qui relie les pertes de l'atelier aux indicateurs des équipes,
-        puis aux indicateurs du dirigeant, puis au compte de résultat.
+      - Étape 3, l'EXÉCUTION, en trois rythmes que le client choisit selon le temps qu'il peut libérer :
+        des chantiers groupés avec une équipe pluridisciplinaire détachée, un jour par semaine sur six à
+        douze mois quand le personnel manque, ou un relais de direction sur site quand le poste est vacant.
+      - L'OUTIL DE SUIVI des pertes, qui relie les pertes de l'atelier aux indicateurs des équipes, puis à ceux
+        du dirigeant, puis au compte de résultat : Cyrille le conçoit avec les équipes du client, qui le
+        construisent et le gardent — ce n'est pas un logiciel vendu.
       - Le TEMPS À LIBÉRER chez le client est chiffré à chaque module, valorisé au coût horaire chargé que
         fournit le DAF : un chantier sans équipe disponible ne démarre pas.
 
@@ -845,10 +853,14 @@ class ContentGenerator
          du lecteur (marge, trésorerie, BFR), à partir des sources ; une hypothèse reste une hypothèse.
       2. « ## Ce que je vous propose » — 180 mots au plus : la démarche en trois étapes ; le diagnostic range
          chaque perte dans l'un des huit gaspillages et la chiffre en euros. Recommande UN format
-         de diagnostic et dis pourquoi : l'express quand un atelier ou une ligne concentre l'enjeu (souvent une
-         PME, ou un premier pas), le complet dès que la question porte sur le site entier (ETI, site de groupe,
-         board qui attend une vue complète). Ne mentionne PAS l'autre format : seul le recommandé est présenté
-         (montrés côte à côte, l'express servait de prix d'appel, même à un grand groupe).
+         de porte d'entrée et dis pourquoi : l'atelier quand la question du dirigeant est l'organisation de
+         ses fonctions support, ce que l'IA va y changer et où redéployer les personnes (souvent une PME
+         patrimoniale, ou un comité qui doit décider avant d'agir) ; l'express quand un atelier ou une ligne
+         concentre l'enjeu (souvent une PME, ou un premier pas) ; le complet dès que la question porte sur le
+         site entier (ETI, site de groupe, fonds ou board qui attend une vue complète).
+         Ne mentionne PAS les autres formats : seul le recommandé est présenté (montrés côte à côte,
+         l'express servait de prix d'appel, même à un grand groupe). Dis en une phrase, sans les nommer
+         tous, que l'exécution se règle au rythme que les équipes peuvent tenir.
       3. « ## Les leviers que je regarderais en premier » — 250 mots au plus : deux à quatre leviers de la
          liste, chacun rattaché à un fait des sources et à sa ligne des comptes, avec les deux ou trois
          gaspillages qui peuvent nourrir cette ligne, le tout présenté comme des hypothèses que le diagnostic
@@ -896,8 +908,8 @@ class ContentGenerator
       signal à l'origine de la démarche et donne envie d'ouvrir la proposition sans en répéter le contenu.
 
       #{FORMAT_MARKER}
-      Un seul mot : « express » ou « complet », le format de diagnostic que tu as recommandé. Il ne sera pas
-      affiché : il décide des conditions que Ruby écrira sous la proposition.
+      Un seul mot : « atelier », « express » ou « complet », la porte d'entrée que tu as recommandée. Il ne
+      sera pas affiché : il décide des conditions que Ruby écrira sous la proposition.
 
       N'écris rien avant le premier marqueur ni après la dernière section.
     PROMPT
@@ -907,7 +919,7 @@ class ContentGenerator
   # depuis ConsultingOffer. Elles se placent avant « Pour démarrer » (NEXT_STEP_HEADING).
   def split_format(draft)
     text, format = draft.split(FORMAT_MARKER, 2)
-    word = format.to_s.strip.downcase[/\A(express|complet)\b/, 1]
+    word = format.to_s.strip.downcase[/\A(atelier|express|complet)\b/, 1]
     [text.to_s.rstrip, word&.to_sym]
   end
 

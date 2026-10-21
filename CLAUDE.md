@@ -222,10 +222,16 @@ la liste des adresses (`realisation_links`). Le document ne part qu'après lectu
 « Corrections automatiques » : une ligne « Non résolu » désigne un chiffre à contrôler avant envoi.
 
 **Proposition commerciale (`commercial_proposal`)**, refondue le 05/10/2026 sur l'offre arrêtée avec
-Cyrille (document « Offre de conseil — des comptes au terrain ») : diagnostic payé dès la commande (express
-8 j / 8 000 € HT sur **un seul atelier ou une seule ligne, jamais le site entier** — décision du 06/10/2026,
-sinon un grand groupe le prendrait comme prix d'appel —, complet 30 j / 30 000 € HT sur le site entier), plan d'amélioration en tiroirs parmi seize leviers reliés
-chacun à une ligne des comptes, exécution au TJM de 1 000 € HT, outil de suivi en option. Tout cela vit
+Cyrille (document « Offre de conseil — des comptes au terrain ») et reprise le 21/10/2026 à l'aune de l'IA :
+une **porte d'entrée payée dès la commande**, en trois formats — atelier de direction « assis / debout »
+5 j / 7 000 € HT, express 8 j / 11 000 € HT sur **un seul atelier ou une seule ligne, jamais le site entier**
+(décision du 06/10/2026, sinon un grand groupe le prendrait comme prix d'appel), complet 30 j / 40 000 € HT sur
+le site entier, dont 40 % « à la remise de l'arbre des pertes » (plus de l'analyse financière, que l'IA produit
+et qui se remet en ouverture) —, plan d'amélioration en tiroirs parmi seize leviers reliés chacun à une ligne
+des comptes, **exécution en trois rythmes** (chantiers groupés 1 400 € HT/j ou forfait, un jour par semaine
+6 000 € HT/mois, relais de direction 1 200 € HT/j — règle interne : un relais par an, quatre mois au plus),
+outil de suivi conçu avec les équipes du client, sans abonnement. TJM 1 400 € HT (`DAILY_RATE`) ; modèle :
+100 jours payés pour 120 000 € HT au moins. Tout cela vit
 dans **`ConsultingOffer`** (`app/models/consulting_offer.rb`) et nulle part ailleurs. ⚠ **Les prix ne
 passent jamais par un modèle** : le prompt les interdit, `ContentGenerator#append_conditions` écrit la
 section « Conditions » sous le texte APRÈS la relecture orthographique, et la proposition est dans
@@ -238,11 +244,12 @@ personnaliser, corrections automatiques, mail d'envoi. **PDF et aperçu** comme 
 placent avant « ## Pour démarrer » (`NEXT_STEP_HEADING`) — ajoutées en fin de texte, elles tombaient sous la
 signature dans le PDF.
 
-**Un seul format dans la proposition (parade A, 06/10/2026)** : montrés côte à côte, l'express à 8 000 €
+**Un seul format dans la proposition (parade A, 06/10/2026)** : montrés côte à côte, l'express
 servait de prix d'appel. Le modèle recommande un format, n'en mentionne pas d'autre, et l'indique sur une
-ligne `ContentGenerator::FORMAT_MARKER` (`###FORMAT###` express|complet) que Ruby retire du texte (`split_format`)
-avant d'appeler `ConsultingOffer.conditions_markdown(format)` : un seul format dans les conditions, la
-déduction de l'express seulement après un express. Marqueur absent → les deux formats, par sécurité.
+ligne `ContentGenerator::FORMAT_MARKER` (`###FORMAT###` atelier|express|complet) que Ruby retire du texte
+(`split_format`) avant d'appeler `ConsultingOffer.conditions_markdown(format)` : un seul format dans les
+conditions, et la seule déduction qui suit ce format (l'atelier se déduit d'un diagnostic, l'express du
+complet, rien après un complet). Marqueur absent → les trois formats, par sécurité.
 
 **L'offre sur les pages publiques (chantier 8, 06/10/2026)** : `/expertise-operationnelle` porte trois sections
 après la barre de résultats — « Des comptes au terrain » (démarche, diagnostic qui se vend seul, ICCF HEC),
@@ -267,6 +274,25 @@ saisie au poste → gaspillage TIMWOODS → indicateurs atelier → indicateurs 
 résultat), construite APRÈS la revue des 26 réalisations, qui dira quels gaspillages chaque mission a traités.
 La V1 se conçoit avec le premier client ; maquette et V1 de démonstration tournent en local chez Cyrille, un
 hébergement par client ne se décide qu'à l'usage réel. Ne pas l'ajouter au site sans demande explicite.
+
+**Reprise de l'offre à l'aune de l'IA (21/10/2026, avant un pitch devant des camarades Gadz'Arts) — codée
+le jour même dans `ConsultingOffer`, le prompt de la proposition et la carte « exécution » de la page expertise.** Grille : ce qui se fait assis (analyse financière, rédaction, exploitation de données,
+formation Lean, benchmarks, suivi de projet) l'IA le fera chez le client → ne se vend plus comme valeur, se fait
+quand même, avec l'IA, vite et sans le facturer comme avant. Ce qui se vend : quatre méthodes (arbre des pertes
+observé ; management de la performance ; chantiers GEMBA-PDCA avec opérateurs ; organisation du travail qui tient
+socialement, méthode revendiquée). Conséquences dans `ConsultingOffer` : le jalon de 40 % du
+complet devient « remise de l'arbre des pertes » (l'analyse financière n'est plus un livrable payé) ; exécution en
+TROIS rythmes (chantiers groupés avec équipe pluridisciplinaire ; un jour par semaine sur six à douze mois ; relais
+de direction, local) ; l'outil de suivi devient un accompagnement « je vous aide à le construire », plus un produit ;
+TJM 1 400 € HT (modèle : 100 jours payés pour 120 000 € HT, le reste en commercial non rémunéré ; mix type
+4 ateliers + 3 express + 1 complet + 1 client un jour par semaine six mois = 100 jours, ~137 000 €). **Nouvelle porte d'entrée : l'atelier de direction « la carte assis / debout du site »,
+5 jours à 1 400 € HT = 7 000 € HT** : avec le dirigeant et son comité, lister les tâches des fonctions support du
+site (contrôle de gestion, méthodes, ordonnancement, qualité documentaire, RH admin), marquer ce que l'IA fera dans
+les douze mois, et cartographier le redéploiement vers les pertes de l'atelier que personne ne traite (gaspillage
+« compétences »). Méthodologie à développer par Cyrille lui-même, plus tard ; **il lui faut une application dédiée
+pour paraître professionnel** (le retour sur investissement la justifiera vite) — pas dans ce dépôt tant que la
+méthode n'existe pas. Le pitch s'ouvre sur la thèse (« ce qui se fait au bureau, loin du terrain, l'IA le fera ;
+je vends ce qui se voit au poste et ce qui se décide en face à face »), puis suit confiance / urgence / aide.
 
 **Version Word (.docx)** de la note et de la proposition (06/10/2026, demande de Cyrille : corriger dans
 Word puis faire lui-même le PDF) : bouton « Télécharger en Word », action `docx`, service **`GenerationDocx`**,
