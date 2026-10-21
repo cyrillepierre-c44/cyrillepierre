@@ -96,6 +96,11 @@ module Studio
     def generate_visual
       image_model = params.dig(:generation, :image_model)
       @generation.update!(image_model: image_model) if image_model.present?
+      # Consigne de composition facultative (21/10/2026) : un champ vide efface la consigne précédente,
+      # un formulaire qui ne porte pas le champ la laisse telle quelle.
+      if params[:generation].respond_to?(:key?) && params[:generation].key?(:visual_brief)
+        @generation.update!(visual_brief: params[:generation][:visual_brief].presence)
+      end
       VisualGenerator.call(@generation)
       redirect_to studio_generation_path(@generation), notice: "Visuel généré."
     end
@@ -189,7 +194,8 @@ module Studio
     def generation_params
       params.require(:generation).permit(
         :kind, :title, :input_text, :input_url, :extra_instructions, :source_file, :llm_model, :orientation,
-        :realisation_id, :output, :generate_visual, :image_model, :source_article_id, :financial_analysis,
+        :realisation_id, :output, :generate_visual, :image_model, :visual_brief, :source_article_id,
+        :financial_analysis,
         :prospect_id
       )
     end

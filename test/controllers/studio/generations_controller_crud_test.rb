@@ -243,6 +243,32 @@ module Studio
       assert_equal model, @generation.reload.image_model
     end
 
+    # Consigne de composition (21/10/2026) : saisie sur la page, enregistrée avant la génération, effacée
+    # par un champ vide, intacte quand le formulaire ne la porte pas.
+    test "generate_visual saves the visual brief, clears it when blank, keeps it when absent" do
+      VisualGenerator.stub(:call, ->(g) { g }) do
+        patch generate_visual_studio_generation_path(@generation),
+              params: { generation: { visual_brief: "Un bureau vide à gauche, l'atelier à droite." } }
+        assert_equal "Un bureau vide à gauche, l'atelier à droite.", @generation.reload.visual_brief
+
+        patch generate_visual_studio_generation_path(@generation)
+        assert_equal "Un bureau vide à gauche, l'atelier à droite.", @generation.reload.visual_brief
+
+        patch generate_visual_studio_generation_path(@generation), params: { generation: { visual_brief: "" } }
+        assert_nil @generation.reload.visual_brief
+      end
+    end
+
+    test "the post page offers the visual brief field inside the regenerate form" do
+      @generation.update!(output: "Un post.", visual_brief: "À gauche le bureau.")
+
+      get studio_generation_path(@generation)
+
+      assert_select "form[action=?] textarea[name='generation[visual_brief]']",
+                    generate_visual_studio_generation_path(@generation), text: /À gauche le bureau\./
+      assert_select "label", text: "Consigne pour le visuel (facultative)"
+    end
+
     test "generate_visual keeps the current image model when none is submitted" do
       before = @generation.image_model
 

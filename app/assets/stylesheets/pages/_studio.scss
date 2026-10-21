@@ -320,6 +320,17 @@
   flex-wrap: wrap;
 }
 
+// La consigne de composition du visuel (21/10/2026) occupe sa propre ligne au-dessus du sélecteur de
+// modèle : le formulaire est en ligne, sans cette règle le champ se serrait entre le menu et le bouton.
+.studio-visual-brief {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  label { margin: 0; }
+}
+
 .studio-regenerate-select {
   width: auto;
   padding: 0.5rem 0.75rem !important;

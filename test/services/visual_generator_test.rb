@@ -100,6 +100,32 @@ class VisualGeneratorTest < ActiveSupport::TestCase
     assert_not_includes painter.prompt, "Inspiration pour la composition"
   end
 
+  # Consigne de composition (21/10/2026) : le visual_hint décrit l'illustration du site, pas l'idée du
+  # post. Un post sur ce que l'IA remplace (le bureau) et ce qu'elle ne remplace pas (l'atelier) était
+  # revenu en image de l'application de la réalisation. La consigne de Cyrille passe avant la fiche.
+  test "a visual brief is placed before the locked realisation and says it prevails" do
+    item = RealisationCatalog::ITEMS.find { |i| i[:visual_hint].present? }
+    painter = FakePainter.new
+    record = generation(realisation_id: item[:id],
+                        visual_brief: "À gauche un bureau vide où le code s'écrit seul, à droite l'atelier.")
+
+    with_painter(painter) { VisualGenerator.call(record) }
+
+    assert_includes painter.prompt, "CONSIGNE DE COMPOSITION DE L'AUTEUR"
+    assert_includes painter.prompt, "À gauche un bureau vide où le code s'écrit seul, à droite l'atelier."
+    assert_includes painter.prompt, "elle prime sur toute inspiration tirée du catalogue"
+    assert_operator painter.prompt.index("CONSIGNE DE COMPOSITION"), :<, painter.prompt.index("Réalisation précise à illustrer")
+    assert_operator painter.prompt.index("Post LinkedIn à illustrer"), :<, painter.prompt.index("CONSIGNE DE COMPOSITION")
+  end
+
+  test "without a visual brief the prompt carries no author instruction block" do
+    painter = FakePainter.new
+
+    with_painter(painter) { VisualGenerator.call(generation(visual_brief: "  ")) }
+
+    assert_not_includes painter.prompt, "CONSIGNE DE COMPOSITION"
+  end
+
   # Le catalogue impose un visual_hint pour chaque réalisation (toute nouvelle entrée doit
   # arriver avec son illustration SVG et son hint). Ce test couvre le repli si la règle venait
   # à être enfreinte : on garde les faits, on perd seulement l'inspiration de design.

@@ -246,6 +246,12 @@
           <%= render "studio/shared/progress_overlay", text: "Génération du visuel en cours…",
                      hint: "Ça peut prendre jusqu'à une minute." %>
 
+          <div class="studio-visual-brief">
+            <%= f.label :visual_brief, "Consigne pour le visuel (facultative)", class: "studio-card-sub" %>
+            <%= f.text_area :visual_brief, class: "cf-input cf-textarea", rows: 3,
+                            placeholder: "Décris la scène en deux ou trois lignes : ce qu'on voit à gauche, à droite, " \
+                                         "ce qui relie les deux. Elle prime sur l'illustration de la réalisation." %>
+          </div>
           <%= f.select :image_model,
                         Generation::IMAGE_MODELS.map { |value, label| [label, value] },
                         { selected: @generation.image_model }, class: "cf-input studio-regenerate-select" %>

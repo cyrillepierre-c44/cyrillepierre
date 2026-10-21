@@ -54,10 +54,23 @@ class VisualGenerator
   # the image takes inspiration from the site's existing design instead of improvising. When no
   # realisation is locked (a brief steered the LLM to pick its own angle freely), none of this
   # applies — the model gets full creative freedom from the post text alone.
+  # A visual brief written by Cyrille on the generation page (21/10/2026) comes BEFORE the locked
+  # realisation and overrides its visual_hint: the hint describes the site's illustration of the
+  # realisation, not the idea of the post. The first time it mattered, a post about what AI replaces
+  # (the desk) and what it does not (the shop floor) came back as a picture of the realisation's app.
   def prompt
     parts = [STYLE_PROMPT, "Post LinkedIn à illustrer :\n#{generation.output}"]
+    parts << visual_brief_block if generation.visual_brief.present?
     parts << locked_realisation_inspiration if locked_realisation
     parts.join("\n\n")
+  end
+
+  def visual_brief_block
+    <<~TXT
+      CONSIGNE DE COMPOSITION DE L'AUTEUR — elle prime sur toute inspiration tirée du catalogue ci-dessous
+      (la scène, ses éléments et leur disposition suivent cette consigne ; le style reste celui défini plus haut) :
+      #{generation.visual_brief.strip}
+    TXT
   end
 
   def locked_realisation_inspiration
