@@ -290,8 +290,9 @@ TJM 1 400 € HT (modèle : 100 jours payés pour 120 000 € HT, le reste en co
 site (contrôle de gestion, méthodes, ordonnancement, qualité documentaire, RH admin), marquer ce que l'IA fera dans
 les douze mois, et cartographier le redéploiement vers les pertes de l'atelier que personne ne traite (gaspillage
 « compétences »). Méthodologie à développer par Cyrille lui-même, plus tard ; **il lui faut une application dédiée
-pour paraître professionnel** (le retour sur investissement la justifiera vite) — pas dans ce dépôt tant que la
-méthode n'existe pas. Le pitch s'ouvre sur la thèse (« ce qui se fait au bureau, loin du terrain, l'IA le fera ;
+pour paraître professionnel** (le retour sur investissement la justifiera vite) — décision du 21/10/2026 : ce sera
+plus tard un **onglet spécifique du site avec accès personnalisé par client**, pas une page publique ; rien à
+ajouter au site d'ici là, l'atelier ne vit que dans la proposition, le doc d'offre et le deck. Le pitch s'ouvre sur la thèse (« ce qui se fait au bureau, loin du terrain, l'IA le fera ;
 je vends ce qui se voit au poste et ce qui se décide en face à face »), puis suit confiance / urgence / aide.
 
 **Version Word (.docx)** de la note et de la proposition (06/10/2026, demande de Cyrille : corriger dans
