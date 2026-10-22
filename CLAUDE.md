@@ -292,8 +292,9 @@ les douze mois, et cartographier le redéploiement vers les pertes de l'atelier 
 « compétences »). Méthodologie à développer par Cyrille lui-même, plus tard ; **il lui faut une application dédiée
 pour paraître professionnel** (le retour sur investissement la justifiera vite) — décision du 21/10/2026 : ce sera
 plus tard un **onglet spécifique du site avec accès personnalisé par client**, pas une page publique ; rien à
-ajouter au site d'ici là, l'atelier ne vit que dans la proposition, le doc d'offre et le deck. Le pitch s'ouvre sur la thèse arrêtée le 22/10/2026, **« L'IA dans l'atelier, pas à la place de
-l'atelier »** (elle fait en une heure l'analyse qui prenait trois semaines au bureau, Cyrille l'emmène au poste ; ce
+ajouter au site d'ici là, l'atelier ne vit que dans la proposition, le doc d'offre et le deck. Le pitch s'ouvre sur la thèse arrêtée le 22/10/2026, **« L'IA sur le terrain, pas à la place du
+terrain »** (« terrain » est le mot de l'offre ; « atelier » et « au poste » pour les scènes concrètes ; « GEMBA »
+seulement devant un public Lean, en apposition) (elle fait en une heure l'analyse qui prenait trois semaines au bureau, Cyrille l'emmène au poste ; ce
 qu'elle ne fait pas : marcher jusqu'à la machine, voir la perte qu'aucun compteur ne mesure, faire bouger ceux qui
 la produisent), puis suit confiance / urgence / aide. ⚠ Ne jamais écrire que l'IA est « le bureau loin du terrain » :
 Cyrille l'embarque sur le terrain pour augmenter l'analyse ; le « bureau loin du terrain » désigne les fonctions
