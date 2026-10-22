@@ -287,7 +287,7 @@ hébergement par client ne se décide qu'à l'usage réel. Ne pas l'ajouter au s
 **Reprise de l'offre à l'aune de l'IA (21/10/2026, avant un pitch devant des camarades Gadz'Arts) — codée
 le jour même dans `ConsultingOffer`, le prompt de la proposition et la carte « exécution » de la page expertise.** Grille : ce qui se fait assis (analyse financière, rédaction, exploitation de données,
 formation Lean, benchmarks, suivi de projet) l'IA le fera chez le client → ne se vend plus comme valeur, se fait
-quand même, avec l'IA, vite et sans le facturer comme avant. Ce qui se vend : quatre méthodes (arbre des pertes
+quand même, avec l'IA, vite et sans le vendre comme des jours de conseil (jamais « je ne facture pas ça » : un logiciel qui embarquerait les méthodes de Cyrille resterait payant, 22/10/2026). Ce qui se vend : quatre méthodes (arbre des pertes
 observé ; management de la performance ; chantiers GEMBA-PDCA avec opérateurs ; organisation du travail qui tient
 socialement, méthode revendiquée). Conséquences dans `ConsultingOffer` : le jalon de 40 % du
 complet devient « remise de l'arbre des pertes » (l'analyse financière n'est plus un livrable payé) ; exécution en
