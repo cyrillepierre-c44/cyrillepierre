@@ -78,6 +78,22 @@ class ContentGenerator
 
   # Only injected into public-facing content (LinkedIn posts, site actus) — cover letters and
   # commercial proposals legitimately name past employers/clients as credibility/references.
+  # Règle de Cyrille du 22/10/2026, valable pour tout ce que le Studio rédige, de l'opérateur au board :
+  # un lecteur à qui l'on laisse entendre qu'il ignore ses pertes se braque, et il a raison — il les
+  # connaît, souvent mieux que quiconque. Posée après la relecture de l'elevator pitch, où « sans que
+  # personne sache pourquoi » aurait fâché tout dirigeant.
+  RESPECT_RULE = <<~TXT
+    RESPECT DU LECTEUR ET DE SES ÉQUIPES (valable pour tout document, de l'opérateur au board) : ne jamais
+    écrire ni laisser entendre que le lecteur, sa direction ou ses équipes ignorent leurs pertes, ne savent
+    pas les expliquer ou ont renoncé à les traiter. Ils les connaissent, souvent mieux que quiconque ; ce qui
+    leur manque, c'est le temps, la mesure en euros, le lien avec les comptes et quelqu'un sur le terrain
+    pour mener les chantiers avec eux. Interdits : « sans que personne sache pourquoi », « personne ne sait
+    où part la marge », « des pertes qu'on a choisi de ne pas regarder », « vos équipes n'ont pas les
+    compétences ». À écrire à la place : « malgré des équipes qui connaissent leurs pertes », « que personne
+    n'a eu le temps de chiffrer », « ce qui manque, c'est… ». Une phrase qui fait passer le lecteur pour un
+    incompétent le braque avant la deuxième page.
+  TXT
+
   ANONYMIZE_COMPANIES_RULE = <<~TXT
     CONFIDENTIALITÉ — RÈGLE ABSOLUE : ce contenu est public. Ne mentionne JAMAIS le nom réel d'une entreprise,
     marque, groupe ou enseigne (même si un nom apparaît dans les réalisations ou le CV ci-dessus). Décris
@@ -425,6 +441,8 @@ class ContentGenerator
         plusieurs phrases consécutives suivent le même schéma sujet-verbe-complément
       - Si une affirmation factuelle nécessiterait une source, une date ou un chiffre que tu n'as pas, signale-le
         explicitement avec "[À vérifier avant envoi]" plutôt que de la présenter comme certaine
+
+      #{RESPECT_RULE}
     PROMPT
   end
 

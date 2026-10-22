@@ -912,6 +912,20 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]
   end
 
+  # Règle de Cyrille du 22/10/2026 : aucun document ne laisse entendre que le lecteur ou ses équipes
+  # ignorent leurs pertes — ils les connaissent, ce qui manque c'est le temps, les euros et le terrain.
+  test "every kind carries the respect rule in its writing guidelines" do
+    %i[linkedin_post commercial_proposal executive_brief outreach_message].each do |kind|
+      context = FakeContext.new(replies: ["a", "b"])
+      run_generator(Generation.create!(user: @user, kind: kind, input_text: "Brief."), context)
+
+      instructions = context.draft_chat.instructions
+      assert_includes instructions, "RESPECT DU LECTEUR ET DE SES ÉQUIPES", kind
+      assert_includes instructions, "« sans que personne sache pourquoi »", kind
+      assert_includes instructions, "malgré des équipes qui connaissent leurs pertes", kind
+    end
+  end
+
   # Les prix ne passent jamais par un modèle : ni par le brouillon, ni par la relecture.
   test "Ruby writes the conditions under the proposal, after the proofreading" do
     record = Generation.create!(user: @user, kind: :commercial_proposal, input_text: "Brief.")

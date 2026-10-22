@@ -221,6 +221,15 @@ sombre. Chaque réalisation citée renvoie à sa carte sur `/realisations` par u
 la liste des adresses (`realisation_links`). Le document ne part qu'après lecture de la section
 « Corrections automatiques » : une ligne « Non résolu » désigne un chiffre à contrôler avant envoi.
 
+⚠ **Respect du lecteur et de ses équipes (`ContentGenerator::RESPECT_RULE`, règle de Cyrille du 22/10/2026, dans
+`critical_writing_guidelines` donc dans TOUT ce que le Studio rédige)** : ne jamais écrire ni laisser entendre que le
+lecteur, sa direction ou ses équipes ignorent leurs pertes, ne savent pas les expliquer ou ont renoncé — de
+l'opérateur au board. Ils les connaissent ; ce qui leur manque, c'est le temps, la mesure en euros, le lien avec les
+comptes et quelqu'un sur le terrain. Interdits : « sans que personne sache pourquoi », « personne ne sait où part la
+marge », « des pertes qu'on a choisi de ne pas regarder ». Née de la relecture de l'elevator pitch (un dirigeant à qui
+on dit cela répond qu'il connaît ses pertes mais ne peut pas les résoudre, et se braque). Vaut aussi pour les pages du
+site, les pitchs et les mails écrits à la main. `content_generator_test.rb` vérifie que chaque type la reçoit.
+
 **Proposition commerciale (`commercial_proposal`)**, refondue le 05/10/2026 sur l'offre arrêtée avec
 Cyrille (document « Offre de conseil — des comptes au terrain ») et reprise le 21/10/2026 à l'aune de l'IA :
 une **porte d'entrée payée dès la commande**, en trois formats — atelier de direction « assis / debout »
