@@ -834,7 +834,7 @@ class ContentGenerator
         peut s'en servir pour comprendre et expliquer ses résultats, même sans lancer les chantiers.
         L'analyse financière n'est jamais le livrable : Cyrille la produit en quelques heures et la remet en
         ouverture ; ce qui se paie, c'est ce qui se voit au poste — y compris les pertes qu'aucun compteur ne
-        mesure, celles qu'on mesure mal et celles qu'on a choisi de ne pas regarder.
+        mesure, celles qu'on mesure mal et celles que tout le monde connaît sans avoir eu le temps de les chiffrer.
       - Étape 2, le PLAN D'AMÉLIORATION en tiroirs : le diagnostic passe en revue seize leviers, le plan n'en
         retient que trois à cinq, ceux où l'argent récupérable est le plus élevé. Chaque module s'ouvre par
         un premier chantier court, visible sur le terrain et mesuré en euros, qui teste la démarche avant
