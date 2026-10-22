@@ -292,8 +292,14 @@ les douze mois, et cartographier le redéploiement vers les pertes de l'atelier 
 « compétences »). Méthodologie à développer par Cyrille lui-même, plus tard ; **il lui faut une application dédiée
 pour paraître professionnel** (le retour sur investissement la justifiera vite) — décision du 21/10/2026 : ce sera
 plus tard un **onglet spécifique du site avec accès personnalisé par client**, pas une page publique ; rien à
-ajouter au site d'ici là, l'atelier ne vit que dans la proposition, le doc d'offre et le deck. Le pitch s'ouvre sur la thèse (« ce qui se fait au bureau, loin du terrain, l'IA le fera ;
-je vends ce qui se voit au poste et ce qui se décide en face à face »), puis suit confiance / urgence / aide.
+ajouter au site d'ici là, l'atelier ne vit que dans la proposition, le doc d'offre et le deck. Le pitch s'ouvre sur la thèse arrêtée le 22/10/2026, **« L'IA dans l'atelier, pas à la place de
+l'atelier »** (elle fait en une heure l'analyse qui prenait trois semaines au bureau, Cyrille l'emmène au poste ; ce
+qu'elle ne fait pas : marcher jusqu'à la machine, voir la perte qu'aucun compteur ne mesure, faire bouger ceux qui
+la produisent), puis suit confiance / urgence / aide. ⚠ Ne jamais écrire que l'IA est « le bureau loin du terrain » :
+Cyrille l'embarque sur le terrain pour augmenter l'analyse ; le « bureau loin du terrain » désigne les fonctions
+support que l'atelier de direction aide à réorganiser. Les prix ne se disent qu'au rendez-vous, jamais au téléphone
+ni devant le réseau (22/10/2026). Document des pitchs (2 min / 10 min / 20 min, dry run, enquête) : Claude Docs
+« Pitchs — des comptes au terrain ».
 
 **Version Word (.docx)** de la note et de la proposition (06/10/2026, demande de Cyrille : corriger dans
 Word puis faire lui-même le PDF) : bouton « Télécharger en Word », action `docx`, service **`GenerationDocx`**,
