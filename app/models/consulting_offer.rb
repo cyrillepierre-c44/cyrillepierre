@@ -71,7 +71,7 @@ module ConsultingOffer # rubocop:disable Metrics/ModuleLength
   EXECUTION = [
     ["Chantiers groupés", "une équipe pluridisciplinaire détachée, plusieurs chantiers menés de front sur " \
                           "quatre à huit semaines, un animateur interne formé pour la suite",
-     "%s HT par jour sur site, ou au forfait par chantier avec son objectif mesuré"],
+     "%s HT par jour sur site, ou au forfait par chantier, sur des jours planifiés avec les personnes nommées"],
     ["Un jour par semaine", "six à douze mois, l'animation de la performance et un chantier à la fois avec les " \
                             "personnes disponibles, un journal de bord d'une page chaque semaine",
      "%s HT par mois"],
@@ -147,6 +147,16 @@ module ConsultingOffer # rubocop:disable Metrics/ModuleLength
 
   # Écrit tel quel sous la proposition, après la relecture orthographique : rien ici ne passe par
   # un modèle.
+  # Clause de moyens côté client (28/10/2026, demande de Cyrille : chez EFESO, une fois sur trois, les
+  # ressources d'un chantier étaient annulées la veille et le forfait absorbait). Le forfait ne couvre que ce que
+  # Cyrille produit seul (arbre des pertes, carte assis / debout) : un livrable, jamais un résultat ; les chantiers
+  # dépendent des équipes libérées, donc son paiement ne dépend jamais de l'effort du client — ses livrables
+  # déclenchent ses factures, les journées annulées tard déclenchent les leurs. Barème des cabinets (deux jours
+  # ouvrés : due en entier ; cinq : à moitié), qu'un DAF reconnaît sans le discuter.
+  CLIENT_COMMITMENTS = <<~TXT.strip
+    **Ce que je demande de votre côté.** Pour la porte d'entrée : un référent nommé, l'accès à l'atelier à toutes les équipes, y compris de nuit et de week-end, les données demandées sous cinq jours ouvrés, et deux heures par semaine avec vous. Un accès qui manque décale la remise d'autant ; les jours déjà passés restent dus. Pour l'exécution : les membres de chaque chantier sont nommés dans la commande, et leurs demi-journées bloquées quatre semaines à l'avance. Une journée que vous annulez à moins de deux jours ouvrés est due en entier, entre deux et cinq jours ouvrés à moitié ; au-delà, elle se reporte sans frais. Un chantier au forfait est un nombre de jours planifiés avec ces personnes : les jours qu'il faut ajouter parce qu'elles ont manqué se facturent au jour.
+  TXT
+
   # Un seul format affiché quand la proposition en recommande un (parade A du 06/10/2026 : montrés côte à
   # côte, l'express servait de prix d'appel) ; les trois, par sécurité, quand le format n'est pas connu.
   def self.conditions_markdown(format = nil)
@@ -164,6 +174,8 @@ module ConsultingOffer # rubocop:disable Metrics/ModuleLength
       #{execution_lines}
 
       **L'outil de suivi des pertes** : je le conçois avec vos équipes, qui le construisent et le gardent ; accompagnement au forfait, sur devis. Aucun abonnement.
+
+      #{CLIENT_COMMITMENTS}
 
       Les travaux démarrent à l'encaissement de l'acompte. Factures payables à #{PAYMENT_DAYS} jours date de facture. Missions sur site depuis Lyon, à la journée : frais kilométriques seulement au-delà du rayon convenu, aucun frais d'hébergement. Les gains présentés dans le diagnostic et le plan sont des estimations : leur obtention dépend des décisions prises et du temps libéré par vos équipes.
     MARKDOWN

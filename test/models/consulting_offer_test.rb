@@ -38,6 +38,12 @@ class ConsultingOfferTest < ActiveSupport::TestCase
     assert_includes text, "je le conçois avec vos équipes, qui le construisent et le gardent"
     assert_includes text, "Aucun abonnement"
     assert_not_includes text, "abonnement mensuel"
+    # Clause de moyens côté client (28/10/2026) : un livrable, jamais un résultat, et les journées annulées tard
+    # sont dues — le forfait par chantier n'est plus « avec son objectif mesuré ».
+    assert_includes text, "Ce que je demande de votre côté."
+    assert_includes text, "Une journée que vous annulez à moins de deux jours ouvrés est due en entier"
+    assert_includes text, "au forfait par chantier, sur des jours planifiés avec les personnes nommées"
+    assert_not_includes text, "objectif mesuré"
     assert_includes text, "30 jours date de facture"
     assert_includes text, "des estimations"
     assert_no_match(/quick win/i, text)
