@@ -253,6 +253,15 @@ personnaliser, corrections automatiques, mail d'envoi. **PDF et aperçu** comme 
 placent avant « ## Pour démarrer » (`NEXT_STEP_HEADING`) — ajoutées en fin de texte, elles tombaient sous la
 signature dans le PDF.
 
+**Clause de moyens côté client (`ConsultingOffer::CLIENT_COMMITMENTS`, 28/10/2026)** : le forfait couvre un **livrable** que
+Cyrille produit seul (arbre des pertes, carte assis / debout), jamais un **résultat**, qui dépend des équipes que le client
+libère (chez EFESO, une fois sur trois, les ressources d'un chantier étaient annulées la veille et le forfait absorbait). Les
+conditions demandent donc un référent, l'accès à l'atelier à toutes les équipes, les données sous cinq jours ouvrés, deux heures
+par semaine avec le dirigeant, des membres de chantier nommés et des demi-journées bloquées quatre semaines à l'avance ; une
+journée annulée à moins de deux jours ouvrés est due en entier, entre deux et cinq à moitié (barème des cabinets, qu'un DAF ne
+discute pas). Le forfait par chantier se définit par « des jours planifiés avec les personnes nommées », plus jamais « avec son
+objectif mesuré ». Principe : le paiement de Cyrille ne dépend jamais de l'effort du client. Verrouillé par `consulting_offer_test.rb`.
+
 **Un seul format dans la proposition (parade A, 06/10/2026)** : montrés côte à côte, l'express
 servait de prix d'appel. Le modèle recommande un format, n'en mentionne pas d'autre, et l'indique sur une
 ligne `ContentGenerator::FORMAT_MARKER` (`###FORMAT###` atelier|express|complet) que Ruby retire du texte
