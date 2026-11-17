@@ -25,6 +25,9 @@ module ConsultingOffer # rubocop:disable Metrics/ModuleLength
   # pas une condition client : un relais par an au plus, et pas au-delà de RELAY_MAX_MONTHS — un an de
   # relais est un CDD, le pipeline s'éteint.
   RELAY_DAILY_RATE = LONG_RATE
+  # Plancher de négociation (17/11/2026), jamais écrit dans une proposition : 850 € HT par jour seulement pour
+  # une transition à temps plein de quatre mois ou plus, ou via un intermédiaire. Le prix ne baisse que contre
+  # du volume engagé ; un premier client garde le tarif et reçoit un geste à côté (mini-expertise, cadrage).
   RELAY_MAX_MONTHS = 4
   # « Un jour par semaine » est du temps partagé et se facture au mois : 4,3 jours par mois en moyenne au
   # taux long (4 730 €), arrondi à la centaine inférieure.

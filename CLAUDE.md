@@ -243,7 +243,9 @@ outil de suivi conçu avec les équipes du client, sans abonnement. **Barème un
 le même dans ses fichiers de recherche d'emploi : 1 400 € HT/j jusqu'à 10 jours commandés (`DAILY_RATE`),
 1 250 € de 11 à 29 (`MID_RATE`), 1 100 € à partir de 30 ou en temps partagé (`LONG_RATE`), `rate_for(days)`. Modèle :
 SASU, 130 000 € HT de CA par an (5 500 € net par mois) sur ~120 jours facturés, par exemple quatre entreprises
-à cinq jours par mois pendant six mois (33 000 € HT chacune). Tout cela vit
+à cinq jours par mois pendant six mois (33 000 € HT chacune). Plancher de négociation, jamais écrit dans une
+proposition : 850 € HT par jour pour une transition à temps plein de quatre mois ou plus, ou via un intermédiaire ;
+le prix ne baisse que contre du volume engagé. Tout cela vit
 dans **`ConsultingOffer`** (`app/models/consulting_offer.rb`) et nulle part ailleurs. ⚠ **Les prix ne
 passent jamais par un modèle** : le prompt les interdit, `ContentGenerator#append_conditions` écrit la
 section « Conditions » sous le texte APRÈS la relecture orthographique, et la proposition est dans
