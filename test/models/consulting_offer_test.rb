@@ -48,6 +48,9 @@ class ConsultingOfferTest < ActiveSupport::TestCase
     assert_includes text, "Une journée que vous annulez à moins de deux jours ouvrés est due en entier"
     assert_includes text, "au forfait par chantier, sur des jours planifiés avec les personnes nommées"
     assert_not_includes text, "objectif mesuré"
+    # Obligation de moyens (17/11/2026) : primes, organisation et dialogue social restent au client.
+    assert_includes text, "Je m'engage sur les moyens, pas sur un résultat"
+    assert_includes text, "consultation des représentants du personnel"
     assert_includes text, "30 jours date de facture"
     assert_includes text, "des estimations"
     assert_no_match(/quick win/i, text)
