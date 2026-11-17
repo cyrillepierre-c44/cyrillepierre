@@ -10,16 +10,35 @@
 # Module de données (prix, échéanciers, gaspillages, seize leviers) : le découper en deux ferait vivre
 # l'offre à deux endroits, ce que ce fichier existe précisément pour éviter.
 module ConsultingOffer # rubocop:disable Metrics/ModuleLength
-  # Modèle économique du 21/10/2026 : 100 jours payés par an pour 120 000 € HT au moins, le reste du temps
-  # en commercial non rémunéré. Les forfaits d'entrée s'arrondissent un peu sous ce taux, jamais au-dessus.
-  DAILY_RATE = 1_400
-  # Le relais de direction est moins cher : des mois pleins suppriment le temps commercial, et c'est le prix
-  # du marché direct de la transition locale. Règle interne, qui n'est pas une condition client : un relais
-  # par an au plus, et pas au-delà de RELAY_MAX_MONTHS — un an de relais est un CDD, le pipeline s'éteint.
-  RELAY_DAILY_RATE = 1_200
+  # Barème validé par Cyrille le 17/11/2026, un seul partout (site, proposition, fichiers du projet) :
+  # le prix du jour baisse avec le volume commandé. Modèle économique : SASU, 130 000 € HT de chiffre
+  # d'affaires par an (5 500 € net par mois), sur 220 jours travaillables dont environ 120 facturés —
+  # par exemple quatre entreprises en temps partagé, cinq jours par mois pendant six mois (30 jours à
+  # 1 100 €, 33 000 € HT chacune). Le reste du temps est commercial, non rémunéré. Les forfaits
+  # s'arrondissent un peu sous le taux de leur tranche, jamais au-dessus.
+  DAILY_RATE = 1_400 # jusqu'à 10 jours commandés
+  MID_RATE = 1_250   # de 11 à 29 jours
+  LONG_RATE = 1_100  # 30 jours et plus, ou temps partagé
+  MID_FROM_DAYS = 11
+  LONG_FROM_DAYS = 30
+  # Le relais de direction est une mission longue : des mois pleins, au taux long. Règle interne, qui n'est
+  # pas une condition client : un relais par an au plus, et pas au-delà de RELAY_MAX_MONTHS — un an de
+  # relais est un CDD, le pipeline s'éteint.
+  RELAY_DAILY_RATE = LONG_RATE
+  # Plancher de négociation (17/11/2026), jamais écrit dans une proposition : 850 € HT par jour seulement pour
+  # une transition à temps plein de quatre mois ou plus, ou via un intermédiaire. Le prix ne baisse que contre
+  # du volume engagé ; un premier client garde le tarif. Seule la restitution à chaud est offerte, aucun diagnostic.
   RELAY_MAX_MONTHS = 4
-  # « Un jour par semaine » se facture au mois : 4,3 jours par mois en moyenne, au taux plein.
-  WEEKLY_MONTHLY_FEE = 6_000
+  # « Un jour par semaine » est du temps partagé et se facture au mois : 4,3 jours par mois en moyenne au
+  # taux long (4 730 €), arrondi à la centaine inférieure.
+  WEEKLY_MONTHLY_FEE = 4_700
+
+  def self.rate_for(days)
+    return LONG_RATE if days >= LONG_FROM_DAYS
+    return MID_RATE if days >= MID_FROM_DAYS
+
+    DAILY_RATE
+  end
 
   # Les trois portes d'entrée. Le complet se paie en trois fois ; le « mi-parcours » est un livrable, pas une
   # date qui glisse — et depuis le 21/10/2026 ce livrable est l'arbre des pertes, plus l'analyse financière :
@@ -55,7 +74,7 @@ module ConsultingOffer # rubocop:disable Metrics/ModuleLength
     complet: {
       name: "Diagnostic complet",
       days: 30,
-      price: 40_000,
+      price: 33_000,
       scope: "le site entier : l'analyse financière de trois à cinq exercices remise en ouverture, une immersion " \
              "sur le site (observations au poste, entretiens de l'opérateur au directeur), la revue des seize " \
              "leviers, un arbre des pertes complet où chaque perte est rangée dans l'un des huit gaspillages, " \
@@ -71,7 +90,8 @@ module ConsultingOffer # rubocop:disable Metrics/ModuleLength
   EXECUTION = [
     ["Chantiers groupés", "une équipe pluridisciplinaire détachée, plusieurs chantiers menés de front sur " \
                           "quatre à huit semaines, un animateur interne formé pour la suite",
-     "%s HT par jour sur site, ou au forfait par chantier, sur des jours planifiés avec les personnes nommées"],
+     "%s HT par jour sur site jusqu'à 10 jours commandés, %s HT de 11 à 29 jours, %s HT à partir de 30 jours, " \
+     "ou au forfait par chantier, sur des jours planifiés avec les personnes nommées"],
     ["Un jour par semaine", "six à douze mois, l'animation de la performance et un chantier à la fois avec les " \
                             "personnes disponibles, un journal de bord d'une page chaque semaine",
      "%s HT par mois"],
@@ -182,9 +202,9 @@ module ConsultingOffer # rubocop:disable Metrics/ModuleLength
   end
 
   def self.execution_lines
-    prices = [euros(DAILY_RATE), euros(WEEKLY_MONTHLY_FEE), euros(RELAY_DAILY_RATE)]
-    EXECUTION.zip(prices).map do |(name, shape, price), amount|
-      "- #{name} : #{shape} — #{price % amount}."
+    prices = [[DAILY_RATE, MID_RATE, LONG_RATE], [WEEKLY_MONTHLY_FEE], [RELAY_DAILY_RATE]]
+    EXECUTION.zip(prices).map do |(name, shape, price), amounts|
+      "- #{name} : #{shape} — #{format(price, *amounts.map { |amount| euros(amount) })}."
     end.join("\n")
   end
 

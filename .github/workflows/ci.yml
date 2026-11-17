@@ -8,7 +8,7 @@ on:
 jobs:
   lint:
     name: Style — RuboCop
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -19,7 +19,7 @@ jobs:
 
   security:
     name: Sécurité — Brakeman, gems, importmap
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -40,7 +40,7 @@ jobs:
 
   test:
     name: Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
