@@ -245,7 +245,8 @@ le même dans ses fichiers de recherche d'emploi : 1 400 € HT/j jusqu'à 10 jo
 SASU, 130 000 € HT de CA par an (5 500 € net par mois) sur ~120 jours facturés, par exemple quatre entreprises
 à cinq jours par mois pendant six mois (33 000 € HT chacune). Plancher de négociation, jamais écrit dans une
 proposition : 850 € HT par jour pour une transition à temps plein de quatre mois ou plus, ou via un intermédiaire ;
-le prix ne baisse que contre du volume engagé. Tout cela vit
+le prix ne baisse que contre du volume engagé. Rien de gratuit sauf la restitution à chaud après la première visite
+(c'est le rôle de la note de diagnostic) : aucun diagnostic offert (17/11/2026). Tout cela vit
 dans **`ConsultingOffer`** (`app/models/consulting_offer.rb`) et nulle part ailleurs. ⚠ **Les prix ne
 passent jamais par un modèle** : le prompt les interdit, `ContentGenerator#append_conditions` écrit la
 section « Conditions » sous le texte APRÈS la relecture orthographique, et la proposition est dans
