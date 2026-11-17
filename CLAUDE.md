@@ -266,7 +266,7 @@ conditions demandent donc un référent, l'accès à l'atelier à toutes les éq
 par semaine avec le dirigeant, des membres de chantier nommés et des demi-journées bloquées quatre semaines à l'avance ; une
 journée annulée à moins de deux jours ouvrés est due en entier, entre deux et cinq à moitié (barème des cabinets, qu'un DAF ne
 discute pas). Le forfait par chantier se définit par « des jours planifiés avec les personnes nommées », plus jamais « avec son
-objectif mesuré ». Principe : le paiement de Cyrille ne dépend jamais de l'effort du client. Verrouillé par `consulting_offer_test.rb`.
+objectif mesuré ». Principe : le paiement de Cyrille ne dépend jamais de l'effort du client. Depuis le 17/11/2026 la clause le dit en toutes lettres : **obligation de moyens**, et les décisions qui touchent le personnel du client (organisation, primes, consultation des représentants du personnel) et leur mise en œuvre restent au client, sans effet sur la facturation. Verrouillé par `consulting_offer_test.rb`.
 
 **Un seul format dans la proposition (parade A, 06/10/2026)** : montrés côte à côte, l'express
 servait de prix d'appel. Le modèle recommande un format, n'en mentionne pas d'autre, et l'indique sur une
