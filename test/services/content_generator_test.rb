@@ -907,7 +907,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     assert_includes instructions, "« atelier », « express » ou « complet »"
     assert_not_includes instructions, "7 000 €"
     assert_not_includes instructions, "11 000 €"
-    assert_not_includes instructions, "40 000 €"
+    assert_not_includes instructions, "33 000 €"
     assert_not_includes instructions, "1 400 €"
     assert_not_includes instructions, Generation::SECTION_MARKERS[:verify]
   end
@@ -1034,7 +1034,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     run_generator(record, context)
 
     final = record.reload.sections[:final]
-    assert_includes final, "Diagnostic complet : 40 000 € HT"
+    assert_includes final, "Diagnostic complet : 33 000 € HT"
     assert_not_includes final, "11 000 €"
     assert_not_includes final, "7 000 €"
     assert_not_includes record.output, "###FORMAT###"
@@ -1051,7 +1051,7 @@ class ContentGeneratorTest < ActiveSupport::TestCase
     final = record.reload.sections[:final]
     assert_includes final, "7 000 € HT"
     assert_includes final, "11 000 € HT"
-    assert_includes final, "40 000 € HT"
+    assert_includes final, "33 000 € HT"
   end
 end
 

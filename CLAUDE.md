@@ -234,13 +234,16 @@ site, les pitchs et les mails écrits à la main. `content_generator_test.rb` v�
 Cyrille (document « Offre de conseil — des comptes au terrain ») et reprise le 21/10/2026 à l'aune de l'IA :
 une **porte d'entrée payée dès la commande**, en trois formats — atelier de direction « assis / debout »
 5 j / 7 000 € HT, express 8 j / 11 000 € HT sur **un seul atelier ou une seule ligne, jamais le site entier**
-(décision du 06/10/2026, sinon un grand groupe le prendrait comme prix d'appel), complet 30 j / 40 000 € HT sur
+(décision du 06/10/2026, sinon un grand groupe le prendrait comme prix d'appel), complet 30 j / 33 000 € HT sur
 le site entier, dont 40 % « à la remise de l'arbre des pertes » (plus de l'analyse financière, que l'IA produit
 et qui se remet en ouverture) —, plan d'amélioration en tiroirs parmi seize leviers reliés chacun à une ligne
-des comptes, **exécution en trois rythmes** (chantiers groupés 1 400 € HT/j ou forfait, un jour par semaine
-6 000 € HT/mois, relais de direction 1 200 € HT/j — règle interne : un relais par an, quatre mois au plus),
-outil de suivi conçu avec les équipes du client, sans abonnement. TJM 1 400 € HT (`DAILY_RATE`) ; modèle :
-100 jours payés pour 120 000 € HT au moins. Tout cela vit
+des comptes, **exécution en trois rythmes** (chantiers groupés au barème ou au forfait, un jour par semaine
+4 700 € HT/mois, relais de direction 1 100 € HT/j — règle interne : un relais par an, quatre mois au plus),
+outil de suivi conçu avec les équipes du client, sans abonnement. **Barème unique validé par Cyrille le 17/11/2026**,
+le même dans ses fichiers de recherche d'emploi : 1 400 € HT/j jusqu'à 10 jours commandés (`DAILY_RATE`),
+1 250 € de 11 à 29 (`MID_RATE`), 1 100 € à partir de 30 ou en temps partagé (`LONG_RATE`), `rate_for(days)`. Modèle :
+SASU, 130 000 € HT de CA par an (5 500 € net par mois) sur ~120 jours facturés, par exemple quatre entreprises
+à cinq jours par mois pendant six mois (33 000 € HT chacune). Tout cela vit
 dans **`ConsultingOffer`** (`app/models/consulting_offer.rb`) et nulle part ailleurs. ⚠ **Les prix ne
 passent jamais par un modèle** : le prompt les interdit, `ContentGenerator#append_conditions` écrit la
 section « Conditions » sous le texte APRÈS la relecture orthographique, et la proposition est dans
@@ -302,8 +305,8 @@ socialement, méthode revendiquée). Conséquences dans `ConsultingOffer` : le j
 complet devient « remise de l'arbre des pertes » (l'analyse financière n'est plus un livrable payé) ; exécution en
 TROIS rythmes (chantiers groupés avec équipe pluridisciplinaire ; un jour par semaine sur six à douze mois ; relais
 de direction, local) ; l'outil de suivi devient un accompagnement « je vous aide à le construire », plus un produit ;
-TJM 1 400 € HT (modèle : 100 jours payés pour 120 000 € HT, le reste en commercial non rémunéré ; mix type
-4 ateliers + 3 express + 1 complet + 1 client un jour par semaine six mois = 100 jours, ~137 000 €). **Nouvelle porte d'entrée : l'atelier de direction « la carte assis / debout du site »,
+barème du 17/11/2026 (voir « Proposition commerciale » plus haut ; il remplace le TJM unique de 1 400 € HT et le
+modèle à 100 jours du 21/10). **Nouvelle porte d'entrée : l'atelier de direction « la carte assis / debout du site »,
 5 jours à 1 400 € HT = 7 000 € HT** : avec le dirigeant et son comité, lister les tâches des fonctions support du
 site (contrôle de gestion, méthodes, ordonnancement, qualité documentaire, RH admin), marquer ce que l'IA fera dans
 les douze mois, et cartographier le redéploiement vers les pertes de l'atelier que personne ne traite (gaspillage
