@@ -458,7 +458,8 @@ suppose des chantiers Kaizen ou A3 avec des équipes **formées** (vécu chez LI
 l'animation de la performance produit des résultats puissants et croissants **au-delà de trois mois** — jamais
 « rapides ». Les jugements de Cyrille sur d'anciens collègues ne vont jamais dans le site. Aucune archive
 2003-2020 (disque perdu en 2025) : la revue repose sur son témoignage. **N°02 revue le 08/10/2026** : l'ancienne fiche
-inventait une collaboration avec McKinsey et un plan de 18 mois — Cyrille a mené seul un plan de **six mois**,
+inventait une collaboration avec McKinsey — Cyrille a mené seul un plan de **dix-huit mois** (la revue avait noté six mois,
+corrigé par Cyrille le 17/11/2026 : dix-huit partout, site, CV et pitchs),
 une dizaine de chantiers GEMBA-PDCA de 30 à 70 K€/an chacun, 450 K€/an sur 3,3 M€/an de pertes identifiées (la
 moitié tenait à une technologie ancienne) ; premiers résultats « dès les premiers mois ». Ne jamais nommer les
 fabricants d'équipements. Ce qu'il raconte des circonstances de son départ de CENEXI ne va jamais dans le site.

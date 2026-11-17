@@ -127,12 +127,12 @@ class RealisationCatalogTest < ActiveSupport::TestCase
     assert_includes item[:resultat], "TRS de 57 % à 65 %"
   end
 
-  # Revue du 08/10/2026 : ni McKinsey, ni 18 mois, ni « premières semaines » pour la N°02.
-  test "N°02 credits no consultancy, lasted six months and promises no quick weeks" do
+  # Revue du 08/10/2026 : ni McKinsey ni « premières semaines » pour la N°02 ; dix-huit mois (Cyrille, 17/11/2026).
+  test "N°02 credits no consultancy, lasted eighteen months and promises no quick weeks" do
     item = RealisationCatalog.find("N°02")
     text = [item[:titre], item[:resultat], item.dig(:page, :description), item.dig(:page, :result)].join(" ")
-    assert_no_match(/McKinsey|18 mois|premières semaines/i, text)
-    assert_includes item[:resultat], "450 K€/an en six mois"
+    assert_no_match(/McKinsey|six mois|premières semaines/i, text)
+    assert_includes item[:resultat], "450 K€/an en dix-huit mois"
     assert_equal %i[defects overprocessing], item[:wastes]
   end
 end

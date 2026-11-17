@@ -50,15 +50,15 @@ module RealisationCatalog
                "injectables aseptiques en ampoules, BPF/GMP, salle blanche classe A · 6 lignes de remplissage et une " \
                "dizaine de machines de contrôle optique (mirage), d'ancienne génération · responsable fabrication " \
                "(170 personnes en 3×8), plan mené personnellement · maintenance hors périmètre",
-      titre: "Réduction des pertes d'ampoules : une dizaine de chantiers, 450 K€/an en six mois",
-      resultat: "450 K€/an en six mois, par une dizaine de chantiers de 30 à 70 K€/an chacun (valeur directe des " \
+      titre: "Réduction des pertes d'ampoules : une dizaine de chantiers, 450 K€/an en dix-huit mois",
+      resultat: "450 K€/an en dix-huit mois, par une dizaine de chantiers de 30 à 70 K€/an chacun (valeur directe des " \
                 "ampoules : coût de revient, et contenu perdu pour les ampoules pleines) · sur 3,3 M€/an de pertes " \
                 "identifiées, dont environ la moitié tenait à une technologie ancienne dont le remplacement ne se " \
                 "justifiait pas · premiers résultats dès les premiers mois",
-      # Revue du 08/10/2026 avec Cyrille : le plan a duré six mois (et non 18), et McKinsey n'y a jamais
-      # pris part — deux erreurs de l'ancienne fiche.
+      # Revue du 08/10/2026 avec Cyrille : McKinsey n'y a jamais pris part (erreur de l'ancienne fiche).
+      # Durée : dix-huit mois, confirmée par Cyrille le 17/11/2026 (la revue du 08/10 avait noté six mois).
       reviewed_on: "2026-10-08",
-      period: "plan de six mois, pendant le poste de responsable fabrication (juin 2016 → sept. 2018)",
+      period: "plan de dix-huit mois, pendant le poste de responsable fabrication (juin 2016 → sept. 2018)",
       wastes: %i[defects overprocessing],
       workstreams: [
         "Analyse des pertes en entonnoir à partir de la traçabilité SAP (consommation d'ampoules vides, stock de " \
@@ -80,7 +80,7 @@ module RealisationCatalog
       tags: %w[pharma pharmaceutique aseptique ampoules rebuts pertes-matière casse SAP Pareto GEMBA PDCA
                points-zéro analyse-des-pertes],
       page: { company: "CENEXI · Pharma aseptique · Fontenay-sous-Bois",
-              result: "450 K€/an en six mois · une dizaine de chantiers",
+              result: "450 K€/an en dix-huit mois · une dizaine de chantiers",
               icon: "fa-arrow-trend-down",
               description: "3,3 M€ de pertes annuelles identifiées par une analyse en entonnoir des données SAP : par " \
                            "ligne, puis par équipement, puis par mode de perte. Priorisation par Pareto, uniquement sur " \
