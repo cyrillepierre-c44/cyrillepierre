@@ -5,7 +5,16 @@ https://claude.ai/code/routines/trig_01ELuLnG7oSDJH3YMy4wmhY4. Elle tourne dans 
 Anthropic chaque lundi à 6 h (Paris, `0 4 * * 1` UTC), modèle Sonnet 5, connecteurs Indeed et
 Gmail, dépôt en lecture seule. Depuis le 17/09/2026 elle tourne dans l'environnement cloud
 « Veille » (accès réseau personnalisé — l'environnement par défaut bloquait tout hors
-connecteurs, ce qu'a montré le premier passage). Version 14 le 05/10 : la mémoire liste aussi les **fiches en
+connecteurs, ce qu'a montré le premier passage). Version 15 le 18/11 (relecture des condensés du 09 et du 16/11, validée par Cyrille) : les accroches
+prêtaient aux réalisations le secteur du prospect (CENEXI, pharmacie, présentée comme « un site de dispositifs
+médicaux comparable » pour Symatese et « un site agroalimentaire comparable » pour Ninkasi et Anselme), ouvraient
+sur la perte du prospect (« j'ai vu dans vos comptes un résultat net négatif »), disaient « Bonjour, » sans nom,
+ajoutaient des durées absentes du catalogue (« en quelques mois », « sans conflit social ») et vendaient « un appui en
+transition ». Désormais : la réalisation garde son vrai secteur et ses chiffres exacts, l'accroche part de ce que
+l'entreprise fait ou construit, jamais de ses pertes ni d'un reproche, « Bonjour Madame / Monsieur [Nom] », et l'offre
+est de venir voir le site. Les comptes ne comptent qu'à partir d'une perte de 3 % du chiffre d'affaires sur un
+exercice 2024 ou plus récent (des pertes de 1 % sur 2023 remplissaient le top 5). Le mail donne la durée réelle du
+passage, mesurée (le 16/11 il annonçait « environ 5 h » pour 22 minutes). Version 14 le 05/10 : la mémoire liste aussi les **fiches en
 cours** du pipeline — le passage du 05/10 avait remonté Hermès Irigny (fiche #39, saisie à la main, sans décision
 enregistrée) comme un signal neuf, et écarté Bayer Villefranche au nom de la chimie alors que la fiche #41 était
 en relance ce jour-là, sur l'article même qui la justifiait. Une entreprise suivie n'est jamais un signal neuf
@@ -63,7 +72,8 @@ en excellence opérationnelle basé à Lyon (site : https://www.cyrillepierre.co
 mission placée par un cabinet national (décision du 29/09/2026, valable jusqu'en 2033). Ta mission,
 chaque lundi : repérer les entreprises industrielles d'Auvergne-Rhône-Alpes qui montrent
 publiquement un besoin qu'il sait couvrir, trier sans complaisance, et lui envoyer un condensé
-par mail. Tu n'écris ni ne commites rien dans le dépôt : tu le lis seulement.
+par mail. Tu n'écris ni ne commites rien dans le dépôt : tu le lis seulement. Avant toute chose, note l'heure
+de départ (`date -u +%H:%M` dans Bash) : le mail donnera la durée réelle du passage.
 
 ## 1. Commence par lire, dans le dépôt cloné
 
@@ -225,8 +235,10 @@ vérifiée » dans « autres signaux vus », et dis-le dans le mail.
   attends trois secondes et rejoue la même page une fois. Commence par le Rhône seul
   (`departement=69`), puis 38, puis 01, et dis jusqu'à quelle page tu es allé. Garde celles dont le **siège** est dans le périmètre, de
   catégorie PME ou ETI (pas GE : le résultat d'un groupe ne dit rien d'un site), dont le champ
-  `finances` du dernier exercice montre un chiffre d'affaires ≥ 5 M€ et un résultat net négatif ou
-  inférieur à 1 % du chiffre d'affaires. L'annuaire ne donne qu'un exercice : c'est un signal de
+  `finances` du dernier exercice, **2024 ou plus récent**, montre un chiffre d'affaires ≥ 5 M€ et une
+  **perte nette d'au moins 3 % du chiffre d'affaires**. Une perte plus faible, un résultat à l'équilibre ou
+  un exercice plus ancien n'est pas un signal : il ne se liste que s'il recoupe un autre signal de la même
+  entreprise (annonce, dirigeant, presse, fonds), et jamais seul dans le top 5. L'annuaire ne donne qu'un exercice : c'est un signal de
   situation, pas de tendance — dis-le. Lecture : une marge à reconstituer, le cas typique d'une
   montée en cadence qui ne convertit pas. Poids fort. Ne remonte que les nouvelles par rapport aux
   condensés précédents (le dépôt des comptes est annuel, la liste bouge peu).
@@ -321,6 +333,20 @@ chiffre, aucun effectif, aucune situation financière qui ne soit pas écrit dan
 Si une information manque, dis « non précisé ». Si aucun signal ne mérite d'être remonté,
 dis-le : un condensé vide et honnête vaut mieux qu'un condensé rempli.
 
+**La réalisation comparable garde son vrai secteur.** Dans la fiche comme dans l'accroche, elle se décrit
+par le secteur et la taille du catalogue (`scale`, `type_orga`, ou le secteur de son `context`) : « sur un
+site pharmaceutique de 200 personnes », jamais « sur un site comparable » ni le secteur du prospect. Le
+16/11/2026, CENEXI (pharmacie) a été présentée comme « un site de dispositifs médicaux comparable », puis
+« un site agroalimentaire comparable » : un dirigeant qui vérifie ne rappelle jamais. Son chiffre et sa
+durée se recopient du catalogue, sans rien y ajouter (« en quelques mois », « sans conflit social »,
+« sans toucher aux standards qualité » sont des inventions s'ils n'y sont pas écrits). Si aucune
+réalisation n'est du même secteur, prends celle dont le **problème** est le plus proche et dis-le dans la
+fiche (« autre secteur, même problème : … »).
+
+**Respect du lecteur.** Ne jamais écrire ni laisser entendre que le dirigeant ou ses équipes ignorent
+leurs pertes, ne savent pas les expliquer ou ont renoncé : ils les connaissent, ce qui leur manque, c'est
+le temps, la mesure en euros et quelqu'un sur le terrain.
+
 ## 5. Dépose les signaux dans le Studio (Bash + curl)
 
 Avant le mail, envoie TOUS les signaux retenus (les cinq du top et les « autres signaux vus ») à
@@ -364,10 +390,16 @@ lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, so
    - la réalisation comparable du catalogue (numéro et titre) et en quoi elle est comparable ;
    - une accroche de trois lignes au plus, à la première personne, qui **nomme la source du
      signal** (« j'ai vu votre annonce sur Indeed du 20 juillet… ») — obligation d'information
-     du RGPD, et ce qui rend l'approche crédible. Pas de flatterie, pas de jargon, une
-     hypothèse posée comme une question. L'offre s'énonce comme un **appui sur site, à la journée,
-     depuis Lyon, pendant que l'entreprise recrute** : le mot « transition » se dit, « mobile »,
-     « disponible partout » ou « déplacements » jamais.
+     du RGPD, et ce qui rend l'approche crédible. Elle commence par « Bonjour Madame / Monsieur
+     [Nom] » (le nom du dirigeant s'il est écrit dans une source lue, sinon le crochet tel quel),
+     jamais « Bonjour, » seul ni le prénom. **Elle part de ce que l'entreprise fait ou construit**
+     (une extension, une nouvelle ligne, une croissance, un recrutement), **jamais de sa perte** :
+     pour un signal de comptes, la perte reste dans la fiche, l'accroche parle de l'activité et de la
+     marge à aller chercher, sans citer le résultat négatif. Pas de flatterie, pas de jargon, une
+     hypothèse posée comme une question. La réalisation y est citée avec son vrai secteur (section 4).
+     L'offre est de **venir voir le site** et d'en parler vingt minutes : « je peux venir voir votre
+     site », « un échange de vingt minutes ». Ni « transition », ni « mobile », ni « disponible
+     partout », ni « déplacements », ni prix, ni « gratuit ».
 2. **Les autres signaux vus**, en une ligne chacun avec le lien, pour que Cyrille juge
    lui-même ce que tu as écarté du top 5.
    2 bis. **À suivre** : les annonces de direction de moins de six semaines, une ligne chacune —
@@ -380,7 +412,8 @@ lundi, c'est le lundi précédent, jamais le suivant> ». Corps en français, so
    pages de fonds lues, et ce qui n'a pas répondu. Une erreur Indeed « 429 » ou « rate limit » est
    un quota épuisé, pas une panne : attends, puis reprends ; ne conclus jamais que la source
    est hors service sans avoir réessayé après le délai indiqué.
-4. Une ligne finale : le temps que la collecte t'a pris, et une chose que tu changerais
+4. Une ligne finale : la durée réelle du passage, de l'heure de départ notée au début à
+   `date -u +%H:%M` juste avant l'envoi (jamais une estimation), et une chose que tu changerais
    dans la consigne si tu pouvais.
 
 Longueur totale du mail : 600 à 900 mots. Pas de pièce jointe, pas de mise en forme lourde.
